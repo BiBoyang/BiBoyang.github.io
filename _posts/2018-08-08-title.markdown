@@ -9,7 +9,6 @@ categories: jekyll update
 
 # 以下是翻译
 
-# 类簇
 
 类簇是 Foundation 框架广泛使用的设计模式。类簇在公共抽象超类下对多个私有的具体子类进行分组。以这种方式对类进行分组简化了面向对象框架的公共可见体系结构，而不会降低其功能丰富度。类簇是基于抽象工厂设计模式的。
 
@@ -17,20 +16,21 @@ categories: jekyll update
 
 为了说明类簇结构及其优点，考虑构建定义对象以存储不同类型（ char、int、float、double ）数量的类层次结构的问题。因为许多不同类型具有许多共同特征（ 例如，它们可以从一种类型转换为另一种类型，并且可以表示为字符串 ），所以它们可以由单个类表示。但是，它们的存储要求不同，因此用同一个类表示它们的效率很低。考虑到这一事实，我们可以用下图所示的类结构来解决这个问题。
 
-![image](http://upload-images.jianshu.io/upload_images/1342490-a83374a3eb29efc5.gif?imageMogr2/auto-orient/strip)
+![image](https://raw.githubusercontent.com/BiBoyang/BiBoyang.github.io/refs/heads/main/Image/leicu01.webp)
 
-Number 是抽象超类，在其方法中声明其子类共有的操作。但是，它不会声明实例变量来存储数字。子类声明了这样的实例变量，并在声明的编程接口中共享Number。
+Number 是抽象超类，在其方法中声明其子类共有的操作。但是，它不会声明实例变量来存储数字。子类声明了这样的实例变量，并在声明的编程接口中共享 Number。
 
 到目前为止，这种设计相对简单。但是，如果考虑这些基本 C 语言类型的常用修改，则类层次结构图看起来更像下图。
 
-![image](http://upload-images.jianshu.io/upload_images/1342490-a0e165d4f73b6b4d.gif?imageMogr2/auto-orient/strip)
+![image](https://raw.githubusercontent.com/BiBoyang/BiBoyang.github.io/refs/heads/main/Image/leicu02.webp)
 
 简单的概念 -- 创建一个容纳数字值的类 -- 可以很容易地发展到十几个类。类簇结构提供了一种反映概念简单性的设计。
 
 ## 使用类簇的情况：简单的概念，简单的接口
 
 将类簇结构应用于此问题会产生下图的类层次结构（私有类为灰色）。
-![image](http://upload-images.jianshu.io/upload_images/1342490-364a9c7f1d72beb5.gif?imageMogr2/auto-orient/strip)
+
+![image](https://raw.githubusercontent.com/BiBoyang/BiBoyang.github.io/refs/heads/main/Image/leicu03.webp)
 
 此层次结构的用户只能看到一个公共类，Number 那么如何分配正确子类的实例呢？答案就在于抽象超类处理实例化的方式。
 
@@ -38,7 +38,7 @@ Number 是抽象超类，在其方法中声明其子类共有的操作。但是�
 
 在类簇中，一个抽象的超类必须声明用于创建其私有子类的实例的方法。超类负责根据您调用的创建方法分配正确子类的对象 -- 您不会，也不能手动选择实例的类。
 
-在 Foundation 框架中，通常通过调用 **+className...**方法或 **alloc...**和**init...**方法来创建一个对象。以 Foundation 框架的 [NSNumber](https://developer.apple.com/library/archive/documentation/LegacyTechnologies/WebObjects/WebObjects_3.5/Reference/Frameworks/ObjC/Foundation/Classes/NSNumber/Description.html#//apple_ref/occ/cl/NSNumber) 类为例，您可以发送这些消息来创建数字对象：
+在 Foundation 框架中，通常通过调用 **+className...** 方法或 **alloc...** 和**init...** 方法来创建一个对象。以 Foundation 框架的 [NSNumber](https://developer.apple.com/library/archive/documentation/LegacyTechnologies/WebObjects/WebObjects_3.5/Reference/Frameworks/ObjC/Foundation/Classes/NSNumber/Description.html#//apple_ref/occ/cl/NSNumber) 类为例，您可以发送这些消息来创建数字对象：
 
 ```C++
 NSNumber *aChar = [NSNumber numberWithChar:’a’];
@@ -46,22 +46,23 @@ NSNumber *anInt = [NSNumber numberWithInt:1];
 NSNumber *aFloat = [NSNumber numberWithFloat:1.0];
 NSNumber *aDouble = [NSNumber numberWithDouble:1.0];
 ```
-你不需要负责释放从工厂方法返回的对象。许多类也提供了创建需要你自己管理释放对象的标准 **alloc...**和 **init...**方法。
+你不需要负责释放从工厂方法返回的对象。许多类也提供了创建需要你自己管理释放对象的标准**alloc...** 和 **init...** 方法。
 每个对象返回的 **aChar**、**anInt**、**aFloat** 和 **aDouble** 可能属于不同的私有子类（事实上确实如此）。虽然每个对象的类成员关系都是隐藏的，但是它的接口是公共的，是由抽象超类 NSNumber 声明的接口。虽然不完全正确，但是将 aChar、anInt、aFloat和a. 对象看作 NSNumber 类的实例是很方便的，因为它们是由NSNumber类方法创建并通过 NSNumber 声明的实例方法访问的。
 
 ## 具有多个公共超类的类簇
 
 在上面的示例中，一个抽象公共类声明了多个私有子类的接口。这是一个纯粹意义上的类集群。也有可能并且通常需要有两个（或可能更多）抽象公共类来声明集群的接口。这在 Foundation 框架中很明显，其中包括下图中列出的集合。
 
-![image](http://upload-images.jianshu.io/upload_images/1342490-a12157050155e725.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image](https://raw.githubusercontent.com/BiBoyang/BiBoyang.github.io/refs/heads/main/Image/leicu04.webp)
 
 
-其他的用到这种类型的集合也存在，但这些集合清楚地说明了两个抽象节点如何协作将类编程接口声明为类簇。在每个集合中，一个公共节点声明所有集合对象都可以响应的方法，另一个节点声明仅适用于允许修改其内容的集合对象的方法**（译者注：换个简单的说法-可变和不可变的集合）**。
+其他的用到这种类型的集合也存在，但这些集合清楚地说明了两个抽象节点如何协作将类编程接口声明为类簇。在每个集合中，一个公共节点声明所有集合对象都可以响应的方法，另一个节点声明仅适用于允许修改其内容的集合对象的方法 **（译者注：换个简单的说法-可变和不可变的集合）**。
 集合接口的这种因子分解使面向对象框架的程序接口更加形象。举个例子，想象一个表示声明此方法的 book 的对象：
 
 ```C++
 - (NSString *)title;
 ```
+
 book 对象可以返回自己的实例变量或创建一个新的字符串对象并返回它 - 这无关紧要。从此声明中可以清楚地看出，返回的字符串无法修改。任何修改返回对象的尝试都会引发编译器警告。
 
 
@@ -96,11 +97,11 @@ book 对象可以返回自己的实例变量或创建一个新的字符串对象
 
 基元和派生方法之间的接口划分使得创建子类更容易。您的子类必须重写继承的基元，同时要确保它继承的所有派生方法都能正常运行。
 
-原始派生的区别适用于完全初始化的对象的接口。如何 **init...**的方法需要被掌握的问题还需要被处理。
+原始派生的区别适用于完全初始化的对象的接口。如何 **init...** 的方法需要被掌握的问题还需要被处理。
 
-通常，集群的抽象超类声明了许多 **init...**和 **+className**方法。如创建实例中所述，抽象类基于您的选择 **init...**或 **+ className**方法决定实例化哪个具体子类。您可以认为抽象类声明了这些方法以方便子类。由于抽象类没有实例变量，因此不需要初始化方法。
+通常，集群的抽象超类声明了许多 **init...** 和 **+className**方法。如创建实例中所述，抽象类基于您的选择 **init...** 或 **+ className** 方法决定实例化哪个具体子类。您可以认为抽象类声明了这些方法以方便子类。由于抽象类没有实例变量，因此不需要初始化方法。
 
-您的子类应该声明它自己的 **init...**（如果它需要初始化它的实例变量）和可能的 **+ className**方法。它不应该依赖于它继承的任何东西。为了在初始化链中维护其链接，它应该在自己指定的初始化方法中调用其超类的指定初始化方法。它还应该重写所有其他继承的初始化方法，并让它们以合理的方式运行。（有关指定初始值设定项的讨论，请参阅 [Object Initialization](https://developer.apple.com/library/archive/documentation/General/Conceptual/CocoaEncyclopedia/Initialization/Initialization.html#//apple_ref/doc/uid/TP40010810-CH6-SW3)。）在类集群中，抽象超类的指定初始值设定项始终为 init。
+您的子类应该声明它自己的 **init...**（如果它需要初始化它的实例变量）和可能的 **+ className** 方法。它不应该依赖于它继承的任何东西。为了在初始化链中维护其链接，它应该在自己指定的初始化方法中调用其超类的指定初始化方法。它还应该重写所有其他继承的初始化方法，并让它们以合理的方式运行。（有关指定初始值设定项的讨论，请参阅 [Object Initialization](https://developer.apple.com/library/archive/documentation/General/Conceptual/CocoaEncyclopedia/Initialization/Initialization.html#//apple_ref/doc/uid/TP40010810-CH6-SW3)。）在类集群中，抽象超类的指定初始值设定项始终为 init。
 
 
 
@@ -121,7 +122,7 @@ book 对象可以返回自己的实例变量或创建一个新的字符串对象
  
 @end
 ```
-请注意，**MonthArray** 该类未声明 **init...**方法，因为它没有要初始化的实例变量。如上所述，**count** 和 **objectAtIndex:** 方法简单地覆盖了继承的原始方法。
+请注意，**MonthArray** 该类未声明 **init...** 方法，因为它没有要初始化的实例变量。如上所述，**count** 和 **objectAtIndex:** 方法简单地覆盖了继承的原始方法。
 
 **MonthArray** 该类的实现如下所示：
 
@@ -158,14 +159,16 @@ static NSString *months[] = { @"January", @"February", @"March",
 }
 @end
 ```
-因为**MonthArray**重写了继承的原始方法，所以它继承的派生方法可以正常工作而不会被覆盖。**NSArray**的**lastObject**，**containsObject:**，**sortedArrayUsingSelector:**，**objectEnumerator**，和其他没有**MonthArray**对象问题的方法依然照常执行。
+因为 **MonthArray** 重写了继承的原始方法，所以它继承的派生方法可以正常工作而不会被覆盖。**NSArray** 的 **lastObject**，**containsObject:**，**sortedArrayUsingSelector:**，**objectEnumerator**，和其他没有**MonthArray**对象问题的方法依然照常执行。
 
 #### 复合的对象
 
 通过将私有集合对象嵌入到您自己设计的对象中这个方法，可以创建复合对象。此复合对象可以依赖于集合对象的基本功能，仅拦截复合对象希望以某种特定方式处理的消息。此体系结构减少了必须编写的代码量，并允许您利用 Foundation Framework 提供的测试代码。
-![image](http://upload-images.jianshu.io/upload_images/1342490-b6d5fb925365288d.gif?imageMogr2/auto-orient/strip)
+![image](https://raw.githubusercontent.com/BiBoyang/BiBoyang.github.io/refs/heads/main/Image/leicu05.webp)
+
 复合对象必须声明自己是集群的抽象超类的子类。作为子类，它必须覆盖超类的原始方法。它也可以覆盖派生方法，但这不是必需的，因为派生方法通过原始方法工作。
- **NSArray** 的 **count** 方法就是一个例子; 介入对象的覆盖方法的实现可以简单如下：
+
+**NSArray** 的 **count** 方法就是一个例子; 介入对象的覆盖方法的实现可以简单如下：
 
 ```C++
 - (unsigned)count {
