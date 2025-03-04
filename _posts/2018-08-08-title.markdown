@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "类簇（官方文档翻译）"
-date:   2025-03-04 23:32:53 +0800
+date:   2018-08-08 23:32:53 +0800
 categories: jekyll update
 ---
 
@@ -38,7 +38,7 @@ Number 是抽象超类，在其方法中声明其子类共有的操作。但是�
 
 在类簇中，一个抽象的超类必须声明用于创建其私有子类的实例的方法。超类负责根据您调用的创建方法分配正确子类的对象 -- 您不会，也不能手动选择实例的类。
 
-在 Foundation 框架中，通常通过调用 **+className...**方法或 **alloc...**和**init...**方法来创建一个对象。以 Foundation 框架的[NSNumber](https://developer.apple.com/library/archive/documentation/LegacyTechnologies/WebObjects/WebObjects_3.5/Reference/Frameworks/ObjC/Foundation/Classes/NSNumber/Description.html#//apple_ref/occ/cl/NSNumber)类为例，您可以发送这些消息来创建数字对象：
+在 Foundation 框架中，通常通过调用 **+className...**方法或 **alloc...**和**init...**方法来创建一个对象。以 Foundation 框架的 [NSNumber](https://developer.apple.com/library/archive/documentation/LegacyTechnologies/WebObjects/WebObjects_3.5/Reference/Frameworks/ObjC/Foundation/Classes/NSNumber/Description.html#//apple_ref/occ/cl/NSNumber) 类为例，您可以发送这些消息来创建数字对象：
 
 ```C++
 NSNumber *aChar = [NSNumber numberWithChar:’a’];
