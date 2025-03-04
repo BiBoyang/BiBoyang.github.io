@@ -221,6 +221,7 @@ struct SideTable {
     static void unlockTwo(SideTable *lock1, SideTable *lock2);
 };
 ```
+
 这里面 **slock** 是为了防止竞争选择的自旋锁，第二个 **refcnts** 是协助对象的 isa 指针的 extra_rc 引用计数的变量，第三个 **weak_table** 就是我们要了解的关键，一个 weak 引用的哈希表。
 
 ```C++
