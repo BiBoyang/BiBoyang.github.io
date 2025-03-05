@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "block(一)：block的本质"
+title:  "探究 block (一)：block 的本质"
 date:   2019-07-03 23:32:53 +0800
 categories: jekyll update
 ---
