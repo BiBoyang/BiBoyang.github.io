@@ -230,9 +230,10 @@ block();
 它直接访问到了函数指针，因为前三位分别是 void、int、int，大小分别是 8、4、4，加一块就为 16 ，所以在 64 位中，就表示出 0x10 地址的崩溃。
 
 ```C
-// Block_layout 内存布局（64位系统）：
-// isa (8字节) | flags (4) | reserved (4) | invoke (8) | descriptor (8) | variables...
-// 访问 invoke 的地址为 Block_layout 起始地址 + 16 字节（0x10）
+ Block_layout 内存布局（64位系统）：
+ 
+isa (8字节) | flags (4) | reserved (4) | invoke (8) | descriptor (8) | variables...
+ 访问 invoke 的地址为 Block_layout 起始地址 + 16 字节（0x10）
 ```
 
 
