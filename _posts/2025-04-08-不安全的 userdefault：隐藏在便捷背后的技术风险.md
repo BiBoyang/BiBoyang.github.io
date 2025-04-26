@@ -5,7 +5,6 @@ date:   2025-04-08 23:32:53 +0800
 categories: jekyll update
 ---
 
-# 不安全的 userdefault：隐藏在便捷背后的技术风险
 
 众所周知，userdefault 是 iOS 系统中一个轻量级的本地存储方案，很多人会在这里存储一些小的数据。
 
