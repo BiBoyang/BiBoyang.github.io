@@ -31,7 +31,7 @@ let suiteDefaults = UserDefaults(suiteName: "group.com.example")
 
 Swift 的 UserDefaults 是 NSUserDefaults 的桥接，底层是完全一样的。
 
-但因为Swift存在泛型，编译器会做额外优化，Swift 自动处理 NSNumber 到 Int/Double 的桥接，避免手动转换。
+但因为 Swift 存在泛型，编译器会做额外优化，Swift 自动处理 NSNumber 到 Int/Double 的桥接，避免手动转换。
 
 通过阅读官方文档和进行代码实现，我们知道 UserDefaults 使用的是懒加载模式，当代码首次调用 UserDefaults.standard（或 [NSUserDefaults standardUserDefaults]）时，系统才会加载 plist 文件到内存。
 
@@ -41,7 +41,7 @@ Swift 的 UserDefaults 是 NSUserDefaults 的桥接，底层是完全一样的�
 此外，UserDefaults 的每次写操作，会出发 XPC 通信，与系统进程 cfprefsd 同步数据；而读操作则不会。
 
 因为这点，如果短时间大量进行写入，有可能会可能阻塞线程。而且我们一定要知道 UserDefaults 的写入并不是第一时间写入，即使是使用 synchronize 方法，也不会第一时间写入，官方文档写的非常清楚
-*Waits for any pending asynchronous updates to the defaults database and returns; this method is unnecessary and shouldn’t be used.*这个方法已经事实上废弃了。
+*Waits for any pending asynchronous updates to the defaults database and returns; this method is unnecessary and shouldn’t be used.* 这个方法已经事实上废弃了。
 
 
 ## 新版本系统的致命挑战
