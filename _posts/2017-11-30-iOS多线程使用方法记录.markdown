@@ -70,7 +70,8 @@ NSThread* myThread = [[NSThread alloc] initWithTarget:self
     }
 ```
 
-但是如果对 SDWebImage 源码比较熟悉的话，我们会知道在大约 4.0 之后的版本里，这个API被替换成了下面。
+但是如果对 SDWebImage 源码比较熟悉的话，我们会知道在大约 4.0 之后的版本里，这个 API 被替换成了下面。
+
 ```C++
 #ifndef dispatch_main_async_safe
 #define dispatch_main_async_safe(block)\
@@ -81,15 +82,19 @@ NSThread* myThread = [[NSThread alloc] initWithTarget:self
     }
 #endif
 ```
-这个原因，可以查看这个[issue](https://github.com/lionheart/openradar-mirror/issues/7053)。简单而言，就是因为在`MapKit`中有一个坑，导致有问题了，所以现在基本上都弃用原有的方法。
+这个原因，可以查看这个 [issue](https://github.com/lionheart/openradar-mirror/issues/7053)。简单而言，就是因为在 `MapKit` 中有一个坑，导致这么实现有问题了，所以现在基本上都弃用原有的方法。
 
 # GCD
-GCD就不必过多介绍了，我们一般使用的最多的异步API。不必手动管理创建的线程，只需要讲想要异步使用的代码放到适当的Dispatch Queue当中，GCD就会生成必要的线程来执行任务。
-GCD实际上是由内核来直接调度资源分配，所以会比上面的更加有效率和节约。
+
+GCD就不必过多介绍了，我们一般使用的最多的异步 API。不必手动管理创建的线程，只需将想要异步使用的代码放到适当的 Dispatch Queue 当中，GCD 就会生成必要的线程来执行任务。
+
+GCD 实际上是由内核来直接调度资源分配，所以会比上面的更加有效率和节约。
+
 下面简单描述一下用的比较多的功能。
 
 ## 多线程应用
 在其他线程运行程序有两种方法。
+
 第一种。
 ```C++
     dispatch_queue_t queue = dispatch_queue_create("testQueue", DISPATCH_QUEUE_CONCURRENT);
@@ -113,18 +118,23 @@ GCD实际上是由内核来直接调度资源分配，所以会比上面的更�
 ```
 
 ## 延后执行
+
 ```C++
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5* NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         NSLog(@"wait 5 sec");
     });
 ```
+
 这里有些地方需要注意。
-dispatch_after方法实际上并不是在指定时间后执行处理，而是在指定的时间处加入到DispatchQueue中。
-因为主队列在主线程中RunLoop中执行，RunLoop有时间间隔的，block中的方法最快是在5后执行，最慢则是在 5+1/60 秒后执行。
+dispatch_after 方法实际上并不是在指定时间后执行处理，而是在指定的时间处加入到 DispatchQueue 中。
+
+因为主队列在主线程中的 RunLoop 中执行，RunLoop 有时间间隔的，block 中的方法最快是在 5 秒后执行，最慢则是在 5+1/60 秒后执行。
 
 
 ## 队列
+
 假如有多个任务要一起处理，就可以使用这个方法。
+
 ```C++
 + (void)dispatchGroup {
     dispatch_queue_t queue = dispatch_queue_create("queue_test", DISPATCH_QUEUE_CONCURRENT);
@@ -144,24 +154,30 @@ dispatch_after方法实际上并不是在指定时间后执行处理，而是在
 ```
 
 ## 快速遍历
-dispatch_appy是GCD提供的一个快速遍历的方法。但是要注意，这个遍历的方法是无序的，并且最好自己去新建一个异步任务。
+
+dispatch_apply 是 GCD 提供的一个快速遍历的方法。但是要注意，这个遍历的方法是无序的，并且最好自己去新建一个异步任务。
+
 ```C++
     dispatch_queue_t queue = dispatch_queue_create("myqueue", DISPATCH_QUEUE_CONCURRENT);
     dispatch_apply(1000, queue, ^(size_t index) {
         NSLog(@"apply is %zu",index);
     });
 ```
-dispatch_apply的优点在于，它比forin遍历还要快速！！！
-如果看过我之前的[文章]的话，应该知道forin遍历在大多数遍历里算得上最快的了，而dispatch_apply比forin遍历还要快速。在某些数量很大并且不需要顺序的遍历操作中可以使用。
+
+dispatch_apply 的优点在于，在计算密集型的循环操作下，比 forin 遍历还要快速！！！
+
 
 ## Semaphore
-这个实际上是一个信号量。我们可以把它理解为一种锁。
-Semaphore是一个有计数的信号。计数为0的时候回阻塞线程，大于0则不会，所以我们可以通过控制semaphore的值，来达成线程同步。
 
-这里主要是三个函数起作用。
-> * `dispatch_semaphore_create`创建一个semaphore信号量;
-> * `dispatch_semaphore_signal` 发送一个信号让信号量+1;
-> * `dispatch_semaphore_wait` 如果信号量计数为0则阻塞等待、否则通过。
+这个实际上是一个信号量。我们可以把它理解为一种锁。
+
+Semaphore 是一个有计数的信号。计数为0的时候回阻塞线程，大于0则不会，所以我们可以通过控制semaphore 的值，来达成线程同步。
+
+这里主要是三个函数起作用：
+
+* `dispatch_semaphore_create` 创建一个 semaphore 信号量;
+* `dispatch_semaphore_signal` 发送一个信号让信号量 +1;
+* `dispatch_semaphore_wait` 如果信号量计数为 0 则阻塞等待、否则通过。
 
 ```C++
         dispatch_group_t group = dispatch_group_create();
@@ -179,11 +195,16 @@ Semaphore是一个有计数的信号。计数为0的时候回阻塞线程，大�
             });
         }
 ```
-dispatch_semaphore有个优点是性能比较好，如果看过SDWebImage的源码的话，会发现它的很多锁是从@synchronized慢慢的替换为dispatch_semaphore。
+
+dispatch_semaphore 有个优点是性能比较好，如果看过 SDWebImage 的源码的话，会发现它的很多锁是从 @synchronized 慢慢的替换为 dispatch_semaphore。
+
 
 ## 单例
+
 这个可能是我们使用的最多的地方了。
+
 比较安全的单例写法是这样的。
+
 ```C++
 #ifdef __has_feature(objc_arc) 
 
@@ -257,6 +278,7 @@ dispatch_semaphore有个优点是性能比较好，如果看过SDWebImage的源�
 ```
 
 ## 定时器
+
 直接去[看这里](https://github.com/BiBoyang/Study/blob/master/File/003.md#gcd)
 
 ```C++
@@ -312,16 +334,17 @@ dispatch_semaphore有个优点是性能比较好，如果看过SDWebImage的源�
 ```
 
 # NSOperation
->  比较惭愧的说，我其实使用NSOperation的并不多。
 
-NSOperation是对GCD的封装，更加的面相对象。
+
+NSOperation 是对 GCD的封装，更加的面相对象。
 
 它主要有三种对象。
-> * NSInvocationOperation
-> * NSBlockOperation
-> * 自定义NSOperation
+ * NSInvocationOperation
+ * NSBlockOperation
+ * 自定义NSOperation
 
 ## NSInvocationOperation
+
 ```C++
 + (void)InvocationOperation {
     
@@ -341,6 +364,8 @@ NSOperation是对GCD的封装，更加的面相对象。
 }
 ```
 我们可以发现，队列实际上还是在主线程中。
+
+
 ## NSBlockOperation
 ```C++
     NSBlockOperation *op = [NSBlockOperation blockOperationWithBlock:^{
@@ -357,6 +382,7 @@ NSOperation是对GCD的封装，更加的面相对象。
 通过重写NSOperation的方法来处理，代码略过。
 
 ## addOperationWithBlock
+
 我们使用这个方法来添加异步任务。
 ```C++
 - (void)addOperationWithBlockToQueue {
@@ -378,12 +404,17 @@ NSOperation是对GCD的封装，更加的面相对象。
     }];
 }
 ```
+
 我们可以发现，使用 addOperationWithBlock: 将操作加入到操作队列后能够开启新线程，进行并发执行。
 
 ## 操作依赖
-我在少数使用NSOperation的地方就是这里了。
-有时候我们会遇到a任务、b任务要先后执行，然后在执行完毕之后才能继续执行c操作。这个时候NSOperation就有用了。
+
+我在少数使用 NSOperation 的地方就是这里了。
+
+有时候我们会遇到 a 任务、b 任务要先后执行，然后在执行完毕之后才能继续执行 c 操作。这个时候NSOperation 就有用了。
+
 示例代码如下：
+
 ```C++
 + (void)addDependency {
     //创建队列
