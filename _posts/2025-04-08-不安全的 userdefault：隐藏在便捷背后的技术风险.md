@@ -52,7 +52,7 @@ Swift 的 UserDefaults 是 NSUserDefaults 的桥接，底层是完全一样的�
 
 这导致一些尴尬的问题，虽然 UserDefaults 默认使用NSFileProtectionCompleteUntilFirstUserAuthentication（使其在首次设备解锁后即可访问），但它可能会在首次解锁前的预热期间返回 nil 或默认值。这种情况会悄无声息地发生，不会引发任何错误。
 
-假如你在 UserDefaults 中存储了一些关于启动是直接读取甚至于写入的数据，那么数据的安全性，以及 App 基于 UserDefaults 的一些设置（比如说暗黑模式）就会变得严重不可控。
+假如你在 UserDefaults 中存储了一些关于启动时直接读取甚至于写入的数据，那么数据的安全性，以及 App 基于 UserDefaults 的一些设置（比如说暗黑模式）就会变得严重不可控。
 
 与之类似的还有  Live Activit，就是在动态岛和锁屏页面常常出现的那个东西。也一样会触发这种问题。当多个 Extension 同时访问共享域时，XPC 延迟导致数据不一致。
 
@@ -65,7 +65,10 @@ Swift 的 UserDefaults 是 NSUserDefaults 的桥接，底层是完全一样的�
 * 写入操作最好也要异步化（防止 XPC 堵塞）。
 
 ```swift
-let defaultsQueue = DispatchQueue(label: "com.example.defaults")
+// 建议使用自定义串行队列并指定QoS
+let defaultsQueue = DispatchQueue(label: "com.example.defaults",
+                                  qos: .userInitiated,
+                                  attributes: .concurrent)
 defaultsQueue.async {
     UserDefaults.standard.set(value, forKey: "key")
 }
@@ -82,7 +85,7 @@ if UIApplication.shared.isProtectedDataAvailable {
 
 如果是敏感数据，使用Keychain；
 
-如果是需要高频写入读取的数据，直接使用 MMKV 算了，写入速度比 UserDefaults 快 100 倍，通过 mmap 还可以实现崩溃安全。
+如果是需要高频写入读取的数据，直接使用 MMKV 算了，写入速度比 UserDefaults 快 100 倍，通过 mmap 还可以实现崩溃安全写入。
 
 # 总结
 
