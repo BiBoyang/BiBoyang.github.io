@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "探访isEqual和Hash的笔记"
+title:  "探访isEqual和Hash"
 date:   2018-08-08 23:32:53 +0800
 categories: jekyll update
 ---
