@@ -172,14 +172,10 @@ objc_object::rootRelease(bool performDealloc, objc_object::RRVariant variant)
 
 既然问题根源是“多线程读写非线程安全的属性”，解决方案就是保证线程安全：
 
-1. 使用 atomic 属性 ：
+
    
-   ```
-   @property (atomic, strong) NSObject *obj;
-   ```
-   虽然 atomic 性能略低，但它保证了 getter/setter 的原子性，绝对不会读到 BAD_OBJECT 。
-2. 加锁（推荐） ：
-   在读写该属性时，使用 os_unfair_lock 、 pthread_mutex 或 @synchronized 保护。
+1. 加锁（强烈推荐） ：
+   在读写该属性时，使用 os_unfair_lock 、 pthread_mutex 或 NSLock 保护。
    
    ```
    os_unfair_lock_lock(&_lock);
@@ -187,5 +183,110 @@ objc_object::rootRelease(bool performDealloc, objc_object::RRVariant variant)
    os_unfair_lock_unlock(&_lock);
    ```
    
+2. 使用 atomic 属性 ：
+   
+   ```
+   @property (atomic, strong) NSObject *obj;
+   ```
+   虽然 atomic 性能略低，但它保证了 getter/setter 的原子性，绝对不会读到 BAD_OBJECT 。但是仅限于读写这一瞬间的并发安全，它远远不等同于“线程安全”。如果牵扯进复杂操作，依然无法保证线程安全。
+   
 3. 串行队列 ：
    将对该属性的所有读写操作都放入同一个串行队列（如主队列或自定义队列）中执行。
+
+
+#### Hook objc_storeStrong
+
+既然问题的核心是 “新版 objc_storeStrong 写入了哨兵值导致崩溃” ，那么兜底方案就是 “把 objc_storeStrong 还原回旧版本的实现” 。
+
+这里我们就要引入 fishhook 了。
+
+然后创建一个新文件，代码如下：
+```
+#import <Foundation/Foundation.h>
+#import <objc/runtime.h>
+#import "fishhook.h" 
+
+OBJC_EXPORT id objc_retain(id);
+OBJC_EXPORT void objc_release(id);
+
+// 保存原始函数的指针
+static void (*orig_objc_storeStrong)(id *location, id obj);
+
+void safe_storeStrong(id *location, id obj) {
+    id prev = *location;
+    if (obj == prev) {
+        return;
+    }
+    objc_retain(obj);   
+    *location = obj;    
+    objc_release(prev); 
+}
+
+
+// 启动时自动 Hook
+
+__attribute__((constructor))
+static void installSafeStoreStrongHook() {
+    // 使用 fishhook 重绑定符号
+    struct rebinding storeStrongRebinding;
+    storeStrongRebinding.name = "objc_storeStrong";
+    storeStrongRebinding.replacement = (void *)safe_storeStrong;
+    storeStrongRebinding.replaced = (void **)&orig_objc_storeStrong;
+    
+    struct rebinding rebinds[] = { storeStrongRebinding };
+    
+    // 执行重绑定
+    rebind_symbols(rebinds, 1);
+    
+    NSLog(@"[SafeStoreStrong] 已成功 Hook objc_storeStrong，降级为旧版无哨兵模式。");
+}
+```
+
+这个方案可以作为你的“急救包”，让你有时间慢慢去重构代码，而不是因为一个系统更新就让 App 瘫痪。但是我们依然要明白，**这个方案 没有修复线程安全问题 。它只是把“必现的崩溃”变回了“偶现的崩溃”**。
+
+我们可以写一个测试用例：
+
+```
+@interface ViewController ()
+
+// 必须是 nonatomic 且 strong 才能触发 objc_storeStrong
+@property (nonatomic, strong) NSString *targetString;
+@property (nonatomic, assign) BOOL stopTest;
+
+@end
+@implementation ViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    self.stopTest = NO;
+    self.targetString = @"objc_storeStrong_test";
+    
+    NSLog(@"开始并发读写测试...");
+    NSLog(@"如果 Hook 生效，App 应该能坚持运行一段时间，然后崩溃");
+
+    // 线程 1: 疯狂写
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        int i = 0;
+        while (!self.stopTest) {
+            // 构造新字符串，确保是堆对象
+            self.targetString = [NSString stringWithFormat:@"Value-%d", i++];
+        }
+    });
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        while (!self.stopTest) {
+            NSString *str = self.targetString;
+            if (str.length > 0) {
+                // 模拟使用对象
+                // NSLog(@"Read: %@", str); // 打印太快会卡死控制台，这里仅访问属性
+            }
+        }
+    });
+}
+
+```
+
+
+# 总结
+
+objc_storeStrong 在旧版本是线程不安全的，本质在于： “读取旧值、更新指针、释放旧值”这三个步骤不是一个原子事务 。新版本（objc-950）的改动并没有解决这个非原子问题，而是通过插入哨兵值，让这种非原子的并发访问行为 必然导致 Crash ，从而暴露问题。
