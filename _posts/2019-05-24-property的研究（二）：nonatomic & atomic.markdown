@@ -8,17 +8,16 @@ categories: jekyll update
 
 
 
-atomic 一般会被翻译成原子性。它表示一个”不可再分割“的单元，也就是**单指令操作**。
+`atomic` 一般会被翻译成原子性。它表示一个”不可再分割“的单元，也就是**单指令操作**。
 
-话说回来，现在原子已经并非是不可分割的，但是提出这个概念的时候，并非如此，所以就直接简单的等价于**不可分割**，就可以了，和物理学没什么关系。所以在下面的内容里，不会直接使用原子性，而是直接用 atomic 来说明。
+话说回来，现在原子已经并非是不可分割的，但是提出这个概念的时候，并非如此，所以就直接简单的等价于**不可分割**，就可以了，和物理学没什么关系。所以在下面的内容里，不会直接使用原子性，而是直接用 `atomic` 来说明。
 
-从某种意义上来讲，线程安全的元素是，它本身就是 atomic 的。
 
 # iOS 中的 atomic
 
-在我们日常的使用过程中，我们经常是使用 nonatomic 的，很少使用 atomic，这个主要是因为 atomic 本身就一些缺陷，但是并非不能使用，在某些情况下，使用 atomic 反而是某种较优解。
+在我们日常的使用过程中，我们经常是使用 `nonatomic` 的，很少使用 `atomic`，这个主要是因为 `atomic` 本身就一些缺陷，但是并非不能使用，在某些情况下，使用 `atomic` 反而是某种较优解。
 
-在上一篇文章中，我们知道在 set 后会调用 **reallySetProperty** 方法，get 后会调用 **objc_getProperty** 方法，我们找到它们的关键代码。慢慢看下去。
+在上一篇文章中，我们知道在 `set` 后会调用 **reallySetProperty** 方法，`get` 后会调用 **objc_getProperty** 方法，我们找到它们的关键代码。慢慢看下去。
 
 ```C++
 objc_getProperty
@@ -50,7 +49,7 @@ if (!atomic) {
     }
 ```
 
-这里，我们会发现，atomic 和 nonatomic 在实现上的区别，在于 set 和 get 操作的时候，是否添加了锁；以及在 get 过程中，atomic 修饰的属性，会将对象注册到自动释放池中，自动管理。
+这里，我们会发现，`atomic` 和 `nonatomic` 在实现上的区别，在于 `set` 和 `get` 操作的时候，是否添加了锁；以及在 `get` 过程中，`atomic` 修饰的属性，会将对象注册到自动释放池中，自动管理。
 
 继续探究锁的实现。
 
@@ -63,7 +62,7 @@ if (!atomic) {
 StripedMap<spinlock_t> PropertyLocks;
 ```
 
-StripedMap 是一个 hashMap，如下所示：
+StripedMap 是一个 `hashMap`，如下所示：
 ```C++
 enum { CacheLineSize = 64 };
 
@@ -153,13 +152,14 @@ class StripedMap {
 #endif
 };
 ```
+
 我们查看注释，
 * StripedMap<T> is a map of void* -> T, sized appropriately for cache-friendly lock striping. 
 * StripedMap<T> 是一个 key 是 void*，value 是 T 的表，对于缓存友好的锁分条大小适中。
 
-StripedMap<T> 是一个模板类，根据传递的实际参数决定其中 array 成员存储的元素类型。 能通过对象的地址，运算出 Hash 值，通过该 hash 值找到对应的 value 。
+`StripedMap<T>` 是一个模板类，根据传递的实际参数决定其中 `array` 成员存储的元素类型。 能通过对象的地址，运算出 Hash 值，通过该 hash 值找到对应的 value 。
 
-这里的 CacheLineSize 显然代表的时候用于缓存的 value 大小，使用 alignas 让字节对齐；而 StripeCount 则表示在 iPhone 中，创建的 array 大小是 8 。
+这里的 `CacheLineSize` 显然代表的时候用于缓存的 `value` 大小，使用 `alignas` 让字节对齐；而 `StripeCount` 则表示在 `iPhone` 中，创建的 `array` 大小是 8 。
 
 ## spinlock_t
 
