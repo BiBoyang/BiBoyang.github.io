@@ -5,26 +5,26 @@ date:   2026-01-20 23:32:53 +0800
 categories: jekyll update
 ---
 
-WKWebView 是 iOS 中重要的网页组成部分,我们需要通过 WKWebView 框架来与 WebKit 打交道,虽然官方提供了 WKWebView 的各种 API,但是我们经常会遇到各种各样的问题,这个时候就需要对于WKWebView 的底层 WebKit 有一定的了解了.
+`WKWebView` 是 `iOS` 中重要的网页组成部分,我们需要通过 `WKWebView` 框架来与 `WebKit` 打交道,虽然官方提供了 `WKWebView` 的各种 `API`,但是我们经常会遇到各种各样的问题,这个时候就需要对于 `WKWebView` 的底层 `WebKit` 有一定的了解了.
 
 
 
-## 带着问题来看
+## 用一个景点问题来初步探究
 
-有过一些 iOS 的网络拦截的人应该知道一个事情:"NSURLProtocol 可以拦截 app 里的网络请求却拦截不到webview里面 post 的 body 内容",那么原因是什么?带着这个问题来切入研究 webkit.
+有过一些 `iOS` 的网络拦截的人应该知道一个事情: " `NSURLProtocol` 可以拦截 `app` 里的网络请求却拦截不到 `webview` 里面 `post` 的 `body` 内容",那么原因是什么? 带着这个问题来初步切入研究 `WebKit`.
 
 ## NSURLProtocol 是如何拦截 App 的网络请求的
 
 具体的代码实现不做详细讨论,简单的说一下原理.
 
-系统里有一个 Protocol 列表,每次网络发起请求时,系统说按顺序查询这个列表并获得处理权限.处理之后接着可以正常的转发请求给系统网络.
+系统的里有一个 `Protocol` 列表,每次网络发起请求时,系统说按顺序查询这个列表并获得处理权限.处理之后接着可以正常的转发请求给系统网络.
 
 简单的说, `NSURLProtocol` 是 iOS 网络层的 **钩子机制**，让你可以在任何网络请求发出前拦截它，并完全自定义如何处理这个请求，而上层调用者完全无感知。
 
 
 
 
-## webview 的网络请求
+## WebView 的网络请求
 
 
 在这里就开始基于 WebKit-7622.1.16 版本的源码,来进行分析.
