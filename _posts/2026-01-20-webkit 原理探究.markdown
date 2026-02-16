@@ -27,9 +27,9 @@ categories: jekyll update
 ## WebView 的网络请求
 
 
-在这里就开始基于 WebKit-7622.1.16 版本的源码,来进行分析.
+在这里就开始基于 `WebKit-7622.1.16` 版本的源码,来进行分析.
 
-WKWebView 采用了多进程的机制.分为以下几种:
+`WKWebView` 采用了多进程的机制.分为以下几种:
 
 
 | 进程种类       | 职责           | 数量          |
@@ -40,16 +40,16 @@ WKWebView 采用了多进程的机制.分为以下几种:
 | GPUProcess     | 图形渲染（可选） | 1 个          |
 
 
-通常情况下,加载一个网页,是这样的流程(不考虑 GPUProcess):
+通常情况下,加载一个网页,是这样的流程(不考虑 `GPUProcess`):
 
-  1. UI Process: "加载 https://example.com"
-  2. Web Process: 准备渲染环境
-  3. Network Process: 发起 HTTP 请求
+  1. `UI Process`: "加载 https://example.com"
+  2. `Web Process`: 准备渲染环境
+  3. `Network Process`: 发起 `HTTP` 请求
   4. 收到响应数据
-  5. Web Process: 解析 HTML → 构建 DOM → 布局 → 绘制
-  6. UI Process: 显示渲染结果
+  5. `Web Process`: 解析 `HTML` → 构建 `DOM` → 布局 → 绘制
+  6. `UI Process`: 显示渲染结果
 
-在这里,可以的得知,在 WKWebView 内部,是由一个 整体的 `Network Process` 来控制网球请求的,而传递数据则通过跨进程 `IPC` 进行传递.
+在这里,可以的得知,在 `WKWebView` 内部,是由一个 整体的 `Network Process` 来控制网球请求的,而传递数据则通过跨进程 `IPC` 进行传递.
 
 这里我们要分清一种情况,假如你是在 `App` 内部点击某个链接进入 `WebView`,比如类似的的代码.
 
@@ -58,11 +58,12 @@ WKWebView 采用了多进程的机制.分为以下几种:
   NSURLRequest *request = [NSURLRequest requestWithURL:url]; │
  [webView loadRequest:request]; 
 ```
-则这个网络请求本身是可以被 NSURLProtocol 所拦截,因为它本质上是 App 内部的一个网络请求,是发生在 App 的进程中的.
 
-而如果已经进入 WebView 之后再进行的网络请求,则完全是绕过了 App 进程,直接进行Web Process → NetworkProcess的通信.
+这个网络请求本身是可以被 `NSURLProtocol` 所拦截,因为它本质上是 `App` 内部的一个网络请求,是发生在 `App` 的进程中的.
 
-而在这里就无法使用 NSURLProtocol 进行拦截了,在 WebKit 的相关代码中有对应解释
+而如果已经进入 `WebView` 之后再进行的网络请求,则完全是绕过了 `App` 进程,直接进行 `Web Process` → `NetworkProcess` 的通信.
+
+而在这里就无法使用 `NSURLProtocol` 进行拦截了,在 `WebKit` 的相关代码中有对应解释
 
 ```
     // We don't send HTTP body over IPC for better performance.
@@ -75,20 +76,20 @@ WKWebView 采用了多进程的机制.分为以下几种:
     }
 ```
 
-这里可以很明显的看到,如果请求包含 HTTPBody 或 HTTPBodyStream ，就创建一个可变副本并清空这两个字段;这样之后的数据只会包含 URL、header、method 等元数据.
+这里可以很明显的看到,如果请求包含 `HTTPBody` 或 `HTTPBodyStream` ，就创建一个可变副本并清空这两个字段;这样之后的数据只会包含 `URL`、`header`、`method` 等元数据.
 
-之所以这样做,和 WebKit 的多进程设计有关.
+之所以这样做,和 `WebKit` 的多进程设计有关.
 
-在多个进程中,是通过跨进程 IPC 进程数据传递的,而这个数据传递要经过“序列化→拷贝→反序列化”的操作,数据量一旦变多,开销会显著放大.
+在多个进程中,是通过跨进程 `IPC` 进程数据传递的,而这个数据传递要经过“*序列化→拷贝→反序列化*”的操作,数据量一旦变多,开销会显著放大.
 
-并且 TTPBodyStream 还是一个实时性非常强的数据,它往往是一次性、不可重用的输入流,跨进程复制之后无法保证读取的一致性.
+并且 `TTPBodyStream` 还是一个实时性非常强的数据,它往往是一次性、不可重用的输入流,跨进程复制之后无法保证读取的一致性.
 
 
-况且还可以保证架构隔离的安全,将网络请求真正发送的位置固定在 NetworkProcess 里,集中控制网络权限,统一处理安全策略、缓存、证书等网络逻辑.
+况且还可以保证架构隔离的安全,将网络请求真正发送的位置固定在 `NetworkProcess` 里,集中控制网络权限,统一处理安全策略、缓存、证书等网络逻辑.
 
 
 # 结论
 
-NSURLProtocol 是基于 NSURLRequest/NSURLSession 的拦截机制，运行在 App 进程的网络栈上下文里，而 WKWebView 的网络请求实际发生在 NetworkProcess。进程隔离使得 App 进程的 NSURLProtocol 看不到 NetworkProcess 内部的请求。
+`NSURLProtocol` 是基于 `NSURLRequest/NSURLSession` 的拦截机制，运行在 `App` 进程的网络栈上下文里，而 `WKWebView` 的网络请求实际发生在 `NetworkProcess`。进程隔离使得 `App` 进程的 `NSURLProtocol` 看不到 `NetworkProcess` 内部的请求。
 
-而即使在 webview 的多个进程内部传递的时候,出于性能原因,也是明确去掉了 HTTP Body.
+而即使在 `WebView` 的多个进程内部传递的时候,出于性能原因,也是明确去掉了 `HTTP Body`.
