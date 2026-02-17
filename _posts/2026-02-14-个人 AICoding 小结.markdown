@@ -5,3 +5,18 @@ date:   2026-02-14 23:32:53 +0800
 categories: jekyll update
 ---
 
+前段时间 Anthropic 的研发团队发布了一篇非常有意思的文章 [How AI assistance impacts the formation of coding skills](https://www.anthropic.com/research/AI-assistance-coding-skills) ,主要解释了一个问题:**AI 写代码能让你更快交付，但会不会让你“学得更慢、会得更少”？**
+
+
+
+# 不要把思考过程完全交给 AI
+
+
+
+
+# 当心 AI 一本正经的胡说八道
+
+
+
+
+##
