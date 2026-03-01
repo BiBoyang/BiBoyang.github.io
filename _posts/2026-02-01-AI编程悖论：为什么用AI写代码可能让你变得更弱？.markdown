@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "AI编程悖论：为什么用AI写代码可能让你变得更弱？"
-date:   2026-02-14 23:32:53 +0800
+date:   2026-02-01 23:32:53 +0800
 categories: jekyll update
 ---
 
