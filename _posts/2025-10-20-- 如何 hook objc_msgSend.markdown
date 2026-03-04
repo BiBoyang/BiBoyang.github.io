@@ -8,3 +8,44 @@ categories: jekyll update
 
 # fishhook 
 
+
+
+通过查看 Runtime 源码，我们发现 objc_msgSend 是使用纯汇编实现函数，通过[汇编代码](https://github.com/BiBoyang/How_To_Hook_msg_send/blob/main/objc-msg-arm64.s#L532-L774)我们可以看到以下定义：
+
+
+```
+MSG_ENTRY _objc_msgSend
+```
+这里的 MSG_ENTRY 是什么意思呢？在文件中继续搜索 MSG_ENTRY 我们找到了这么一个宏：
+```
+.macro MSG_ENTRY /*name*/
+	.text
+	.align 10
+	.globl    $0
+$0:
+.endmacro
+```
+我们展开
+```
+.text
+.align 10
+.globl _objc_msgSend
+_objc_msgSend:
+```
+在这里,系统将符号 _objc_msgSend 映射为 C 的全局方法符号。也就是说，这段汇编可以通过头文件声明，便已完成了 C 的函数定义。我们在后续处理的时候可以将其视为 C 方法。
+
+
+
+## objc_msgSend 的性能优化
+
+如果看过老版本 objc_msgSend 源码的人,应该意识到,新版本用 MSG_ENTRY 在这里替换掉了 ENTRY,而且是仅限 objc_msgSend 方法.
+
+我们都知道 objc_msgSend 这个函数对于 iOS 程序的重要性,极其高频.哪怕 1 个时钟周期的浪费，乘以每秒亿万次的调用，都会变成巨大的性能损耗。
+
+对于现代 CPU（特别是像 Apple M 系列这种高性能 ARM 芯片）在执行代码时，并不是执行一条读一条，而是 按“块”读取 。这个“块”通常对应 Cache Line（缓存行） 的大小。
+
+Cache Line 通常是 64 字节 （ARM64）或 128 字节。而 ARM64 指令固定是 4 字节 。
+
+这意味着 CPU 从内存（或 L1 Cache）读取一次，会把 16 条指令 （  64 ÷ 4 = 16 ）搬进指令队列。
+
+
