@@ -14,6 +14,7 @@ categories: jekyll update
 ```
 MSG_ENTRY _objc_msgSend
 ```
+
 这里的 `MSG_ENTRY` 是什么意思呢？在文件中继续搜索 `MSG_ENTRY` 我们找到了这么一个宏：
 ```
 .macro MSG_ENTRY /*name*/
@@ -61,7 +62,7 @@ _objc_msgSend:
 
 ## 1024 字节的对齐
 
-`MSG_ENTRY` 的宏长度声明是 `.align 10` ,实际上起始地址对齐约束 （地址按 1024-byte 边界对齐）.而一般的指令(以及老版本的 `objc_msgSend`) 使用的是 `ENTRY` 宏,长度声明是 `.align 5`,实际上是 `32` 字节.
+`MSG_ENTRY` 的宏长度声明是 `.align 10` ,实际上起始地址对齐约束 （地址按 `1024-byte` 边界对齐）.而一般的指令(以及老版本的 `objc_msgSend`) 使用的是 `ENTRY` 宏,长度声明是 `.align 5`,实际上是 `32` 字节.
 
 看到这里,可能会有一个疑问:**Cache Line 只有 64 字节,那系统搞一个 1024 字节（1KB）对齐,这也读不起啊?**
 
