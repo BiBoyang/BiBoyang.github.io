@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "什么是 MSG_ENTRY"
+title:  "从 ENTRY 到 MSG_ENTRY：objc_msgSend 的热点入口优化解析"
 date:   2025-10-28 23:32:53 +0800
 categories: jekyll update
 ---
