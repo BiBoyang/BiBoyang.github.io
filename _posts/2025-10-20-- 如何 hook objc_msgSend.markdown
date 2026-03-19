@@ -10,13 +10,14 @@ categories: jekyll update
 
 
 
-通过查看 Runtime 源码，我们发现 objc_msgSend 是使用纯汇编实现函数，通过[汇编代码](https://github.com/BiBoyang/How_To_Hook_msg_send/blob/main/objc-msg-arm64.s#L532-L774)我们可以看到以下定义：
+通过查看 `Runtime` 源码，我们发现 `objc_msgSend` 是使用**纯汇编**实现函数，通过[汇编代码](https://github.com/BiBoyang/How_To_Hook_msg_send/blob/main/objc-msg-arm64.s#L532-L774)我们可以看到以下定义：
 
 
 ```
 MSG_ENTRY _objc_msgSend
 ```
-这里的 MSG_ENTRY 是什么意思呢？在文件中继续搜索 MSG_ENTRY 我们找到了这么一个宏：
+这里的 `MSG_ENTRY` 是什么意思呢？在文件中继续搜索 `MSG_ENTRY` 我们找到了这么一个宏：
+
 ```
 .macro MSG_ENTRY /*name*/
 	.text
@@ -25,14 +26,16 @@ MSG_ENTRY _objc_msgSend
 $0:
 .endmacro
 ```
+
 我们展开
+
 ```
 .text
 .align 10
 .globl _objc_msgSend
 _objc_msgSend:
 ```
-在这里,系统将符号 _objc_msgSend 映射为 C 的全局方法符号。也就是说，这段汇编可以通过头文件声明，便已完成了 C 的函数定义。我们在后续处理的时候可以将其视为 C 方法。
+在这里,系统将符号 `_objc_msgSend` 映射为 `C` 的全局方法符号。也就是说，这段汇编可以通过头文件声明，便已完成了 `C` 的函数定义。我们在后续处理的时候可以将其视为 `C` 方法。
 
 
 
