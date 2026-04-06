@@ -5,5 +5,7 @@ main:
     url: /archive/
   - title: "标签"
     url: /tags/
+  - title: "月刊"
+    url: /monthly/
   - title: "关于"
     url: /about/

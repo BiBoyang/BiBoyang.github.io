@@ -10,6 +10,11 @@ locale: "zh-CN"
 remote_theme: "mmistakes/minimal-mistakes"
 minimal_mistakes_skin: "air"
 
+collections:
+  monthly:
+    output: true
+    permalink: /monthly/:path/
+
 search: true
 breadcrumbs: true
 paginate: 8
@@ -61,6 +66,15 @@ defaults:
       related: true
       toc: true
       toc_sticky: true
+  - scope:
+      path: ""
+      type: monthly
+    values:
+      layout: single
+      author_profile: true
+      classes: wide
+      show_date: true
+      read_time: true
   - scope:
       path: ""
       type: pages
