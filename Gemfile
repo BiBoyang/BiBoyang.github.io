@@ -13,9 +13,6 @@ source "https://rubygems.org"
 # GitHub Pages 依赖
 gem "github-pages", group: :jekyll_plugins
 
-# 主题
-gem "minima", "~> 2.5"
-
 # 添加 webrick
 gem "webrick"
 
@@ -29,6 +26,7 @@ group :jekyll_plugins do
   gem "jekyll-sitemap"
   gem "jekyll-gist"
   gem "jekyll-seo-tag"
+  gem "jekyll-include-cache"
 end
 
 # Windows and JRuby does not include zoneinfo files, so bundle the tzinfo-data gem
