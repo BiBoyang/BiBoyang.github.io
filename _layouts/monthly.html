@@ -1,0 +1,43 @@
+---
+layout: single
+author_profile: true
+classes: wide
+show_date: true
+read_time: true
+---
+
+{{ content }}
+
+{% assign other_issues = site.monthly | sort: "date" | reverse %}
+{% assign rendered_count = 0 %}
+
+{% for issue in other_issues %}
+  {% if issue.url != page.url %}
+    {% assign rendered_count = rendered_count | plus: 1 %}
+  {% endif %}
+{% endfor %}
+
+{% if rendered_count > 0 %}
+  <hr>
+  <section class="page__related">
+    <h2 class="page__related-title">往期月刊</h2>
+    <div class="grid__wrapper">
+      {% assign shown_count = 0 %}
+      {% for issue in other_issues %}
+        {% if issue.url != page.url and shown_count < 4 %}
+          {% assign shown_count = shown_count | plus: 1 %}
+          <div class="grid__item">
+            <article class="archive__item">
+              <h3 class="archive__item-title no_toc">
+                <a href="{{ issue.url | relative_url }}">{{ issue.title }}</a>
+              </h3>
+              {% if issue.excerpt %}
+                <p class="archive__item-excerpt">{{ issue.excerpt | strip_html | strip_newlines }}</p>
+              {% endif %}
+            </article>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </section>
+{% endif %}
