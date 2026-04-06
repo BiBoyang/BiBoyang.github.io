@@ -3,6 +3,7 @@ layout: post
 title:  "AI与美伊战事一个月回顾：战场博弈、产业冲击与金融震荡"
 date:   2026-03-30 23:32:53 +0800
 categories: jekyll update
+tags: [AI, Geopolitics, Finance]
 ---
 
 

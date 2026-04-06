@@ -3,6 +3,7 @@ layout: post
 title:  "AI编程悖论：为什么用AI写代码可能让你变得更弱？"
 date:   2026-02-01 23:32:53 +0800
 categories: jekyll update
+tags: [AI, Coding, Productivity]
 ---
 
 想象一下：你用了半年 AI 编程助手，代码写得飞快，但是当你突然遇到 bug,但是一时半会无法使用 AI 的时候，会发生什么样的事情?

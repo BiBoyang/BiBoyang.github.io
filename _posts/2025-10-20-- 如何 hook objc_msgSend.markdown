@@ -3,6 +3,7 @@ layout: post
 title: "如何 hook objc_msgSend"
 date: 2025-10-20 23:32:53 +0800
 categories: objc runtime hook
+tags: [iOS, Objective-C, runtime, hook, objc_msgSend]
 excerpt: "objc_msgSend 可以作为符号被重绑定，但真正困难的不是找到它，而是在不破坏 ABI、寄存器现场和返回路径的前提下完成 hook。"
 ---
 

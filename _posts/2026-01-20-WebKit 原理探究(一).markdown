@@ -3,6 +3,7 @@ layout: post
 title:  "WebKit 原理探究(一)"
 date:   2026-01-20 23:32:53 +0800
 categories: jekyll update
+tags: [WebKit, iOS, Browser]
 ---
 
 `WKWebView` 是 `iOS` 中重要的网页组成部分,我们需要通过 `WKWebView` 框架来与 `WebKit` 打交道,虽然官方提供了 `WKWebView` 的各种 `API`,但是我们经常会遇到各种各样的问题,这个时候就需要对于 `WKWebView` 的底层 `WebKit` 有一定的了解了.

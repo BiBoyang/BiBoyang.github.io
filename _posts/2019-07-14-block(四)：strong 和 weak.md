@@ -3,6 +3,7 @@ layout: post
 title:  "探究 block (四)：strong 和 weak"
 date:   2019-07-14 23:32:53 +0800
 categories: jekyll update
+tags: [iOS, Objective-C, block, weak, strong]
 ---
 
 > 在不特殊说明是MRC的情况下，默认是ARC。

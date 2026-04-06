@@ -3,5 +3,7 @@ main:
     url: /
   - title: "归档"
     url: /archive/
+  - title: "标签"
+    url: /tags/
   - title: "关于"
     url: /about/

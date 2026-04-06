@@ -3,6 +3,7 @@ layout: post
 title:  "读《工程控制论》悟 Agent 开发"
 date:   2026-03-23 23:32:53 +0800
 categories: jekyll update
+tags: [AI, Agent, Engineering]
 ---
 
 

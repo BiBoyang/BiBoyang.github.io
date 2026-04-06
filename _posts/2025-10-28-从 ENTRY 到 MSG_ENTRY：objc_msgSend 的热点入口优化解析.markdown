@@ -3,6 +3,7 @@ layout: post
 title:  "从 ENTRY 到 MSG_ENTRY：objc_msgSend 的热点入口优化解析"
 date:   2025-10-28 23:32:53 +0800
 categories: jekyll update
+tags: [iOS, Objective-C, runtime, objc_msgSend, performance]
 ---
 
 
@@ -183,4 +184,3 @@ END_ENTRY __objc_msgSend_uncached
 # 总结 
 
 系统使用 `MSG_ENTRY` 替代 `ENTRY`,是系统工程演进中的一个重要细节。它通过**牺牲少量二进制空间**，换取了 `objc_msgSend` 在 `CPU` 流水线的**极致效率**和**缓存稳定性**。对于 `App` 启动和高频消息发送场景，这是维持系统高性能运转的基石级优化。
-

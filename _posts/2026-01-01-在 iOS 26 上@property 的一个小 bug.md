@@ -3,6 +3,7 @@ layout: post
 title:  "在 iOS 26 上@property 的一个小 bug"
 date:   2026-01-01 23:32:53 +0800
 categories: jekyll update
+tags: [iOS, Objective-C, property, bug]
 ---
 
 

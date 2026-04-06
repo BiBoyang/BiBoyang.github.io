@@ -3,6 +3,7 @@ layout: post
 title:  "@property的研究（三）： iOS 中 copy 的原理"
 date:   2019-05-27 23:32:53 +0800
 categories: jekyll update
+tags: [iOS, Objective-C, property, copy]
 ---
 
 

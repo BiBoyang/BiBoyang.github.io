@@ -14,6 +14,9 @@ search: true
 breadcrumbs: true
 paginate: 8
 paginate_path: /page:num/
+tag_archive:
+  type: liquid
+  path: /tags/
 
 author:
   name: "BiBoyang"
