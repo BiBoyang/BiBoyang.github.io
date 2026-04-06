@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "WebKit 原理探究(一)"
+title:  "从一个拦截问题看 WKWebView 的多进程网络架构"
 date:   2026-01-20 23:32:53 +0800
 categories: jekyll update
 tags: [WebKit, iOS, Browser]
@@ -10,7 +10,7 @@ tags: [WebKit, iOS, Browser]
 
 
 
-## 用一个景点问题来初步探究
+## 用一个经典问题来初步探究
 
 有过一些 `iOS` 的网络拦截的人应该知道一个事情: " `NSURLProtocol` 可以拦截 `app` 里的网络请求却拦截不到 `webview` 里面 `post` 的 `body` 内容",那么原因是什么? 带着这个问题来初步切入研究 `WebKit`.
 
@@ -18,7 +18,7 @@ tags: [WebKit, iOS, Browser]
 
 具体的代码实现不做详细讨论,简单的说一下原理.
 
-系统的里有一个 `Protocol` 列表,每次网络发起请求时,系统说按顺序查询这个列表并获得处理权限.处理之后接着可以正常的转发请求给系统网络.
+`URL Loading System` 会根据已注册的 `NSURLProtocol` 子类决定是否交由自定义协议处理.处理之后接着可以正常的转发请求给系统网络.
 
 简单的说, `NSURLProtocol` 是 iOS 网络层的 **钩子机制**，让你可以在任何网络请求发出前拦截它，并完全自定义如何处理这个请求，而上层调用者完全无感知。
 
@@ -34,7 +34,7 @@ tags: [WebKit, iOS, Browser]
 | 进程种类       | 职责           | 数量          |
 |----------------|:---------------|---------------|
 | UIProcess      | 应用逻辑、API   |  1 个         |
-| WebProcess     | 渲染、JS 执行   | 每个页面 1 个 |
+| WebProcess     | 渲染、JS 执行   | 多数情况每页 1 个 |
 | NetworkProcess | 所有网络请求   | 1 个          |
 | GPUProcess     | 图形渲染（可选） | 1 个          |
 
@@ -48,7 +48,7 @@ tags: [WebKit, iOS, Browser]
   5. `Web Process`: 解析 `HTML` → 构建 `DOM` → 布局 → 绘制
   6. `UI Process`: 显示渲染结果
 
-在这里,可以的得知,在 `WKWebView` 内部,是由一个 整体的 `Network Process` 来控制网球请求的,而传递数据则通过跨进程 `IPC` 进行传递.
+在这里,可以的得知,在 `WKWebView` 内部,是由一个 整体的 `Network Process` 来控制网络请求的,而传递数据则通过跨进程 `IPC` 进行传递.
 
 这里我们要分清一种情况,假如你是在 `App` 内部点击某个链接进入 `WebView`,比如类似的的代码.
 
