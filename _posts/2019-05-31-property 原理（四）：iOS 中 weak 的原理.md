@@ -2,7 +2,7 @@
 layout: post
 title:  "@property 原理（四）：iOS 中 weak 的原理"
 date:   2019-05-31 23:32:53 +0800
-categories: jekyll update
+categories: [iOS, Objective-C, Runtime]
 tags: [iOS, Objective-C, property, weak]
 ---
 
@@ -14,8 +14,8 @@ tags: [iOS, Objective-C, property, weak]
 流程可以简单地分为三步，初始化、存储、释放，如下所示：
 
 1. 初始化时：系统会调用 **objc_initWeak** 函数，初始化一个新的 weak 指针指向对象的地址；
-2. 添加引用时：**objc_initWeak** 函数会调用 **objc_storeWeak()** 函数， **objc_storeWeak()** 的作用是更新指针指向，创建对应的弱引用表（一个哈希表）。
-3. 释放时，调用 **clearDeallocating** 函数。**clearDeallocating** 函数首先根据对象地址获取所有 weak 指针地址的数组，然后遍历这个数组把其中的数据设为 nil，最后把这个 entry 从 weak 表中删除，最后清理对象的记录。
+2. 添加引用时：**objc_initWeak** 最终会走到 **storeWeak() / objc_storeWeak()** 这一类逻辑，完成指针更新，并把这个弱引用位置注册到对应对象的弱引用表里。
+3. 释放时：对象进入销毁流程后，会调用 **clearDeallocating**。它会找到所有指向该对象的 weak 位置，把它们统一设为 `nil`，然后再把对应的 entry 从 weak 表中删除。
 
 # 实现过程
 
@@ -49,9 +49,9 @@ id objc_initWeak(id *location, id newObj) {
 ```
 **注：这里的实现代码是最新版的，不同版本的代码可能稍有不同，不过并不影响理解，新版做了性能的优化。**
 
-这里方法比较简单明了，但是我们要知道这里有一个潜在的前提条件：
+这里方法本身比较简单明了，但是要注意一个潜在前提：
 
-* location 是一个没有被注册为 **__weak** 对象的有效指针。如果 newObj 是空指针或它指向的对象已经释放，则 location 也就是 weak 的指针将初始化为 0（nil）。 否则，将 object 注册为指向 location 的 **__weak** 对象。 
+* `location` 是一个有效的 weak 存储位置。如果 `newObj` 是空指针，或者它指向的对象已经释放，那么 `location` 也就是这个 weak 指针会被初始化为 `nil`；否则，就会把 `location` 注册成指向该对象的一个 weak 引用位置。
 
 继续往下看相关实现：
 
@@ -181,9 +181,9 @@ static id storeWeak(id *location, objc_object *newObj) {
     return (id)newObj;
 }
 ```
-storeWeak 函数的作用是在添加引用的时候，添加新的指针和创建对应的弱引用表。
-* -1- 这里有关 initialize 方法的问题.
-    在使用 **+initialized** 方法的时候，因为这个方法是在 alloc 之前调用的。不这么做，可能会出现 **+initialize** 中调用了 **storeWeak** 方法，而在 **storeWeak** 方法中 **weak_register_no_lock** 方法中用到对象的 isa 还没有初始化完成的情况。
+`storeWeak` 函数的作用，是在弱引用赋值时更新新旧对象的注册关系。
+* -1- 这里和 `+initialize` 有关。  
+  如果不先处理好初始化状态，就可能出现一种边界情况：**+initialize** 里又触发了 **storeWeak**，而此时对象相关的类信息还没有准备好，最终就可能和弱引用注册逻辑互相打架。
 
 ### 这里有几个关键方法，需要说明一下。
 
@@ -223,7 +223,7 @@ struct SideTable {
 };
 ```
 
-这里面 **slock** 是为了防止竞争选择的自旋锁，第二个 **refcnts** 是协助对象的 isa 指针的 extra_rc 引用计数的变量，第三个 **weak_table** 就是我们要了解的关键，一个 weak 引用的哈希表。
+这里面 **slock** 是用来做同步保护的锁，第二个 **refcnts** 是协助对象 `isa` 上 `extra_rc` 的引用计数表，第三个 **weak_table** 才是这里真正的重点——保存 weak 引用关系的哈希表。
 
 ```C++
 struct weak_table_t {
@@ -237,7 +237,7 @@ struct weak_table_t {
     uintptr_t max_hash_displacement;
 };
 ```
-这里的最大探测步长 **max_hash_displacement**，是因为苹果创建的 hash 表使用的是开放寻址法中的线性探测法，元素默认会有偏移，用 **max_hash_displacement** 来记录写入元素时候所经过的最大探测步长和读取元素的时候所经历的最大探测步长,当读取的 **hash_displacement** 大于写入时候的 **max_hash_displacement** 的时候就会抛出错误.
+这里的最大探测步长 **max_hash_displacement**，是因为苹果这里的 hash 表使用的是开放寻址法中的线性探测法。元素真正落下去的位置，可能会相对原始 hash 位置产生偏移；而 **max_hash_displacement** 就是用来记录这种最大偏移量的。
 
 
 我们继续往下看。
@@ -308,72 +308,20 @@ struct weak_entry_t {
 
 因此，在哈希表中，由弱引用项索引的是当前存储该地址的所有位置的列表。
 
-对于 ARC，我们还跟踪是否存在一个任意被解除分配的对象，在调用 dealloc 之前将其简单地放置在表中，以及在内存回收之前释放 **objc_clear_deallocating**。
+对于 ARC 来说，更关键的是：对象在真正回收内存之前，需要先把所有相关的 weak 引用位置清理掉，也就是后面会看到的 `clearDeallocating` 这一套逻辑。
  
-我们在上边的代码中可以发现有两个 **weak_referrer_t**，第一个应该是我们正常情况下的 weak 表，第二个我有点没看明白，但是根据上下文，猜测可能是一个补充，在当前弱引用对象少于 2 个的时候，不在采用 hash了，直接用数组去实现的。
+我们在上边的代码中会发现两种存储形态：  
+一种是正常的 `referrers` 指针数组；另一种是 `inline_referrers`。后者可以理解成一种小规模优化——当弱引用位置还不多的时候，先直接放在内联数组里，不着急分配额外的堆内存。
 
-这里确实有点难懂，上面的内容很多也是我的猜测。
+这一段确实不太好读，不过大方向可以先抓住：**少量弱引用先用内联数组，数量多了再切到真正的哈希表存储。**
 
 这里直接借用朋友的一张图来表示 SideTable。
 
  ![](https://github.com/BiBoyang/BoyangBlog/blob/master/Image/sidetable.png?raw=true)
  
-在继续往下看，里面还有旧对象解除注册操作 **weak_unregister_no_lock** 和新对象添加注册操作 **weak_register_no_lock**。
+继续往下看，里面还有旧对象解除注册操作 **weak_unregister_no_lock** 和新对象添加注册操作 **weak_register_no_lock**。
 
- ```C++
- id weak_register_no_lock(weak_table_t *weak_table, id referent_id, 
-                      id *referrer_id, bool crashIfDeallocating)
-{
-    objc_object *referent = (objc_object *)referent_id;
-    objc_object **referrer = (objc_object **)referrer_id;
-
-    if (!referent  ||  referent->isTaggedPointer()) return referent_id;
-
-    // ensure that the referenced object is viable
-    bool deallocating;
-    if (!referent->ISA()->hasCustomRR()) {
-        deallocating = referent->rootIsDeallocating();
-    }
-    else {
-        BOOL (*allowsWeakReference)(objc_object *, SEL) = 
-            (BOOL(*)(objc_object *, SEL))
-            object_getMethodImplementation((id)referent, 
-                                           SEL_allowsWeakReference);
-        if ((IMP)allowsWeakReference == _objc_msgForward) {
-            return nil;
-        }
-        deallocating =
-            ! (*allowsWeakReference)(referent, SEL_allowsWeakReference);
-    }
-
-    if (deallocating) {
-        if (crashIfDeallocating) {
-            _objc_fatal("Cannot form weak reference to instance (%p) of "
-                        "class %s. It is possible that this object was "
-                        "over-released, or is in the process of deallocation.",
-                        (void*)referent, object_getClassName((id)referent));
-        } else {
-            return nil;
-        }
-    }
-
-    // now remember it and where it is being stored
-    weak_entry_t *entry;
-    if ((entry = weak_entry_for_referent(weak_table, referent))) {
-        append_referrer(entry, referrer);
-    } 
-    else {
-        weak_entry_t new_entry(referent, referrer);
-        weak_grow_maybe(weak_table);
-        weak_entry_insert(weak_table, &new_entry);
-    }
-
-    // Do not set *referrer. objc_storeWeak() requires that the 
-    // value not change.
-
-    return referent_id;
-}
-------------
+```C++
 id weak_register_no_lock(weak_table_t *weak_table, id referent_id, 
                       id *referrer_id, bool crashIfDeallocating)
 {
@@ -426,7 +374,12 @@ id weak_register_no_lock(weak_table_t *weak_table, id referent_id,
 
     return referent_id;
 }
- ```
+```
+
+`weak_register_no_lock` 这段代码重点看两件事就够了：
+
+1. 先判断这个对象还能不能形成 weak 引用；如果对象已经在释放，或者这个类本身不支持 weak，就直接失败；
+2. 如果可以形成 weak，就把“当前这个 weak 变量所在的位置”注册进 weak 表里。
 
  
 ## hash表的动态调整 
@@ -481,7 +434,7 @@ id weak_register_no_lock(weak_table_t *weak_table, id referent_id,
     entry->num_refs++;
 }
  ```
-这里的关键代码在于，标明了，存储 weak 的哈希表，会在使用率在 75% 的时候进行扩充（grow_refs_and_insert）。扩充的方法是很简单的 copy 法。
+这里的关键点在于：存储 weak 的哈希表，在使用率到 75% 左右时会进行扩容（`grow_refs_and_insert`）。扩容的方法本身也不复杂，就是创建更大的表，然后把旧元素重新插进去。
 
  ```C++
  __attribute__((noinline, used))
