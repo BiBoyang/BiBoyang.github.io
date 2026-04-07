@@ -2,10 +2,10 @@
 layout: post
 title:  "探访isEqual和Hash"
 date:   2018-08-08 23:32:53 +0800
-categories: jekyll update
+categories: [iOS, Objective-C, Runtime]
 ---
 
-# hashABC
+# 从哈希表说起
 
 hash 是一种用于处理查找时非常高效的数据结构。时间复杂度一般情况下可以直接认为是 O(1)。
 散列技术是在记录的存储位置和它的关键字之间确立一个对应关系 *f*，使得关键字 `key` 对应的存储位置 `f(key)`。函数 `f` 被称之为哈希函数( hash function )，使用哈希技术将数据存储在一块连续的地址区域中，该连续的存储空间我们称之为散列表，也就是哈希表（ hash table ）。
@@ -28,7 +28,7 @@ hash 是一种用于处理查找时非常高效的数据结构。时间复杂度
  
  负载因子 = 表中记录个数 / 散列表的长度
  
-* 优点：在理想的状态下，查找、插入、删除操作的效率是最高的，是 O(1)，树的相同操作也是需要 O(n) 的时间级的。
+* 优点：在理想的状态下，查找、插入、删除操作的效率很高，平均可以接近 O(1)；而树结构常见是 O(log n)，虽然慢一些，但也有自己的优势。
 * 缺点：要时刻注意散列表的负载因子，准备扩容；要在面对真实的场景的时候，采用正确的冲突处理方法。
  
 # 对象等同性
@@ -42,7 +42,7 @@ hash 是一种用于处理查找时非常高效的数据结构。时间复杂度
   
 话回正题。
 
-“==” 代表的是两个对象的指针的直接对比两个对象的指针，也就是内存地址；而 “isEqual” 是对比对象的值。以下边代码为例：
+“==” 代表的是两个对象指针是否相同，也就是在比较它们是不是同一个对象；而 “isEqual” 则是对象语义上的相等性判断。以下边代码为例：
 
 ```C++
 NSString *stringA = @"BiBoyang";
@@ -69,7 +69,7 @@ BOOL equalC = [stringA isEqualToString:stringB];//1
 ```C++
 @interface Person : NSObject
 @property (nonatomic, copy) NSString *firstName;
-@property (nonatomic, copy) NSDate *lastName;
+@property (nonatomic, copy) NSString *lastName;
 @end
 
 ······
@@ -115,8 +115,8 @@ BOOL equalC = [stringA isEqualToString:stringB];//1
 第二种方法：
 
 ```C++
--  (NSUIntger)hash {
-  NSUIntger stringToHash = [NSString stringWithFormat:"%@:%@",_firstName,_lastName];
+-  (NSUInteger)hash {
+  NSString *stringToHash = [NSString stringWithFormat:@"%@:%@",_firstName,_lastName];
   return [stringToHash hash];
 }
 ```
@@ -125,16 +125,16 @@ BOOL equalC = [stringA isEqualToString:stringB];//1
 第三种方法：
 
 ```C++
--  (NSUIntger)hash {
-  NSUIntger firstNameHash = [_firstName hash];
-  NSUIntger lastNameHash = [_lastName hash];
-  NSUIntger ageHash = _age;
+-  (NSUInteger)hash {
+  NSUInteger firstNameHash = [_firstName hash];
+  NSUInteger lastNameHash = [_lastName hash];
+  NSUInteger ageHash = _age;
   return firstNameHash ^ lastNameHash ^ ageHash;
 }
 ```
 这种方法既能保持较高效率，又能使生成的哈希码至少位于一定范围内，而不会过于频繁的重复。
 
-现实中，一般是第二种和第三种都有（事实上，这两种方法各有优劣，要根据实际情况选择）。
+如果只是从工程实践角度看，常量 hash 肯定不合适；而真正可用的方案，一般会尽量避免为了算 hash 再创建太多额外对象，更多还是基于现有属性去组合出一个 hash 值。
 
 # 为什么单独的hash无法保证对象相等
 
@@ -174,7 +174,7 @@ NOTE: The hash algorithm used to be duplicated in CF and Foundation; but now it 
 Hash function was changed between Panther and Tiger, and Tiger and Leopard.
 */
 ```
-这句话的大意是：这个字符串的大小如果小于等于 96，则保证 hash 的安全；如果大小大于 96 了，则无法保证安全，它只会对前 32 位，中 32 位，后 32 位进行 hash 运算。
+这句话的大意是：如果字符串长度小于等于 96，那么就完整参与 hash 计算；如果字符串长度大于 96，那么实现会只取前 32 位、中间 32 位、后 32 位来参与计算。
 
 也就是这个宏的由来 
 
@@ -293,4 +293,4 @@ BOOL equalC = ([aaa hash] == [bbb hash]);//True
 
 > * 这里有的朋友写的测试和我不同。大家注意下中间 32 位的判断方法 `(length/2)-16..(length/2)+15`，要谨慎的判断数字是否在中间 32 位中。这里是比较容易出问题的。
 
-由此可见，NSString 的 hash 值，确实有点靠不住。
+由此可见，`NSString` 的 hash 和其他对象一样，本质上只是一个哈希值，并不保证唯一性。即使两个字符串的 hash 相同，也依然完全可能并不是同一个字符串。
