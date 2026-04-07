@@ -2,7 +2,7 @@
 layout: post
 title:  "探究 block (一)：block 的本质"
 date:   2019-07-03 23:32:53 +0800
-categories: jekyll update
+categories: [iOS, Objective-C, Runtime]
 tags: [iOS, Objective-C, block]
 ---
 
@@ -163,7 +163,7 @@ static int age = 10;
 block();
 ```
 
-像是这种，没有对外捕获变量的，就是 GlobaBlock 。
+像是这种，没有捕获自动变量的，一般就是 `GlobalBlock`。
 
 
 而我们在写一个捕获变量的。
@@ -194,14 +194,14 @@ ARC 机制也确实这么做的。它会自动将栈上的 block 复制到堆上
 | __NSGlobalBlock | 程序的数据区域 | 无用 |
 | __NSMallocBlock | 堆 | 引用计数增加 |
 
-系统默认调用 copy 方法把 block 复制的四种情况
+常见会触发 `copy` 的几种情况如下：
 
 1. 手动调用 copy
 2. block 是函数的返回值
-3. block 被强引用，block 被赋值给 __strong 或者 id 类型
+3. block 需要以长期存活的形式离开当前作用域
 4. 调用系统 API 入参中含有 usingBlcok 的 Cocoa 方法或者 GCD 的相关 API
 
-ARC 环境下，一旦 block 赋值就会触发 copy，block 就会 copy 到堆上，block也就会变成 __NSMallocBlock 。当然，如果刻意的去写（没有实际用处），ARC 环境下也是存在 __NSStackBlock 的，这种情况下，block 就在栈上。
+在 ARC 环境下，编译器通常会在合适的时候把需要长期存在的 block 复制到堆上，这时候 block 会变成 `__NSMallocBlock`。当然，如果刻意去构造一些特殊场景，ARC 下依然可能看到 `__NSStackBlock`，只是这并不是日常开发里最常见的形态。
 
 
 # 从报错看内存
@@ -219,7 +219,7 @@ block();
 
 我们可以发现，当把 block 置为 nil 的时候，第四行的函数指针，被置为 NULL ，注意，这里是 NULL 而不是 nil 。
 
-我们给一个对象发送 nil 消息是没有问题的，但是给如果是 NULL 就会发生崩溃。
+我们给一个对象发送 `nil` 消息是没有问题的，但是这里 block 调用最终会落到函数指针上；如果函数指针是 `NULL`，那自然就会崩溃。
 
 * nil：指向oc中对象的空指针
 * Nil：指向oc中类的空指针

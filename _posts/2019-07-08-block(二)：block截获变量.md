@@ -2,7 +2,7 @@
 layout: post
 title:  "探究 block (二)：block 截获变量"
 date:   2019-07-08 23:32:53 +0800
-categories: jekyll update
+categories: [iOS, Objective-C, Runtime]
 tags: [iOS, Objective-C, block, closure]
 ---
 
@@ -212,12 +212,12 @@ __Block_byref_i_0 *__forwarding;
 };
 ```
 
-在这个实例内，包含了 **__isa** 指针、一个标志位 **__flags** 、一个记录大小的 **__size** 。最最最重要的，多了一个 **__forwarding** 指针和 val 变量.
-这里长话短说，出来了一个新的 **__forwarding**指针,指向了**结构体实例本身在内存的地址**。
+在这个实例内，包含了 **__isa** 指针、一个标志位 **__flags**、一个记录大小的 **__size**。最最最重要的是，多了一个 **__forwarding** 指针和真正存储变量值的成员。
+这里长话短说，出来了一个新的 **__forwarding** 指针。它的作用，是让 block 无论在栈上还是被复制到堆上之后，都能通过这层转发关系，找到那份真正的 byref 结构体。
 
 block 通过指针的持续传递，将使用的**自动变量值**保存到了 block 的结构体实例中。在 block 内部内修改 **__block0** 变量，通过一系列指针指向关系，最终指向了 __Block_byref_age_0 结构体内与局部变量同名同类型的那个成员，并成功修改变量值。
 
-在栈中， **__forwarding** 指向了自己本身，但是如果复制到了堆上，**__forwarding** 就指向复制到堆上的 block，而堆上的 block 中的 **__forwarding** 这时候指向了自己。
+在栈上时， **__forwarding** 一开始通常会指向自己；如果后面发生了从栈到堆的迁移，那么这条转发链会跟着更新，保证后续访问的仍然是正确的那份 byref 存储，而不是旧地址。
 ![](https://github.com/BiBoyang/BoyangBlog/blob/master/Image/block_6.jpg?raw=true)
 
 ## 2.对象的变量
@@ -303,7 +303,7 @@ int main(int argc, const char * argv[]) {
 ```
 在转换出来的源码中，我们也可以看到，block 捕获了 __block ，并且强引用了它，因为在 __Block_byref_block_obj_0 结构体中，有一个变量是 id block_obj ，这个默认也是带 __strong 所有权修饰符的。
 
-根据打印出来的结果来看，ARC 环境下，block 捕获外部对象变量，是都会 copy 一份的，地址都不同。只不过带有 __block 修饰符的对象会被捕获到 block 内部持有。
+根据打印出来的结果来看，ARC 环境下，block 捕获外部对象变量时，会按照各自的捕获语义去持有或转发它们。这里更重要的不是“把对象本身 copy 一份”，而是 block 会通过自己的结构体把这些对象引用保存下来。
 
 对于声明为__block 的外部对象，在block 内部会**进行持有**，以至于在 block 环境内能安全的引用外部对象。
 

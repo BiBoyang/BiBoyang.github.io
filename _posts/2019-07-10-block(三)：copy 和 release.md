@@ -2,7 +2,7 @@
 layout: post
 title:  "探究 block(三)：copy 和 release"
 date:   2019-07-10 23:32:53 +0800
-categories: jekyll update
+categories: [iOS, Objective-C, Runtime]
 tags: [iOS, Objective-C, block, memory]
 ---
 
@@ -122,6 +122,13 @@ static void *_Block_copy_internal(const void *arg, const int flags) {
 }
 ```
 
+如果只先抓主线的话，`_Block_copy` 其实就干下面几件事：
+
+1. 判断传入的 block 是什么类型；
+2. 如果本来就在堆上，就增加引用计数；
+3. 如果是全局 block，就直接返回；
+4. 如果是栈 block，就分配堆内存、按位拷贝、修正标志位，并在必要时调用 copy helper。
+
 ## Block_release()
 
 我们接着来看 **_Block_release()** 的代码。
@@ -165,3 +172,11 @@ void _Block_release(void *arg) {
     }
 }
 ```
+
+和 `copy` 一样，`release` 其实也可以先抓主线：
+
+1. 如果 block 为 `NULL`，直接返回；
+2. 如果引用计数还没到 0，就什么都不做；
+3. 如果是堆 block 且引用计数降到 0，就调用 dispose helper 并释放内存；
+4. 如果是全局 block，本来就不用处理；
+5. 如果拿一个栈 block 来 release，runtime 只会给出警告。
