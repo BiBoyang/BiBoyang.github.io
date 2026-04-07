@@ -2,7 +2,7 @@
 layout: post
 title:  "@property的研究（三）： iOS 中 copy 的原理"
 date:   2019-05-27 23:32:53 +0800
-categories: jekyll update
+categories: [iOS, Objective-C, Runtime]
 tags: [iOS, Objective-C, property, copy]
 ---
 
@@ -19,7 +19,7 @@ assign 是用来修饰基本数据类型的属性修饰词。
 它会直接执行 setter 方法，但是不会经过 retain/release 方法，所以，在某种意义上，和 weak 有些类似。-->
 
 
-我们知道，属性中的 copy，其实是不保留新值的，而是将其拷贝一份，当使用不可变对象的时候，可以用它来保护封装性，确保它不会随意的变动。那么它是如何实现的呢？
+我们知道，属性中的 `copy`，本质上不是简单地 retain 新值，而是对传入对象执行一次 `copy` 语义。当使用不可变对象的时候，它可以帮助我们保护封装性，确保外部传进来的可变对象不会在内部被随意改动。那么它到底是如何实现的呢？
 
 在 `objc-accessor.mm` 中，有 property 中 copy 的实现。
 
@@ -75,12 +75,12 @@ void objc_copyCppObjectAtomic(void *dest, const void *src, void (*copyHelper) (v
 }
 ```
 
-从上述代码中，我们可以得出结论：
+从上述代码里，我们至少可以先得到两个结论：
 
 1. 对结构体进行 copy，直接对结构体指针所指向的内存进行拷贝即可；
-2. 对对象进行 copy，则会传入的源指针和目标对象同时进行加锁，然后在去进行拷贝操作，所以我们可以知道，copy 操作是线程安全的。
+2. 对对象进行 `copy` 时，会先对源和目标相关位置做同步保护，再调用真正的拷贝逻辑。
 
-不过这里的 `copyHelper(dest, src); `找不到实现方法，则有些遗憾。
+不过这里的 `copyHelper(dest, src);` 并没有继续展开实现，这里多少有些遗憾。
 
 ## 深浅拷贝
 
@@ -123,7 +123,7 @@ void objc_copyCppObjectAtomic(void *dest, const void *src, void (*copyHelper) (v
 
 ## 从源码中探究答案
 
-上面的测试更多的是我们自己去一个一个的测试，更底层的实现原理，还是要看源码。
+上面的测试更多是从使用结果反推出来的结论，而如果要进一步搞清楚“为什么会这样”，还是得去看源码。
 
 对于字符串，我们虽然因为 Foundation.framework 并未开源找不到源码，但是我们依旧可以去查阅开源的 CoreFoundation.framework 源码。因为 CoreFoundation 和 Foundation 的对象是 **Toll-free bridge** 的，所以，可以从 CoreFoundation 的源代码进行了解。
 
@@ -276,17 +276,17 @@ CF_PRIVATE CFMutableArrayRef __CFArrayCreateMutableCopy0(CFAllocatorRef allocato
 }
 ```
 
-从上面两份代码，我们可以可以：
-1. immutable 和 mutable 数组的拷贝，都是会调用 __CFArrayInit 函数去创建一个新的对象；
-2. 内部元素实际上还都是**指向源数组**；
-3. 不可变数组的 copy 没有体现在代码中，个人猜测可能是实现过于简单，所以也就没有在这里实现。
+从上面两份代码，我们可以得到：
+1. immutable 和 mutable 数组的拷贝，都会调用 `__CFArrayInit` 去创建一个新的容器对象；
+2. 但是容器内部的元素，默认并不会递归深拷贝，而仍然是指向原有元素；
+3. 所以对于集合来说，很多时候“容器地址变了”并不等于“真正的深拷贝”。
 
 其他的容器，类似 CFDictionary、CFSet 等，也是类似的结果。
 
 
 ## 真正的深拷贝
 
-可以发现，其实如果严格按照深拷贝的定义，集合的 copy 和 mutableCopy 其实都是浅拷贝。那么该如何实现真正的深拷贝呢？有两个办法：
+可以发现，如果严格按照深拷贝的定义，集合的 `copy` 和 `mutableCopy` 大多数情况下都只是“容器层面的复制”，并不等于递归意义上的深拷贝。那么要实现真正的深拷贝，一般有两个办法：
 
 一. 使用对象的序列化拷贝：
 

@@ -2,21 +2,19 @@
 layout: post
 title:  "property的研究（二）：nonatomic & atomic"
 date:   2019-05-24 23:32:53 +0800
-categories: jekyll update
+categories: [iOS, Objective-C, Runtime]
 tags: [iOS, Objective-C, property, atomic]
 ---
 
 
 
 
-`atomic` 一般会被翻译成原子性。它表示一个”不可再分割“的单元，也就是**单指令操作**。
-
-话说回来，现在原子已经并非是不可分割的，但是提出这个概念的时候，并非如此，所以就直接简单的等价于**不可分割**，就可以了，和物理学没什么关系。所以在下面的内容里，不会直接使用原子性，而是直接用 `atomic` 来说明。
+`atomic` 一般会被翻译成“原子性”。不过在 `@property` 这个语境里，没必要把它和物理学里的“原子”扯得太深。对我们来说，更重要的是理解它在 Objective-C 里到底意味着什么：**getter/setter 在访问这一层，会额外做同步保护**。
 
 
 # iOS 中的 atomic
 
-在我们日常的使用过程中，我们经常是使用 `nonatomic` 的，很少使用 `atomic`，这个主要是因为 `atomic` 本身就一些缺陷，但是并非不能使用，在某些情况下，使用 `atomic` 反而是某种较优解。
+在我们日常开发中，更多时候会使用 `nonatomic`，很少使用 `atomic`。这主要不是因为 `atomic` 完全没用，而是因为它解决的问题比较窄，性能上还有额外成本；但在某些特定场景里，用 `atomic` 反而可能是一个更省事的选择。
 
 在上一篇文章中，我们知道在 `set` 后会调用 **reallySetProperty** 方法，`get` 后会调用 **objc_getProperty** 方法，我们找到它们的关键代码。慢慢看下去。
 
@@ -50,7 +48,7 @@ if (!atomic) {
     }
 ```
 
-这里，我们会发现，`atomic` 和 `nonatomic` 在实现上的区别，在于 `set` 和 `get` 操作的时候，是否添加了锁；以及在 `get` 过程中，`atomic` 修饰的属性，会将对象注册到自动释放池中，自动管理。
+这里我们会发现，`atomic` 和 `nonatomic` 在实现上的区别，主要就在于 `get` 和 `set` 的过程中是否加锁；并且在 `get` 过程中，`atomic` 修饰的属性会通过 `objc_autoreleaseReturnValue` 这条路径去处理返回对象。
 
 继续探究锁的实现。
 
@@ -160,7 +158,7 @@ class StripedMap {
 
 `StripedMap<T>` 是一个模板类，根据传递的实际参数决定其中 `array` 成员存储的元素类型。 能通过对象的地址，运算出 Hash 值，通过该 hash 值找到对应的 value 。
 
-这里的 `CacheLineSize` 显然代表的时候用于缓存的 `value` 大小，使用 `alignas` 让字节对齐；而 `StripeCount` 则表示在 `iPhone` 中，创建的 `array` 大小是 8 。
+这里的 `CacheLineSize` 显然表示的是缓存行大小，用 `alignas` 去做字节对齐；而 `StripeCount` 则表示在 `iPhone` 上，创建出来的条带数组大小是 8。
 
 ## spinlock_t
 
@@ -249,7 +247,7 @@ class mutex_tt : nocopy_t {
     };
 };
 ```
-这里就很有意思了！我之前一直看各种博文，一直认为 atomic 是自旋锁，但是点进去一看，居然是 mute 互斥锁了。它实际上使用的是一种叫做 os_unfair_lock 的底层锁。
+这里就很有意思了！我之前一直看各种博客，一直以为 `atomic` 底层就是传统意义上的自旋锁；结果点进去一看，已经不是那一路了。它现在实际使用的是一种叫做 `os_unfair_lock` 的底层锁。
 
 我们一层一层的翻下去，直到 os/lock.h 文件，里面展示了 os_unfair_lock 的实现。关键的是有一段注释：
 
@@ -280,7 +278,7 @@ class mutex_tt : nocopy_t {
 > 替换已弃用的OSSpinLock。不会在争用时旋转，而是在内核中等待解锁唤醒。
 > 与OSSpinLock一样，不存在公平性或锁排序的尝试，例如，在被叫醒的等待者有机会尝试获取锁之前，解锁器可能会立即重新获取锁。这可能有利于性能的原因，但也增加等待者饥饿的一点可能。
 
-看到这段话，我立刻想起了[不再安全的 OSSpinLock](https://blog.ibireme.com/2016/01/16/spinlock_is_unsafe_in_ios/) 这篇文章。里面写明了，因为自旋锁的优先级反转问题，使自旋锁被弃用，这样一来一切都说的通了。目前 atomic 使用的是**互斥锁**。
+看到这段话，我立刻想起了[不再安全的 OSSpinLock](https://blog.ibireme.com/2016/01/16/spinlock_is_unsafe_in_ios/) 这篇文章。里面讲得很清楚：因为优先级反转问题，`OSSpinLock` 被弃用了。这样一来，一切就说得通了。这里虽然历史命名里还是 `spinlock_t`，但实际实现已经不是以前那种传统自旋锁语义了。
 
 
 # 自旋锁和互斥锁的区别
@@ -293,13 +291,13 @@ class mutex_tt : nocopy_t {
 
 
 # 并不安全的 atomic
-认真的说，atmoic 的所谓的线程安全，其实只是针对修饰的对象的**读/写**操作，如果一个线程在对它进行 setter/getter 操作，其他的线程就需要等待。
+认真的说，`atomic` 所谓的“线程安全”，其实只是针对修饰对象的**单次读 / 写**操作。如果一个线程正在对它做 `setter/getter`，别的线程在这个窗口里就需要等待。
 
-但是如果将它添加到另外一个线程，或者在另外的线程调用了 release 方法，那么就会出问题，因为 release 方法本身就不受 getter/setter 操作的限制。
+但如果你把这个对象拿到别的线程里继续做更复杂的事情，或者在别的线程里走到了它的生命周期逻辑，那问题依然可能出现。因为 `atomic` 只保护“这一次属性访问”，并不会帮你把整个对象使用过程都变成线程安全的。
 
 # 实际场景
 
-看起来，atomic 好像完全没什么用了，但是其实 atomic 单纯的作为锁来使用，性能还算不错，但是只能**对读写操作**进行使用，我们依然可以在某些情况下使用它。
+看起来，`atomic` 好像完全没什么用了，但也不至于这么悲观。它单纯作为“属性访问级别的同步保护”来看，还是有价值的，只是它能解决的问题非常有限。
 
 我曾经接收过一个老项目，项目里有一个集中展示其他人头像的页面，在这个页面，检测平台会上报几个 crash，而且版本分部很均匀，使用的版本库还是手动引入的 SDWebImage，版本推测是 3.8。
 
