@@ -2,12 +2,12 @@
 layout: post
 title:  "SDWebImage源码解读 (二)"
 date:   2018-09-04 23:32:53 +0800
-categories: jekyll update
+categories: [iOS, SourceCode, Image]
 ---
 
 
 #### SDWebImage (v4.4.1)-SDWebImageManager
-以在一个UIImageView上加载网络图片为例，看看要经历那些流程。
+这一篇主要看的是：一个 `UIImageView` 调用 `sd_setImageWithURL:` 之后，整个链路是怎么走到 `SDWebImageManager` 的。
 第一步，调用
 ```
 - (void)sd_setImageWithURL:(nullable NSURL *)url;
@@ -46,7 +46,7 @@ categories: jekyll update
                           progress:(nullable SDWebImageDownloaderProgressBlock)progressBlock
                          completed:(nullable SDExternalCompletionBlock)completedBlock;
 ```
-这个方法是加载图片的最后一步。
+这个方法其实就是 `UIImageView` / `UIButton` 这一层真正走到框架核心逻辑的入口。
 ```
 - (void)sd_internalSetImageWithURL:(nullable NSURL *)url
                   placeholderImage:(nullable UIImage *)placeholder
@@ -57,9 +57,9 @@ categories: jekyll update
                          completed:(nullable SDExternalCompletionBlock)completedBlock
                            context:(nullable NSDictionary<NSString *, id> *)context {
     
-    NSString *validOperationKey = operationKey ?: NSStringFromClass([self class]);//省略版三目运算，实际上直接执行后边这个方法
+    NSString *validOperationKey = operationKey ?: NSStringFromClass([self class]);//如果没有自定义 operationKey，就默认使用类名
     
-    [self sd_cancelImageLoadOperationWithKey:validOperationKey];//取消之前的下载任务
+    [self sd_cancelImageLoadOperationWithKey:validOperationKey];//取消之前的同类下载任务
     objc_setAssociatedObject(self, &imageURLKey, url, OBJC_ASSOCIATION_RETAIN_NONATOMIC);//动态添加属性
     
     if (!(options & SDWebImageDelayPlaceholder)) {
@@ -81,7 +81,7 @@ categories: jekyll update
         self.sd_imageProgress.totalUnitCount = 0;
         self.sd_imageProgress.completedUnitCount = 0;
         
-        SDWebImageManager *manager = [context objectForKey:SDWebImageExternalCustomManagerKey];//创建一个空的单例
+        SDWebImageManager *manager = [context objectForKey:SDWebImageExternalCustomManagerKey];//从上下文中取自定义 manager
         if (!manager) {
             manager = [SDWebImageManager sharedManager];//创建单例
         }
@@ -95,7 +95,7 @@ categories: jekyll update
             }
         };
         id <SDWebImageOperation> operation = [manager loadImageWithURL:url options:options progress:combinedProgressBlock completed:^(UIImage *image, NSData *data, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
-            //图片下载&读取完成
+            //图片下载 / 读取完成
             __strong __typeof (wself) sself = wself;
             if (!sself) { return; }
 #if SD_UIKIT
@@ -115,7 +115,7 @@ categories: jekyll update
                     [sself sd_setNeedsLayout];
                 }
                 if (completedBlock && shouldCallCompletedBlock) {
-                    //操作完成的回调
+                    //操作完成时的回调
                     completedBlock(image, error, cacheType, url);
                 }
             };

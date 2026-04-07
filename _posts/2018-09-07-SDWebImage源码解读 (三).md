@@ -2,7 +2,7 @@
 layout: post
 title:  "SDWebImage源码解读 (三)"
 date:   2018-09-07 23:32:53 +0800
-categories: jekyll update
+categories: [iOS, SourceCode, Image]
 ---
 # SDWebImage源码解读 (三)
 
@@ -57,7 +57,12 @@ categories: jekyll update
 ```
 
 下载图片的代码如上。
-这里的会对url先进行判空，如果是空的，就直接返回。然后会创建一个
+这一层最关键的，不是把每一行代码都翻译一遍，而是看清楚 downloader 到底解决了哪两个问题：
+
+1. 同一个 URL 不要重复下载；
+2. 多个请求方如何共享同一次下载结果。
+
+所以先看最核心的几个点。
 
 
 
@@ -67,7 +72,7 @@ categories: jekyll update
 ```
 
 
-这里我们会去创建一个新的方法；
+这里会继续走到创建具体下载 operation 的方法：
 ```
 - (NSOperation<SDWebImageDownloaderOperationInterface> *)createDownloaderOperationWithUrl:(nullable NSURL *)url
                                                                                   options:(SDWebImageDownloaderOptions)options {
@@ -129,14 +134,13 @@ categories: jekyll update
 ```
 
 #### SDWebImageDownloaderOperation
-来创建一个新的NSOperation。因为是NSOperation，所以它会直接调用**start**方法。所以接下来，会在`SDWebImageDownloaderOperation`类中，通过重写start方法来处理下载和缓存的关系。
+来创建一个新的 `NSOperation`。而 `SDWebImageDownloaderOperation` 这一层，本质上就是把一次图片下载包装成一个可取消、可复用、可回调的操作对象。
 在这里方法里，核心是围绕
 ```
 @property (strong, nonatomic, nonnull) NSMutableArray<SDCallbacksDictionary *> *callbackBlocks;
 ```
-这个方法来进行一套回调，在获取到网络回调的时候，会先遍历数组，然后会根据url来作为key，获取这里所有key对应的回调。
-这里为了保证不出线程冲突，使用了dispatch_semaphore_wait这个lock。
->* 这里使用这个有意思的，有dictionary属性array的原因，是因为array是有序的。可以变相的使这个兼具array和dictionary的特性。利用dictionary的hash能力，保证同一个url只会下载一次。
+这个属性来维护一套回调集合。也就是说，同一个 URL 的多个请求方，并不一定要真的发起多次下载，而是可以把它们的回调统一挂到同一个 operation 上，等这次下载结束后再一起分发。
+这里为了保证线程安全，使用了 `dispatch_semaphore_wait` 这一套锁来保护回调数组。
 
 在NSOperation中，有三个状态来表示任务状态
 * **isExecuting** - 代表任务正在执行中
@@ -212,7 +216,7 @@ categories: jekyll update
         self.dataTask = [session dataTaskWithRequest:self.request];
         self.executing = YES;
 ```
-注意，这里的unownedSession是使用**weak**来修饰的，其实是因为它是从上一层传过来的值的赋值。我们并不需要关心它的生命周期。
+注意，这里的 `unownedSession` 使用 **weak** 修饰，本质上是因为它是从上层传下来的 session 引用，这一层并不打算拥有它的生命周期。
 而在cancel方法里
 ```
 - (void)cancel {

@@ -2,7 +2,7 @@
 layout: post
 title:  "SDWebImage源码解读 (四)"
 date:   2018-09-10 23:32:53 +0800
-categories: jekyll update
+categories: [iOS, SourceCode, Image]
 ---
 
 
@@ -87,9 +87,17 @@ categories: jekyll update
 
 ```
 
-这里我们逐步分析一下：
-最开始，先去判断一下key(也就是图片url)是否为空。然后再去检查内存缓存，如果图片在内存中，并且没有强制要求查询磁盘，就返回。
-这里出现了一种特殊情况，如果是要求了强制检查磁盘缓存。即使内存缓存有数据，也会继续去查找数据。
+这段代码其实可以先抓一条最核心的主线：
+
+1. 先查内存缓存；
+2. 如果需要，再查磁盘缓存；
+3. 如果拿到的是磁盘数据，就解码成图片；
+4. 如果配置允许，再把解码后的图片回写到内存缓存。
+
+这个就是 `SDImageCache` 最核心的工作流。
+
+最开始，先判断一下 key（也就是图片 URL）是否为空。然后先检查内存缓存，如果图片已经在内存中，并且没有强制要求继续查询磁盘，那么就直接返回。
+这里有一种特殊情况：如果要求强制检查磁盘缓存，即使内存里已经有图片，也会继续往下查找数据。
 这里是往上查找`SDImageCacheQueryDataWhenInMemory`->`SDWebImageQueryDataWhenInMemory`
 它的注释为
 ```
@@ -159,9 +167,9 @@ categories: jekyll update
     return filename;
 }
 ```
-我猜想这里使用MD5的原因：
-> 一方面可能是因为安全策略的原因。但是更重要的是保证存储的key的读取安全。
- 比如说，有一个这样的图片url**http://img.com/bby**。按照SDWebImage的存储策略，可能会形成类似这样的key:**/var/Applications/[application]/documents/http://img.com/bby**，甚至可能更混乱的路径。
+这里使用 MD5，我觉得最核心的意义至少有两个：
+> 1. 把任意 URL 转成一个稳定、可控、合法的文件名；
+> 2. 避免直接把原始 URL 当成文件路径的一部分，导致路径过长、字符非法或者层级混乱。
  
 ## 缓存图片
   ```
@@ -239,7 +247,7 @@ categories: jekyll update
 }
 
   ```
-  可以发现，缓存数据需要在串行队列 **ioQueue** 中同步执行，主要任务就是新建存储图片数据的文件夹，并使用 **[_fileManager createFileAtPath:cachePathForKey contents:imageData attributes:nil]** 把imageData写入该路径下。
+  可以发现，缓存数据需要在串行队列 **ioQueue** 中执行。主要任务就是创建缓存目录，并把 `imageData` 写入到对应路径下。
 
 ## 判断图片类型
 使用这个方法来判断
@@ -255,7 +263,7 @@ BOOL SDCGImageRefContainsAlpha(CGImageRef imageRef) {
     return hasAlpha;
 }
 ```
-这个方法实际上是判断图片是否包含alpha通道
+这个方法实际上就是在判断图片是否包含 alpha 通道。
 
 * jpeg是有损压缩，可能会造成图片的破坏，并且没有alpha通道；
 * PNG是一种无损压缩。不会破坏图片，可以有透明效果。 

@@ -2,12 +2,14 @@
 layout: post
 title:  "SDWebImage源码解读 (一)"
 date:   2018-09-02 23:32:53 +0800
-categories: jekyll update
+categories: [iOS, SourceCode, Image]
 ---
 
 # SDWebImage源码解读 (一)
 
 ###### SDWebImage (v4.4.1)
+
+这一组文章分析的版本是 **SDWebImage 4.4.1**。主要目的不是为了照着这个版本写业务代码，而是借它来理解一套成熟图片框架的整体设计思路。
 
 特点:
 
@@ -100,19 +102,19 @@ categories: jekyll update
 
 ## SDWebImageOperation
 
-这里代码不多,只实现了一个SDWebImageOperation协议。
+这里代码不多，只实现了一个 `SDWebImageOperation` 协议。
 
 ```
 @protocol SDWebImageOperation <NSObject>
 - (void)cancel;
 ```
 
-这里是为了安全和简洁。调用这个**cancel**方法，会使得它持有的两个operation(SDWebImageCombinedOperation和SDWebImageManager)都被cancel
+这里的作用其实很直接：把“可以取消”这件事抽象成统一协议。调用这个 **cancel** 方法，最终会把对应链路上的操作一起取消掉。
 
 ## SDWebImageCompat
 
-这里在最开始先是使用**__OBJC_GC__**宏来告知使用者，**SDWebimage**是不支持垃圾回收机制的。
-接着，作者在这里吐槽了一下Apple的平台判断宏。
+这里一开始先通过 **__OBJC_GC__** 宏表明，**SDWebImage** 不支持垃圾回收机制。
+接着作者还顺手吐槽了一下 Apple 的平台判断宏。
 
 ```C++
 Apple's defines from TargetConditionals.h are a bit weird.
@@ -123,7 +125,7 @@ Apple's defines from TargetConditionals.h are a bit weird.
 为了确定我们是否正在运行OSX，我们只能靠target_os_iphone = 0 和 其他所有的平台
 ```
 
-这里我标注一下这个宏的槽点
+这里我把这个宏的槽点标一下：
 
 ```C++
 +------------------------------------------------+
@@ -137,7 +139,7 @@ Apple's defines from TargetConditionals.h are a bit weird.
  +------------------------------------------------+
 ```
 
-接着就是一段冗长而又必要的平台判断。
+接着就是一段冗长但又必要的平台判断。
 
 #### 枚举宏的细节
 
@@ -153,12 +155,12 @@ Apple's defines from TargetConditionals.h are a bit weird.
 #endif
 ```
 
-之所以这么写的原因是因为，普通的NS_ENUM只能使用在Objective-C下，在C++/Objective-C++下使用会出现问题。
+之所以这么写，是因为普通的 `NS_ENUM` 在 Objective-C++ 语境下可能会有兼容性问题，所以这里做了一层兜底处理。
 
 #### 主线程判断
 
-**dispatch_main_sync_safe**宏是一个保证block在主线程执行的方法。
-在之前的版本中，主线程判断使用的是NSThread来判断
+**dispatch_main_sync_safe** 宏是一个保证 block 在主线程执行的方法。
+在之前的版本中，主线程判断使用的是 `NSThread`。
 
 ```C++
 #define dispatch_main_sync_safe(block)\
@@ -169,8 +171,8 @@ Apple's defines from TargetConditionals.h are a bit weird.
     }
 ```
 
-但是这个方法有个问题，**它只能判断线程是否是主线程，但是无法判断队列是否是当前队列**。
-现在更新了一个新的方法。
+但是这个方法有个问题：**它只能判断线程是不是主线程，却无法判断当前是不是目标队列**。
+所以后面又更新成了一个新的版本。
 
 ```C++
 #ifndef dispatch_queue_async_safe
@@ -187,16 +189,15 @@ Apple's defines from TargetConditionals.h are a bit weird.
 #endif
 ```
 
-**strcmp()**是c语言的字符串比较函数. strcmp(s1，s2) 判断两个字符串s1和s2是否相同，相同== 0； 如果当前线程已经是主线程了，那么在调用**dispatch_async(dispatch_get_main_queue(), block)**有可能会出现crash；如果当前线程不是主线程，调用**dispatch_async(dispatch_get_main_queue(), block)**。
-通过这样的判断，可以保证是主线程当前队列。
+**strcmp()** 是 C 语言里的字符串比较函数。`strcmp(s1, s2)` 用来判断两个字符串是否相同，相同则返回 `0`。这里通过比较队列 label，尽量避免把本来就在目标队列上的任务再次异步派发。
 
-这么做的原因是可以[查看这个](https://github.com/lionheart/openradar-mirror/issues/7053)。以及[这篇文章](http://blog.benjamin-encz.de/post/main-queue-vs-main-thread/)。
+这么做的原因可以参考[这个 issue](https://github.com/lionheart/openradar-mirror/issues/7053) 和[这篇文章](http://blog.benjamin-encz.de/post/main-queue-vs-main-thread/)。
 
 #### 修改图片尺寸
 
-有时候，后台传给我们的图片是有多张的，需要去适配屏幕大小。
+有时候，后台传给我们的图片会有多种 scale，需要去适配屏幕大小。
 
-我们需要判断标识的比例来进行调整。
+这里的核心，就是根据图片命名里的 scale 标记去调整显示比例。
 
 ```C++
 inline UIImage *SDScaledImageForKey(NSString * _Nullable key, UIImage * _Nullable image) {
@@ -277,4 +278,3 @@ inline UIImage *SDScaledImageForKey(NSString * _Nullable key, UIImage * _Nullabl
 7.若没有字节对齐，先进行字节对齐；
 
 8.GPU处理位图数据，开始渲染。
-
