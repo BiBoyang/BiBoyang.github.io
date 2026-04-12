@@ -7,5 +7,7 @@ main:
     url: /tags/
   - title: "月刊"
     url: /monthly/
+  - title: "项目"
+    url: /projects/
   - title: "关于"
     url: /about/
