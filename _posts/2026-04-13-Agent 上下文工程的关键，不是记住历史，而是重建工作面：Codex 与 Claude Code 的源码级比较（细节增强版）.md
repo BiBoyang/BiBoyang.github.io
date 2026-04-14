@@ -1,0 +1,224 @@
+# Agent 上下文工程的关键，不是记住历史，而是重建工作面：Codex 与 Claude Code 的源码级比较
+
+把 Agent 的上下文理解成“聊天记录”，很自然，也很容易把问题看浅。
+
+任务一长，系统就不可能继续把完整历史原样塞进模型窗口。它一定会开始做裁剪、折叠、摘要、重放、恢复。真正决定 Agent 后半程是否稳定的，不是模型前面记住了多少，而是系统在压缩之后能不能把**工作面**重新搭起来。
+
+把 Codex 和 Claude Code 放在一起看，我最关心的不是谁的 context window 更大，也不是谁的 summary prompt 更会写，而是两个更底层的问题：
+
+- 压缩发生时，系统先牺牲什么；
+- 压缩结束后，系统靠什么把现场还原回来。
+
+长任务里的“失忆感”大多就出在这里。上下文工程要解决的，也正是这两个问题。
+
+## 先把一个误区拨正：上下文不是 transcript，而是一个分层工作面
+
+从实现角度看，一个可持续运行的 Agent，上下文至少包含下面几层东西。
+
+一层是稳定规则。系统提示、项目规范、工具协议、权限边界、用户长期偏好，都应该属于这一层。这些东西最怕被埋在历史消息里，因为它们本来就不该依赖“模型还记不记得”。
+
+一层是当前任务态。包括当前计划、最近确认的结论、还没完成的步骤、当前正在读写的对象、已经排除的路径。它们不是长期记忆，但对当前轮决策的价值远高于普通聊天。
+
+一层是观测物。终端输出、文件内容、日志、搜索结果、工具返回值、错误信息，都在这里。这一层通常最占 token，也最容易污染决策面。
+
+最后才是历史轨迹。历史当然不是没用，但它不应该自动获得最高优先级。对长任务来说，保留全部历史经常只是制造噪音。
+
+只要这几层没有拆开，系统迟早会出现一种典型现象：主线还在，细节先丢。模型还知道“要修这个 bug”，但已经忘了不要动哪个文件、为什么上一个方案被否掉、刚才那个报错其实是环境问题。这就是很多人说的“Agent 跑着跑着像换了个人”。
+
+所以，上下文工程真正要解决的不是“怎么把更多历史塞进去”，而是**如何让不同层的信息以不同寿命存在，并在压缩后继续站在正确的位置上。**
+
+## Codex 的重点，不是摘要写得多漂亮，而是把 compact 当成状态迁移
+
+Codex 这边最值得看的，不是宣传层的表述，而是几处很朴素的实现。
+
+第一处是 `codex-rs/core/templates/compact/prompt.md`。这里的 compact prompt 没有谈什么“长期记忆”，而是非常具体地要求保留四类东西：当前进度、关键决策、约束与偏好、下一步要做什么。对应的 `codex-rs/core/templates/compact/summary_prefix.md` 也写得很直白：下一个模型拿到的是“另一个语言模型留下的摘要，以及已经使用过的工具状态”。
+
+只看这两处，Codex 的 compact 很像标准的摘要接力。
+
+但再往下看，事情就没那么简单了。
+
+第二处是 `codex-rs/codex-api/src/endpoint/compact.rs`。这里能看到 compact 不是普通续写，而是专门的 `responses/compact` 请求，返回值类型是 `Vec<ResponseItem>`。这意味着 compact 在协议层的输出就已经不是“下一轮要读的一段字符串”，而是一组重新整理过的 response items。
+
+第三处是 `codex-rs/app-server-protocol/schema/typescript/ResponseItem.ts`。这里把 `compaction` 作为单独 item type 暴露出来，而且字段不是 `summary_text`，而是 `encrypted_content`。只看这个接口面，Codex 想表达的就不是“给你一段摘要”，而是“给你一个压缩后的状态对象”。
+
+这说明 Codex 的设计目标不是“把旧对话缩写一下”，而是把旧对话压成一种**可继续计算的状态项**。哪怕内部依然可能借助 summary，这个接口暴露出来的语义也已经不是 transcript，而是状态折叠。
+
+这个区别很重要。
+
+如果一个系统把 compact 定义成“写一段摘要”，那它的默认世界观就是：后续模型主要依赖文字交接。  
+如果一个系统把 compact 定义成“返回新的 response items，其中包含 opaque compaction state”，那它的默认世界观更接近：旧历史已经被转换成另一种运行时表示，后续轮次不应该再把它当普通聊天来看。
+
+对上下文工程来说，后者有两个直接后果。
+
+第一，压缩必须被当作正常生命周期，而不是异常补丁。  
+在 `codex-rs/protocol/src/openai_models.rs` 里，模型元数据直接带 `auto_compact_token_limit`，并且在 `auto_compact_token_limit()` 里把可用阈值钳到 context window 的 90%。这个细节很重要，因为它说明 compact 不是用户自己想起来再触发的功能，而是模型运行预算的一部分。
+
+第二，compact 前后的连续性必须被系统显式维护。  
+一旦 compact 是运行时状态迁移，系统就不能假设“只要模型足够聪明，自己会续上”。它必须保证 compact 后仍然是同一个任务、同一套工具、同一种规则，而不是开了一个看起来相似、实际语义已经偏移的新会话。
+
+Codex 甚至把这种风险写得很直白。在 `codex-rs/exec/tests/event_processor_with_json_output.rs` 里，warning event 的测试直接断言那句提示文案会被输出：长对话和多次 compaction 会让模型精度下降，应该尽量把会话保持得小而聚焦。把这种提醒写进测试，说明这不是文档里的随口建议，而是系统层明确承认的行为边界。
+
+这句话看起来保守，其实很关键。它等于承认了一件常被忽略的事实：**compaction 不是白来的能力，它只是受控退化。**
+
+所以，Codex 给我的最大启发不是“它有一个黑箱 compaction item”，而是下面这套更实用的设计前提：
+
+- 压缩是主流程的一部分，不是救火按钮；
+- 系统应该围绕 compact 前后的一致性来设计；
+- 关键规则不能寄存在历史聊天里；
+- 多次 compact 本身就是质量风险，需要被当成显式代价管理。
+
+## Claude Code 的重点，不是会 summary，而是它知道该先清理什么
+
+如果说 Codex 更像“把 compact 做成协议层状态迁移”，Claude Code 更像“把 compact 做成一条运行时流水线”。
+
+这套流水线最值得看的地方在 `src/query.ts`。
+
+从 `src/query.ts:365` 开始，主查询不是直接把全部消息送模型，而是先取 `getMessagesAfterCompactBoundary(messages)`。这一步已经说明它不是线性 history 模型，而是 boundary-based history model：压缩边界之前的内容，默认不再以原样历史参与每一轮推理。
+
+然后真正关键的顺序来了。
+
+在 `src/query.ts:369` 到 `src/query.ts:467` 这段里，查询前的处理顺序是：
+
+- 先做 `applyToolResultBudget`；
+- 再做 `snip`；
+- 再做 `microcompact`；
+- 再做 `context collapse`；
+- 最后才进入 `autocompact`。
+
+这里有个很值得注意的细节：`applyToolResultBudget` 跑在 `microcompact` 之前，而且源码注释直接写明两者是可组合的，不互斥；`context collapse` 又刻意放在 `autocompact` 之前，因为如果 collapse 之后已经降到阈值以下，就不必再把上下文压成单一 summary。这个顺序不是实现偶然，而是明确的策略排序。
+
+它没有急着把旧对话总结成一段话，而是先处理最容易膨胀、同时又最不值得长期保留的部分：工具输出。
+
+这是 Claude Code 真正值得学的地方。很多 coding agent 的上下文不是死于“聊天太长”，而是死于 observation 太脏。日志、read file、grep、搜索结果、JSON 输出、测试报错，这些东西局部价值很高，但生命周期很短。如果它们不先被治理，后面的 compact 本质上只是在更大的噪音堆上做摘要。
+
+在 `src/services/compact/microCompact.ts` 里，这种判断更明显。
+
+`microcompactMessages()` 先检查 time-based trigger。如果距离上一次 assistant message 已经过久，说明缓存已经冷了，系统就优先清掉旧 tool results，缩小即将被重写的前缀。接着，如果 cached microcompact 条件满足，它会进入 `cachedMicrocompactPath()`，按 tool id 收集可压缩的 tool result，然后通过 cache edits 在 API 层删掉这些结果，而不是在本地消息里直接重写内容。源码里甚至明确写了：cached microcompact 只给 main thread 用，避免 forked agent 把不属于主线程的 tool result 注册进全局状态，反过来污染主线程。
+
+这说明 Claude Code 的一个核心目标不是“总结得更好”，而是**尽可能少动还能复用的前缀，只把最脏、最贵、最短命的 observation 清掉。**
+
+这和很多人直觉里的“上下文压缩 = 摘要旧对话”不是一回事。它实际上在做一件更工程化的事情：先治理 observation，再决定要不要做更重的语义压缩。
+
+## Claude Code 真正强的地方，在 compact 之后会重建工作面
+
+Claude Code 另一个很值得注意的设计，不在压缩前，而在压缩后。
+
+在 `src/services/compact/compact.ts:520` 之后，它做的不是“生成 summary 然后继续”，而是进入一段很长的恢复流程。
+
+先清读文件状态和 nested memories，再并行生成 post-compact file attachments 和 async agent attachments。然后，如果当前 session 有 plan，就把 plan 重新附加；如果当前处在 plan mode，就把 plan mode 的提醒也重新附加；如果这轮任务调用过 skills，就把 skill attachment 补回来。接着还会把 tools delta、agent listing delta、MCP instructions delta 再次声明一遍。
+
+这一段最能说明它在恢复什么：
+
+- `src/services/compact/compact.ts:531` 开始恢复文件和异步 agent 附件；
+- `src/services/compact/compact.ts:545` 开始恢复 plan；
+- `src/services/compact/compact.ts:550` 开始恢复 plan mode；
+- `src/services/compact/compact.ts:557` 开始恢复 skill attachment；
+- `src/services/compact/compact.ts:563` 之后重新声明 tools、agent list 和 MCP instruction delta；
+- `src/services/compact/compact.ts:598` 还会创建 compact boundary marker，把压缩边界和压缩前的一些元信息带回后续工作面。
+
+这段逻辑里最重要的一点，是**它不相信 summary 能完整承载现场。**
+
+这正是很多 Agent 缺的东西。很多系统的 compact 流程默认认为，只要 summary 写得好，后面模型自然能接上。但真实情况往往是，summary 最多保住主线，很难同时保住最近读过哪些文件、当前计划长什么样、目前有哪些工具还在工作面上、哪些 agent 已经启动、哪些 skill 刚刚被调用过。
+
+Claude Code 的实现显然是按“摘要不够”来设计的，所以它选择把关键工件重新挂回工作面。
+
+`src/services/compact/compact.ts:1415` 之后的 `createPostCompactFileAttachments()` 更能说明这一点。它会按最近访问时间恢复文件，但又同时受文件数和 token budget 限制；如果某个文件已经出现在 compact 后保留下来的尾部里，就不会重复注入。这里甚至把策略写进注释了：重复注入已经能看见的 read result 是纯浪费，最多可能浪费掉二十多 K token。后面的 `createPlanAttachmentIfNeeded()` 和 `createSkillAttachmentIfNeeded()` 也很直白：plan 和 invoked skills 都属于 compact 后必须显式保留的上下文对象。
+
+这套实现最后指向的结论很清楚：
+
+**长任务不是靠“记住历史”续命，而是靠“重建工作面”续命。**
+
+只要系统在 compact 后没有把工作面重新搭起来，用户就会明显感到它“像换了一个人”：文件上下文没了，计划没了，最近观察没了，工具边界也模糊了。模型不是不知道怎么回答，而是不再站在上一个阶段的现场里。
+
+## Claude Code 为什么更容易给人“会忘事”的体感
+
+这个问题如果只从“模型能力”解释，很容易解释偏。
+
+从实现上看，更合理的答案是：Claude Code 把压缩的代价暴露得更充分。
+
+第一，它的 compact 是显式的。  
+用户能感知 summary handoff，也更容易感知 compact 前后工作面的变化。
+
+第二，它的压缩对象不仅是历史消息，还包括 observation。  
+这会让很多局部但高价值的信息更早退出主工作面。
+
+第三，它对“保什么、丢什么”的取舍更明显。  
+一旦系统更依赖 summary 和 selective reinjection，那些没有被挑中重新挂载的细节就更容易消失。
+
+所以 Claude Code 更容易让人觉得“忘事”，不一定是因为它真的保留得更差，而是因为它的 compact 机制更显性、取舍更可见。
+
+从源码实现反推，最容易在 handoff 里损失的信息，通常有三类：
+
+- 局部强约束，比如不能改哪个目录、必须保留哪种兼容性；
+- 负向信息，比如某个方案试过了、失败了、已经排除；
+- 临时高价值信息，比如刚读过的文件、刚看到的报错、刚发现的接口细节。
+
+这三类信息有一个共同特点：它们对当前任务极重要，但在“写交接摘要”时不一定天然显眼。
+
+如果系统没有为它们设计独立层，compact 一发生，它们就会最先丢。
+
+## Claude Code 还有一个容易被低估的点：它把多 Agent 当成上下文分区
+
+在 `src/tools/AgentTool/prompt.ts` 里，fork 和 fresh subagent 的区别写得非常清楚。
+
+省略 `subagent_type` 时，等于 fork 当前 agent，继承完整上下文，并尽量复用 prompt cache；显式指定 `subagent_type` 时，则启动一个 fresh specialized agent，它拿到的是 briefing，不是父线程的整段历史。`src/tools/AgentTool/prompt.ts:83` 到 `src/tools/AgentTool/prompt.ts:96` 这段“when to fork”写得很像一份上下文管理守则，而不是普通功能说明。
+
+这个设计最有价值的地方，不是“可以并行”，而是**可以切开上下文边界**。
+
+源码里的提示词甚至专门提醒：不要中途去读 fork 的输出文件，否则会把 fork 的工具噪音重新拉回主线程上下文，破坏 fork 的意义。这种提醒非常少见，但说明实现者对一个问题看得很清楚：multi-agent 如果不能隔离上下文，最后只是把污染复制得更远。
+
+和这个思路相配套的，是 memory 也没有被当成“全量记忆库”。
+
+在 `src/memdir/findRelevantMemories.ts` 里，memory selection 明确是 header scan 之后再做 side query，从候选里最多挑 5 个“确定有用”的 memory。系统提示里还特别强调：如果不确定有用，就不要选；如果某个工具最近正在被频繁使用，不要把它的使用文档当 memory 再塞进来，除非是 warning 或 gotcha。这里的关键词不是“recall”，而是“be selective and discerning”，这和它在 compact 路径上对 observation 的克制是一致的。
+
+这说明 Claude Code 在 memory 上的基本判断也很克制：**memory 不是越多越好，而是越相关越好。**
+
+这个点和上面的 compact 逻辑是一致的。它不是追求“把所有东西都带上”，而是在不断做工作面净化。
+
+## 从 Codex 和 Claude Code 抽出来的一套上下文设计原则
+
+如果只看这两个系统里最稳定、最有工程含义的部分，上下文设计大致可以收敛成下面六条。
+
+### 1. Stable Prefix 要独立于聊天历史
+
+稳定规则不要藏在对话里。项目约束、工具边界、长期偏好、输出规范，都应该有单独挂载点。`AGENTS.md`、`CLAUDE.md`、tool schema、system sections，本质上都在解决同一个问题：让关键规则不依赖历史记忆。
+
+### 2. Observation 要单独治理
+
+不要把工具输出当成普通消息。tool results、日志、文件内容、搜索结果应该有自己的预算、回收和替换策略。Claude Code 的 `applyToolResultBudget`、`microcompact`、`cache edits` 之所以重要，不是因为它们技巧复杂，而是因为它们承认 observation 是上下文污染的第一来源。
+
+### 3. Compact 不是摘要动作，而是状态迁移
+
+Codex 用 `responses/compact` 和 `compaction` item 把这件事说得很清楚；Claude Code 则用 `getMessagesAfterCompactBoundary()`、compact boundary、summary messages 和 post-compact attachments 在实现上把它做出来。只要 compact 发生，系统就已经不在简单续写 transcript，而是在迁移状态。
+
+### 4. Summary 只能保主线，不能保现场
+
+摘要适合保留任务目标、关键结论、下一步动作，但不适合单独承载文件状态、工具可用性、局部限制、最近观察。想靠 summary 一层解决全部 compact 问题，最后一定会掉现场细节。
+
+### 5. Compact 之后必须恢复关键工件
+
+文件、计划、skill、agent state、tools delta、MCP instructions 这类对象，如果在 compact 前决定过当前回合的行为，就应该在 compact 后有机会重新进入工作面。恢复不一定是全量的，但一定要有机制。
+
+### 6. Multi-agent 的第一价值是上下文切分
+
+子 Agent 不是越多越好，关键是边界要清楚。什么时候 fork 继承上下文，什么时候 fresh start，只给 briefing，这直接决定系统是在做并行协作，还是在放大上下文污染。
+
+## 结尾
+
+我现在越来越不把 Agent 的上下文问题看成“记忆力”问题，而是把它看成一个更接近操作系统的问题：哪些状态常驻，哪些状态短驻，哪些状态可以回收，哪些状态必须在切换后恢复。
+
+Codex 提供的是协议层视角：compact 是状态迁移，不是聊天摘要。  
+Claude Code 提供的是运行时视角：上下文要先去噪，再压缩，再恢复，还要按边界切分。
+
+这两条线合起来，基本能得到一个很明确的判断：
+
+**真正稳定的 Agent，不是靠更大的窗口坚持记住过去，而是靠更好的上下文工程，在每次压缩之后重新站回正确的工作面。**
+
+## 参考资料
+
+- `https://openai.com/index/unrolling-the-codex-agent-loop/`
+- `https://platform.openai.com/docs/api-reference/responses/compact`
+- `https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents`
+- `https://code.claude.com/docs/en/hooks`
+- `https://code.claude.com/docs/en/costs`
+- `https://zhanghandong.github.io/harness-engineering-from-cc-to-ai-coding/part3/ch09.html`
