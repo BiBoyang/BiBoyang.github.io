@@ -8,7 +8,7 @@ tags: [iOS, Swift,Concurrency]
 
 
 
-在 Swift Concurrency 里，`actor` 很容易和 `@MainActor` 被混成一件事。表面上看，它们都在处理“并发访问”问题；但如果把两者等同起来，后面几乎一定会写出边界模糊的代码。
+在 `Swift Concurrency` 里，`actor` 很容易和 `@MainActor` 被混成一件事。表面上看，它们都在处理“并发访问”问题；但如果把两者等同起来，后面几乎一定会写出边界模糊的代码。
 
 我现在更愿意把它们拆成两句话来记：
 
