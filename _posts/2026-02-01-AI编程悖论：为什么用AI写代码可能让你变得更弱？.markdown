@@ -101,7 +101,9 @@ tags: [AI, Coding, Productivity]
 
 `AI` 模型（尤其是 `LLM`）本质上是基于概率的预测机，它们很容易产生“**幻觉**”（`Hallucination`），即自信满满地胡说八道。
 
+
 前段时间我在研究网络相关的内容,在使用某个刚刚进行了大更新的 `AI` 时,它就给我输出了一个错的离谱的回答
+
 
 ![](https://raw.githubusercontent.com/BiBoyang/BiBoyang.github.io/refs/heads/main/Image/AICodingStudy_01.jpg)
 
@@ -110,11 +112,12 @@ tags: [AI, Coding, Productivity]
 
 对于这种情况,我认为对于 `AI` 提供的 `API` 用法或生僻的库，务必去官方文档或源码中核实,不要盲目相信;或者让 `AI` 解释它的代码逻辑，并要求它提供参考来源。如果它无法解释清楚，或者来源不存在，那很可能是幻觉。
 
+
 在开头提到的那个实验中,还有一个小结论:**Anthropic 的研究发现，AI 辅助下，调试能力和概念理解能力最容易下降**。因此，在这两方面要格外警惕，不要让 AI 剥夺了你排查问题的机会。
 
 
 
-### 要对抗 AI
+## 要对抗 AI
 
 一个人（或一个模型）很容易陷入思维定势。利用 `AI` 的多角色扮演能力，可以让它自己查漏补缺。
 
