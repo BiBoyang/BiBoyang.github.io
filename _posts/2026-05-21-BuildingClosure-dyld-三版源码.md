@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "一年后重读得物 BuildingClosure 优化：从三版 dyld 源码看 Apple 的两次修补"
-date:   2026-05-21 23:32:53 +0800
+date:   2026-05-21 00:00:00 +0800
 categories: [iOS, dyld, 性能优化]
 tags: [iOS, dyld, 启动优化, BuildingClosure, 完美哈希, lookup8]
 ---
