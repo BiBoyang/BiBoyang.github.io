@@ -1,26 +1,28 @@
 ---
 layout: post
-title:  "一年后重读得物 BuildingClosure 优化：从三版 dyld 源码看 Apple 的两次修补"
-date:   2026-05-21 00:00:00 +0800
+title:  "一年后重读得物 BuildingClosure 优化"
+date:   2026-04-29 00:00:00 +0800
 categories: [iOS, dyld, 性能优化]
 tags: [iOS, dyld, 启动优化, BuildingClosure, 完美哈希, lookup8]
 ---
 
-2025 年 4 月，得物技术团队发了一篇文章，讲他们排查到 iOS 启动耗时中 BuildingClosure 阶段的一次诡异暴增。根因不是动态库、不是编译选项、不是打包脚本——是新增的几个 ObjC 方法名，跟已有符号在 dyld 的完美哈希构造算法里撞了。改名之后，耗时恢复正常。
+2025 年 4 月，得物技术团队发了一篇文章[得物 iOS 启动优化之 Building Closure](https://mp.weixin.qq.com/s/xr43Xx-A3NT8lPGIii8pPA)，讲他们排查到 iOS 启动耗时中 `BuildingClosure` 阶段的一次诡异暴增。根因不是动态库、不是编译选项、不是打包脚本,而是新增的几个 ObjC 方法名，跟已有符号在 dyld 的完美哈希构造算法里撞了。改名之后，耗时恢复正常。
 
 当时这篇文章在 iOS 圈子里传得挺广，不只是因为结论有意思，更因为排查过程走了完整的 Instrument → 堆栈定位 → dyld 源码编译 → 注入日志 → 对照实验的链路，方法本身就有参考价值。
 
-一年后，dyld 的源码已经在 GitHub 上公开维护了。我手上有三个版本的 dyld 源码——从 2021 年的 852.2（约对应 iOS 15 / macOS 12 时期），到半年前下载的 1335（2026 年 1 月发布，约对应 iOS 18.4），再到四月份刚拉的最新 1376.6（2026 年 4 月发布，可能随下一代 iOS 正式上线）。对照着看了一遍，从源码演进看，Apple 针对这件事其实很可能悄悄做了两次修补。
+一年后，随着 dyld 的最新源码已经在 GitHub 上公开，我重新阅读复盘了一下这篇文章.
+
+我手上有三个版本的 dyld 源码----从 2021 年的 852.2（约对应 iOS 15 / macOS 12 时期），到半年前下载的 1335（2026 年 1 月发布，约对应 iOS 18.4），再到四月份刚拉的最新 1376.6（2026 年 4 月发布，可能随下一代 iOS 正式上线）。对照着看了一遍，从源码演进看，Apple 针对这件事其实很可能悄悄做了至少两次修补。
 
 ---
 
 ## BuildingClosure 在干什么
 
-先花一点篇幅把 BuildingClosure 到底是什么说清楚。这部分得物文章有涉及，但我这里补充一些源码视角的细节，后面对比版本差异时会用到。
+先花一点篇幅把 Building Closure 到底是什么说清楚。这部分得物文章有涉及，但我这里补充一些源码视角的细节，后面对比版本差异时会用到。
 
-iOS 启动过程中，dyld 作为动态链接器负责加载所有 Mach-O 镜像、做符号绑定（bind）和基址修正（rebase）。这是一笔每次启动都要付的账。从 dyld3（iOS 13）开始，Apple 引入了一个优化：把第一次启动时算好的结果缓存下来，存成闭包文件（在 `Library/Caches/com.apple.dyld/` 下），后面再启动直接用。生成这个缓存的过程就叫 BuildingClosure。
+iOS 启动过程中，dyld 作为动态链接器负责加载所有 Mach-O 镜像、做符号绑定（bind）和基址修正（rebase）。这是一笔每次启动都要付的账。从 dyld3（iOS 13）开始，Apple 引入了一个优化：把第一次启动时算好的结果缓存下来，存成闭包文件（在 `Library/Caches/com.apple.dyld/` 下），后面再启动直接用。生成这个缓存的过程就叫 Building Closure。
 
-BuildingClosure 里有一个环节是给所有 ObjC 符号建索引——selector、class、protocol，各一张哈希表。dyld4（iOS 15+）把这个环节封装在 `PrebuiltObjC` 里：
+Building Closure 里有一个环节是给所有 ObjC 符号建索引----selector、class、protocol，各一张哈希表。dyld4（iOS 15+）把这个环节封装在 `PrebuiltObjC` 里：
 
 ```
 App 镜像 → PrebuiltObjC::make()
@@ -238,4 +240,5 @@ dyld 的源码在 `apple-oss-distributions/dyld`，直接拉 tag 对应的 relea
 
 ---
 
-*本文涉及的 dyld 源码版本：dyld-852.2（2021）、dyld-1335（2026-01）、dyld-1376.6（2026-04），均来自 [apple-oss-distributions/dyld](https://github.com/apple-oss-distributions/dyld)。得物技术原文：《得物 iOS 启动优化之 Building Closure》，2025-04-03 发表于掘金。*
+* 本文涉及的 dyld 源码版本：dyld-852.2（2021）、dyld-1335（2026-01）、dyld-1376.6（2026-04），均来自 [apple-oss-distributions/dyld](https://github.com/apple-oss-distributions/dyld)。
+* 得物技术原文：《得物 iOS 启动优化之 Building Closure》，2025-04-03 发表于微信公众号**得物技术**。
