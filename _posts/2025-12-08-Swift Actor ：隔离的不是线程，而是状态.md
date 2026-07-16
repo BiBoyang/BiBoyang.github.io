@@ -2,6 +2,7 @@
 layout: post
 title:  "Swift Actor ：隔离的不是线程，而是状态"
 date:   2025-12-08 07:40:00 +0800
+updated: 2026-07-16
 categories: [iOS, Swift,Concurrency]
 tags: [iOS, Swift,Concurrency]
 ---
@@ -142,6 +143,8 @@ await MainActor.run {
 
 `MainActor.run` 的意义是：我现在明确要求这段闭包在主 actor 上执行。它和“给某个声明加 `@MainActor`”解决的问题并不完全一样。前者更像是一次显式 hop，后者是给 API 建立隔离契约。
 
+> 2026-07 补充：Swift 6.2 起可以把整个模块默认设为 MainActor 隔离；这一节还漏了 `MainActor.assumeIsolated` 这个 API。都写在文末「版本变化备忘」里了。
+
 ## 什么时候用 `actor`，什么时候用 `@MainActor`
 
 如果只讲定义，这两个概念不难；真正容易混乱的是工程里怎么落。
@@ -197,6 +200,8 @@ Swift 在 actor 模型里还给了一个很实用的出口：`nonisolated`。
 
 当然，前提也很明确：一旦用了 `nonisolated`，就不能再偷偷访问 actor 隔离的可变状态。这个边界如果写乱了，等于主动绕开模型给你的保护。
 
+> 2026-07 补充：Swift 6.2 改了 `nonisolated` async 函数的默认执行位置，详见文末「版本变化备忘」。
+
 ## 真正值得记住的结论
 
 如果把整件事压缩成一句话，那就是：
@@ -218,3 +223,35 @@ Swift 在 actor 模型里还给了一个很实用的出口：`nonisolated`。
 - SwiftLee: `Actors in Swift: how to use and prevent data races`
 - Swift Evolution: `SE-0306 Actors`
 - Swift Evolution: `SE-0316 Global Actors`
+
+## 版本变化备忘
+
+2026-07 补充。原文写于 2025-12-08，保持当时的理解不动；相关的版本变化和遗漏都记在这里。
+
+### Swift 6.2：`nonisolated` async 默认改为在调用方的 actor 上运行（SE-0461）
+
+`nonisolated` 的 async 函数，默认执行位置从全局并发执行器改成了调用方的 actor，等效于显式写 `nonisolated(nonsending)`；旧行为还留着，但要显式标 `@concurrent` 才能拿到。
+
+要注意它在 6.2 里不是无条件生效的：这个变化由 upcoming feature flag `NonisolatedNonsendingByDefault` 门控，Xcode 26 新建项目开启 Approachable Concurrency 会自动带上，老项目得手动开。
+
+这个方向我是认同的。旧默认下，从 MainActor 上下文调一个 nonisolated async 函数，会先 hop 出去、跑完再 hop 回来，纯属浪费；新语义下就地跑完，hop 少了，正文那套“隔离域”的心智模型反而更顺。
+
+出处：[SE-0461: Run nonisolated async functions on the caller's actor by default](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0461-async-function-isolation.md)、[Swift 6.2 Released](https://www.swift.org/blog/swift-6.2-released/)（2025 年 9 月发布）
+
+### Swift 6.2：可以把整个模块默认设为 MainActor 隔离（SE-0466）
+
+SE-0466 给了一个模块级开关：编译参数 `-default-isolation MainActor`（Xcode 26 里对应的 build setting 是 `SWIFT_DEFAULT_ACTOR_ISOLATION`，SwiftPM 里是 `.defaultIsolation(MainActor.self)`），整个模块默认按 MainActor 隔离推断，不需要主 actor 保护的再显式写 `nonisolated`。Xcode 26 新建的 app 项目默认就是这个模式。
+
+相当于把正文的默认假设反过来了：以前是“默认不隔离，按需 `@MainActor`”，现在可以是“默认 MainActor，按需 `nonisolated`”。对 UI 重的 app 代码，我觉得这个默认值更贴近实际。
+
+出处：[SE-0466: Control default actor isolation inference](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0466-control-default-actor-isolation.md)、[WWDC25: Embracing Swift concurrency](https://developer.apple.com/videos/play/wwdc2025/268/)
+
+### 原文遗漏的 API：`MainActor.assumeIsolated`
+
+正文说旧式同步回调里不能把 `@MainActor` 当成无条件的运行时跳板，这个判断本身没问题，但当时没给解法——这是原文遗漏的 API，不是原文写错了。
+
+解法就是 `MainActor.assumeIsolated`：在能确定执行位置的同步上下文里（比如跑在主线程上的旧式回调），用它显式假定当前已在 MainActor 上，闭包里就能同步访问 MainActor 隔离的状态，不必硬造一个异步上下文去 `await`。假定错了会直接崩溃，所以只在真的确定时用。只想校验、不需要执行闭包的话，用 `MainActor.preconditionIsolated`。
+
+这两个 API 是 Swift 5.9 就有的（SE-0392），跟 6.2 那批变化无关——本来写这篇时就该提到。
+
+出处：[MainActor.assumeIsolated - Apple Developer](https://developer.apple.com/documentation/swift/mainactor/assumeisolated(_:file:line:))、[MainActor.preconditionIsolated - Apple Developer](https://developer.apple.com/documentation/swift/mainactor/preconditionisolated(_:file:line:))、[SE-0392: Custom Actor Executors](https://github.com/swiftlang/swift-evolution/blob/main/proposals/0392-custom-actor-executors.md)
