@@ -3,7 +3,7 @@ layout: post
 title:  "从 trace 到 eval：trace 设计、Agent 评测方法论、一个评测 harness 的实现，和它抓到的上游并发 bug"
 date:   2026-08-23 22:08:16 +0800
 categories: [AI, Agent]
-tags: [AI, Agent, Trace, Eval]
+tags: [AI, Agent]
 ---
 
 做 Agent 工程质量，我认一条主线：trace 是一等公民，测试断言、评测数据都从它而来。这条主线在近期 deepseek harness 发布之后，被我总结成为一个开源项目 [dsh-eval-harness](https://github.com/BiBoyang/dsh-eval-harness)——给 dsh 插件跑回归的门禁工具。它最近在回归测试 DeepSeek Harness 时抓到一个上游自己都没发现的并发崩溃：三个进程同时启动，两个在 270 毫秒内 ENOENT 崩掉。
