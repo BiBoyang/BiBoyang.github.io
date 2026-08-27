@@ -23,6 +23,9 @@ permalink: /posts/:title/
 tag_archive:
   type: liquid
   path: /tags/
+category_archive:
+  type: liquid
+  path: /categories/
 
 author:
   name: "BiBoyang"

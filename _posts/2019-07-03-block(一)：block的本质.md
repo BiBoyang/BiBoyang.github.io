@@ -2,7 +2,7 @@
 layout: post
 title:  "探究 block (一)：block 的本质"
 date:   2019-07-03 23:32:53 +0800
-categories: [iOS, Objective-C, Runtime]
+categories: [iOS]
 tags: [iOS, Objective-C, block]
 ---
 

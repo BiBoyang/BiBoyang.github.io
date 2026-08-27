@@ -2,7 +2,7 @@
 layout: post
 title:  "性能优化之路"
 date:   2019-01-01 23:32:53 +0800
-categories: [iOS, Performance, Engineering]
+categories: [iOS]
 ---
 
 我在开发 iOS 的过程中，逐渐形成了一些对性能优化的认识，准备整理出来。恳请各位斧正。

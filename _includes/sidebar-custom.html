@@ -1,0 +1,18 @@
+{% comment %}侧边栏扩展：大类导航。Minimal Mistakes 在 sidebar.html 末尾自动引入本文件。{% endcomment %}
+{% if site.categories.size > 0 %}
+<nav class="sidebar__category-nav" aria-label="分类">
+  <h3 class="sidebar__category-title">分类</h3>
+  <ul>
+    {% assign categories_sorted = site.categories | sort %}
+    {% for category in categories_sorted %}
+      {% assign category_name = category[0] %}
+      {% assign category_size = category[1].size %}
+      <li>
+        <a href="{{ site.category_archive.path | relative_url }}#{{ category_name | slugify }}">
+          {{ category_name }}<span class="category-count">{{ category_size }}</span>
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+</nav>
+{% endif %}

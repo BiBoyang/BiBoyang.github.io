@@ -2,7 +2,7 @@
 layout: post
 title:  "探究 block (五)：有趣的 block 面试题"
 date:   2019-07-20 23:32:53 +0800
-categories: [iOS, Objective-C, Runtime]
+categories: [iOS]
 ---
 
 

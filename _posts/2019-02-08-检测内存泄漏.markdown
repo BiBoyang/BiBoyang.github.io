@@ -2,7 +2,7 @@
 layout: post
 title:  "检测内存泄漏"
 date:   2019-02-08 23:32:53 +0800
-categories: jekyll update
+categories: [iOS]
 ---
 
 内存是移动设备上的共享资源，如果一个 App 无法正确地进行内存管理的话，将会导致内存消耗殆尽，闪退以及性能的严重下降。

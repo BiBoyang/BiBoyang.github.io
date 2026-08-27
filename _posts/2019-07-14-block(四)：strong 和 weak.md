@@ -2,7 +2,7 @@
 layout: post
 title:  "探究 block (四)：strong 和 weak"
 date:   2019-07-14 23:32:53 +0800
-categories: [iOS, Objective-C, Runtime]
+categories: [iOS]
 tags: [iOS, Objective-C, block, weak, strong]
 ---
 

@@ -2,7 +2,7 @@
 layout: post
 title:  "一年后重读得物 BuildingClosure 优化"
 date:   2026-04-29 00:00:00 +0800
-categories: [iOS, dyld, 性能优化]
+categories: [iOS]
 tags: [iOS, dyld, 启动优化, BuildingClosure, 完美哈希, lookup8]
 ---
 

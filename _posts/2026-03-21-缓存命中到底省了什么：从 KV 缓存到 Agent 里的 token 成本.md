@@ -2,7 +2,7 @@
 layout: post
 title:  "缓存命中到底省了什么：从 KV 缓存到 Agent 里的 token 成本"
 date:   2026-03-21 07:40:00 +0800
-categories: [AI, Agent]
+categories: [AI]
 tags: [AI, Agent]
 ---
 

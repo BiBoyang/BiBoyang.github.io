@@ -2,7 +2,7 @@
 layout: post
 title:  "探访isEqual和Hash"
 date:   2018-08-08 23:32:53 +0800
-categories: [iOS, Objective-C, Runtime]
+categories: [iOS]
 ---
 
 # 从哈希表说起

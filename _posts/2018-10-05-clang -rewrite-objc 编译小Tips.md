@@ -2,7 +2,7 @@
 layout: post
 title:  "clang -rewrite-objc 编译小Tips"
 date:   2018-10-05 23:32:53 +0800
-categories: jekyll update
+categories: [iOS]
 ---
 
 

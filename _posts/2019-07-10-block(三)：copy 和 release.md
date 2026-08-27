@@ -2,7 +2,7 @@
 layout: post
 title:  "探究 block(三)：copy 和 release"
 date:   2019-07-10 23:32:53 +0800
-categories: [iOS, Objective-C, Runtime]
+categories: [iOS]
 tags: [iOS, Objective-C, block, memory]
 ---
 

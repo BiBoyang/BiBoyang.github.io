@@ -2,7 +2,7 @@
 layout: post
 title:  "Temperature 与 Top-p 学习笔记"
 date:   2026-04-03 23:32:53 +0800
-categories: [AI, Agent]
+categories: [AI]
 tags: [AI, Agent]
 ---
 

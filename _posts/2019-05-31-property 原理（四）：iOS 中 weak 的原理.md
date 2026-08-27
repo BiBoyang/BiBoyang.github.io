@@ -2,7 +2,7 @@
 layout: post
 title:  "@property 原理（四）：iOS 中 weak 的原理"
 date:   2019-05-31 23:32:53 +0800
-categories: [iOS, Objective-C, Runtime]
+categories: [iOS]
 tags: [iOS, Objective-C, property, weak]
 ---
 

@@ -2,7 +2,7 @@
 layout: post
 title:  "ReAct 与 Plan-and-Execute：Agent 推理的两种思路"
 date:   2026-04-05 23:32:53 +0800
-categories: [AI, Agent]
+categories: [AI]
 tags: [AI, Agent]
 ---
 

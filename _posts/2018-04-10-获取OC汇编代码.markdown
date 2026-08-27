@@ -2,7 +2,7 @@
 layout: post
 title:  "获取OC汇编代码"
 date:   2018-04-10 23:32:53 +0800
-categories: jekyll update
+categories: [iOS]
 ---
 
 

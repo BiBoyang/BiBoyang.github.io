@@ -2,7 +2,7 @@
 layout: post
 title:  "从 ENTRY 到 MSG_ENTRY：objc_msgSend 的热点入口优化解析"
 date:   2025-10-28 23:32:53 +0800
-categories: [iOS, Objective-C, Runtime]
+categories: [iOS]
 tags: [iOS, Objective-C, runtime, objc_msgSend, performance]
 ---
 

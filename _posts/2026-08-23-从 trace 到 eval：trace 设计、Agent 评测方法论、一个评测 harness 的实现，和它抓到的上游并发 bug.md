@@ -2,7 +2,7 @@
 layout: post
 title:  "从 trace 到 eval：trace 设计、agent eval 方法论、一个 eval harness 的实现，和它抓到的上游并发 bug"
 date:   2026-08-23 22:08:16 +0800
-categories: [AI, Agent]
+categories: [AI]
 tags: [AI, Agent]
 ---
 

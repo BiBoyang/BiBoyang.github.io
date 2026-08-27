@@ -3,7 +3,7 @@ layout: post
 title:  "Swift Actor ：隔离的不是线程，而是状态"
 date:   2025-12-08 07:40:00 +0800
 updated: 2026-07-16
-categories: [iOS, Swift,Concurrency]
+categories: [iOS]
 tags: [iOS, Swift,Concurrency]
 ---
 

@@ -2,7 +2,7 @@
 layout: post
 title:  "从虚拟内存到 iOS Memory Footprint"
 date:   2018-11-03 23:32:53 +0800
-categories: [iOS, Memory, System]
+categories: [iOS]
 ---
 
 

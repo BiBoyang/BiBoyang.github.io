@@ -2,7 +2,7 @@
 layout: post
 title:  "如何获取 LinkMap"
 date:   2019-02-28 23:32:53 +0800
-categories: jekyll update
+categories: [iOS]
 ---
 
 # 如何获取 LinkMap

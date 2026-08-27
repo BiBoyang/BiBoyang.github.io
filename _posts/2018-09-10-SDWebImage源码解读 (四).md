@@ -2,7 +2,7 @@
 layout: post
 title:  "SDWebImage源码解读 (四)"
 date:   2018-09-10 23:32:53 +0800
-categories: [iOS, SourceCode, Image]
+categories: [iOS]
 ---
 
 

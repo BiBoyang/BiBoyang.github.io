@@ -2,7 +2,7 @@
 layout: post
 title: "GitHub Actions 每日自动测试：从 schedule 踩坑到跑通"
 date: 2026-04-28 02:00:00 +0800
-categories: [CI/CD, GitHub Actions, Swift, Rust]
+categories: [工程效率]
 ---
 
 我在维护两个项目，一个是 Swift 写的 macOS CLI 工具（ForgeLoop），另一个是 Rust 写的微信 Bot（AMClaw）。开发阶段每次 push 都跑全量测试太费时间，而且有些测试在本地 commit 之前已经跑过了，CI 再跑一次完全重复。
