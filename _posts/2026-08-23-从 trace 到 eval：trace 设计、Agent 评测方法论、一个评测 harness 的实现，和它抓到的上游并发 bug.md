@@ -6,11 +6,22 @@ categories: [AI, Agent]
 tags: [AI, Agent]
 ---
 
-做 agent 工程质量，我认一条主线：trace 是一等公民，测试断言、eval 数据都从它而来。这条主线在近期 deepseek harness 发布之后，被我总结成为一个开源项目 [dsh-eval-harness](https://github.com/BiBoyang/dsh-eval-harness)——给 dsh 插件跑回归的门禁工具。它在回归测试 DeepSeek Harness 时抓到一个上游自己都没发现的并发崩溃：三个进程同时启动，两个在 270 毫秒内 ENOENT 崩掉。
+我开始做 AI 相关 App,从 chatbot 到 agent 已经有一年多了.积攒了不少相关的经验,这次我分享一下关于 trace 和 eval 的一些做法和观点.
 
-初稿发出去之后，我又做了一件事：拿每条结论去和业界近一年的公开实践对撞——Anthropic、OpenAI、LangChain、Braintrust、OpenHands 的工程博客，加上 Eugene Yan、Shreya Shankar 这批独立作者。哪些被印证、哪些被打脸、哪些是我没看见的盲区，都在 §七。对撞的收获也写回了正文：假失败的对称面（§二）、校准的操作参数（§三）、路径断言的分层和尺子的统计口径（§四）。
+# 开篇
 
-文章主线：trace 怎么设计才对（地基）→ 拿 trace 做 eval 要防什么（方法）→ eval harness 的关键决策与实现管线（工程）→ 它抓到上游 bug 的全过程（战果）→ 外部对撞（校验）。
+做 agent 工程质量，我认可一条主线：trace 是一等公民，测试断言、eval 数据都从它而来。要做好 agent,eval 不可缺少,而trace 算的上 eval 的基础,是环环相扣的,这个经验一方面来自于我之前深入做过 iOS 性能优化(要优化性能,就要测试出哪里有问题,也要做好数据统计和收集),另外一方面也来自于互联网上尤其是各家 AI 大厂的技术博文.
+
+这条主线在近期 deepseek harness 发布之后，被我总结成为一个开源项目 [dsh-eval-harness](https://github.com/BiBoyang/dsh-eval-harness):这是一个给 dsh 插件跑回归测试的门禁工具。它在回归测试 DeepSeek Harness 时抓到一个上游自己都没发现的并发崩溃：三个进程同时启动，两个在 270 毫秒内 ENOENT 崩掉。
+
+初稿发出去之后，我又做了一件事：拿每条结论去和业界近一年的公开实践以及我自己曾经的笔记进行对撞--Anthropic、OpenAI、LangChain、Braintrust、OpenHands 的工程博客，加上 Eugene Yan、Shreya Shankar 这批独立作者,以及我之前记录的错综复杂的笔记日志。
+
+文章主线：
+1. trace 怎么设计才对（地基）
+2. 拿 trace 做 eval 要防什么（方法）
+3. eval harness 的关键决策与实现管线（工程）
+4. 它抓到上游 bug 的全过程（战果）
+5. 外部对撞（校验）。
 
 # 一、trace 要在项目第一天就做
 
@@ -18,9 +29,9 @@ tags: [AI, Agent]
 
 ## 做对的：让「界面状态」成为可断言对象
 
-最早做的是一个 Swift 终端 UI 库，渲染 AI 流式输出用的。终端程序有个经典难题：界面状态没法复现——断言脆弱的字节流等于没测，渲染逻辑一重构测试就全红。
+最早做的是一个 Swift 终端 UI 库，渲染 AI 流式输出用的。终端程序有个经典难题：界面状态很难复现,断言脆弱的字节流等于没测，渲染逻辑一重构测试就全红。
 
-这个项目的解法是第 2 个里程碑就内建了一个 VirtualTerminal：一个能在内存里解释 ANSI 转义序列的虚拟终端（字符网格 + 光标 + CSI 序列解析）。测试不再断言「输出了什么字节」，而是断言「最终屏幕状态」。配合事件溯源式的渲染模型——UI 状态完全由事件流驱动，不绑定任何业务模型——渲染的每个关键决策都变成可断言的诊断事件：什么时候全量重绘（带原因）、什么时候走增量更新、快速路径追加了多少行。
+我经过思考,给出的解法是第 2 个开发版本就内建了一个 VirtualTerminal：一个能在内存里解释 ANSI 转义序列的虚拟终端（字符网格 + 光标 + CSI 序列解析）。测试不再断言「输出了什么字节」，而是断言「最终屏幕状态」。配合事件溯源式的渲染模型--UI 状态完全由事件流驱动，不绑定任何业务模型--渲染的每个关键决策都变成可断言的诊断事件：什么时候全量重绘（附带原因）、什么时候走增量更新、快速路径追加了多少行。
 
 注意这里的 trace 形态不是一个日志框架，而是一个默认关闭的可选回调：库不写文件、不引依赖，「记到哪」完全交给消费方——未启用时不产生任何 I/O 和持久化开销。
 
@@ -100,15 +111,17 @@ LangChain 的 eval checklist（2026-03）补了我框架的另一半：评分器
 
 **校准集怎么构成：fail 样本要够，而且别合成。** 两个独立来源给出同一方向：Yan 建议 200+ 样本里至少 50–100 个 fail——几百条标注里只有 5 条 fail 的校准集没用。fail 样本不够怎么办？他的排序是：用小模型/弱模型产「有机失败」（长上下文吃力、推理不足，天然产生真实缺陷）为最佳；**让强模型合成缺陷是反模式**——合成缺陷是 OOD 的，要么太夸张要么太微妙，在这种数据上校准出的 judge 抓不到生产里 messy 的真实失败。LangChain 补了数量门槛：20+ 人工标注起步，约 100 条达到生产级置信度。标签形态上 Yan 还有个损辣但真实的观察：坚持要 1–5 细粒度分「以便日后调阈值」的利益相关方，他见过 exactly zero 个真的调过——既然终点是二元判定，标注起点就该是二元。
 
-**judge 的工程细则，四条。** 一，给 judge 留「Unknown」退路：信息不足时允许拒答，防止硬判出幻觉（Anthropic）。二，一个维度一个 judge，反对「God Evaluator」——一个 prompt 评 5–10 个维度没人做好过，失准时也无法定位是哪个维度在漂（Anthropic、Yan 同此结论）。三，用 JSON Schema 机械强制「先依据后判定」：OpenAI 的做法是给评分器输出套 schema，`checks[].notes` 必填——比 prompt 约定硬，这正好把我之前「先写分析、末行判定」的格式约束升级成结构约束。四，pairwise 比较要跑两遍、交换顺序：判定翻转说明两者难区分，应记 tie 而不是强行分胜负——顺便，tie 不等于没有信息，Braintrust 指出「打平但省 40% 工具调用就是赢」。
+**judge 的工程细则，四条。** 一，给 judge 留「Unknown」退路：信息不足时允许拒答，防止硬判出幻觉（Anthropic）。美团图灵团队把这条退路用成了 rubric 的质量信号：unknown 占比高，首先该怀疑 rubric 定义不合格——拿 unknown 占比反查 rubric，迭代到单条 rubric 的人人一致率、人机一致率过可信阈值（他们的参考线是 85%/90%）。Unknown 从防御手段升级成了校准回路的输入。二，一个维度一个 judge，反对「God Evaluator」——一个 prompt 评 5–10 个维度没人做好过，失准时也无法定位是哪个维度在漂（Anthropic、Yan 同此结论）。三，用 JSON Schema 机械强制「先依据后判定」：OpenAI 的做法是给评分器输出套 schema，`checks[].notes` 必填——比 prompt 约定硬，这正好把我之前「先写分析、末行判定」的格式约束升级成结构约束。四，pairwise 比较要跑两遍、交换顺序：判定翻转说明两者难区分，应记 tie 而不是强行分胜负——顺便，tie 不等于没有信息，Braintrust 指出「打平但省 40% 工具调用就是赢」。
 
 **校准飞轮。** LangChain 给了一个闭环做法：人工修正 judge 的记录自动回填为 judge 的 few-shot 示例——每次纠偏都在强化校准。这把校准从一次性仪式变成持续过程，和 §七会讲到的标准漂移（criteria drift，标准本身会漂移）正好配套。
+
+上面的纪律管的都是人机一致，美团图灵团队的实践补上了我没覆盖的另一半——**人人一致**。他们深度 BP 多个业务团队两年，结论直白：「1 个独裁者好过 10 个民主者」——需要一个强有力的角色拉齐产品、运营、研发、QA 的评测标准，分歧时拍板，避免各自为政；评测员之间用背靠背标注拉齐。他们还给了一个演进视角：评测目标不是一次定死的，会随业务扩量和用户画像偏移而调整——履约业务从冷启动的 20 多个指标，一年后扩到近 200 个。这和标准漂移是同一现象的两种驱动：漂移来自评估过程本身，这个来自业务规模推着标准走。我的校准纪律隐含「标准由一个人（我）定」，个人项目里这成立；团队尺度上，「谁的标准」本身就是第一道要解决的题。
 
 两个纪律补充保留初稿原文，它们和上面的参数不冲突而是前提。其一，**样本量决定可信度**：真失败样本只有 10 条时，TPR=0.9 的 95% 置信区间大约宽到 0.55–1.0，「过线」没什么统计意义——要么把校准集扩到上百条、两类样本都充足，要么报告里带上分母（或 Wilson 置信区间），别只报点估计。其二，**校准集和验证集分开**：拿调过评分标准的同一批数据做最终验证，分数会虚高。
 
 校准还逼我修了一个 judge 自身的格式问题。同行给过我一个忠告：**千万别让 LLM 先给答案**——它会基于答案编理由，哪怕答案是错的。harness 的 judge 最初就是「首行判定、次行理由」的格式，这个格式本身就在诱导先定论后粉饰。改成「先写分析、末行判定」之后，至少格式诱导被消除了——当然，模型仍然可能先有了结论再补一份像样的分析，格式改变不了动机，只能不给它偷懒的借口。更硬的做法是要求分析引用 trace 里的具体工具调用，并对引用做二次校验，这我还在权衡。
 
-最后留一个靶子：OpenAI 那篇 skill eval 指南，全程拿 Codex 当评分器，没有人工标注、没有 TPR/TNR、没有校准/验证集分离——主流官方指南也默认 judge 可信。这不是批评他们（那篇文章的目标读者不是做门禁的人），但它说明校准纪律在业界远不是共识，这一节的方法论依然是有差异化价值的。
+最后留一个靶子：OpenAI 那篇 skill eval 指南，全程拿 Codex 当评分器，没有人工标注、没有 TPR/TNR、没有校准/验证集分离——主流官方指南也默认 judge 可信。这不是批评他们（那篇文章的目标读者不是做门禁的人），但它说明校准纪律在业界远不是共识，这一节的方法论依然是有差异化价值的。美团那篇给这个取舍提供了另一个解释角度：Skill 生产门槛越来越低，未来需要评测的不只是产运研，是每个会创建、修改、接入 Skill 的人——评测系统必须足够简单、标准化、自动化才接得住这个需求面。给每个 Skill 生产者用的指南，把「简单易用」置于「统计严谨」之上是理性选择；只是做门禁的人不能照单全收。
 
 # 四、harness 的关键决策，每个背后都有事故
 
@@ -156,13 +169,15 @@ Braintrust 给了路径断言的可操作形态：断 `must_call / must_not_call
 
 **驱动层**的基本动作是 spawn 子进程：`dsh --profile headless --patch <overlay> <prompt>`。三个设计点。其一，隔离发生在配置层：每条用例需要独立的 session 落盘根，最省事的写法是给子进程塞环境变量——但环境变量会泄漏到 agent 调用的工具里，污染被测行为，所以 harness 为每条用例生成一份 `--patch` overlay，按 row id 整体替换持久化配置里的落盘根。其二，每条用例一份工作区作 cwd、一份 session 根，目录名带加载序号而不是用例名的 slug——slug 化不是唯一键，「read image」和「read-image」会撞成同一个 slug，撞了就是两条用例的 trace 互相错捡。其三，可执行文件路径必须绝对：我真实踩过，runner 给每条用例起了独立 cwd，而我传了相对路径，11 条用例全部 spawn ENOENT——子进程在自己的工作区里找相对路径，当然找不到。现在 harness 启动前先用 `--version` 探针验证 dsh 可用，顺带把版本号记进报告，排障时直接区分「dsh 变了」还是「模型变了」。（后来读到 LangChain 引的一则 Anthropic 轶事，说他们在 SWE-bench 工具上花的时间比 prompt 还多、绝对路径消除整类路径错误——看来这个坑的门票人人都买过。）
 
+隔离还有一个维度是我的 harness 没做的：按风险分层。美团把执行沙箱按只读、可写、高风险三类分层隔离列为评测基建的必备能力——我的工作区隔离服务的是重跑卫生（防文件副作用假通过），不防用例本身的高风险操作越界。目前 12 条用例全是本地文件操作，这层还不是刚需；用例集里一旦出现写外部状态的用例，就得补。
+
 **采集层**面对的是 dsh 的落盘格式：session.jsonl 每行一帧信封 `{type, seq, time, data}`，默认还是压缩版 session.jsonl.zstd——多帧拼接的 zstd 容器。这里有两个反直觉的坑，都是实测出来的。第一个：把多帧拼接的容器一次性丢给 `zstdDecompressSync`，它只解出第一帧，**不报错、静默截断**——所以必须逐帧解。第二个：逐帧切分不能在字节流里搜魔数——zstd 帧魔数完全可能出现在压缩载荷内部，搜魔数会把一帧切成两半。正确的做法是按帧结构解析边界：帧头描述符给出内容尺寸字段长度，块头给出每块大小，顺着声明的尺寸走，魔数只在「上一帧结构结束的位置」校验。harness 的解码器就是这么写的（和上游 dsh-session 包里的 scanZstdFrames 同款思路），全部依赖 Node 内置 `node:zlib`，零外部依赖——注意 zstd 支持是较新版本 Node 才有的（22.15+/23.8+），旧 LTS 上没有。
 
 尾帧是另一个故事。进程在写入过程中被 SIGKILL 时，最后一个帧很可能只写了一半。能恢复多少，上限由**写入端的 flush 频率**决定——没 flush 出来的字节根本不在文件里，谁也救不回。解码端能做的是容忍截断：harness 对残缺尾帧用 `finishFlush: ZSTD_e_flush` 解——这个参数的作用是把输入结尾当作一个 flush 点而不是要求的流尾，已刷出的块照常产出明文。恢复失败也只丢这一个尾帧，已完成的帧不受影响。顺带一提，Node 对截断帧的容错比想象中宽：不带任何选项解残缺帧也常常返回部分明文而不是报错——这意味着「靠异常发现尾帧残缺」不成立，trace 跳行数告警这条防线是必须的。
 
 **提取层**把帧流变成结构化观测：turn 怎么结束的、调了哪些工具、每次调用的参数和结果文本、最终回答、token 用量、成功解析的帧数和跳过的坏行数。这层最大的教训是按真实落盘形状写代码，不按想象写：tool/result 在真实落盘里有三种形状（成功 / `data.error{name,code}` / 纯 isError 标记），最初按假设的形状提取，漏了后两种，工具硬错误就悄悄漏过了。现在用一份真实 session 脱敏后做 fixture，快照测试把三种形状锁死。token 口径同样有讲究：多步 session 里同一段缓存每步重复读回，所以 total 只算未命中缓存的 input + output + reasoning（落盘的 input 字段本身已排除缓存命中），缓存读写单列观察。这个口径是为门禁的漂移检测服务的；缓存读仍按折扣价计费，算成本账时别用这个 total。OpenHands 的实验给了效率口径一个额外理由：他们的 skill eval 里 pass 提升的同时 runtime 从 266s 降到 109s（也有一次从 87s 升到 99s 的代价案例）——效率 delta 是干预副作用的探测器，不只是成本核算。
 
-**门禁层**的两个设计。一是报告带 schemaVersion：基准报告入库，是要长期活着的数据资产；loader 对旧版自动补默认值，对未知的未来版本直接拒绝比较，重复用例名、非法状态、summary 与用例不符一律拒跑——不让一份坏报告产出看似合法的判定。二是判定是带退出码的协议：PASS=0、FAIL=1、N/A=2、WARN=0（strict 模式 2）。一个有意的设计代价要说清：strict 模式下 WARN 和 N/A 同为 2，CI 只看退出码时分不出两者——取舍的理由是两者都意味着「不能当作干净通过」，需要分辨时看文本输出的 OVERALL 行。所有中间产物同时以文本行和 JSON 两种形态输出，人和 CI 各取所需。LangChain 的 checklist 还给了门禁一个成本分层视角：便宜的确定性评分器守 CI（毫秒级），贵的 LLM judge 守 preview/prod 阶段——我的门禁目前全量同权，这是可以演进的形状。
+**门禁层**的两个设计。一是报告带 schemaVersion：基准报告入库，是要长期活着的数据资产；loader 对旧版自动补默认值，对未知的未来版本直接拒绝比较，重复用例名、非法状态、summary 与用例不符一律拒跑——不让一份坏报告产出看似合法的判定。二是判定是带退出码的协议：PASS=0、FAIL=1、N/A=2、WARN=0（strict 模式 2）。一个有意的设计代价要说清：strict 模式下 WARN 和 N/A 同为 2，CI 只看退出码时分不出两者——取舍的理由是两者都意味着「不能当作干净通过」，需要分辨时看文本输出的 OVERALL 行。所有中间产物同时以文本行和 JSON 两种形态输出，人和 CI 各取所需。LangChain 的 checklist 还给了门禁一个成本分层视角：便宜的确定性评分器守 CI（毫秒级），贵的 LLM judge 守 preview/prod 阶段——我的门禁目前全量同权，这是可以演进的形状。美团的基建清单还提了报告的一个输出维度：归因要落到故障域——问题发生在规划、工具、环境还是 Skill。我的报告目前回答「过没过」和「是不是 infra 的锅」，「挂在哪一层」要靠人读 trace；提取层已有的工具错误分类和 turn 结束方式其实是现成的故障域原料，缺的是把它们汇总成报告字段。
 
 这条管线没有一步是复杂的，但每一步都有一次真实事故兜底。把 agent 行为变成数据的过程里，最容易出错的地方从来不是解析，而是那些你以为不会出错的接缝。
 
@@ -223,6 +238,8 @@ dsh 每次启动会「治愈」一个共享符号链接目录（profiles/node_mo
 ## 盲区：对撞之后才知道自己没看见什么
 
 **多轮 session 层。** LangChain 的三原语（runs/traces/threads）里，thread 层——跨 session 的状态演化——是我的 harness 完全没有覆盖的：所有用例都是单轮。Anthropic 的 context engineering 文章还补了两个具体的归因盲区：compaction 丢了关键 context 造成的失败会被误记成「模型不行」，所以压缩事件（何时触发、丢了什么）必须是 trace 的一等字段；子代理只回一两千 token 的摘要，只采主链路的 eval 天然瞎掉子代理的整个探索过程。
+
+**指标的业务分层。** 美团这篇最有分量的概念是「搭桥」：模型能力指标和业务结果指标之间有天然鸿沟，中间必须有一层面向任务系统的桥梁指标——以 AI 搜索为例，业务关心 DAU、留存、点击，搜索系统关心召回率、点击率，Agent 层关心意图识别是否准确、检索是否有效、结果整合是否可信；三层串起来，才能回答「为什么业务指标变差」以及「模型能力提升为什么没带来业务收益」。我的四层模型（日志→归因→评测→决策）止步于门禁，是纯工程视角：门禁绿了、业务为什么还是变差，我的框架回答不了。这是个人项目和企业落地的真实坐标差——我的 harness 守的是「别回归」，他们的评测体系还要向业务价值解释「为什么值得做」。顺带一条印证：他们给长程评测定义的 (prompt, expected_behavior, trace) 三元组——类比短程时代的 (query, ground_truth, answer)——和我的 yaml 用例 + trace 断言完全同构。
 
 **eval 套件的生命周期。** Anthropic 和 LangChain 独立提出了同一套东西：能力 eval（低通过率起步，爬坡用）和回归 eval（接近 100%，守成用）要分两个套件；爬到顶的能力任务「毕业」进回归套件；一个通过率 100% 的 eval 只剩回归信号、没有改进信号（eval saturation）；不再暴露新失败的用例要定期剪掉——更多用例 ≠ 更好的 eval，盲目堆测试会制造进步假象。我的门禁有「从软到硬的晋升」，这是它的镜像：用例本身也有生命周期。公开材料里没人做的事从一项（门禁晋升的量化门槛）变成了两项——套件治理这一层，加上它，仍属空白。
 
@@ -285,4 +302,4 @@ trace 第一天就要做，它是后期所有质量工作的地基；用例从�
 
 ---
 
-*文中 eval 工具 [dsh-eval-harness](https://github.com/BiBoyang/dsh-eval-harness) 已开源；bug 报告见 deepseek-ai/deepseek-harness 的 [Discussions #4312](https://github.com/deepseek-ai/deepseek-harness/discussions/4312)。外部对照涉及的文献：Anthropic《Demystifying evals for AI agents》《Quantifying infrastructure noise in agentic coding evals》《Effective harnesses for long-running agents》《Effective context engineering for AI agents》《Unlocking the Codex harness》；OpenAI《Testing Agent Skills Systematically with Evals》《Evaluation best practices》；LangChain《Agent observability powers agent evaluation》《Agent Evaluation Readiness Checklist》；Braintrust《The six generations of AI agents and how to eval them》；OpenHands《How to Evaluate Agent Skills》；Eugene Yan《Product Evals in Three Simple Steps》《Evaluating the Effectiveness of LLM-Evaluators》；Shankar et al.《Who Validates the Validators?》；Hamel Husain《Your AI Product Needs Evals》。*
+*文中 eval 工具 [dsh-eval-harness](https://github.com/BiBoyang/dsh-eval-harness) 已开源；bug 报告见 deepseek-ai/deepseek-harness 的 [Discussions #4312](https://github.com/deepseek-ai/deepseek-harness/discussions/4312)。外部对照涉及的文献：Anthropic《Demystifying evals for AI agents》《Quantifying infrastructure noise in agentic coding evals》《Effective harnesses for long-running agents》《Effective context engineering for AI agents》《Unlocking the Codex harness》；OpenAI《Testing Agent Skills Systematically with Evals》《Evaluation best practices》；LangChain《Agent observability powers agent evaluation》《Agent Evaluation Readiness Checklist》；Braintrust《The six generations of AI agents and how to eval them》；OpenHands《How to Evaluate Agent Skills》；Eugene Yan《Product Evals in Three Simple Steps》《Evaluating the Effectiveness of LLM-Evaluators》；Shankar et al.《Who Validates the Validators?》；Hamel Husain《Your AI Product Needs Evals》；美团技术团队《[图灵Agent评测](https://mp.weixin.qq.com/s/gZKWRqznB8sNBFf69fBIvw)》。*
