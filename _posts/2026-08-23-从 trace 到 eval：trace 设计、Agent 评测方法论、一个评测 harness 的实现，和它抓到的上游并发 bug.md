@@ -196,6 +196,8 @@ Error: ENOENT: unlink '~/.dsh/profiles/node_modules/@deepseek-ai/cordis-plugin-t
     at ensureSymlink (lib/index.js:381:3)
 ```
 
+> **Tip：ENOENT 是啥？** Unix 系统调用的一个经典错误码，来自 "Error NO ENTry"（没有这个目录项）的缩写——大白话就是「文件或路径不存在」。open、unlink、readlink 这些操作如果目标不存在，就会抛它。Node 的 fs API 原样继承了这套 errno 命名，所以报错里经常能看到它。
+
 dsh 每次启动会「治愈」一个共享符号链接目录（profiles/node_modules），换版后所有链接都要重指。三个进程同时做这件事，而 `lstatSync → readlinkSync → unlinkSync` 这个序列没有并发防护：A 进程 lstat 时链接还在，readlink 时已被 B 删掉，ENOENT。这是典型的 TOCTOU——检查（lstat）和使用（readlink/unlink）之间存在竞态窗口。而且这个序列还藏着一个更不显眼的后果：A 在 readlink 之后、unlink 之前，B 可能已经删掉旧链接并建好了新的，A 的 unlink 会把 B 刚建好的正确链接一并删掉——这一步不报错，目录就此处于半治愈状态。源码里 `symlinkSync` 的 EEXIST 分支有护栏，注释甚至明写「并发启动会治愈同一个目录，输掉竞争等于成功」：上游知道有并发，但只防了创建这一步，读和删裸奔。
 
 分析丢给三个独立 agent 复核，三家全部确认结论，其中一家做了 16 路并发的控制实验，稳定复现 4 次崩溃。报告发到官方 Discussions（[#4312](https://github.com/deepseek-ai/deepseek-harness/discussions/4312)），有社区成员据此写出了修复的参考实现，我在 macOS 侧做了对照验证：压力实验的单位是单个进程启动——未修版本 16 并发 × 3 轮共 48 次启动崩 23 次；修复版本同样 48 次零崩溃，加压到 24 并发 × 4 轮共 96 次依然零崩溃。
