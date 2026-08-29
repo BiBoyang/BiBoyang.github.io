@@ -1,0 +1,121 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 520" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Helvetica Neue', sans-serif">
+  <defs>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#2563eb"/>
+    </marker>
+    <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#dc2626"/>
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#16a34a"/>
+    </marker>
+    <marker id="arrow-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#64748b"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="860" height="520" fill="#fafafa" rx="12"/>
+
+  <!-- Title -->
+  <text x="430" y="36" text-anchor="middle" font-size="18" font-weight="700" fill="#1e293b">CGImageRef 与 CGImageSourceRef 的隐式持有关系</text>
+
+  <!-- ====== Top: Ideal Model ====== -->
+  <rect x="30" y="60" width="380" height="200" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5" rx="10"/>
+  <text x="220" y="84" text-anchor="middle" font-size="13" font-weight="600" fill="#16a34a">理想模型（iOS 14 及更早的印象）</text>
+
+  <!-- CGImageSourceRef box -->
+  <rect x="60" y="110" width="160" height="50" fill="#fff" stroke="#2563eb" stroke-width="1.5" rx="8"/>
+  <text x="140" y="132" text-anchor="middle" font-size="12" font-weight="600" fill="#1e40af">CGImageSourceRef</text>
+  <text x="140" y="148" text-anchor="middle" font-size="10" fill="#64748b">解码数据源</text>
+
+  <!-- Arrow: creates -->
+  <line x1="220" y1="135" x2="300" y2="135" stroke="#16a34a" stroke-width="2" marker-end="url(#arrow-green)"/>
+  <text x="260" y="128" text-anchor="middle" font-size="10" fill="#16a34a">create</text>
+
+  <!-- CGImageRef box -->
+  <rect x="305" y="110" width="80" height="50" fill="#fff" stroke="#2563eb" stroke-width="1.5" rx="8"/>
+  <text x="345" y="132" text-anchor="middle" font-size="12" font-weight="600" fill="#1e40af">CGImageRef</text>
+  <text x="345" y="148" text-anchor="middle" font-size="10" fill="#64748b">独立结果</text>
+
+  <!-- Thread boundary -->
+  <line x1="50" y1="185" x2="390" y2="185" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="4,4"/>
+  <text x="220" y="200" text-anchor="middle" font-size="10" fill="#94a3b8">─── 线程边界 ───</text>
+
+  <!-- Other thread usage -->
+  <rect x="100" y="215" width="240" height="32" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1" rx="6"/>
+  <text x="220" y="236" text-anchor="middle" font-size="11" fill="#475569">CGImageRef 可安全跨线程传递 ✓</text>
+
+  <!-- ====== Bottom: iOS 15+ Actual ====== -->
+  <rect x="30" y="280" width="380" height="220" fill="#fef2f2" stroke="#dc2626" stroke-width="1.5" rx="10"/>
+  <text x="220" y="304" text-anchor="middle" font-size="13" font-weight="600" fill="#dc2626">iOS 15+ 实际行为</text>
+
+  <!-- CGImageSourceRef box -->
+  <rect x="60" y="325" width="160" height="50" fill="#fff" stroke="#2563eb" stroke-width="1.5" rx="8"/>
+  <text x="140" y="347" text-anchor="middle" font-size="12" font-weight="600" fill="#1e40af">CGImageSourceRef</text>
+  <text x="140" y="363" text-anchor="middle" font-size="10" fill="#64748b">解码数据源</text>
+
+  <!-- Arrow: creates (solid) -->
+  <line x1="220" y1="335" x2="300" y2="335" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow-blue)"/>
+  <text x="260" y="328" text-anchor="middle" font-size="10" fill="#2563eb">create</text>
+
+  <!-- CGImageRef box -->
+  <rect x="305" y="325" width="80" height="50" fill="#fff" stroke="#2563eb" stroke-width="1.5" rx="8"/>
+  <text x="345" y="347" text-anchor="middle" font-size="12" font-weight="600" fill="#1e40af">CGImageRef</text>
+  <text x="345" y="363" text-anchor="middle" font-size="10" fill="#64748b">结果对象</text>
+
+  <!-- Implicit retain arrow (curved back) -->
+  <path d="M 345 375 Q 345 410 220 410 Q 140 410 140 375" fill="none" stroke="#dc2626" stroke-width="2" stroke-dasharray="6,3" marker-end="url(#arrow-red)"/>
+  <rect x="195" y="398" width="110" height="22" fill="#fef2f2" rx="4"/>
+  <text x="250" y="413" text-anchor="middle" font-size="11" font-weight="600" fill="#dc2626">隐式 retain ⚠️</text>
+
+  <!-- Thread boundary -->
+  <line x1="50" y1="440" x2="390" y2="440" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="4,4"/>
+  <text x="220" y="455" text-anchor="middle" font-size="10" fill="#94a3b8">─── 线程边界 ───</text>
+
+  <!-- Crash warning -->
+  <rect x="80" y="463" width="280" height="28" fill="#fef2f2" stroke="#dc2626" stroke-width="1" rx="6"/>
+  <text x="220" y="481" text-anchor="middle" font-size="11" font-weight="600" fill="#dc2626">跨线程复用 → 生命周期耦合 → crash ✗</text>
+
+  <!-- ====== Right side: Explanation ====== -->
+  <rect x="440" y="60" width="390" height="440" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="10"/>
+  <text x="635" y="84" text-anchor="middle" font-size="13" font-weight="600" fill="#475569">关键区别</text>
+
+  <!-- Point 1 -->
+  <circle cx="465" cy="118" r="8" fill="#16a34a"/>
+  <text x="465" y="122" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">1</text>
+  <text x="485" y="115" font-size="12" font-weight="600" fill="#1e293b">理想：结果对象完全独立</text>
+  <text x="485" y="133" font-size="11" fill="#64748b">CGImageRef 创建后即与 source 脱钩</text>
+  <text x="485" y="148" font-size="11" fill="#64748b">可安全传递给任意线程使用</text>
+
+  <!-- Point 2 -->
+  <circle cx="465" cy="180" r="8" fill="#dc2626"/>
+  <text x="465" y="184" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">2</text>
+  <text x="485" y="177" font-size="12" font-weight="600" fill="#1e293b">实际：存在隐式持有关系</text>
+  <text x="485" y="195" font-size="11" fill="#64748b">CGImageRef 隐式 retain 了 source</text>
+  <text x="485" y="210" font-size="11" fill="#64748b">对象生命周期被意外耦合</text>
+
+  <!-- Point 3 -->
+  <circle cx="465" cy="242" r="8" fill="#f59e0b"/>
+  <text x="465" y="246" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">3</text>
+  <text x="485" y="239" font-size="12" font-weight="600" fill="#1e293b">高频场景最危险</text>
+  <text x="485" y="257" font-size="11" fill="#64748b">动图播放、多线程 frame 缓存</text>
+  <text x="485" y="272" font-size="11" fill="#64748b">后台解码 + 前台渲染并发</text>
+
+  <!-- Divider -->
+  <line x1="460" y1="300" x2="810" y2="300" stroke="#e2e8f0" stroke-width="1"/>
+
+  <!-- Solution hint -->
+  <text x="635" y="324" text-anchor="middle" font-size="12" font-weight="600" fill="#2563eb">SDWebImage 的应对</text>
+
+  <rect x="460" y="340" width="350" height="36" fill="#eff6ff" stroke="#2563eb" stroke-width="1" rx="6"/>
+  <text x="635" y="362" text-anchor="middle" font-size="11" fill="#1e40af">第一代：force decode 止血（PR #3387）</text>
+
+  <rect x="460" y="386" width="350" height="36" fill="#eff6ff" stroke="#2563eb" stroke-width="1" rx="6"/>
+  <text x="635" y="408" text-anchor="middle" font-size="11" fill="#1e40af">第二代：策略分流 + SDCGImageCreateCopy</text>
+
+  <rect x="460" y="432" width="350" height="36" fill="#eff6ff" stroke="#2563eb" stroke-width="1" rx="6"/>
+  <text x="635" y="454" text-anchor="middle" font-size="11" fill="#1e40af">重建对象语义，彻底拆解耦合</text>
+
+  <text x="635" y="488" text-anchor="middle" font-size="10" fill="#94a3b8">详见 Issue #3273</text>
+</svg>
