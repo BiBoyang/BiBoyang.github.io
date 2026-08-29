@@ -23,6 +23,8 @@ tags: [AI, Agent, Engineering]
 
 把控制论六大核心模块和 `Agent`系统一一对标：被控对象（`LLM+Agent`运行时）、控制器（策略编排/规则引擎）、状态（任务进度/上下文）、观测（输入/日志/工具返回）、反馈（自检/重试/纠错）、约束（资源/合规/配额）。
 
+![控制论六大核心模块与 Agent 工程对标](https://raw.githubusercontent.com/BiBoyang/BiBoyang.github.io/refs/heads/main/Image/ControlTheory_01.svg)
+
 这门理论的精髓并非追求零误差、零扰动，而是**学会与不确定性共处**。作为一个资深的 `iOS` 开发者，我对这点深有体会：**就像做客户端要兼容各类机型、扛住网络波动，做 Agent 也不能指望模型永远不出错，而是要靠量化偏差、搭建反馈、明确约束，让系统遭遇扰动后能快速拉回正轨**。这恰恰是当下大多数 `Agent` 开发者最缺失的全局思维——别再死磕 `Prompt` 微调，先把系统稳定性的底子打牢才是关键！
 
 ## 一句话定主轴
@@ -83,9 +85,13 @@ tags: [AI, Agent, Engineering]
 
 - **复合应用**：前馈兜底、反馈补漏，既解决了相位滞后问题，又规避了非线性饱和风险，即便面对复杂扰动，`Agent` 也能稳如老狗。
 
+![前馈-反馈复合控制：Agent 稳行策略](https://raw.githubusercontent.com/BiBoyang/BiBoyang.github.io/refs/heads/main/Image/ControlTheory_02.svg)
+
 ## 从 Prompt 到 Harness：控制论视角下 Agent 工程的三次进化
 
 作为痴迷新技术的开发者，我发现 `Agent` 工程的三次迭代，完美契合控制论的发展逻辑，更是从 “玩具级 demo”到 “生产力工具” 的蜕变：从 **Prompt Engineering** 到 **Context Engineering** 再到 **Harness Engineering**，本质是控制论思想从浅入深、从局部到全局的落地，也是开环控制→半闭环控制→全闭环鲁棒控制的进阶，每一步都解决了稳定性的核心缺陷。
+
+![Agent 工程三次进化：开环 → 半闭环 → 全闭环](https://raw.githubusercontent.com/BiBoyang/BiBoyang.github.io/refs/heads/main/Image/ControlTheory_03.svg)
 
 ### Prompt Engineering：控制论视角的「开环控制」，纯靠运气的初级阶段
 
@@ -106,6 +112,8 @@ tags: [AI, Agent, Engineering]
 `Harness Engineering` 是我目前深耕钻研的高阶方向，更是控制论思想在 `Agent` 开发中的进一步落地，能将 `Agent` 打造成**受约束的全闭环控制系统**，整合控制论六大核心要素，实现全链路的观测、反馈、纠偏与兜底。
 
 这套架构分为四层：**状态估计层**精准重构任务、证据、资源、风险四类核心状态；**控制决策层**采用“确定性骨架+生成式补偿”设计，避免 `LLM`过载；**执行反馈层**通过三重校验实现高效纠偏；**约束安全层**全程兜底，防范饱和、冲突等风险。
+
+![Harness Engineering 四层架构](https://raw.githubusercontent.com/BiBoyang/BiBoyang.github.io/refs/heads/main/Image/ControlTheory_04.svg)
 
 再搭配[混沌工程](https://www.ibm.com/cn-zh/think/topics/chaos-engineering)、灰度发布等工程性设计，即便遭遇 `API` 宕机、恶意输入等极端情况，`Agent` 也不会崩溃，真正实现**误差有界、收敛目标**的控制核心。从 `Prompt`到 `Harness` 的进阶，本质是从“依赖模型运气”到“掌控系统能力”的思维转变，也是我作为 `iOS` 开发者最认可的工程化思路。
 

@@ -1,0 +1,121 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 480" font-family="'PingFang SC','Microsoft YaHei','Helvetica Neue',sans-serif">
+  <defs>
+    <marker id="arr3" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L8,3 z" fill="#475569"/>
+    </marker>
+    <marker id="arr3g" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L8,3 z" fill="#34d399"/>
+    </marker>
+    <marker id="arr3b" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L8,3 z" fill="#60a5fa"/>
+    </marker>
+    <marker id="arr3p" markerWidth="14" markerHeight="14" refX="12" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L0,10 L12,5 z" fill="#94a3b8"/>
+    </marker>
+    <filter id="sh3" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#000" flood-opacity="0.15"/>
+    </filter>
+  </defs>
+
+  <!-- background -->
+  <rect width="920" height="480" fill="#0e1a1a" rx="14"/>
+
+  <!-- ============ Panel 1: Prompt Engineering ============ -->
+  <rect x="20" y="50" width="270" height="370" rx="12" fill="rgba(251,191,36,0.03)" stroke="rgba(251,191,36,0.12)" stroke-width="1.5"/>
+  <rect x="40" y="22" width="230" height="28" rx="14" fill="rgba(251,191,36,0.07)" stroke="rgba(251,191,36,0.22)" stroke-width="1"/>
+  <text x="155" y="41" text-anchor="middle" font-size="14" fill="#fbbf24" font-weight="700">Prompt Engineering</text>
+  <text x="155" y="95" text-anchor="middle" font-size="13" fill="#fcd34d" font-weight="600">开环控制 · 纯靠运气</text>
+
+  <!-- flow -->
+  <rect x="75" y="120" width="80" height="40" rx="10" fill="rgba(251,191,36,0.07)" stroke="rgba(251,191,36,0.15)" stroke-width="1"/>
+  <text x="115" y="145" text-anchor="middle" font-size="13" fill="#fcd34d">Prompt</text>
+  <line x1="155" y1="140" x2="176" y2="140" stroke="#475569" stroke-width="1.8" marker-end="url(#arr3)"/>
+  <rect x="178" y="115" width="80" height="50" rx="10" fill="rgba(251,191,36,0.07)" stroke="rgba(251,191,36,0.22)" stroke-width="1.2"/>
+  <text x="218" y="138" text-anchor="middle" font-size="13" fill="#fbbf24" font-weight="600">LLM</text>
+  <text x="218" y="155" text-anchor="middle" font-size="12" fill="#fcd34d">黑箱</text>
+  <line x1="218" y1="165" x2="218" y2="199" stroke="#475569" stroke-width="1.8" marker-end="url(#arr3)"/>
+  <rect x="178" y="203" width="80" height="40" rx="10" fill="rgba(251,191,36,0.07)" stroke="rgba(251,191,36,0.15)" stroke-width="1"/>
+  <text x="218" y="228" text-anchor="middle" font-size="13" fill="#fcd34d">输出</text>
+
+  <!-- problems -->
+  <text x="155" y="280" text-anchor="middle" font-size="13" fill="#f87171" font-weight="600">❌ 无观测</text>
+  <text x="155" y="298" text-anchor="middle" font-size="13" fill="#f87171" font-weight="600">❌ 无反馈</text>
+  <text x="155" y="316" text-anchor="middle" font-size="13" fill="#f87171" font-weight="600">❌ 无约束</text>
+  <text x="155" y="345" text-anchor="middle" font-size="12" fill="#fca5a5">幻觉/调用失败/漂移</text>
+  <text x="155" y="362" text-anchor="middle" font-size="12" fill="#fca5a5">层出不穷</text>
+  <text x="155" y="382" text-anchor="middle" font-size="12" fill="#fbbf24" font-style="italic">→ 盲调 Prompt 死循环</text>
+
+  <!-- ============ Panel 2: Context Engineering ============ -->
+  <rect x="310" y="50" width="270" height="370" rx="12" fill="rgba(45,212,191,0.03)" stroke="rgba(45,212,191,0.12)" stroke-width="1.5"/>
+  <rect x="330" y="22" width="230" height="28" rx="14" fill="rgba(45,212,191,0.07)" stroke="rgba(45,212,191,0.22)" stroke-width="1"/>
+  <text x="445" y="41" text-anchor="middle" font-size="14" fill="#2dd4bf" font-weight="700">Context Engineering</text>
+  <text x="445" y="95" text-anchor="middle" font-size="13" fill="#5eead4" font-weight="600">半闭环控制 · 进阶稳控</text>
+
+  <!-- flow -->
+  <rect x="365" y="120" width="80" height="40" rx="10" fill="rgba(45,212,191,0.07)" stroke="rgba(45,212,191,0.15)" stroke-width="1"/>
+  <text x="405" y="145" text-anchor="middle" font-size="13" fill="#5eead4">Prompt</text>
+  <line x1="445" y1="140" x2="466" y2="140" stroke="#475569" stroke-width="1.8" marker-end="url(#arr3)"/>
+  <rect x="468" y="115" width="80" height="50" rx="10" fill="rgba(45,212,191,0.07)" stroke="rgba(45,212,191,0.22)" stroke-width="1.2"/>
+  <text x="508" y="138" text-anchor="middle" font-size="13" fill="#2dd4bf" font-weight="600">LLM</text>
+  <text x="508" y="155" text-anchor="middle" font-size="12" fill="#5eead4">+ 状态</text>
+  <line x1="508" y1="165" x2="508" y2="199" stroke="#475569" stroke-width="1.8" marker-end="url(#arr3)"/>
+  <rect x="468" y="203" width="80" height="40" rx="10" fill="rgba(45,212,191,0.07)" stroke="rgba(45,212,191,0.15)" stroke-width="1"/>
+  <text x="508" y="228" text-anchor="middle" font-size="13" fill="#5eead4">输出</text>
+
+  <!-- state observation -->
+  <rect x="365" y="255" width="170" height="50" rx="10" fill="rgba(96,165,250,0.07)" stroke="rgba(96,165,250,0.22)" stroke-width="1.2"/>
+  <text x="450" y="274" text-anchor="middle" font-size="13" fill="#60a5fa" font-weight="600">状态观测</text>
+  <text x="450" y="292" text-anchor="middle" font-size="12" fill="#93c5fd">分层上下文/状态机/日志</text>
+
+  <!-- partial feedback arrow -->
+  <path d="M468 278 Q380 278 380 255 L380 165" stroke="#60a5fa" stroke-width="1.5" fill="none" stroke-dasharray="5 3" marker-end="url(#arr3b)"/>
+  <text x="372" y="200" text-anchor="middle" font-size="12" fill="#60a5fa">半闭环</text>
+
+  <!-- assessment -->
+  <text x="445" y="330" text-anchor="middle" font-size="13" fill="#34d399" font-weight="600">✅ 状态可观测</text>
+  <text x="445" y="348" text-anchor="middle" font-size="13" fill="#34d399" font-weight="600">✅ 观测去噪声</text>
+  <text x="445" y="366" text-anchor="middle" font-size="13" fill="#f87171" font-weight="600">❌ 无饱和防护</text>
+  <text x="445" y="384" text-anchor="middle" font-size="13" fill="#f87171" font-weight="600">❌ 反馈有延迟</text>
+  <text x="445" y="404" text-anchor="middle" font-size="12" fill="#5eead4" font-style="italic">→ 误差仍会持续放大</text>
+
+  <!-- ============ Panel 3: Harness Engineering ============ -->
+  <rect x="600" y="50" width="270" height="370" rx="12" fill="rgba(52,211,153,0.03)" stroke="rgba(52,211,153,0.12)" stroke-width="1.5"/>
+  <rect x="620" y="22" width="230" height="28" rx="14" fill="rgba(52,211,153,0.07)" stroke="rgba(52,211,153,0.22)" stroke-width="1"/>
+  <text x="735" y="41" text-anchor="middle" font-size="14" fill="#34d399" font-weight="700">Harness Engineering</text>
+  <text x="735" y="95" text-anchor="middle" font-size="13" fill="#6ee7b7" font-weight="600">全闭环控制 · 生产级</text>
+
+  <!-- four layers -->
+  <rect x="640" y="115" width="190" height="42" rx="10" fill="rgba(52,211,153,0.07)" stroke="rgba(52,211,153,0.22)" stroke-width="1.2"/>
+  <text x="735" y="133" text-anchor="middle" font-size="13" fill="#34d399" font-weight="700">约束安全层</text>
+  <text x="735" y="149" text-anchor="middle" font-size="12" fill="#6ee7b7">饱和防护/冲突处理/熔断</text>
+
+  <rect x="640" y="163" width="190" height="42" rx="10" fill="rgba(45,212,191,0.07)" stroke="rgba(45,212,191,0.22)" stroke-width="1.2"/>
+  <text x="735" y="181" text-anchor="middle" font-size="13" fill="#2dd4bf" font-weight="700">控制决策层</text>
+  <text x="735" y="197" text-anchor="middle" font-size="12" fill="#5eead4">确定性骨架+生成式补偿</text>
+
+  <rect x="640" y="211" width="190" height="42" rx="10" fill="rgba(251,191,36,0.07)" stroke="rgba(251,191,36,0.22)" stroke-width="1.2"/>
+  <text x="735" y="229" text-anchor="middle" font-size="13" fill="#fbbf24" font-weight="700">执行反馈层</text>
+  <text x="735" y="245" text-anchor="middle" font-size="12" fill="#fcd34d">三重校验/重试回滚</text>
+
+  <rect x="640" y="259" width="190" height="42" rx="10" fill="rgba(96,165,250,0.07)" stroke="rgba(96,165,250,0.22)" stroke-width="1.2"/>
+  <text x="735" y="277" text-anchor="middle" font-size="13" fill="#60a5fa" font-weight="700">状态估计层</text>
+  <text x="735" y="293" text-anchor="middle" font-size="12" fill="#93c5fd">任务/证据/资源/风险</text>
+
+  <!-- full feedback loop arrow -->
+  <path d="M640 280 Q590 280 590 220 L590 136 L638 136" stroke="#34d399" stroke-width="1.5" fill="none" marker-end="url(#arr3g)"/>
+  <text x="614" y="130" text-anchor="middle" font-size="12" fill="#34d399" font-weight="600">全闭环反馈</text>
+
+  <!-- features -->
+  <text x="735" y="325" text-anchor="middle" font-size="13" fill="#34d399" font-weight="600">✅ 观测-反馈-约束</text>
+  <text x="735" y="343" text-anchor="middle" font-size="13" fill="#34d399" font-weight="600">✅ 前馈+反馈复合</text>
+  <text x="735" y="361" text-anchor="middle" font-size="13" fill="#34d399" font-weight="600">✅ 误差有界收敛</text>
+  <text x="735" y="379" text-anchor="middle" font-size="13" fill="#34d399" font-weight="600">✅ 混沌工程兜底</text>
+  <text x="735" y="400" text-anchor="middle" font-size="12" fill="#6ee7b7" font-style="italic">→ 误差有界，收敛目标</text>
+
+  <!-- progression arrows -->
+  <line x1="288" y1="235" x2="310" y2="235" stroke="#94a3b8" stroke-width="4" marker-end="url(#arr3p)"/>
+  <line x1="578" y1="235" x2="600" y2="235" stroke="#94a3b8" stroke-width="4" marker-end="url(#arr3p)"/>
+
+  <!-- title -->
+  <text x="460" y="455" text-anchor="middle" font-size="16" fill="#e2e8f0" font-weight="600">Agent 工程三次进化：开环 → 半闭环 → 全闭环</text>
+</svg>

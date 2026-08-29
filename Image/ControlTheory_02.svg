@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 540" font-family="'PingFang SC','Microsoft YaHei','Helvetica Neue',sans-serif">
+  <defs>
+    <marker id="arr2" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L8,3 z" fill="#475569"/>
+    </marker>
+    <marker id="arr2f" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L8,3 z" fill="#fbbf24"/>
+    </marker>
+    <filter id="sh2" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#000" flood-opacity="0.15"/>
+    </filter>
+  </defs>
+
+  <!-- background -->
+  <rect width="920" height="540" fill="#0e1a1a" rx="14"/>
+
+  <!-- Disturbance -->
+  <rect x="30" y="230" width="120" height="70" rx="14" fill="rgba(248,113,113,0.07)" stroke="rgba(248,113,113,0.22)" stroke-width="1.5" filter="url(#sh2)"/>
+  <text x="90" y="255" text-anchor="middle" font-size="15" fill="#f87171" font-weight="700">扰动</text>
+  <text x="90" y="273" text-anchor="middle" font-size="12" fill="#f87171">Disturbance</text>
+  <text x="90" y="290" text-anchor="middle" font-size="12" fill="#fca5a5">幻觉/超时/漂移</text>
+
+  <!-- Agent execution -->
+  <rect x="685" y="205" width="150" height="120" rx="14" fill="rgba(52,211,153,0.07)" stroke="rgba(52,211,153,0.22)" stroke-width="2" filter="url(#sh2)"/>
+  <text x="760" y="233" text-anchor="middle" font-size="16" fill="#34d399" font-weight="700">Agent</text>
+  <text x="760" y="253" text-anchor="middle" font-size="16" fill="#34d399" font-weight="700">执行运行时</text>
+  <text x="760" y="275" text-anchor="middle" font-size="13" fill="#6ee7b7">LLM + 工具调用</text>
+  <text x="760" y="293" text-anchor="middle" font-size="13" fill="#6ee7b7">推理 + 生成</text>
+  <text x="760" y="313" text-anchor="middle" font-size="12" fill="#34d399" font-style="italic">被控对象</text>
+
+  <!-- Feedforward label -->
+  <rect x="260" y="45" width="380" height="32" rx="16" fill="rgba(45,212,191,0.07)" stroke="rgba(45,212,191,0.22)" stroke-width="1.5"/>
+  <text x="450" y="66" text-anchor="middle" font-size="14" fill="#2dd4bf" font-weight="700">前馈控制 Feedforward — 预判扰动，提前设防</text>
+
+  <!-- arrow disturbance -> feedforward -->
+  <path d="M90 230 L90 100 L258 100" stroke="#475569" stroke-width="2" fill="none" marker-end="url(#arr2)"/>
+  <text x="145" y="92" text-anchor="middle" font-size="12" fill="#2dd4bf" font-weight="600">预判扰动</text>
+
+  <!-- Feedforward box -->
+  <rect x="265" y="70" width="350" height="95" rx="14" fill="rgba(45,212,191,0.07)" stroke="rgba(45,212,191,0.22)" stroke-width="1.5" filter="url(#sh2)"/>
+  <text x="440" y="93" text-anchor="middle" font-size="13" fill="#2dd4bf" font-weight="600">主动控制 · 防患于未然</text>
+  <line x1="285" y1="100" x2="595" y2="100" stroke="rgba(45,212,191,0.15)" stroke-width="1"/>
+  <text x="300" y="118" font-size="13" fill="#5eead4">▸ Prompt 模板固化</text>
+  <text x="300" y="135" font-size="13" fill="#5eead4">▸ 工具配额前置校验</text>
+  <text x="300" y="152" font-size="13" fill="#5eead4">▸ 核心上下文锚定</text>
+
+  <!-- arrow feedforward -> agent -->
+  <path d="M615 117 L760 117 L760 203" stroke="#475569" stroke-width="2" fill="none" marker-end="url(#arr2)"/>
+  <text x="690" y="110" text-anchor="middle" font-size="12" fill="#2dd4bf" font-weight="600">主动抵消</text>
+
+  <!-- Feedback label -->
+  <rect x="260" y="355" width="380" height="32" rx="16" fill="rgba(251,191,36,0.07)" stroke="rgba(251,191,36,0.22)" stroke-width="1.5"/>
+  <text x="450" y="376" text-anchor="middle" font-size="14" fill="#fbbf24" font-weight="700">反馈控制 Feedback — 误差出现后快速纠偏</text>
+
+  <!-- arrow agent -> feedback -->
+  <path d="M760 325 L760 410 L617 410" stroke="#fbbf24" stroke-width="2" fill="none" marker-end="url(#arr2f)"/>
+  <text x="705" y="402" text-anchor="middle" font-size="12" fill="#fbbf24" font-weight="600">误差检测</text>
+
+  <!-- Feedback box -->
+  <rect x="265" y="392" width="350" height="95" rx="14" fill="rgba(251,191,36,0.07)" stroke="rgba(251,191,36,0.22)" stroke-width="1.5" filter="url(#sh2)"/>
+  <text x="440" y="415" text-anchor="middle" font-size="13" fill="#fbbf24" font-weight="600">被动修正 · 知错就改</text>
+  <line x1="285" y1="422" x2="595" y2="422" stroke="rgba(251,191,36,0.15)" stroke-width="1"/>
+  <text x="300" y="440" font-size="13" fill="#fcd34d">▸ 三步校验（结构/语义/事实）</text>
+  <text x="300" y="457" font-size="13" fill="#fcd34d">▸ 重试回滚机制</text>
+  <text x="300" y="474" font-size="13" fill="#fcd34d">▸ 人工介入回路</text>
+
+  <!-- arrow feedback -> center summary (left, up, right) -->
+  <path d="M265 440 L210 440 L210 280 L258 280" stroke="#fbbf24" stroke-width="2" fill="none" marker-end="url(#arr2f)"/>
+  <text x="194" y="360" text-anchor="middle" font-size="12" fill="#fbbf24" font-weight="600" transform="rotate(-90 194 360)">被动纠偏</text>
+
+  <!-- Center summary -->
+  <rect x="260" y="230" width="360" height="100" rx="14" fill="rgba(100,116,139,0.05)" stroke="rgba(148,163,184,0.15)" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="440" y="260" text-anchor="middle" font-size="16" fill="#e2e8f0" font-weight="700">复合控制</text>
+  <text x="440" y="295" text-anchor="middle" font-size="13" fill="#94a3b8">前馈兜底 + 反馈补漏</text>
+
+  <!-- title -->
+  <text x="460" y="515" text-anchor="middle" font-size="16" fill="#e2e8f0" font-weight="600">前馈-反馈复合控制：Agent 稳行策略</text>
+</svg>
