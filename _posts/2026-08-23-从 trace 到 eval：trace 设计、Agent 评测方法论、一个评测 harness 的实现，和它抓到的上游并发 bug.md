@@ -11,7 +11,7 @@ tags: [AI, Agent]
 > 1. **从 trace 到 eval：trace 设计、agent eval 方法论、一个 eval harness 的实现，和它抓到的上游并发 bug**（本文）
 > 2. [给 skill 建门禁：一天里的三种沉默失败、一次红线写法实证，和它抓到的上游 bug（又一只）](/posts/给-skill-建门禁-一天里的三种沉默失败-一次红线写法实证-和它抓到的上游-bug-又一只/)
 > 3. [我给 skill-up 报了一个不存在的 bug](/posts/我给-skill-up-报了一个不存在的-bug/)
-> 4. [CI 红、本地绿：一次「平台差异」误诊，和 merge 干净不等于语义兼容](/posts/ci-红-本地绿-一次平台差异误诊-和-merge-干净不等于语义兼容/)
+> 4. [CI 红、本地绿：一次「平台差异」误诊，和 merge 干净不等于语义兼容](/posts/CI-红-本地绿-一次-平台差异-误诊-和-merge-干净不等于语义兼容/)
 
 我开始做 AI 相关 App，从 chatbot 到 agent，一年多了，攒了些经验。这篇分享我在 trace 和 eval 上的做法与观点。
 
