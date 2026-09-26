@@ -110,4 +110,4 @@ mock、runner 和 108 格逐格证据整理后会开源。这套东西对我是�
 
 ---
 
-*本文涉及的仓库：[deepseek-harness](https://github.com/deepseek-ai/deepseek-harness)（被测对象之一）、[kimi-code](https://github.com/MoonshotAI/kimi-code)（相关上游，见 [issue #4012](https://github.com/MoonshotAI/kimi-code/issues/4012)）。mock 与矩阵 runner 开源后在此补链接。*
+*本文涉及的仓库：[deepseek-harness](https://github.com/deepseek-ai/deepseek-harness)（被测对象之一）、[kimi-code](https://github.com/MoonshotAI/kimi-code)（相关上游，见 [issue #4012](https://github.com/MoonshotAI/kimi-code/issues/4012)）。mock、矩阵 runner 与 108 格逐格证据已开源：[truncation-detection-benchmark](https://github.com/BiBoyang/truncation-detection-benchmark)。*
