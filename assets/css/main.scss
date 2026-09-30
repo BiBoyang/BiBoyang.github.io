@@ -5,3 +5,21 @@
 
 @import "minimal-mistakes/skins/{{ site.minimal_mistakes_skin | default: 'air' }}";
 @import "minimal-mistakes";
+
+// 文章详情页（body.layout--post）不显示左侧作者栏（见 _layouts/post.html 的 author_profile: false）。
+// 主题为左栏预留了 200/300px 宽度，这里回收掉；右侧 sticky TOC 预留的 padding-inline-end 保持不变。
+@media (min-width: 64em) {
+  .layout--post .page,
+  .layout--post .page__related {
+    width: 100%;
+  }
+  // .page__related 是独立区块，主题没给它右侧 TOC 的 padding，需要补上才能与正文右缘对齐
+  .layout--post .page__related {
+    padding-inline-end: 200px;
+  }
+}
+@media (min-width: 80em) {
+  .layout--post .page__related {
+    padding-inline-end: 300px;
+  }
+}
