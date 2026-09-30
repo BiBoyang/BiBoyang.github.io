@@ -86,4 +86,4 @@
 - 解锁前后对比：dsh-routing-suite/l3-chaos-mounted/（4×error）vs l3-chaos-mounted-v2/（4×pass）
 - token 开销表：SUMMARY 末节
 - 链接：dsh Discussion #7978、routing-suite Issue #152、harness v0.6.0（mock.plugins + allowBuilds + 进程组杀）
-- **表述注意**：只有 dsh-eval-harness 已开源；第 6 篇承诺的截断 mock/矩阵 runner「整理后开源」至今未兑现（页脚挂着"开源后在此补链接"）——本篇不要写"工具链已开源"，可顺带自嘲一句这笔债
+- **链接注意**：截断测评复现包已于 2026-09-27 开源：[truncation-detection-benchmark](https://github.com/BiBoyang/truncation-detection-benchmark)（第 5/6 篇页脚链接已补）——本篇证据节可直接引用

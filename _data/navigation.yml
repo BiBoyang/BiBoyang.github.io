@@ -3,6 +3,8 @@ main:
     url: /
   - title: "归档"
     url: /archive/
+  - title: "评测系列"
+    url: /eval-series/
   - title: "标签"
     url: /tags/
   - title: "分类"
