@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-b96e77b5.js";
+            window.path_to_searchindex_js = "searchindex-0701b1e0.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-5870c396.js"></script>
@@ -200,7 +200,7 @@
 <p>但字符网格带来的麻烦远比“没有像素“更根本。真正的问题是：<strong>终端没有 undo。</strong></p>
 <hr>
 <h2 id="三终端没有-undo你只能向前写"><a class="header" href="#三终端没有-undo你只能向前写">三、终端没有 undo，你只能向前写</a></h2>
-<p>先把楼层分清楚。<strong>声明式不是 GUI 的专利，命令式也不是 TUI 的本质</strong>——Ink 让你在终端里写 JSX，框架 diff 完再发 ANSI；GUI 自己也命令式了几十年（QuickDraw、UIKit 手写 frame），声明式要到 React（2013）才在 Web 端成为主流。这是框架层的事，两种介质上都能长。</p>
+<p><strong>声明式不是 GUI 的专利，命令式也不是 TUI 的本质</strong>——Ink 让你在终端里写 JSX，框架 diff 完再发 ANSI；GUI 自己也命令式了几十年（QuickDraw、UIKit 手写 frame），声明式要到 React（2013）才在 Web 端成为主流。这是框架层的事，两种介质上都能长。</p>
 <p>真正的差异在更底下一层——<strong>程序和显示端之间的契约</strong>。</p>
 <p>GUI 的显示端是有状态的：window server 和合成器持有每个窗口的像素，窗口被挡住再露出来，不用你的代码重画；点击落在哪个 view，系统替你做命中测试。手写 frame 也站在这套基础设施上。</p>
 <p>终端给程序的契约是一条<strong>只写的字节流</strong>：字符发出去就进了模拟器的网格，你既不能回读“第三行第五列现在是什么“，也没有“撤销上一次写入“的 API。想改？只能用 ANSI 转义序列回到目标位置 → 擦除 → 重写。模拟器自己当然持有网格（否则它没法显示），但那份状态不在你的契约里。</p>
