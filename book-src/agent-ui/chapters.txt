@@ -1,41 +1,43 @@
 ! Agent 时代的开发者界面 · 小册目录（唯一顺序权威）
-! 调顺序 / 微调标题 = 改这份文件，然后重跑: python3 book-src/build-books.py agent-ui
+! 调顺序 / 微调侧栏标题 = 改这份文件；改正文 = 改同目录 chapters/<slug>.md（正典，随便手改）
+! 改完重跑: python3 book-src/build-books.py agent-ui
 ! 行格式（以「 | 」分隔）:
-!   @ slug | 侧栏标题 | 源文件绝对路径   → 前置章节（不编号）
-!   - slug | 侧栏标题 | 源文件绝对路径   → 正文章节
-!   # 文字                              → 分卷标题
+!   @ slug | 侧栏标题   → 前置章节（不编号），正文取 chapters/<slug>.md
+!   - slug | 侧栏标题   → 正文章节，正文取 chapters/<slug>.md
+!   # 文字             → 分卷标题
 !   ! 开头 = 注释
+! 注：本册已与 Desktop 写作目录解耦（分叉模型），chapters/ 内的修订不会回流原稿。
 !mode raw
 
-@ preface | 写在前面 | /Users/boyang/Desktop/flowdown 学习/系列文章/Agent时代的开发者界面-新系列/00-写在前面.md
-@ prologue | 引子：没报错，就代表输出没问题吗 | /Users/boyang/Desktop/flowdown 学习/系列文章/Agent时代的开发者界面-新系列/00b-引子-没报错就代表输出没问题吗.md
+@ preface | 写在前面
+@ prologue | 引子：没报错，就代表输出没问题吗
 
 # 界面本体
 
-- ch01 | 01 · 为什么 Agent 从 CLI/TUI 开始 | /Users/boyang/Desktop/flowdown 学习/系列文章/Agent时代的开发者界面-新系列/01-为什么Agent从CLI和TUI开始.md
-- ch02 | 02 · TUI 不是低配 GUI | /Users/boyang/Desktop/flowdown 学习/系列文章/Agent时代的开发者界面-新系列/02-TUI不是低配GUI-字符网格里的渲染引擎.md
-- ch03 | 03 · Markdown 在 TUI 上的流式地狱 | /Users/boyang/Desktop/flowdown 学习/系列文章/Agent时代的开发者界面-新系列/03-Markdown在TUI上的流式地狱.md
-- ch04 | 04 · Agent TUI：当事件树撞上线性终端 | /Users/boyang/Desktop/flowdown 学习/系列文章/Agent时代的开发者界面-新系列/04-AgentTUI-当事件树撞上线性终端.md
-- ch05 | 05 · 中场：Event Sourcing，Agent UI 的底层模型 | /Users/boyang/Desktop/flowdown 学习/系列文章/Agent时代的开发者界面-新系列/05-中场-EventSourcing-AgentUI的底层模型.md
-- ch06 | 06 · 为什么 Agent GUI 这么难 | /Users/boyang/Desktop/flowdown 学习/系列文章/Agent时代的开发者界面-新系列/06-为什么AgentGUI这么难.md
-- ch07 | 07 · GUI 上的 Markdown 流式渲染 | /Users/boyang/Desktop/flowdown 学习/系列文章/Agent时代的开发者界面-新系列/07-GUI上的Markdown流式渲染.md
-- ch08 | 08 · 权限 UX 与 Diff UX | /Users/boyang/Desktop/flowdown 学习/系列文章/Agent时代的开发者界面-新系列/08-权限UX与DiffUX-Agent的真正主界面.md
-- ch09 | 09 · 多端 Agent 架构 | /Users/boyang/Desktop/flowdown 学习/系列文章/Agent时代的开发者界面-新系列/09-多端Agent架构.md
-- ch10 | 10 · 移动端的位置 | /Users/boyang/Desktop/flowdown 学习/系列文章/Agent时代的开发者界面-新系列/10-移动端的位置-从大前端到AgentWorkflowEngineer.md
-- ch11 | 11 · 渲染的所有权模型 | /Users/boyang/Desktop/flowdown 学习/系列文章/Agent时代的开发者界面-新系列/11-渲染的所有权模型-谁为已完成内容记账.md
-- ch12 | 12 · 双模渲染 | /Users/boyang/Desktop/flowdown 学习/系列文章/Agent时代的开发者界面-新系列/12-双模渲染-同一引擎里的两种所有权.md
-- ch13 | 13 · 收敛的另一面：pi-mono 暗线 | /Users/boyang/Desktop/flowdown 学习/系列文章/Agent时代的开发者界面-新系列/13-收敛的另一面-pi-mono暗线与生态同源.md
-- ch14 | 14 · 回到自己的引擎：ForgeLoopTUI 改造实录 | /Users/boyang/Desktop/flowdown 学习/系列文章/Agent时代的开发者界面-新系列/14-回到自己的引擎-ForgeLoopTUI改造实录.md
-- ch15 | 15 · 终端之外：GUI 与移动端的映射 | /Users/boyang/Desktop/flowdown 学习/系列文章/Agent时代的开发者界面-新系列/15-终端之外-渲染所有权在GUI与移动端的映射.md
-- ch16 | 16 · 渲染的信任边界 | /Users/boyang/Desktop/flowdown 学习/系列文章/Agent时代的开发者界面-新系列/16-渲染的信任边界-AgentUI没有同源策略.md
-- ch17 | 17 · 上下文账本 | /Users/boyang/Desktop/flowdown 学习/系列文章/Agent时代的开发者界面-新系列/17-上下文账本-Agent唯一的内存和它的GC.md
-- ch18 | 18 · 规则与记忆 | /Users/boyang/Desktop/flowdown 学习/系列文章/Agent时代的开发者界面-新系列/18-规则与记忆-Agent的长期状态文件还是黑箱.md
-- ch19 | 19 · 计划即界面 | /Users/boyang/Desktop/flowdown 学习/系列文章/Agent时代的开发者界面-新系列/19-计划即界面-checklist正在成为Agent时代的diff.md
-- ch20 | 20 · Checkpoint 的谎言 | /Users/boyang/Desktop/flowdown 学习/系列文章/Agent时代的开发者界面-新系列/20-Checkpoint的谎言-回滚按钮能兑现多少.md
+- ch01 | 01 · 为什么 Agent 从 CLI/TUI 开始
+- ch02 | 02 · TUI 不是低配 GUI
+- ch03 | 03 · Markdown 在 TUI 上的流式地狱
+- ch04 | 04 · Agent TUI：当事件树撞上线性终端
+- ch05 | 05 · 中场：Event Sourcing，Agent UI 的底层模型
+- ch06 | 06 · 为什么 Agent GUI 这么难
+- ch07 | 07 · GUI 上的 Markdown 流式渲染
+- ch08 | 08 · 权限 UX 与 Diff UX
+- ch09 | 09 · 多端 Agent 架构
+- ch10 | 10 · 移动端的位置
+- ch11 | 11 · 渲染的所有权模型
+- ch12 | 12 · 双模渲染
+- ch13 | 13 · 收敛的另一面：pi-mono 暗线
+- ch14 | 14 · 回到自己的引擎：ForgeLoopTUI 改造实录
+- ch15 | 15 · 终端之外：GUI 与移动端的映射
+- ch16 | 16 · 渲染的信任边界
+- ch17 | 17 · 上下文账本
+- ch18 | 18 · 规则与记忆
+- ch19 | 19 · 计划即界面
+- ch20 | 20 · Checkpoint 的谎言
 
 # 另一半 · 基建
 
-- infra01 | 01 · 连接与会话 | /Users/boyang/Desktop/flowdown 学习/系列文章/Agent时代的开发者界面-新系列/基01-连接与会话-断线之后谁还记得讲到哪了.md
-- infra02a | 02上 · 一条消息的生命线 | /Users/boyang/Desktop/flowdown 学习/系列文章/Agent时代的开发者界面-新系列/基02上-一条消息的生命线-移动端会话的六个断点.md
-- infra02b | 02下 · 移动端的架构代价 | /Users/boyang/Desktop/flowdown 学习/系列文章/Agent时代的开发者界面-新系列/基02下-移动端的架构代价-推送工作区与第一原则.md
-- infra03 | 03 · 协议三边界 | /Users/boyang/Desktop/flowdown 学习/系列文章/Agent时代的开发者界面-新系列/基03-协议三边界-MCP-ACP-AGUI各欠谁的债.md
+- infra01 | 01 · 连接与会话
+- infra02a | 02上 · 一条消息的生命线
+- infra02b | 02下 · 移动端的架构代价
+- infra03 | 03 · 协议三边界

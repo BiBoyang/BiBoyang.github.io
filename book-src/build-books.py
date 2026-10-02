@@ -16,8 +16,9 @@ chapters.txt 行格式（以「 | 」分隔）:
                      post=博客 post：剥 front matter 与文首「系列导航」引用块、
                      注入 H1 标题、正文 H1 降一级（跳过代码围栏）
     # 文字           分卷标题（写入 SUMMARY.md）
-    @ slug | 标题 | 源文件绝对路径    前置章节（不编号）
-    - slug | 标题 | 源文件绝对路径    正文章节
+    @ slug | 标题 [| 源文件绝对路径]    前置章节（不编号）
+    - slug | 标题 [| 源文件绝对路径]    正文章节
+    源文件路径可省略，默认取本册 chapters/<slug>.md（书内容正典，可直接手改）。
     空行与其余 ! 开头的行为注释。
 """
 from __future__ import annotations
@@ -32,7 +33,7 @@ REPO = Path(__file__).resolve().parent.parent
 BOOKS = ["agent-ui", "eval-series"]
 
 
-def parse_manifest(path: Path):
+def parse_manifest(path: Path, book_dir: Path):
     mode = "raw"
     entries = []  # (kind, slug, title, source)  kind: part | prefix | chapter
     for lineno, raw in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
@@ -52,8 +53,10 @@ def parse_manifest(path: Path):
         if line.startswith("@ ") or line.startswith("- "):
             kind = "prefix" if line[0] == "@" else "chapter"
             parts = [p.strip() for p in line[2:].split(" | ")]
+            if len(parts) == 2:
+                parts.append(str(book_dir / "chapters" / f"{parts[0]}.md"))
             if len(parts) != 3:
-                raise SystemExit(f"{path}:{lineno} 格式错误（应为 slug | 标题 | 源文件）: {line}")
+                raise SystemExit(f"{path}:{lineno} 格式错误（应为 slug | 标题 [| 源文件]）: {line}")
             entries.append((kind, parts[0], parts[1], Path(parts[2]).expanduser()))
             continue
         raise SystemExit(f"{path}:{lineno} 无法识别的行: {line}")
@@ -77,12 +80,15 @@ def strip_front_matter(text: str):
 
 
 def strip_series_block(body: str) -> str:
-    """剥正文开头紧跟的「系列导航」引用块（> **系列 开头的连续 > 行）。"""
+    """剥正文开头紧跟的博客专用引用块：「系列导航」块（> **系列 开头）和
+    「成册横幅」块（> 本系列已集结成 开头，书里是自指链接）。"""
     lines = body.splitlines()
     i = 0
     while i < len(lines) and not lines[i].strip():
         i += 1
-    if i < len(lines) and lines[i].startswith("> **系列"):
+    while i < len(lines) and (
+        lines[i].startswith("> **系列") or lines[i].startswith("> 本系列已集结成")
+    ):
         while i < len(lines) and lines[i].startswith(">"):
             i += 1
         while i < len(lines) and not lines[i].strip():
@@ -115,7 +121,7 @@ def transform(source: Path, mode: str, fallback_title: str) -> str:
 def build(book: str) -> None:
     book_dir = REPO / "book-src" / book
     src_dir = book_dir / "src"
-    mode, entries = parse_manifest(book_dir / "chapters.txt")
+    mode, entries = parse_manifest(book_dir / "chapters.txt", book_dir)
 
     if src_dir.exists():
         shutil.rmtree(src_dir)
