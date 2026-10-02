@@ -323,11 +323,20 @@ body .greedy-nav .visible-links a {
 .breadcrumbs {
   padding: 1em 16px 0 !important;
   margin: 0 !important;
-  max-width: none;
+  max-width: none !important;
+  width: 100% !important;
   text-align: left !important;
   font-size: 0.85em;
   color: var(--text-muted);
   box-sizing: border-box;
+}
+/* 宽屏下主题默认会把面包屑限宽 1280px 并居中，这里强制全宽贴左，与内容列对齐 */
+@media (min-width: 80em) {
+  .breadcrumbs {
+    max-width: none !important;
+    margin: 0 !important;
+    padding-inline: 16px !important;
+  }
 }
 .breadcrumbs .current {
   color: var(--text);
