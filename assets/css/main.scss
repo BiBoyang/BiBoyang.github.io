@@ -76,7 +76,7 @@ a:hover {
 }
 
 /* ---- 页头 ---- */
-.masthead {
+body .masthead {
   background-color: #ffffff !important;
   border-bottom: 1px solid var(--border-soft);
   box-shadow: none !important;
@@ -87,26 +87,26 @@ a:hover {
   -webkit-backdrop-filter: none !important;
   padding: 0;
 }
-.masthead__inner-wrap {
+body .masthead__inner-wrap {
   padding-top: 0.65em;
   padding-bottom: 0.65em;
 }
-.site-title {
+body .site-title {
   color: var(--text) !important;
   font-weight: 600;
   font-size: 1.05em;
   letter-spacing: -0.01em;
 }
-.site-title:hover {
+body .site-title:hover {
   color: var(--accent) !important;
 }
-.greedy-nav a {
+body .greedy-nav a {
   color: var(--text-muted);
 }
-.greedy-nav a:hover {
+body .greedy-nav a:hover {
   color: var(--accent);
 }
-.greedy-nav .visible-links a {
+body .greedy-nav .visible-links a {
   font-size: 0.95em;
 }
 
