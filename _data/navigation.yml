@@ -3,14 +3,12 @@ main:
     url: /
   - title: "归档"
     url: /archive/
-  - title: "评测系列"
-    url: /eval-series/
   - title: "标签"
     url: /tags/
   - title: "分类"
     url: /categories/
-  - title: "月刊"
-    url: /monthly/
+  - title: "小册"
+    url: /books/
   - title: "项目"
     url: /projects/
   - title: "关于"

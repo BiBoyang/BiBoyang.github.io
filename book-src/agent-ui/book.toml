@@ -1,0 +1,13 @@
+[book]
+title = "Agent 时代的开发者界面"
+authors = ["BiBoyang"]
+language = "zh-CN"
+src = "src"
+
+[build]
+build-dir = "../../books/agent-ui"
+create-missing = false
+
+[output.html]
+no-section-label = true
+git-repository-url = "https://github.com/BiBoyang/BiBoyang.github.io"

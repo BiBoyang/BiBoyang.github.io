@@ -1,0 +1,332 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>09 · 多端 Agent 架构 - Agent 时代的开发者界面</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="favicon-8114d1fc.png">
+        <link rel="stylesheet" href="css/variables-8adf115d.css">
+        <link rel="stylesheet" href="css/general-e96d0476.css">
+        <link rel="stylesheet" href="css/chrome-d279d366.css">
+        <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex-dae990a6.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc-c656fa20.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Agent 时代的开发者界面</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/BiBoyang/BiBoyang.github.io" title="Git repository" aria-label="Git repository">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="agent-时代的开发者界面九多端-agent-架构clituiidedesktopwebmobile"><a class="header" href="#agent-时代的开发者界面九多端-agent-架构clituiidedesktopwebmobile">Agent 时代的开发者界面（九）：多端 Agent 架构——CLI、TUI、IDE、Desktop、Web、Mobile</a></h1>
+<blockquote>
+<p>系列第九篇。第 5 篇提出了 Event Sourcing 框架——Agent 的执行是一条事件流，不同 UI 是同一事件流的不同投影。这一篇把这个框架展开到六个具体的端，外加 API 这个没有界面的入口，讲清楚每个端各自适合承载什么、不适合什么，以及它们怎么共存。</p>
+</blockquote>
+<hr>
+<h2 id="一不是多端适配是多端投影"><a class="header" href="#一不是多端适配是多端投影">一、不是多端适配，是多端投影</a></h2>
+<p>传统软件做多端，思路是“一套代码，多处适配“——同一套业务逻辑，为每个平台写不同的 UI 层。</p>
+<p>Agent 多端的思路不完全一样。不是“把同一个聊天界面适配到 6 个屏幕尺寸“，而是<strong>同一条事件流，每个端挑选自己最适合投影的那部分事件，用自己最擅长的交互方式呈现。</strong> CLI 不需要渲染 diff 面板，Mobile 不需要展示 3000 行日志，IDE 不需要做独立权限弹窗——权限确认以内联形式嵌在编辑器里——每个端只消费它擅长消费的事件子集。</p>
+<hr>
+<h2 id="二六端--api-的定位"><a class="header" href="#二六端--api-的定位">二、六端 + API 的定位</a></h2>
+<h3 id="cli执行入口--自动化接口"><a class="header" href="#cli执行入口--自动化接口">CLI：执行入口 + 自动化接口</a></h3>
+<p>CLI 是最薄的投影。它的核心能力不是“展示“，而是“执行“——继承 cwd/PATH/env/git/SSH 全部上下文，直接把 Agent 接入工程现场。</p>
+<p>适合承载：全量事件流，但以最原始的方式（文本输出）。适合 CI/CD 集成（<code>./agent fix --auto</code>）、管道组合（<code>cat error.log | agent diagnose</code>）、远程执行（SSH + tmux）。</p>
+<p>不适合承载：diff 审查、权限管理、多任务队列。</p>
+<p>CLI 永远不会被“替代“——因为管道的价值是结构性的，不依赖任何 UI 框架。</p>
+<h3 id="tui本地工作台"><a class="header" href="#tui本地工作台">TUI：本地工作台</a></h3>
+<p>TUI 是 CLI 往上走一层——在终端里提供结构化面板，但保留键盘优先和远程可用的特性。第 2–4 篇拆解的渲染引擎、Markdown 降级和 Agent 事件展平，构成了 TUI 的完整技术栈。</p>
+<p>适合承载：执行时间线、工具调用状态、流式输出、权限确认、文件变更列表。适合长时间运行的 Agent 会话（tmux 断线恢复）、低配机器和远程开发场景。</p>
+<p>不适合承载：富 diff 审查（并排对比）、多模态附件预览、团队协作。</p>
+<h3 id="ide代码上下文--diff-审查"><a class="header" href="#ide代码上下文--diff-审查">IDE：代码上下文 + Diff 审查</a></h3>
+<p>IDE 插件是天生的 diff 审查工具。编辑器的并排 diff view、行级采纳/拒绝、与语言服务器的集成——这些都是 IDE 的内置能力，Agent 插件只需要对接事件流。</p>
+<p>适合承载：<code>file.changed</code> 和 <code>validation.finished</code> 事件的投影——也就是 diff 审查和测试结果。第 8 篇讲的“按文件组织 + 按风险标记 + 部分采纳/拒绝 + 测试关联“，在 IDE 里是出厂能力。</p>
+<p>不适合承载：长会话管理、权限审批、多 Agent 任务编排。IDE 擅长“审查“，不擅长“管理“。</p>
+<h3 id="desktop本地工作台--系统集成"><a class="header" href="#desktop本地工作台--系统集成">Desktop：本地工作台 + 系统集成</a></h3>
+<p>Desktop App 的能力介于 TUI 和 Web 之间——有完整的 GUI 控件和原生性能，但不需要浏览器的内存开销。适合独立的 Agent 桌面客户端。</p>
+<p>适合承载：系统通知（本地 daemon 在后台跑 Agent，桌面端推送结果）、文件系统集成（拖拽文件到 Agent）、离线恢复（本地 event log 持久化）。</p>
+<p>不适合承载：多用户协作（Web 更合适）、纯键盘工作流（TUI 更强）。</p>
+<h3 id="web团队协作--历史--审批"><a class="header" href="#web团队协作--历史--审批">Web：团队协作 + 历史 + 审批</a></h3>
+<p>Web 是唯一天然支持多用户的端。Agent 产出的 event log 在服务端持久化后，Web 端可以做会话分享、历史搜索、团队审批——这些是 CLI/TUI/IDE 都不擅长的。</p>
+<p>适合承载：多任务队列、团队审批流、会话回放和分析、成本统计。Zacp 项目是这条路线的一个实际案例——WebUI + ACP 协议 + 多 CLI Agent：CLI Agent 不知道 WebUI 的存在，WebUI 只消费 ACP 事件，加一个 Web 端不需要改任何 agent 核心。它还顺便回应了一个争论——第 5 篇引过的两种极端观点，“GUI 必然到来“和“GUI Agent 方向根本上错了”（CLI-Anything 的立场），Zacp 恰好是两者的折中实例：agent 核心保持 CLI 原生、走结构化协议，用户界面侧用 Web 做投影。</p>
+<p>不适合承载：实时执行（延迟和网络依赖）、本地文件系统操作。</p>
+<h3 id="mobilecompanion不是主战场"><a class="header" href="#mobilecompanion不是主战场">Mobile：Companion，不是主战场</a></h3>
+<p>Mobile 不适合做 Agent 的主执行入口——屏幕小、输入慢、后台限制、散热墙、文件系统权限受限。但 Mobile 有一个不可替代的价值：<strong>用户离开电脑后，Mobile 是唯一能触达用户的端。</strong> 它作为审批触达点的具体场景，第 10 篇展开。</p>
+<p>适合承载：任务状态查看、高风险操作审批、执行总结阅读、简单回复。类似“远程任务控制器“，不是“缩小版 IDE“。</p>
+<h3 id="api自动化与集成入口"><a class="header" href="#api自动化与集成入口">API：自动化与集成入口</a></h3>
+<p>六个端之外还有第七个入口：API。它没有任何界面——CI/CD 流水线里触发 Agent（<code>./agent fix --auto</code> 背后就是一个 API 调用）、GitHub webhook 回调（PR 打开时自动发起 review）、脚本化工作流（定时任务、批量仓库维护），事件流以 JSON 形式被程序直接消费。</p>
+<p>适合承载：自动化触发、机器消费的执行结果、与现有 DevOps 工具链的集成。</p>
+<p>不适合承载：任何需要人在环路的交互——API 端的权限必须全部预批，否则任务挂起。它是统一 Permission Engine 的极端投影：所有交互流事件的答案在调用参数里预先声明。</p>
+<hr>
+<h2 id="三不只适合做什么从渲染架构推导端定位"><a class="header" href="#三不只适合做什么从渲染架构推导端定位">三、不只“适合做什么“：从渲染架构推导端定位</a></h2>
+<p>上面六个端的定位看起来像功能分配——“因为 IDE 有 diff view 所以适合审查，因为 Web 有多用户所以适合协作”。但往下挖一层，每个端的<strong>渲染架构</strong>决定了它天然擅长和不擅长处理什么类型的事件。</p>
+<p>第 7 篇详细拆解了各技术栈在 Markdown 流式渲染上的差异。同一个逻辑可以迁移到端定位：</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>渲染架构</th><th>核心特征</th><th>擅长的事件消费模式</th><th>对应端</th></tr>
+</thead>
+<tbody>
+<tr><td>纯文本 stdout（ANSI）</td><td>零布局开销，线性追加，无 undo</td><td>高频流式事件（tool.started/finished），单维信息</td><td>CLI</td></tr>
+<tr><td>字符网格增量 diff（ANSI）</td><td>增量 diff + commit/live 分区，可原地重绘</td><td>高频流式事件 + 结构化面板（工具状态、权限确认）</td><td>TUI</td></tr>
+<tr><td>CoreText 全量 invalidate</td><td>每次 attributedText 变更触发完整重排，50-100× 富文本开销</td><td>一次性富文本展示，不适合高频更新</td><td>原生 Desktop / Mobile</td></tr>
+<tr><td>WebView 增量 reflow</td><td>脏区传播，只重排受影响子树，出厂能力</td><td>高频局部更新 + 复杂富文本（diff 面板、协作视图）</td><td>Web</td></tr>
+<tr><td>Yoga / Lynx 后台增量</td><td>后台线程 diff，主线程只应用变更</td><td>中频更新 + 低延迟交互 + 列表虚拟化</td><td>Mobile Companion</td></tr>
+</tbody>
+</table>
+</div>
+<p>这里有一个反直觉的结论：<strong>原生端（CoreText）做流式 Agent 聊天反而是最脆弱的。</strong> 同样的 3000 字流式 Markdown，iPhone 上 CoreText 全量 layout 每次 20-60ms，WebView 增量 reflow 的代价远低于此。所以“Web 适合协作“不只是因为它有多用户能力，还因为它的渲染引擎天生能消化高频事件更新。而 Mobile 原生端之所以只适合做 Companion（通知 + 轻量审批），不是因为屏幕小——是因为在被动散热的手机上，CoreText 全量 invalidate 的高频布局在实测中很容易顶到 thermal throttling，形成恶性循环。</p>
+<p>这不是说原生端不该做 Agent GUI。而是说：<strong>如果你用原生 CoreText 做流式 Agent 客户端，你的性能天花板比 WebView 低。</strong> 选择技术栈的时候，这比“哪个平台用户多“更根本。</p>
+<hr>
+<h2 id="四每个端的交互契约不同"><a class="header" href="#四每个端的交互契约不同">四、每个端的交互契约不同</a></h2>
+<p>第 5 篇区分了事件的三层分类：执行流、副作用流、交互流。不同端对这三层的消费策略完全不同：</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th></th><th>CLI</th><th>TUI</th><th>IDE</th><th>Desktop</th><th>Web</th><th>Mobile</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>执行流</strong></td><td>全量文本输出</td><td>面板化展示</td><td>跳过（IDE 不关心工具调用过程）</td><td>通知摘要</td><td>可回放时间线</td><td>仅摘要（推送）</td></tr>
+<tr><td><strong>副作用流</strong></td><td>路径字符串</td><td>路径字符串</td><td>并排 diff 面板</td><td>文件列表</td><td>富 diff + 评论</td><td>不展示</td></tr>
+<tr><td><strong>交互流</strong></td><td>阻塞 <code>[y/n]</code></td><td>输入行阻塞</td><td>内联弹窗</td><td>系统通知</td><td>页面内卡片</td><td>推送通知</td></tr>
+<tr><td><strong>离场处理</strong></td><td>不支持</td><td>tmux 挂起</td><td>不支持</td><td>本地 daemon</td><td>服务端超时</td><td>推送 + 后台</td></tr>
+</tbody>
+</table>
+</div>
+<p>Mobile 的“仅摘要“来自推送通知和任务卡片——对应前面说的“任务状态查看“；副作用流（diff）则完全不投影到手机。没有一个端需要消费全部事件。CLI 和 Mobile 在消费的事件类型上几乎没有交集——但它们消费的是同一条事件流。</p>
+<blockquote>
+<p>补记（2026.09）：这张表写成后，“离场处理“一行开始在头部产品里过时——而且是以印证本文的方式。Claude Code 现在有后台会话（<code>/bg</code>）和独立的 agent 视图，配合 Remote Control 和“Push when Claude decides“配置，Agent 可以在用户离开后继续跑、必要时直接往手机推通知——第 10 篇说的“用户离开电脑后，Mobile 是唯一能触达用户的端”，已经是出货的功能，不是设想。“CLI/TUI 离场 = 挂起“从此只是默认行为，不再是能力上限。</p>
+</blockquote>
+<hr>
+<h2 id="五统一-runtime统一-event-log统一-permission-engine统一-workspace-model"><a class="header" href="#五统一-runtime统一-event-log统一-permission-engine统一-workspace-model">五、统一 Runtime，统一 Event Log，统一 Permission Engine，统一 Workspace Model</a></h2>
+<p>多端架构的核心约束只有四个：</p>
+<p><strong>统一 Runtime。</strong> Agent 的执行逻辑（model loop、工具调用、plan-revise 循环）只有一个实例。不是每个端跑一个 Agent——是一个 Agent 跑在 Runtime 里，所有端只做投影。</p>
+<p><strong>统一 Event Log。</strong> append-only，按时间排序，不可变。每个端从这个 log 里读取自己需要的事件。这是恢复、审计和协作的基础设施。</p>
+<p><strong>统一 Permission Engine。</strong> 权限请求从 Agent Runtime 发出，所有端都可以响应。谁先响应就用谁的结果。超时策略和信任规则持久化在 Permission Engine 层，不是某个 UI 层。</p>
+<p><strong>统一 Workspace Model。</strong> cwd、git branch、文件系统状态——这些不属于任何 UI，属于 Workspace。Agent 操作的是 Workspace，不是某个端的“视图“。</p>
+<p>满足这四个统一之后，每个端只是一个轻量的投影层——消费事件、渲染 UI、发送用户输入回 Runtime。你加一个 Mobile 端不需要改 Agent 逻辑，加一个 Web 端不需要改权限模型。</p>
+<hr>
+<h2 id="六不是所有产品都需要所有端"><a class="header" href="#六不是所有产品都需要所有端">六、不是所有产品都需要所有端</a></h2>
+<p>六端 + API 是分析框架，不是 checklist。一个独立开发者的 Agent 工具可能只需要 CLI + TUI。一个团队协作的 Agent 平台可能需要 Web + IDE + Mobile。选哪些端，取决于用户在哪里、用户在那个场景下需要消费哪些事件。</p>
+<p>关键不是端多不多，而是每加一个端，是不是只需要写投影层——而不是重写 Agent 核心。如果每次加端都要重构事件模型和权限引擎，说明架构还没到位。</p>
+<hr>
+<h2 id="七下一篇"><a class="header" href="#七下一篇">七、下一篇</a></h2>
+<p>最后一篇。从具体的技术和架构回到人——一个大前端开发者，在 Agent 时代的能力地图是什么？移动端、桌面端、TUI、全栈——这些经验怎么迁移到 Agent Workflow Engineer 这个新方向上。</p>
+<hr>
+<p><em>本文的多端架构框架参考了 ForgeLoopTUI 的 CoreRenderEvent 设计、Zacp 的 ACP 多 Agent WebUI 架构，以及第 5 篇提出的 Event Sourcing 模型。</em></p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch08.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="ch10.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch08.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="ch10.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr-ef4e11c1.min.js"></script>
+        <script src="mark-09e88c2c.min.js"></script>
+        <script src="searcher-09f2665d.js"></script>
+
+        <script src="clipboard-1626706a.min.js"></script>
+        <script src="highlight-abc7f01d.js"></script>
+        <script src="book-609e4cb8.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

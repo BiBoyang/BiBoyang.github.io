@@ -1,0 +1,437 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>07 · GUI 上的 Markdown 流式渲染 - Agent 时代的开发者界面</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="favicon-8114d1fc.png">
+        <link rel="stylesheet" href="css/variables-8adf115d.css">
+        <link rel="stylesheet" href="css/general-e96d0476.css">
+        <link rel="stylesheet" href="css/chrome-d279d366.css">
+        <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex-dae990a6.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc-c656fa20.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Agent 时代的开发者界面</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/BiBoyang/BiBoyang.github.io" title="Git repository" aria-label="Git repository">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="agent-时代的开发者界面七gui-上的-markdown-流式渲染全量重建与工程折中"><a class="header" href="#agent-时代的开发者界面七gui-上的-markdown-流式渲染全量重建与工程折中">Agent 时代的开发者界面（七）：GUI 上的 Markdown 流式渲染——全量重建与工程折中</a></h1>
+<blockquote>
+<p>系列第七篇。第 3 篇拆解了 TUI 上的 Markdown 流式渲染——降级映射、Stable Prefix Cache、表格 retreat、代码块盲区。这一篇是同一面问题的镜像：在拥有像素、字体引擎和 GPU 合成器的 GUI 世界里，Markdown 流式渲染为什么仍然是一个“打字机效果“就吃掉 60% CPU 的难题。</p>
+</blockquote>
+<hr>
+<h2 id="一打字机效果--增量渲染"><a class="header" href="#一打字机效果--增量渲染">一、打字机效果 ≠ 增量渲染</a></h2>
+<p>用过 ChatGPT、Claude、FlowDown 的人一定熟悉打字机效果——AI 回复逐字出现。但这是视觉错觉。</p>
+<p>真实情况：<strong>数据层是增量的，渲染层不是。</strong></p>
+<pre><code>网络 SSE chunk → BalancedEmitter（增量吐出字符）
+  → message.document += newText               // 全文拼接
+  → MarkdownParser.parse(fullContent)          // ← 全量 AST 解析
+  → TextBuilder.build()                        // ← 全量重建 NSAttributedString
+  → textView.attributedText = doc              // ← CoreText 全量布局
+</code></pre>
+<p>每一步 O(n)。n 随文本增长而变大。以下是 FlowDown 在一组本地实测里的 3000 字回复数据，反映的是特定设备和构建配置下的趋势：</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>文本量</th><th>解析</th><th>构建</th><th>布局</th><th>刷新频率</th><th>CPU</th></tr>
+</thead>
+<tbody>
+<tr><td>~500 字</td><td>轻</td><td>轻</td><td>轻</td><td>20 Hz</td><td>低</td></tr>
+<tr><td>~1500 字</td><td>中</td><td>中</td><td>中</td><td>15 Hz</td><td>中</td></tr>
+<tr><td>~3000 字</td><td>重</td><td>重</td><td>重</td><td>9 Hz</td><td>~60%</td></tr>
+<tr><td>5000+ 字</td><td>很重</td><td>很重</td><td>很重</td><td>3 Hz</td><td>高</td></tr>
+</tbody>
+</table>
+</div>
+<p>应用已经做了降频处理——文本越长刷新越慢。但这只降低了“重做“频率，没降低单次“重做“的成本。3000 字时每秒仍有 9 次全量管线触发。</p>
+<p>打字机效果是 <code>BalancedEmitter</code> 增量吐出字符制造的数据层假象。渲染层每次都在重做整个文档。</p>
+<hr>
+<h2 id="二三层管线拆解"><a class="header" href="#二三层管线拆解">二、三层管线拆解</a></h2>
+<p>从 LLM token 到屏幕像素，经过六个阶段：</p>
+<pre><code>LLM token 流
+  → ① 传输：SSE chunk 到达
+  → ② 拼接：chunk 拼成字符串，节流控制
+  → ③ 检测：判断当前文本是否"可解析"（大部分实现没有这层）
+  → ④ 解析：Markdown → AST
+  → ⑤ 构建：AST → NSAttributedString
+  → ⑥ 布局：NSAttributedString → 像素
+</code></pre>
+<p>④⑤⑥ 深度耦合。问题不能靠单独替换某一层解决。</p>
+<h3 id="解析层最根本的限制"><a class="header" href="#解析层最根本的限制">解析层——最根本的限制</a></h3>
+<p>以 cmark 为例（Swift 侧最主流的 Markdown 解析库，被 FlowDown/MarkdownView、Down 等使用）：</p>
+<pre><code>cmark_parser_new()    → 创建 parser
+cmark_parser_feed()   → 喂入整个字符串
+cmark_parser_finish() → 结束解析，产出 AST
+cmark_parser_free()   → 销毁 parser
+</code></pre>
+<p>没有 <code>pause()</code>，没有 <code>resume()</code>，没有 <code>ast_diff(old, new)</code>。每次新 chunk 到达都必须走完整的 create → feed → finish → free 流程。</p>
+<h3 id="构建层"><a class="header" href="#构建层">构建层</a></h3>
+<p>FlowDown 的 <code>TextBuilder</code> 源码里有一行：</p>
+<pre><code class="language-swift">assert(!previouslyBuilt, "TextBuilder can only be built once.")
+</code></pre>
+<p>整个 builder 假设输入是一份完整的解析结果。一次性产出完整的 <code>NSMutableAttributedString</code>，遍历所有 block node 做属性拼接。<code>NSMutableAttributedString</code> 本身有 <code>append(_:)</code>——但这条 builder 管线的设计假设不支持增量。</p>
+<h3 id="布局层"><a class="header" href="#布局层">布局层</a></h3>
+<p><code>textView.attributedText = doc</code> 之后，整段富文本重新进入文本系统计算。富文本布局比纯文本贵 50-100 倍——同样的 3000 字，纯文本布局 &lt;1ms，富文本 20-60ms。差距来自字形查找（6+ 种字体 face）、CJK 字体回退链、换行断点评估、内存分配风暴。</p>
+<h3 id="21-on-为什么这么重常数因子拆解"><a class="header" href="#21-on-为什么这么重常数因子拆解">2.1 O(n) 为什么这么重——常数因子拆解</a></h3>
+<p>O(n) 的大 O 记法掩盖了常数因子。以 iPhone 上 3000 字富文本 NSAttributedString（包含代码块、标题、加粗、链接、表格等多种样式组合）为例，一次 CoreText 布局的实际开销拆开看：</p>
+<p><strong>字形生成。</strong> 纯文本布局是 trivial 的——一个字体 face，逐字符排版。但 Markdown 渲染产出的是高度异构的 NSAttributedString：正文用 <code>.systemFont</code>，加粗/斜体用不同 weight，代码块用等宽字体（<code>Menlo</code> 或 <code>SF Mono</code>），标题用不同 size（H1-H6 至少 2-3 种），链接可能换 foregroundColor，emoji 触发 Apple Color Emoji 字体回退路径。每个字符的属性变更都可能触发一次新的字体 face 查找。3000 字符 × 5-6 种字体 face，加上 CJK 字符的字体回退链（CJK 字形在 systemFont 中不完整时需回退到专用中文字体），字形查找本身就是显著的 CPU 开销。</p>
+<p><strong>换行计算。</strong> CoreText 的 line breaker 对每一行都要做宽度测量（候选断点位置的累积字符宽度）、断点选择（在允许的断点中选最优，考虑连字符、标点禁则）、中文特殊规则（行首禁则——。，、不能出现在行首，行末溢出——标点可以略微突出边界）。一个 3000 字的段落，假定平均每行 30 个字符、总共 100 行，断点评估的量级远比“扫描一遍字符串“大得多。</p>
+<p><strong>内存分配与 ARC 开销。</strong> 这是最容易被忽略的一项。每个 tick 的完整路径：<code>cmark_parser_new</code> + <code>cmark_node_new</code> × N + <code>cmark_parser_free</code>（malloc/free AST 节点树）→ <code>NSMutableAttributedString.append()</code> × M 个 block（每个 append 可能触发属性字典 NSDictionary 分配）→ <code>CTFramesetterCreateWithAttributedString</code>（内部分配 CTTypesetter + CTLine × 100 行 + 字形缓存）。9 次/秒 × 3000 字：大量短暂存活的对象在单次 runloop iteration 中创建和丢弃，ARC 的 retain/release 在这些对象间高频触发，autorelease pool 在 runloop 末尾 drain 时集中释放，产生额外 CPU spike。</p>
+<p><strong>量化对比：</strong></p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>操作</th><th>3000 字耗时（数量级）</th><th style="text-align: center">占比</th></tr>
+</thead>
+<tbody>
+<tr><td>cmark 解析</td><td>~1-3ms</td><td style="text-align: center">~5%</td></tr>
+<tr><td>TextBuilder 构建</td><td>~5-15ms</td><td style="text-align: center">~15%</td></tr>
+<tr><td>CoreText 布局</td><td>~20-60ms</td><td style="text-align: center">~80%</td></tr>
+</tbody>
+</table>
+</div>
+<p>同一段 3000 字的纯文本布局（单一字体、无属性切换）：&lt; 1ms。差距是 50-100 倍。真凶不是文本长度，是属性异构度 × 高频触发。</p>
+<h3 id="22-coretext-全量-invalidate-的本质"><a class="header" href="#22-coretext-全量-invalidate-的本质">2.2 CoreText 全量 invalidate 的本质</a></h3>
+<p><code>CTFramesetter</code> 的 API 设计假设输入的 NSAttributedString 是“完整的、不会增量变化的“。当你修改 <code>attributedText</code> 并重新 set 时：必须重新创建 framesetter → 必须重新对整个内容做排布 → 每行 line fragment 的位置都可能因为前面内容的变动而偏移。CoreText 内部没有“脏区域“标记机制——它不知道哪些行变了、哪些没变。</p>
+<p>对比 CSS layout engine：浏览器里 <code>element.appendChild(newParagraph)</code> 只标记父节点为 “layout dirty”，然后只重排那个子树，页面大部分内容保持原位。而 CoreText 的 <code>textView.attributedText = newAttrString</code>——一切 invalidate，从头到尾全量重排。</p>
+<p>Markdown 的块级结构更是放大了这个问题。列表嵌套深度、代码块边界、角标定义——这些跨段落上下文依赖意味着即使 CoreText 支持 dirty reflow，Markdown 解析层的全局依赖也会让“局部修改“扩散为“全局 dirty“。</p>
+<hr>
+<h2 id="三路线-a边输出边渲染flowdown-模式"><a class="header" href="#三路线-a边输出边渲染flowdown-模式">三、路线 A：边输出边渲染（FlowDown 模式）</a></h2>
+<h3 id="balancedemitter节流发射器"><a class="header" href="#balancedemitter节流发射器">BalancedEmitter：节流发射器</a></h3>
+<pre><code class="language-swift">actor BalancedEmitter {
+    private var buffer: String = ""
+    private var frequency: Int         // 发射次数/秒
+    private var batchSize: Int         // 每次发射字符数
+
+    func add(_ chunk: String) {
+        buffer += chunk
+        batchSize = max(1, Int(ceil(Double(buffer.count) / Double(frequency))))  // 动态
+        dispatchLoopIfRequired()
+    }
+}
+</code></pre>
+<p><code>batchSize</code> 是动态的——缓冲区积压越多，每次发射字符越多，自适应追赶。</p>
+<h3 id="emotionaldamage-降频"><a class="header" href="#emotionaldamage-降频">emotionalDamage 降频</a></h3>
+<p>文本越长 → 渲染越重 → 主动降频：</p>
+<pre><code class="language-swift">var emotionalDamage = 0  // 累计字符数
+
+if emotionalDamage &gt;= 5000 {
+    frequency = 3   // 3次/秒 — 极长文本
+} else if emotionalDamage &gt;= 2000 {
+    frequency = 9   // 9次/秒
+} else if emotionalDamage &gt;= 1000 {
+    frequency = 15  // 15次/秒
+}
+// 默认 20次/秒
+</code></pre>
+<p>设计思想：“宁可视觉上慢一点，也不能让 UI 掉帧。”</p>
+<h3 id="代价on²-从哪来"><a class="header" href="#代价on²-从哪来">代价：O(n²) 从哪来</a></h3>
+<p>每次渲染是 O(n)。但流式场景下 O(n) 被执行了 O(n) 次：</p>
+<pre><code>tick  1: parse(50字)  + build(50字)  + layout(50字)
+tick  2: parse(100字) + build(100字) + layout(100字)
+...
+tick 90: parse(3000字)+ build(3000字)+ layout(3000字)
+</code></pre>
+<p>总工作量 ≈ N²。降频让 t 不再严格正比于 N——但砍的是常数因子，复杂度阶没变。降频的收益集中在中等长度（1000-5000 字）——文本继续变长、频率触底（3Hz）之后，tick 数重新正比于 N，总工作量回归 N²。</p>
+<hr>
+<h2 id="四路线-b输出完毕再渲染"><a class="header" href="#四路线-b输出完毕再渲染">四、路线 B：输出完毕再渲染</a></h2>
+<p>流式期间不做任何渲染，只把 chunk 拼进 buffer。流式结束后一次性做完整 Markdown 渲染。</p>
+<pre><code>流式中：buffer += chunk（字符串拼接，摊还 O(1) per chunk）
+流式结束：一次完整 parse + build + layout
+</code></pre>
+<p>CPU 优势：管线只跑一次。代价：没有打字机效果——等了几秒后突然出现完整回复。适用于非实时对话场景（批量处理、后台任务）。</p>
+<hr>
+<h2 id="五过渡方案流式纯文本--结束切-markdown"><a class="header" href="#五过渡方案流式纯文本--结束切-markdown">五、过渡方案：流式纯文本 + 结束切 Markdown</a></h2>
+<p>这是 ROI 最高的方案。</p>
+<p>流式期间跳过④⑤⑥层，用纯文本展示。流式结束那一刻做一次完整 Markdown 渲染，切换成富文本。</p>
+<pre><code>流式中：纯文本渲染（无 parse/build 开销）
+流式结束：一次性完整 Markdown 渲染
+</code></pre>
+<p>改动全在应用层——渲染入口加一个 if-else，不碰任何外部库。流式期间 Markdown 解析开销清零。</p>
+<p>代价：流式过程中看到的是原始 Markdown 语法（<code>**加粗**</code>、<code># 标题</code>），流式结束有一次 snap 切换。但流式过程中 Markdown 语法通常是未闭合的——<code>**bold</code> 没右半截、代码块没结尾 ```——当前方案下这些残缺语法的渲染结果也是错乱的。纯文本反而是干净的。</p>
+<hr>
+<h2 id="六跨技术栈对比谁解决了哪一层"><a class="header" href="#六跨技术栈对比谁解决了哪一层">六、跨技术栈对比：谁解决了哪一层</a></h2>
+<p>解析层（④）所有人都站在同一条起跑线上——没有真正的增量 Markdown 解析。差距全在⑤⑥层。</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th></th><th>解析层（④）</th><th>构建层（⑤）</th><th>布局层（⑥）</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>原生 CoreText</strong></td><td>cmark 全量</td><td>NSAttributedString 全量重建</td><td>全量 invalidate</td></tr>
+<tr><td><strong>原生 TextKit 2</strong></td><td>cmark 全量</td><td>NSTextContentStorage 增量追加</td><td>NSTextLayoutManager 局部 invalidate</td></tr>
+<tr><td><strong>WebView</strong></td><td>JS 全量 parse</td><td>React reconciliation → 最小 DOM 变更</td><td>浏览器增量 reflow</td></tr>
+<tr><td><strong>React Native</strong></td><td>JS 全量 parse</td><td>React reconciliation → 最小变更集</td><td>Yoga 增量布局</td></tr>
+<tr><td><strong>Lynx</strong></td><td>JS/C++ 全量 parse</td><td>后台线程 diff → updateData 增量</td><td>原生增量 + list 虚拟化</td></tr>
+</tbody>
+</table>
+</div>
+<p>下面展开 WebView、RN 和 Lynx 三条路——它们各自的优势、代价和适用边界。</p>
+<h3 id="61-webview增量-reflow-是出厂能力"><a class="header" href="#61-webview增量-reflow-是出厂能力">6.1 WebView：增量 reflow 是出厂能力</a></h3>
+<p>浏览器渲染引擎（Blink / WebKit）从 90 年代 Netscape 时代就在解决“网页被 JavaScript 不断修改“的问题，增量 reflow 是它的第一性能力，不是后加的特性。</p>
+<p>当 JavaScript 向 DOM 追加新节点时（<code>appendChild</code>），渲染引擎只标记受影响子树为 dirty：Style Computation 只对新增节点做 selector matching；Layout 从 dirty node 向上找到最近的 block formatting context root，向下做局部重排，兄弟节点不受影响；Paint 只重绘 dirty region；Composite 直接复用未变动的 GPU texture 图层。</p>
+<p>但 Markdown 解析仍在 JS 层——<code>marked.js</code>、<code>markdown-it</code> 每次仍然是全量 parse。所以实际做法分两类：</p>
+<p><strong>做法 A：innerHTML 全量替换。</strong> 每次新 chunk 到达，把整段 Markdown 重新转成 HTML 字符串，赋给 <code>innerHTML</code>。这条路径没有节点级复用——<code>innerHTML</code> 赋值的标准行为是解析整段 HTML 字符串、销毁旧子树、构建新子树，浏览器不在这条路径上做新旧 DOM diff，不存在“结构一致就复用节点“的优化。它的收益在重建之后：新子树挂上文档时，渲染引擎按正常的 dirty 传播做增量 reflow 和重绘，兄弟容器和页面其余部分不受影响；而且 HTML 解析本身是高度优化的 C++ 路径，比 JS 层的 reconcile 便宜得多。所以“全量“全在 DOM 构建层，并不全在渲染层。</p>
+<p><strong>做法 B：React reconciliation。</strong> Vercel AI SDK 的默认做法——<code>useChat</code> 每收到一个新 chunk 就触发一次重渲染（可用 <code>throttle</code> 参数节流）→ React 对使用 <code>messages</code> 的组件（通常是整个消息列表）做 Virtual DOM diff → 找到最小 DOM 变更集 → 只 apply 这些变更到真实 DOM → 浏览器收到最小 DOM 变更 → 最小化 dirty reflow。注意这里出力气的是 React 而非 SDK 本身——SDK 不含 Markdown 渲染逻辑，官方做法是让用户自行接入 react-markdown。React 的 Virtual DOM diff 替代了原生方案中 NSAttributedString 全量重建（⑤层），浏览器增量 reflow 替代了 CoreText 全量重排（⑥层）。</p>
+<p>代价：WKWebView 进程隔离，每个 WebContent 进程占独立内存空间——占用随页面内容波动很大（数十 MB 到数百 MB），且 iOS 对单个 WebContent 进程设有系统级内存上限（随设备内存缩放，iPhone 大致从数百 MB 到约 2GB，iPad 更高），超限该进程直接被 jetsam 杀掉，表现为 WebView 白屏；聊天列表中多个 cell 不能都用 WebView；字体渲染和系统不一致；无法复用 Dynamic Type / VoiceOver。</p>
+<h3 id="62-react-native新架构去掉了-bridge-瓶颈"><a class="header" href="#62-react-native新架构去掉了-bridge-瓶颈">6.2 React Native：新架构去掉了 Bridge 瓶颈</a></h3>
+<p>RN 经典架构（Bridge 模式）下，JS Thread 做 React reconciliation → Shadow Thread 用 Yoga（C++）做 flexbox 增量布局 → Main Thread 通过 Bridge 接收 mutation list 做原生视图增量更新。每次新 chunk 产生的微小变更都要经过异步 Bridge 序列化/反序列化。</p>
+<p>新架构（Fabric + JSI，0.68+ 引入，0.76 起默认启用）去掉了异步 Bridge：JS 通过 JSI 直接同步调用 C++ 函数；Fabric 的 Shadow Tree 直接映射到原生 View Tree，支持优先级调度（高优更新可以打断低优更新）。对 Markdown 流式渲染的关键改进是：每次 chunk 产生的微小 DOM 变更不再经过异步 Bridge，布局计算可以在渲染帧空闲时执行，不阻塞主线程滚动。</p>
+<p>但 RN 也不能做 Markdown 增量解析。它还有一个隐蔽问题：流式输出中，新 chunk 可能改变已有段落的结构（如代码块闭合后，之前被误判为代码块内容的东西需要重排），导致大量 key 失配，Reconciliation 退化为接近全量对比。</p>
+<h3 id="63-lynx引擎内置流式能力"><a class="header" href="#63-lynx引擎内置流式能力">6.3 Lynx：引擎内置流式能力</a></h3>
+<p>Lynx（字节跳动出品）在两个关键设计上对 AI 流式场景特别友好：双线程架构（Main Thread + Background Thread）将网络流解析和业务逻辑处理放在非 UI 线程——token 到达 → 后台解析 → 生成 UI 更新 → 提交给主线程渲染，正好匹配 LLM SSE 流式数据的处理需求。<code>fetchStream</code> 在引擎层面提供了三端统一的流式资源接口，不像 RN 需要依赖第三方 SSE 库做桥接。<code>updateData</code> 支持从原生侧增量推送数据，不需要每次重刷整个模板。</p>
+<p>Lynx 在流式渲染上的优势，本质上和 RN 新架构类似——后台线程处理流式数据和 UI diff，主线程只负责渲染。但 Lynx 把流式网络、模板更新、列表虚拟化做成了引擎内置能力，不需要开发者自己搭 pipe。</p>
+<h3 id="64-结论"><a class="header" href="#64-结论">6.4 结论</a></h3>
+<p><strong>不存在“增量 Markdown 解析“的跨平台魔法。</strong> 各技术栈只是在下游渲染架构上有不同程度的增量优化。WebView / RN / Lynx 的渲染架构天然更适应高频增量更新的冲击，原生 CoreText 在这方面是最脆弱的。如果你要做 Agent GUI 客户端，技术栈选型真正要考虑的不是“哪个能增量解析 Markdown“——不存在这样的方案——而是“谁的渲染引擎能更好地吸收高频增量更新的冲击“。</p>
+<hr>
+<h2 id="七为什么移动端比桌面端严重得多"><a class="header" href="#七为什么移动端比桌面端严重得多">七、为什么移动端比桌面端严重得多</a></h2>
+<p>同一段 3000 字流式 Markdown，Mac 上 10-15% CPU，iPhone 飙到 60%。原因不在代码：</p>
+<p><strong>散热墙。</strong> iPhone 是被动散热——持续高负载触发 thermal throttling 后 CPU 降频，单次 layout 从 30ms 升到 50ms，CPU 占用率反而更高，恶性循环。</p>
+<p><strong>CPU 微架构。</strong> Mac M 系列芯片的共享 L2 与系统级缓存（SLC）更大，内存带宽更高。CoreText 布局阶段大量访问字形缓存——cache miss 时 iPhone 代价远高于 Mac。</p>
+<p><strong>WKWebView 成本。</strong> WebView 的进程隔离在移动端是实打实的代价——每个 WebContent 进程占用独立内存空间，超限会被 jetsam 杀掉（直接白屏）。桌面端无所谓，移动端多 cell 场景是真实的稳定性风险。</p>
+<hr>
+<h2 id="八四条优化路线的-roi-排序"><a class="header" href="#八四条优化路线的-roi-排序">八、四条优化路线的 ROI 排序</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>#</th><th>方案</th><th>改动面</th><th>收益</th><th>副作用</th></tr>
+</thead>
+<tbody>
+<tr><td>1</td><td>继续降频</td><td>一行参数</td><td>CPU ~50-75%</td><td>打字机变顿</td></tr>
+<tr><td>2</td><td>流式纯文本 + 结束切 MD</td><td>1-2 个调用点</td><td>流式 MD 开销清零</td><td>流式期间看原始语法</td></tr>
+<tr><td>3</td><td>模块检测 + 分片渲染</td><td>手写检测器 + 改造渲染管线</td><td>视觉更好</td><td>工程量大</td></tr>
+<tr><td>4</td><td>底层增量解析</td><td>三个库架构重构</td><td>理论上最优</td><td>极高复杂度</td></tr>
+</tbody>
+</table>
+</div>
+<p>方案 2 的 ROI 最高。方案 4 留给相关库的长期演进——或者留给 WebView/RN，它们的渲染架构天生更适应这个场景。最稀缺的工程能力不是写出复杂的方案，是判断一个方案不该做。</p>
+<hr>
+<h2 id="九对照第-3-篇同一个问题两种介质"><a class="header" href="#九对照第-3-篇同一个问题两种介质">九、对照第 3 篇：同一个问题，两种介质</a></h2>
+<p>第 3 篇讲 TUI 上的 Markdown 流式渲染，困在字符网格和物理行计算里。这一篇讲 GUI 上的同一问题，困在解析器和 CoreText 的全量重建里。核心矛盾完全相同：<strong>Markdown 是“写完再解析“的语言，Agent 是“边想边输出“的过程。</strong> 两种介质只是在不同的层面与这个矛盾搏斗。</p>
+<p>TUI 的策略：降级映射 + Stable Prefix Cache + 防御性 retreat。GUI 的策略：节流降频 + 纯文本 fallback + 模块检测。</p>
+<p>没有哪个介质解决了这个问题。都只是在不同的约束下做了不同的折中。</p>
+<hr>
+<h2 id="十下一篇"><a class="header" href="#十下一篇">十、下一篇</a></h2>
+<p>第 8 篇：权限 UX 与 Diff UX——Agent 真正的“主界面“。前几篇——TUI 三部曲和 GUI 两篇——都在讲“怎么渲染“，下一篇开始讲“渲染什么“——在 Agent 的所有输出中，哪两样东西最值得精心设计界面。</p>
+<hr>
+<p><em>本文分析基于 FlowDown 源码（pin MarkdownView 3.9.1）和 ForgeLoopTUI 项目，性能数据来自 FlowDown 流式卡顿分析笔记。</em></p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch06.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="ch08.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch06.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="ch08.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr-ef4e11c1.min.js"></script>
+        <script src="mark-09e88c2c.min.js"></script>
+        <script src="searcher-09f2665d.js"></script>
+
+        <script src="clipboard-1626706a.min.js"></script>
+        <script src="highlight-abc7f01d.js"></script>
+        <script src="book-609e4cb8.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

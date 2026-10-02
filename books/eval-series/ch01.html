@@ -1,0 +1,440 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>一 · 从 trace 到 eval - 我的评测工具链</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="favicon-8114d1fc.png">
+        <link rel="stylesheet" href="css/variables-8adf115d.css">
+        <link rel="stylesheet" href="css/general-e96d0476.css">
+        <link rel="stylesheet" href="css/chrome-d279d366.css">
+        <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex-6d91ce70.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc-afbc1fc7.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">我的评测工具链</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/BiBoyang/BiBoyang.github.io" title="Git repository" aria-label="Git repository">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="从-trace-到-evaltrace-设计agent-eval-方法论一个-eval-harness-的实现和它抓到的上游并发-bug"><a class="header" href="#从-trace-到-evaltrace-设计agent-eval-方法论一个-eval-harness-的实现和它抓到的上游并发-bug">从 trace 到 eval：trace 设计、agent eval 方法论、一个 eval harness 的实现，和它抓到的上游并发 bug</a></h1>
+<p>我开始做 AI 相关 App，从 chatbot 到 agent，一年多了，攒了些经验。这篇分享我在 trace 和 eval 上的做法与观点。</p>
+<h2 id="开篇"><a class="header" href="#开篇">开篇</a></h2>
+<p>做 agent 工程质量，我认可一条主线：trace 是一等公民，测试断言、eval 数据都从它而来。要做好 agent，eval 不可少，而 trace 是 eval 的基础。这个经验一方面来自我之前深入做 iOS 性能优化的经历（要优化性能，先得测出问题在哪，也得做好数据统计和收集），另一方面来自互联网上各家 AI 大厂的技术博文。</p>
+<p>近期 deepseek harness 发布后，我把这条主线做成了开源项目 <a href="https://github.com/BiBoyang/dsh-eval-harness">dsh-eval-harness</a>：一个给 dsh 插件跑回归测试的门禁工具。它在回归测试 DeepSeek Harness 时抓到一个上游自己都没发现的并发崩溃：三个进程同时启动，两个在 270 毫秒内 ENOENT 崩掉。</p>
+<p>初稿发出后，我又做了一件事：拿每条结论去和业界近一年的公开实践以及自己的旧笔记对撞——Anthropic、OpenAI、LangChain、Braintrust、OpenHands 的工程博客，加上 Eugene Yan、Shreya Shankar 这批独立作者。</p>
+<p>文章主线：</p>
+<ol>
+<li>trace 怎么设计才对（地基）</li>
+<li>拿 trace 做 eval 要防什么（方法）</li>
+<li>eval harness 的关键决策与实现管线（工程）</li>
+<li>它抓到上游 bug 的全过程（战果）</li>
+<li>外部对撞（校验）。</li>
+</ol>
+<h2 id="一trace-要在项目第一天就做"><a class="header" href="#一trace-要在项目第一天就做">一、trace 要在项目第一天就做</a></h2>
+<p>这个认知，是三个项目用三种姿势分别验证出来的。一个从第一天就做对了，一个晚了两个月补票，一个把它推到了我没预想到的远度。三个都匿名，但每个坑都是真的。</p>
+<h2 id="做对的让界面状态成为可断言对象"><a class="header" href="#做对的让界面状态成为可断言对象">做对的：让「界面状态」成为可断言对象</a></h2>
+<p>最早做的是一个 Swift 终端 UI 库，渲染 AI 流式输出用的。终端程序有个经典难题：界面状态很难复现，断言脆弱的字节流等于没测，渲染逻辑一重构测试就全红。</p>
+<p>解法是第二个开发版本就内建一个 VirtualTerminal：在内存里解释 ANSI 转义序列的虚拟终端（字符网格 + 光标 + CSI 序列解析）。测试不再断言「输出了什么字节」，改断言「最终屏幕状态」。配合事件溯源式的渲染模型——UI 状态完全由事件流驱动，不绑定任何业务模型——渲染的每个关键决策都变成可断言的诊断事件：什么时候全量重绘（附带原因）、什么时候走增量更新、快速路径追加了多少行。</p>
+<p>注意这里的 trace 形态不是一个日志框架，而是一个默认关闭的可选回调：库不写文件、不引依赖，「记到哪」完全交给消费方——未启用时不产生任何 I/O 和持久化开销。</p>
+<p>这个库现在 793 个测试，渲染逻辑没有黑盒。它还抓过一次性能退化：热点分析发现宽度计算函数在混宽字符负载下的耗时是 ASCII 的 2.83 倍；修掉热点后，整条渲染 pipeline 的基准耗时下降约 15.5%，这个数字直接固化成了 CI 门禁——观测体系建得早，性能回归才有判据。</p>
+<h2 id="补票的晚做两个月的代价"><a class="header" href="#补票的晚做两个月的代价">补票的：晚做两个月的代价</a></h2>
+<p>第二个项目是一个 Swift 原生 AI coding agent，我的反面教材。</p>
+<p>项目启动时没有任何可观测性，全项目 3 处 print。两个月后我专门开了一个阶段补建全链路 trace：span 三元组（traceID/spanID/parentSpanID）、层级埋点从 session 根一路到工具执行和 HTTP 请求、跨层父子关系用 <code>@TaskLocal</code> 隐式传播（不污染工具协议接口）、内置脱敏器、默认空操作（NoOp）、文件日志滚动截断。</p>
+<p>补建本身很认真，但一接入就暴露了晚做的代价：CHANGELOG 里记录了一批 provider 的 span 生命周期 bug——有的 provider 在产出最终结果之后才结束 span，trace 时长系统性失真。这类 bug 在「没有 trace 就看不见」的状态里活了两个月。教训最后固化成这个项目的硬规则：所有 span 必须在事件流对外产生最终结果之前结束——注意这是该项目「trace 时长必须反映真实处理时间」的特定契约，不是通用原则；span 该在哪结束取决于你想观测的是生成、序列化还是分发耗时。</p>
+<p>补得越认真，越说明该在第一天做。后补 trace 的成本不只是补代码，还有那段时间里你看不见的一切。</p>
+<h2 id="推到最远的trace-即运行时"><a class="header" href="#推到最远的trace-即运行时">推到最远的：trace 即运行时</a></h2>
+<p>第三个项目是一个 Rust 写的个人 agent runtime，它把「trace 是一等公民」推到了我没预想到的远度：trace 不是旁路记录，是运行时状态机本体——计划步骤的状态直接由 trace 对象承载，写 trace 和推进状态是同一个动作。这带来一个必须显式接受的取舍：trace 写入失败时主流程只能快速失败（fail-fast），没有「静默降级」这条旁路——这是它和「零开销空操作」哲学的天然张力，选哪个取决于 trace 在你的系统里是数据还是状态。</p>
+<p>每次运行落盘四个产物：机器读的完整 JSON（约 50 个字段，含每次 LLM 调用的完整 prompt 快照）、人读的 Markdown、只追加的索引、每日总览表。四份产物的权威关系要交代清：只追加的事件日志是唯一权威源，Markdown、索引、总览都是可重建的投影（projection）——投影写失败可以重来，权威日志追加失败才快速失败。落盘格式带版本号，配合 serde 的 <code>#[serde(default)]</code> 与字段版本化策略维持向后兼容，并用旧版 fixture 做回归验证——<code>#[serde(default)]</code> 只兜得住字段缺失，兜不住语义、单位、枚举和 ID 规则的变化，兼容不是 serde 白送的，是一组显式的工程决策。</p>
+<p>它最有意思的是自我进化的方式：eval 流程会反向发现 trace 的字段缺口。有一次 eval 发现「恢复行为不可归因」——agent 重试了，但 trace 里看不出它做了什么恢复动作——于是补齐 recovery_action、replan_count 字段。trace 养 eval，eval 养 trace。</p>
+<p>这个项目还沉淀出一个四层模型：日志 → 归因 → 评测 → 决策（Log → Attribution → Evaluation → Decision）。日志只是原料，归因成指标（成功率、回退率、上下文丢弃率……），指标进门禁，门禁决定合并。门禁从软到硬还有量化晋升门槛：连续 5 次 PR 无 FAIL、误报 WARN 不超过 20%，才允许升级——不是「感觉稳定了」，是「数据证明稳定了」。</p>
+<h2 id="好-trace-的标准"><a class="header" href="#好-trace-的标准">好 trace 的标准</a></h2>
+<p>三个项目看下来，标准就浮出来了：</p>
+<ol>
+<li><strong>结构化、稳定的事件模型</strong>：事件名和字段先收住，比日志抽象做漂亮更重要；格式带版本号，靠显式迁移和旧版 fixture 回归维持向后兼容</li>
+<li><strong>开销和失败语义按 trace 的角色分开</strong>：旁路遥测（diagnostic trace）默认近乎零开销，不启用时是空操作（无 I/O、无持久化），写入失败永远不许拖垮主流程；权威事件日志（event journal）则相反——它本身就是业务状态，写入失败必须快速失败，否则状态会不可恢复地不一致。上面第三个项目属于后者。把两类都叫「trace」是容易误导的：后者严格说已经是 system of record</li>
+<li><strong>脱敏内建，但边界要说清</strong>：已识别的敏感模式（API key、token、家目录路径）在写入前遮蔽；但 prompt、工具参数、工具结果里可能携带任意敏感数据，trace 文件整体仍要按敏感数据对待</li>
+<li><strong>trace 即测试断言</strong>：拓扑结构、错误分类、时序不变量都能拿 trace 回归——不进入测试体系的 trace 只是安慰剂</li>
+<li><strong>允许被 eval 反向塑造</strong>：字段缺口由 eval 流程发现，trace 和 eval 是共生关系</li>
+</ol>
+<h2 id="二假通过与假失败eval-的归因学"><a class="header" href="#二假通过与假失败eval-的归因学">二、假通过与假失败：eval 的归因学</a></h2>
+<p>拿 trace 做 eval，最大的陷阱是判错——而且两个方向都会判错。假通过放行了坏的，假失败冤枉了好的。我自己踩过的是假通过，三种形态；假失败这一面是读外部文献补上的，先讲我的，再讲补的。</p>
+<h2 id="假通过我踩过的三种"><a class="header" href="#假通过我踩过的三种">假通过：我踩过的三种</a></h2>
+<p>第一种，agent 兜底答对，能力根本没被调用。你问它图片尺寸，它没调 read_image，用 bash 的 file 命令兜底答对了——结构断言全绿，但你想测的能力零覆盖。防御方式是断言路径而不是结果：<code>tools_called</code> 锁定必须真实调用，<code>no_tool_errors</code> 锁定工具必须真实成功，结果文本必须包含只有真实调用才会出现的标记。用例注释写得很直白：「即使 agent 用 bash 兜底答对也判 fail——防止假通过」。</p>
+<p>第二种，工具报错被 agent 粉饰太平。工具返回了 error，agent 当作没看见，最终回答依然自信，单看最终文本完全正常。所以 trace 里的工具硬错误要单独提取出来，任何一条都足以判 FAIL。</p>
+<p>第三种最容易被忽略：eval 系统自身的盲区。我们真踩过——harness 有个版本里，dsh 子进程崩了（exit≠0）但 trace 断言全过，用例照样 PASS；还有一次筛选条件笔误导致用例零命中，CI 空跑却显示绿色。现在的防御是：非零退出永远不许 PASS、筛选无命中直接报错、trace 解析跳行数增长要告警——因为断言可能跑在残缺数据上。</p>
+<h2 id="假通过外部文献补的五种"><a class="header" href="#假通过外部文献补的五种">假通过：外部文献补的五种</a></h2>
+<p>对撞近一年的公开实践之后，假通过的目录要扩。这五种我都没踩过（或者踩了没意识到），每一种都有明确出处：</p>
+<p><strong>提前宣告胜利。</strong> Anthropic 做长时程 agent（《Effective harnesses for long-running agents》，2025-11）时观察到：项目后期，新 session 的 agent 环顾四周看到已有进展，直接宣布完成——什么都没做就「通过」了。它不依赖工具报错，也不需要兜底命令，纯粹是自我宣布。他们的防线是把特性清单全部初始化为 failing，agent 只能翻「完成位」，不能删不能改。</p>
+<p><strong>局部验证 ≠ 端到端验证。</strong> 同一篇文章：agent 会跑单测、会用 curl 打 dev server，看似「测过了」，但功能端到端是坏的；只有显式要求用浏览器自动化像真人一样操作之后才暴露 bug。测试绿了，但验证的深度不够——这比工具报错被粉饰更隐蔽，因为验证行为本身确实发生了。</p>
+<p><strong>终态 ≠ 对话记录（outcome ≠ transcript）。</strong> Anthropic 的 eval 专文（《Demystifying evals for AI agents》，2026-01）把判定对象拆成两层：agent 说「航班订好了」是对话记录，数据库里是否真有预订记录是终态——评分器（grader）要有查环境终态的 <code>state_check</code>，不能只看答复文本。他们给过一个硬数据：CORE-Bench 上评分器的 bug（期望 <code>96.124991…</code> 却拒收 <code>96.12</code> 这类刚性判分）能把实际 95% 的模型压成 42%。粉饰不只发生在工具层，最终答复本身就可以粉饰。</p>
+<p><strong>触发层的假通过。</strong> OpenAI 的 skill eval 指南（2026-01）指出一个我从没测过的维度：skill 的 name/description 是 agent 决定「要不要用它」的主要信号，所以 eval 集必须带负例对照——「该触发时触发」和「不该触发时不触发」都要测。只测前者的团队会优化出一个什么都触发的 agent。橡皮图章 judge 管输出层，这个盲区管入口层。</p>
+<p><strong>预算内的假通过。</strong> Braintrust 的六代 agent 综述（2026-05）提出 budgeted success：一次事故响应用了 35 次工具调用才解决——「这不是 pass，是伪装成 pass 的成本事故」。结果对但路径代价不可接受，正确性要和预算联合判定。我的 harness 记 token 口径只做成本观察，没把预算升格为判定条件——这是一个真实的缺口。</p>
+<h2 id="假失败被冤枉的那一面"><a class="header" href="#假失败被冤枉的那一面">假失败：被冤枉的那一面</a></h2>
+<p>LangChain 的 eval checklist（2026-03）补了我框架的另一半：评分器把超时、基础设施错误标记为「推理错误」，就是在冤枉 agent。他们引过一个案例：Witan Labs 修掉一个数据提取的基础设施 bug 后，基准分从 50% 直接跳到 73%——infra 问题经常伪装成推理失败。防御方式和假通过镜像对称：运行状态要显式区分 completed / error / timeout，门禁判定前先问「这次失败真的是 agent 的失败吗」。</p>
+<p>我的 harness 其实已经有这条线的雏形——非零退出判 error 而非 fail，超时带进程诊断字段——但我从没把它当成「假失败防御」来表述。归因学是两个方向的：放行的要拦，冤枉的也要拦。</p>
+<h2 id="三judge-也要被校准"><a class="header" href="#三judge-也要被校准">三、judge 也要被校准</a></h2>
+<p>结构断言是确定性的，可信。但语义断言（judge）是另一个 LLM，它也会犯错——而且它的漏判会直接变成门禁的假绿。这是「eval 系统盲区」的另一种形态：不是看不见，是看见了但判错。</p>
+<p>校准的方法论不复杂，复杂在纪律。从真实报告里抽几十条输出，逐条亲手标 PASS/FAIL，让 judge 跑同一个集合，然后<strong>分开看两个数</strong>：TPR（真失败被抓到的比例）和 TNR（真通过没被冤枉的比例）。为什么不能只看总一致率——假设样本里 90% 都是 PASS，一个什么都放行的橡皮图章 judge 也能拿 90% agreement，但它漏掉了全部真实失败。Eugene Yan 对 LLM judge 的实测（《Evaluating the Effectiveness of LLM-Evaluators》）给出过一组对照：judge 在多数类样本上表现极好，在少数类（真实失败）上召回率大幅下降——正是总一致率掩盖的盲区。</p>
+<p>到这里，方法论的骨架就齐了。但骨架上还挂着几个我初稿时答不上来的问题——校准集怎么配、人类基线怎么用、judge 工程上有什么讲究。对撞完文献，这四组问题都有了带出处的答案。</p>
+<p><strong>人类基线告诉你的是任务的可标注上限，不是 judge 的验收线。</strong> Eugene Yan（《Product Evals in Three Simple Steps》，2025-11）给了一组我一直想要的数据：人类标注者之间的一致性（Cohen’s Kappa）常常只有 0.2–0.3，疲劳时人类会漏掉多达 50% 的缺陷；judge 的 Kappa 达到 0.4–0.6 就已不错（Yan 原文称这一档为 substantial——按 Landis &amp; Koch 的通行分级，0.41–0.60 叫 moderate，0.61–0.80 才是 substantial，这里以通行分级为准）。这组数据的正确用法是判断评分标准（rubric）是否清晰、任务是否主观到不可标注——人类一致性低，首先该怀疑的是标准本身。但它<strong>不能直接拿来给 judge 放行</strong>：低一致性可能来自评分标准含糊或类别不均衡（Kappa 有 prevalence 悖论），并不自动降低生产门禁对漏判率的要求——安全、财务、发布阻断类 FAIL，即使人类容易漏，judge 的 FAIL recall 该 95% 还是得 95%。所以验收要对齐到专家 adjudication 后的金标，分报 FAIL recall、PASS specificity、拒答率和各自的置信区间。Kappa、recall、accuracy 是三个不同的量，别在一句话里混着比「超过人类」。judge 的真正价值不是比人准，而是 7×24 小时用同一个标准评几百条样本——规模，不是精度。</p>
+<p><strong>校准集怎么构成：fail 样本要够，而且别合成。</strong> 两个独立来源给出同一方向：Yan 建议 200+ 样本里至少 50–100 个 fail——几百条标注里只有 5 条 fail 的校准集没用。fail 样本不够怎么办？他的排序是：用小模型/弱模型产「有机失败」（长上下文吃力、推理不足，天然产生真实缺陷）为最佳；<strong>让强模型合成缺陷是反模式</strong>——合成缺陷是 OOD 的，要么太夸张要么太微妙，在这种数据上校准出的 judge 抓不到生产里 messy 的真实失败。LangChain 补了数量门槛：20+ 人工标注起步，约 100 条达到生产级置信度。标签形态上 Yan 还有个损辣但真实的观察：坚持要 1–5 细粒度分「以便日后调阈值」的利益相关方，他见过 exactly zero 个真的调过——既然终点是二元判定，标注起点就该是二元。</p>
+<p><strong>judge 的工程细则，四条。</strong> 一，给 judge 留「Unknown」退路：信息不足时允许拒答，防止硬判出幻觉（Anthropic）。美团图灵团队把这条退路用成了 rubric 的质量信号：unknown 占比高，首先该怀疑 rubric 定义不合格——拿 unknown 占比反查 rubric，迭代到单条 rubric 的人人一致率、人机一致率过可信阈值（他们的参考线是 85%/90%）。Unknown 从防御手段升级成了校准回路的输入。二，一个维度一个 judge，反对「God Evaluator」——一个 prompt 评 5–10 个维度没人做好过，失准时也无法定位是哪个维度在漂（Anthropic、Yan 同此结论）。三，用 JSON Schema 机械强制「先依据后判定」：OpenAI 的做法是给评分器输出套 schema，<code>checks[].notes</code> 必填——比 prompt 约定硬，这正好把我之前「先写分析、末行判定」的格式约束升级成结构约束。四，pairwise 比较要跑两遍、交换顺序：判定翻转说明两者难区分，应记 tie 而不是强行分胜负——顺便，tie 不等于没有信息，Braintrust 指出「打平但省 40% 工具调用就是赢」。</p>
+<p><strong>校准飞轮。</strong> LangChain 给了一个闭环做法：人工修正 judge 的记录自动回填为 judge 的 few-shot 示例——每次纠偏都在强化校准。这把校准从一次性仪式变成持续过程，和 §七会讲到的标准漂移（criteria drift，标准本身会漂移）正好配套。</p>
+<p>上面的纪律管的都是人机一致，美团图灵团队的实践补上了我没覆盖的另一半——<strong>人人一致</strong>。他们深度 BP 多个业务团队两年，结论直白：「1 个独裁者好过 10 个民主者」——需要一个强有力的角色拉齐产品、运营、研发、QA 的评测标准，分歧时拍板，避免各自为政；评测员之间用背靠背标注拉齐。他们还给了一个演进视角：评测目标不是一次定死的，会随业务扩量和用户画像偏移而调整——履约业务从冷启动的 20 多个指标，一年后扩到近 200 个。这和标准漂移是同一现象的两种驱动：漂移来自评估过程本身，这个来自业务规模推着标准走。我的校准纪律隐含「标准由一个人（我）定」，个人项目里这成立；团队尺度上，「谁的标准」本身就是第一道要解决的题。</p>
+<p>再补两条纪律，它们是上面参数的前提，不冲突。其一，<strong>样本量决定可信度</strong>：真失败样本只有 10 条时，TPR=0.9 的 95% 置信区间大约宽到 0.55–1.0，「过线」没什么统计意义——要么把校准集扩到上百条、两类样本都充足，要么报告里带上分母（或 Wilson 置信区间），别只报点估计。其二，<strong>校准集和验证集分开</strong>：拿调过评分标准的同一批数据做最终验证，分数会虚高。</p>
+<p>校准还逼我修了一个 judge 自身的格式问题。同行给过我一个忠告：<strong>千万别让 LLM 先给答案</strong>——它会基于答案编理由，哪怕答案是错的。harness 的 judge 最初就是「首行判定、次行理由」的格式，这个格式本身就在诱导先定论后粉饰。改成「先写分析、末行判定」之后，至少格式诱导被消除了——当然，模型仍然可能先有了结论再补一份像样的分析，格式改变不了动机，只能不给它偷懒的借口。更硬的做法是要求分析引用 trace 里的具体工具调用，并对引用做二次校验，这我还在权衡。</p>
+<p>最后留一个靶子：OpenAI 那篇 skill eval 指南，全程拿 Codex 当评分器，没有人工标注、没有 TPR/TNR、没有校准/验证集分离——主流官方指南也默认 judge 可信。这不是批评他们（那篇文章的目标读者不是做门禁的人），但它说明校准纪律在业界远不是共识，这一节的方法论依然是有差异化价值的。美团那篇给这个取舍提供了另一个解释角度：Skill 生产门槛越来越低，未来需要评测的不只是产运研，是每个会创建、修改、接入 Skill 的人——评测系统必须足够简单、标准化、自动化才接得住这个需求面。给每个 Skill 生产者用的指南，把「简单易用」置于「统计严谨」之上是理性选择；只是做门禁的人不能照单全收。</p>
+<h2 id="四harness-的关键决策每个背后都有事故"><a class="header" href="#四harness-的关键决策每个背后都有事故">四、harness 的关键决策，每个背后都有事故</a></h2>
+<p>dsh-eval-harness 的结构一句话：写 yaml 用例，headless 驱动真实 agent session，解析落盘的 session trace，断言，对比基准出门禁。结构平淡，决策都在细节里。</p>
+<p>写完之后我对着业界的公开实践（awesome-evals 这类社区清单和它们的实操手册）逐项核对过一遍：结构断言先行、二元判定、试验隔离、基准对比门禁、版本化报告、成本阈值——这些主流做法和 harness 的现有设计全部对得上。核对的价值不在自我确认，在于知道自己站在什么坐标系里：哪些是共识，哪些是我自己的选择。</p>
+<p>最重要的决策是<strong>读真实 trace，不用 LLM 替身</strong>。替身的代价是测的不再是真实系统：prompt 组装、工具协议、模型行为全被换掉；读落盘 trace 的代价是每次全量跑要烧真 token（12 条用例约 12 万，deepseek-chat 量级下成本可以忽略）。我选后者——eval 的意义就是验证真实链路，替身测通过的系统上线照样崩。</p>
+<p>（2026-09-27 补记：这段话后来被系列第 5、6 篇限定了一层——它管的是<strong>行为语义</strong>场景：prompt 组装、模型行为、工具协议，替身一换，测的就不是那个系统了。但在<strong>协议故障注入</strong>场景——要流按要求截断、丢终止事件、发半个事件——真实模型不会配合你确定性犯病，mock 反而是唯一可信的考题：那个场景里模型的智力与结论无关，保真的责任由「黄金样本对齐真实 API」的校准机制承担。这条原则的完整形态因此是分层的：行为语义走真实链路，协议故障走 mock——<a href="/posts/回答被截断-你的-CLI-知道吗-四个工具-六种故障-108-格矩阵-和一个差点发布的错误结论/">第 5 篇</a>的截断矩阵和<a href="/posts/给流式协议造故障-三协议-mock-once-注入-字节级送达证明-和-strings-阴性不等于代码不存在/">第 6 篇</a>的 mock 厨房是它的展开。）</p>
+<p>第二个值得说的是<strong>重跑卫生</strong>。harness 支持失败重跑来治理偶发失败，但有个隐蔽陷阱：上一次尝试的文件副作用会让重跑假通过——用例要求「创建文件」，重跑时文件已经在那儿了。所以每条用例的每次 attempt 都获得全新的工作区和全新的 session 落盘根（<code>.sessions/&lt;用例&gt;/attempt-N</code>）：工作区清空重建防文件副作用，session 根按 attempt 独立则连 trace 采集都不共享——早期版本曾经 session 根复用、靠时间窗过滤本次 attempt 的 trace，但被 kill 进程的延迟落盘可能越过时间窗边界，时间戳不是可靠的关联键。对撞外部文献后还要补一个反方向的实证：Anthropic 在内部 eval 里发现 Claude 会读前几次尝试留下的 git history 作弊式获利——共享残留状态不只导致假通过，还会<strong>虚增成绩</strong>。清工作区时，git 历史、缓存这些隐蔽载体要一并考虑。</p>
+<h2 id="路径断言分层一处立场修正"><a class="header" href="#路径断言分层一处立场修正">路径断言分层：一处立场修正</a></h2>
+<p>前文说「断言路径而不是结果」，但对撞里两个独立来源正面挑战了它：Anthropic 明确反对检查「按正确顺序调用特定工具」——太脆，而且会惩罚 eval 设计者没想到的合法路径（τ2-bench 实例：Opus 发现政策漏洞给出更优解，被判 fail）；LangChain 同样警告精确路径断言会冤杀创造性绕路。</p>
+<p>我想过这个问题，结论是不认错，但要分层。反对者的场景是给模型打分的 benchmark——那里必须对未知解法公平。我的场景是自家插件的回归门禁——路径稳定性本来就是我要守的东西。而且「创造性绕路」多数时候说明预期路径先出了问题，这个前序失败是信号，该记录。但注意 Anthropic 那个例子的锋利之处：agent 发现漏洞给出更优解时，之前没有任何问题——它是水平高，不是补救。判它 fail 是在惩罚超出设计者想象力的行为。</p>
+<p>所以立场修正为三层，刚好落在 harness 现有的信号体系上：</p>
+<ul>
+<li><strong>覆盖断言是 FAIL 级</strong>：想测的能力必须被真实调用（read_image 不许被 bash 兜底），这是防能力零覆盖，不动摇；</li>
+<li><strong>路径偏离是 WARN 级</strong>：调了该调的，只是顺序、方式不同——记录下来，它回答「之前是不是出了什么问题」，但不一票否决；</li>
+<li><strong>结果对错交给终态判定</strong>：终态检查（state_check 思想）和语义 judge 管这一层。</li>
+</ul>
+<p>Braintrust 给了路径断言的可操作形态：断 <code>must_call / must_not_call / max_tool_calls</code>（包含必要调用吗、避开禁止调用吗、步数超限吗），不断精确序列。三层的判据加在一起，既防假通过，也不冤杀更优解。</p>
+<h2 id="把遮羞布和尺子分开以及尺子的统计口径"><a class="header" href="#把遮羞布和尺子分开以及尺子的统计口径">把「遮羞布」和「尺子」分开（以及尺子的统计口径）</a></h2>
+<p>失败重跑是遮羞布：它回答「这个用例最终能不能过」，让门禁不被偶发抖动打红。但它回答不了「这个用例单次成功率是多少」——我的一条用例（todo-tool）真实出现过首跑直接不调工具、重跑才过的情况，报告里只有一个不起眼的偶发（flaky）标记。所以 harness 另有 trials 模式：跑满 n 次独立尝试、每次清工作区、不许重试，报告写出单次成功率、pass@k 和 pass^k（k 次全成的概率）。这里要把定义和估计分开：pass@k 的定义是给 k 次独立尝试至少成一次的概率，理论上 1-(1-p)^k；但从 n 次尝试里<strong>估计</strong>它要用无偏组合估计 1-C(n-c,k)/C(n,k)（c 为通过次数，约束 k ≤ n）——n=k 时套理论公式在小样本下是有偏的。pass^k 同理：定义是 p^k，估计要用 C(c,k)/C(n,k) 而不是 plug-in 的 (c/n)^k——x^k 上凸，Jensen 不等式保证 plug-in 向上偏（n=3,c=2,k=2 时 4/9 vs 1/3）。这两个数会讲完全相反的故事：单次成功率 0.75 的用例，pass@10 约等于 1.0（看起来完美），pass^10 约为 0.056（几乎必挂）。两个前提必须说清：这些数基于「每次尝试独立同分布」的假设——真实环境里的限流、网络、模型状态漂移都会破坏这个假设；而且小样本的估计是估计，不是真实成功率，报告里必须带着 n 看。遮羞布管 CI 绿不绿，尺子管你敢不敢信它。</p>
+<p>还有一个被 review 戳破的张力要如实交代：trials 模式下用例状态是「任一通过即 pass」，而 gate 原本只比较最终 status——尺子测出 10 次只过 1 次，门禁照样放行。测量和门禁合体应该是显式选择，所以 harness 现在的做法是默认保留测量语义，需要时开 <code>min_trial_success_rate</code>：successRate 的单侧 95% Wilson 下界低于阈值记 WARN（strict 模式下即为硬门槛）。判下界不判点估计——10 次过 9 次的点估计 0.9，下界只有约 0.65，小样本不配谈达标。</p>
+<p>再给尺子补三个口径，全部来自对撞：</p>
+<p><strong>门禁应该判置信区间的界，而不是点估计——而且要用对区间的形状。</strong> Eugene Yan 给了一个具体算例：门禁要求缺陷率 &lt;5%；200 个样本观测到 3%，95% 置信区间约 3%±2.4%，上界 5.4% 越线——不能放行；样本加到 400，区间缩到 ±1.7%，上界 4.7%，才算过。他的结论方向是对的，但口径要修两道：一，这是 Wald 正态近似，小 p 小样本下系统性偏窄；二，「缺陷率是否低于 5%」是单侧问题，该用<strong>单侧 Wilson 上置信界</strong>（z=1.645）而不是对称区间——按单侧 Wilson 算，n=200 上界约 5.7%（不过），n=400 约 4.8%（通过），Yan 的结论这才在严格口径下成立。（若用双侧 95% Wilson，上界分别为 6.4% 和 5.2%，n=400 依然越线——区间形状的选择直接影响门禁结论。）背后的规律不变：标准误随 √n 下降，误差减半样本要翻四倍，加样本的收益递减。这回答了初稿没答的问题——尺子要做多长。</p>
+<p><strong>聚合指标是新形态的遮羞布，要分层看。</strong> OpenHands 的 skill eval（2026-03）有个实例：聚合 pass rate 70%→80% 看似正收益，按模型拆开，至少一个模型启用 skill 后是退化的。门禁若只看聚合数，逐模型/逐后端的退化就被平均掉了——pass@k/pass^k 解决「重跑多少次」的口径，分层解决「按什么切片」的口径。</p>
+<p><strong>模型升级即触发全量重校。</strong> OpenHands 引了 Boris Cherny 的实践：每次换模型都删掉 claude.md，跑偏了才一点点加回来——每个模型需要的引导越来越少。干预（skill、prompt、judge 的评分标准）的有效性随模型版本衰减，昨天校准好的东西换模型后都要重测。我的 harness 已经把 <code>dshVersion</code> 记进报告、版本变化时 gate 留痕——基建在位，缺的是把「版本变化 → 触发重校」写成纪律。</p>
+<p>还有一个工程决策一句话带过：<strong>零依赖 YAML 子集解析器</strong>——用例格式是自定义的 yaml 子集，内置解析器只认这个子集，写超纲语法立刻报带行号的错。不引第三方库，一是供应链面最小化，二是用例格式完全可控。</p>
+<h2 id="五实现管线行为是怎么一步步变成数据的"><a class="header" href="#五实现管线行为是怎么一步步变成数据的">五、实现管线：行为是怎么一步步变成数据的</a></h2>
+<p>管线四步：驱动 → 采集 → 提取 → 门禁。每一步都有真实的坑。</p>
+<p><strong>驱动层</strong>的基本动作是 spawn 子进程：<code>dsh --profile headless --patch &lt;overlay&gt; &lt;prompt&gt;</code>。三个设计点。其一，隔离发生在配置层：每条用例需要独立的 session 落盘根，最省事的写法是给子进程塞环境变量——但环境变量会泄漏到 agent 调用的工具里，污染被测行为，所以 harness 为每条用例生成一份 <code>--patch</code> overlay，按 row id 整体替换持久化配置里的落盘根。其二，每条用例一份工作区作 cwd、一份 session 根，目录名带加载序号而不是用例名的 slug——slug 化不是唯一键，「read image」和「read-image」会撞成同一个 slug，撞了就是两条用例的 trace 互相错捡。其三，可执行文件路径必须绝对：我真实踩过，runner 给每条用例起了独立 cwd，而我传了相对路径，11 条用例全部 spawn ENOENT——子进程在自己的工作区里找相对路径，当然找不到。现在 harness 启动前先用 <code>--version</code> 探针验证 dsh 可用，顺带把版本号记进报告，排障时直接区分「dsh 变了」还是「模型变了」。（后来读到 LangChain 引的一则 Anthropic 轶事，说他们在 SWE-bench 工具上花的时间比 prompt 还多、绝对路径消除整类路径错误——看来这个坑的门票人人都买过。）</p>
+<p>隔离还有一个维度是我的 harness 没做的：按风险分层。美团把执行沙箱按只读、可写、高风险三类分层隔离列为评测基建的必备能力——我的工作区隔离服务的是重跑卫生（防文件副作用假通过），不防用例本身的高风险操作越界。目前 12 条用例全是本地文件操作，这层还不是刚需；用例集里一旦出现写外部状态的用例，就得补。</p>
+<p><strong>采集层</strong>面对的是 dsh 的落盘格式：session.jsonl 每行一帧信封 <code>{type, seq, time, data}</code>，默认还是压缩版 session.jsonl.zstd——多帧拼接的 zstd 容器。这里有两个反直觉的坑，都是实测出来的。第一个：把多帧拼接的容器一次性丢给 <code>zstdDecompressSync</code>，它只解出第一帧，<strong>不报错、静默截断</strong>——所以必须逐帧解。第二个：逐帧切分不能在字节流里搜魔数——zstd 帧魔数完全可能出现在压缩载荷内部，搜魔数会把一帧切成两半。正确的做法是按帧结构解析边界：帧头描述符给出内容尺寸字段长度，块头给出每块大小，顺着声明的尺寸走，魔数只在「上一帧结构结束的位置」校验。harness 的解码器就是这么写的（和上游 dsh-session 包里的 scanZstdFrames 同款思路），全部依赖 Node 内置 <code>node:zlib</code>，零外部依赖——注意 zstd 支持是较新版本 Node 才有的（22.15+/23.8+），旧 LTS 上没有。</p>
+<p>尾帧是另一个故事。进程在写入过程中被 SIGKILL 时，最后一个帧很可能只写了一半。能恢复多少，上限由<strong>写入端的 flush 频率</strong>决定——没 flush 出来的字节根本不在文件里，谁也救不回。解码端能做的是容忍截断：harness 对残缺尾帧用 <code>finishFlush: ZSTD_e_flush</code> 解——这个参数的作用是把输入结尾当作一个 flush 点而不是要求的流尾，已刷出的块照常产出明文。恢复失败也只丢这一个尾帧，已完成的帧不受影响。顺带一提，Node 对截断帧的容错比想象中宽：不带任何选项解残缺帧也常常返回部分明文而不是报错——这意味着「靠异常发现尾帧残缺」不成立，trace 跳行数告警这条防线是必须的。</p>
+<p><strong>提取层</strong>把帧流变成结构化观测：turn 怎么结束的、调了哪些工具、每次调用的参数和结果文本、最终回答、token 用量、成功解析的帧数和跳过的坏行数。这层最大的教训是按真实落盘形状写代码，不按想象写：tool/result 在真实落盘里有三种形状（成功 / <code>data.error{name,code}</code> / 纯 isError 标记），最初按假设的形状提取，漏了后两种，工具硬错误就悄悄漏过了。现在用一份真实 session 脱敏后做 fixture，快照测试把三种形状锁死。token 口径同样有讲究：多步 session 里同一段缓存每步重复读回，所以 total 只算未命中缓存的 input + output + reasoning（落盘的 input 字段本身已排除缓存命中），缓存读写单列观察。这个口径是为门禁的漂移检测服务的；缓存读仍按折扣价计费，算成本账时别用这个 total。OpenHands 的实验给了效率口径一个额外理由：他们的 skill eval 里 pass 提升的同时 runtime 从 266s 降到 109s（也有一次从 87s 升到 99s 的代价案例）——效率 delta 是干预副作用的探测器，不只是成本核算。</p>
+<p><strong>门禁层</strong>的两个设计。一是报告带 schemaVersion：基准报告入库，是要长期活着的数据资产；loader 对旧版自动补默认值，对未知的未来版本直接拒绝比较，重复用例名、非法状态、summary 与用例不符一律拒跑——不让一份坏报告产出看似合法的判定。二是判定是带退出码的协议：PASS=0、FAIL=1、N/A=2、WARN=0（strict 模式 2）。一个有意的设计代价要说清：strict 模式下 WARN 和 N/A 同为 2，CI 只看退出码时分不出两者——取舍的理由是两者都意味着「不能当作干净通过」，需要分辨时看文本输出的 OVERALL 行。所有中间产物同时以文本行和 JSON 两种形态输出，人和 CI 各取所需。LangChain 的 checklist 还给了门禁一个成本分层视角：便宜的确定性评分器守 CI（毫秒级），贵的 LLM judge 守 preview/prod 阶段——我的门禁目前全量同权，这是可以演进的形状。美团的基建清单还提了报告的一个输出维度：归因要落到故障域——问题发生在规划、工具、环境还是 Skill。我的报告目前回答「过没过」和「是不是 infra 的锅」，「挂在哪一层」要靠人读 trace；提取层已有的工具错误分类和 turn 结束方式其实是现成的故障域原料，缺的是把它们汇总成报告字段。</p>
+<p>这条管线没有一步是复杂的，但每一步都有一次真实事故兜底。把 agent 行为变成数据的过程里，最容易出错的地方从来不是解析，而是那些你以为不会出错的接缝。</p>
+<h2 id="六破案eval-抓到上游的并发-bug"><a class="header" href="#六破案eval-抓到上游的并发-bug">六、破案：eval 抓到上游的并发 bug</a></h2>
+<p>上周 dsh 从 0.1.0-rc.6 升到 0.1.1-rc.2。我按惯例翻上游的 fix 记录找用例素材——每个修过的 bug 都是一条回归用例的种子。看中了图片尺寸准入的修复（0.1.0-rc.8 的 changelog 条目「修复图片尺寸过大或历史图片累计载荷过高导致模型请求失败」，rc.2 又进一步完善了图像预处理）：修复前，边长超限的图片会被 read_image 原样写进 session 历史，后续请求全被 provider 400 毒化；修复后应在准入时降采样。</p>
+<p>用例红绿对照：同一张 2500x4 的 PNG、同一段 prompt，rc.6 上 FAIL（无降采样标注），rc.2 上 PASS（结果文本含 <code>downscaled from 2500x4</code>）。用例收编，符合预期。</p>
+<p>真正的发现在后面。升版后第一次全量跑，12 条用例、并发 3，两条用例首跑崩了、重跑才过。报告里的重试历史和 stderr 尾部——harness 专门记录的进程诊断字段——显示两个进程都是 ENOENT，但崩在不同位置（错误原文里的绝对路径已缩写为 <code>~</code>；Node 的 fs API 不会展开 <code>~</code>，此处仅为脱敏展示）：</p>
+<pre><code>Error: ENOENT: readlink '~/.dsh/profiles/node_modules/commander'
+    at ensureSymlink (dsh-app-boot/lib/index.js:380:7)
+Error: ENOENT: unlink '~/.dsh/profiles/node_modules/@deepseek-ai/cordis-plugin-timer'
+    at ensureSymlink (lib/index.js:381:3)
+</code></pre>
+<blockquote>
+<p><strong>Tip：ENOENT 是啥？</strong> Unix 系统调用的一个经典错误码，来自 “Error NO ENTry”（没有这个目录项）的缩写——大白话就是「文件或路径不存在」。open、unlink、readlink 这些操作如果目标不存在，就会抛它。Node 的 fs API 原样继承了这套 errno 命名，所以报错里经常能看到它。</p>
+</blockquote>
+<p>dsh 每次启动会「治愈」一个共享符号链接目录（profiles/node_modules），换版后所有链接都要重指。三个进程同时做这件事，而 <code>lstatSync → readlinkSync → unlinkSync</code> 这个序列没有并发防护：A 进程 lstat 时链接还在，readlink 时已被 B 删掉，ENOENT。这是典型的 TOCTOU——检查（lstat）和使用（readlink/unlink）之间存在竞态窗口。而且这个序列还藏着一个更不显眼的后果：A 在 readlink 之后、unlink 之前，B 可能已经删掉旧链接并建好了新的，A 的 unlink 会把 B 刚建好的正确链接一并删掉——这一步不报错，目录就此处于半治愈状态。源码里 <code>symlinkSync</code> 的 EEXIST 分支有护栏，注释甚至明写「并发启动会治愈同一个目录，输掉竞争等于成功」：上游知道有并发，但只防了创建这一步，读和删裸奔。</p>
+<p>分析丢给三个独立 agent 复核，三家全部确认结论，其中一家做了 16 路并发的控制实验，稳定复现 4 次崩溃。报告发到官方 Discussions（<a href="https://github.com/deepseek-ai/deepseek-harness/discussions/4312">#4312</a>），有社区成员据此写出了修复的参考实现，我在 macOS 侧做了对照验证：压力实验的单位是单个进程启动——未修版本 16 并发 × 3 轮共 48 次启动崩 23 次；修复版本同样 48 次零崩溃，加压到 24 并发 × 4 轮共 96 次依然零崩溃。</p>
+<p>这个 bug 能被抓住，全靠前面那些「无聊」的决策：没有「并发 + 隔离」的执行设计，三个进程根本不会同时启动；没有重试历史，重跑过了就没人知道首跑崩过；没有 stderr 尾部采集，崩溃原因无从查起。质量基建的价值不在平时，在这种时刻一次性兑现。</p>
+<p><strong>一个值得说的对照</strong>：Braintrust 那篇综述把回放（replay，用生产 trace 冻结工具观测、重放候选版本）列为发布门禁的一层。这是大厂的主流做法，但它抓不到我这类 bug——录像回放里，工具结果是冻结的，并发时序是被抹平的，TOCTOU 在回放里物理上不存在。我的 harness 恰好站在另一个极端：全真实重跑，连竞态窗口都是真的。两种范式各有盲区，回放便宜稳定但看不见真实环境的并发与时序，真实重跑贵且抖，但保留了回放物理上抹掉的并发与时序变量——低概率竞态可能在样本内不触发、provider 内部状态依然不可观测，它不是全知，只是看得见回放看不见的那一类。这个 bug 是真实重跑派最好的征兵广告。</p>
+<h2 id="七外部对撞印证冲击与盲区"><a class="header" href="#七外部对撞印证冲击与盲区">七、外部对撞：印证、冲击与盲区</a></h2>
+<p>我把三个一线开源 agent 的实现（Kimi Code CLI、Codex CLI、Claude Code）和近一年的 eval 文献翻了一遍。动机很朴素：前面的结论都是从个人项目里长出来的，我想知道它们在大厂工程体系和学界文献里是被证实还是被证伪。大部分被证实了——读到的时候我是松了口气的，这些坑不是只有我一个人踩。下面按「印证 / 冲击 / 盲区」组织，只写有信息量的部分。</p>
+<h2 id="印证多家独立投过票的结论"><a class="header" href="#印证多家独立投过票的结论">印证：多家独立投过票的结论</a></h2>
+<p><strong>事件总线是标配。</strong> 三家的架构概念上同构：core 产出带类型标签的事件流，UI 只是订阅者。Kimi 的 Wire 协议是 24 种 Event 加 4 种 Request 的广播通道，TUI、IDE、Web、可视化器全吃同一份 wire.jsonl；Codex 把这条总线做成了正式产品——JSON-RPC app-server，协议类型能直接导出 TypeScript 和 JSON Schema；Claude Code 干脆不暴露内部总线，把可观测性整个标准化成 OpenTelemetry 三信号。形态不同，结论相同：core 和 UI 之间必须隔一条结构化事件流。格式带版本号也没人不做：Kimi 的 wire.jsonl 首行就是协议版本号；Codex 用 serde alias 兜住改名后的旧事件，协议形状变更必须重新生成 schema fixture——和 §五 的报告 schemaVersion 是同一套思路。OpenAI 那篇 Codex app-server 文章还贡献了一个反面教训：非官方 v1「当时没预料到其他客户端会依赖，所以没设计成稳定 API」，adoption 增长后被迫重构——「协议第一天就要当协议设计」的一手代价记录。</p>
+<p><strong>打分纪律没有分歧。</strong> 三家对外成绩全部是 test-based，跑真实仓库的测试判对错；LLM-judge 只用于按评分标准做主观评审。Anthropic 那套纪律——judge 上岗前用人工标注校准、评分器防 bypass（他们真实遇到过 agent 翻历史尝试的 git 记录作弊）、pass@k 和 pass^k 分清、必须人工读对话记录——和 §三 §四 几乎逐条对应。</p>
+<p><strong>假模型替身是在哪一层用的问题。</strong> §四 说「读真实 trace，不用 LLM 替身」，这在端到端层成立。但 Codex 有 129 个集成测试全部用 wiremock 起假模型服务器做确定性回放；Kimi 的协议 e2e 也用 scripted 假 provider。这不矛盾，是分层：</p>
+<pre><code>   L4  端到端 benchmark（真实模型、真实容器，test-based 打分）
+   L3  行为回归（假模型服务器，确定性回放，测 harness 逻辑）
+   L2  协议一致性测试（事件契约、schema snapshot）
+   L1  单元测试 / 静态不变量
+</code></pre>
+<p>假模型在 L3 是对的：它测的是「框架把模型回答转化成了什么动作」，要的就是确定性。真实链路在 L4 也是对的：它验证整条链路在真实模型行为下能不能活。dsh-eval-harness 站在 L4。初稿批评的替身，错在拿 L3 的手段顶 L4 的岗。</p>
+<p><strong>「第一天做」有量化的第三方佐证。</strong> Eugene Yan 记录过一个团队：花约 4 周建 eval harness（定标准、人工标注、对齐 judge、实验管线），随后 2 周跑了几十个实验，几个月内跑了几百个。Anthropic 给了另一个角度：20–50 个任务就足以起步，且 eval 套件越晚建越难——拖久了只能对着线上系统逆向工程成功标准。</p>
+<p><strong>「先看数据再建体系」有了最系统的版本。</strong> Hamel Husain 和 Shreya Shankar 的 eval FAQ（《AI Evals: Everything You Need to Know》，面向 700+ 工程师与产品经理的课程沉淀）把这个方向写成了完整纲领：评估指标要从真实失败里长出来，不该预先设计；helpfulness、ROUGE 这类现成指标测不出「推荐了不存在的场次」这种真实业务失败，只配当定位 trace 的探索信号；judge 必须对照人工标注校准、已知 TPR/TNR 还能反推系统真实失败率——和 §三 的校准纪律逐条对应；失败判定用二元不用 1–5 分量表（相邻等级主观漂移、标注者倾向选中间值）；rubric 不要提前写，随标注过程修订——和 Shankar 那篇 UIST 论文的 catch-22 是同一作者群的连贯立场。它还给了 eval saturation 一个更损的表述：100% 通过率是警报而非喜讯，70% 的通过率反而说明评估击中了系统的软肋。组织原则上也同票：一位被授权的领域专家做最终裁决，优于标注委员会和外包——和美团「1 个独裁者好过 10 个民主者」隔着太平洋对上了。</p>
+<h2 id="冲击真正逼我改想法的三处"><a class="header" href="#冲击真正逼我改想法的三处">冲击：真正逼我改想法的三处</a></h2>
+<p><strong>路径断言之争</strong>已经在 §四 展开过（修正为 FAIL 级覆盖 + WARN 级偏离 + 终态判定三层），这里只补一句：这是十篇文献里唯一两处独立来源同时撞上来的分歧，撞得有道理，我接了。</p>
+<p><strong>标准漂移（criteria drift）：校准集有保质期。</strong> Shankar 的论文（《Who Validates the Validators?》，UIST 2024）是我这轮阅读里概念增量最大的一篇。她的用户研究发现一个 catch-22：人需要标准才能给输出打分，但打分的过程又帮助人定义标准——评估标准无法在看到模型输出之前完全定义，参与者边打分边改标准，甚至回头改之前的打分。这对 §三 是个正面冲击：我的校准纪律隐含假设「标准定下来是稳定的、校准集是一次性资产」，标准漂移说这个假设不成立——再叠上模型漂移（§四 的「模型升级即重校」），校准集有保质期，重校不是可选项。论文强度要如实说：n=9、单任务、定性研究——概念强度大于证据强度。但它的「先看 20 个例子再写标准」和 Hamel Husain 的「先 error analysis 再写 eval」独立印证，这不是某个流派的偏好。</p>
+<p><strong>基础设施噪音：i.i.d. 警告被量化了。</strong> §四 里「限流、网络、模型状态漂移都会破坏独立同分布假设」在初稿里只是一句免责声明。Anthropic 把它测了出来（《Quantifying infrastructure noise in agentic coding evals》，2026-02）：Terminal-Bench 2.0 上最严和最松的资源配置差 6 个百分点（p&lt;0.01）——比榜首模型之间的分差还大；通过率甚至随一天中的时段波动。他们给出的消费纪律可以直接引用：<strong>榜单上 3 个百分点以内的差距，在 eval 配置公开并对齐之前，保持怀疑。</strong> 对我的 harness 也有一个具体提醒：报告记了 <code>dshVersion</code>，但没记运行环境（机器、负载、时段）——如果哪天分数要跨机器对比，这个缺口会咬人。</p>
+<h2 id="盲区对撞之后才知道自己没看见什么"><a class="header" href="#盲区对撞之后才知道自己没看见什么">盲区：对撞之后才知道自己没看见什么</a></h2>
+<p><strong>多轮 session 层。</strong> LangChain 的三原语（runs/traces/threads）里，thread 层——跨 session 的状态演化——是我的 harness 完全没有覆盖的：所有用例都是单轮。Anthropic 的 context engineering 文章还补了两个具体的归因盲区：compaction 丢了关键 context 造成的失败会被误记成「模型不行」，所以压缩事件（何时触发、丢了什么）必须是 trace 的一等字段；子代理只回一两千 token 的摘要，只采主链路的 eval 天然瞎掉子代理的整个探索过程。</p>
+<p><strong>错误分析怎么落地：编码纪律和两个抄得走的工具。</strong> 我全文讲「用例从失败反推」，但怎么反推只有直觉没有流程。Hamel &amp; Shankar 那篇 FAQ 补的正是这块，方法借自社会科学的质性研究：收集约 100 条多样 trace；开放式编码（open coding）——领域专家逐条读，针对每条的第一个上游失败写开放笔记，前 30 条必须亲手标、不许外包给 LLM 或 agent，因为初始编码承载的是说不清的隐性知识；轴心编码（axial coding）——把笔记归成失败模式 taxonomy，作者称这是全流程最重要的一步；迭代到理论饱和之后，才允许 agent 按已识别的模式检索剩余 trace，裁决权始终在人。两个可以直接抄的诊断工具：其一，转移失败矩阵（Transition Failure Matrix）——行记「最后一个成功状态」，列记「第一个失败位置」，矩阵单元的计数直接暴露失败热点；§五末尾我承认过「挂在哪一层要靠人读 trace」，这个矩阵就是现成的汇总形状，提取层已有的工具错误分类和 turn 结束方式恰好是它的原料。其二，handoff 即失败模式——人工接管不算结束，trace 必须延续到用户需求真正解决为止，交接太早、太晚、上下文不足都是独立的失败点；我的 trace 边界到 agent 输出为止，这一层是瞎的。还有一个反向视角值得单记：「难以评估」往往是产品设计的信号而不是评估问题——输出难审阅时该改的是产品，让验证变容易（比如先给医生看带原文链接的抽取事实，再生成报告）；我的框架默认被测系统不动、eval 想办法测，这一条把压力传回了产品侧。</p>
+<p><strong>指标的业务分层。</strong> 美团这篇最有分量的概念是「搭桥」：模型能力指标和业务结果指标之间有天然鸿沟，中间必须有一层面向任务系统的桥梁指标——以 AI 搜索为例，业务关心 DAU、留存、点击，搜索系统关心召回率、点击率，Agent 层关心意图识别是否准确、检索是否有效、结果整合是否可信；三层串起来，才能回答「为什么业务指标变差」以及「模型能力提升为什么没带来业务收益」。我的四层模型（日志→归因→评测→决策）止步于门禁，是纯工程视角：门禁绿了、业务为什么还是变差，我的框架回答不了。这是个人项目和企业落地的真实坐标差——我的 harness 守的是「别回归」，他们的评测体系还要向业务价值解释「为什么值得做」。顺带一条印证：他们给长程评测定义的 (prompt, expected_behavior, trace) 三元组——类比短程时代的 (query, ground_truth, answer)——和我的 yaml 用例 + trace 断言完全同构。</p>
+<p><strong>eval 套件的生命周期。</strong> Anthropic 和 LangChain 独立提出了同一套东西：能力 eval（低通过率起步，爬坡用）和回归 eval（接近 100%，守成用）要分两个套件；爬到顶的能力任务「毕业」进回归套件；一个通过率 100% 的 eval 只剩回归信号、没有改进信号（eval saturation）；不再暴露新失败的用例要定期剪掉——更多用例 ≠ 更好的 eval，盲目堆测试会制造进步假象。我的门禁有「从软到硬的晋升」，这是它的镜像：用例本身也有生命周期。公开材料里没人做的事从一项（门禁晋升的量化门槛）变成了两项——套件治理这一层，加上它，仍属空白。</p>
+<p><strong>被测系统该暴露什么钩子。</strong> 要给自家 agent 建 eval，被测系统得提供四样东西，三家各贡献了一部分样本：可注入的 run 标识（事后把遥测和 eval 结果 join 起来按用例切片）；确定性开关（feature flag、灰度实验一键固定，否则分数里混着实验噪音）；稳定的关联键（Kimi 用响应头 <code>x-trace-id</code>，Codex 用 W3C traceparent 跨进程传播）；结构化、可回放的对话记录。Codex 的 app-server 另有一个驱动层的坑值得点名：审批回调是协议级义务——server 会主动发 approval request 并暂停 turn 等客户端应答，只实现单向请求的 eval 驱动会在审批点挂死。</p>
+<h2 id="八收尾"><a class="header" href="#八收尾">八、收尾</a></h2>
+<p>trace 第一天就要做，它是后期所有质量工作的地基；用例从真实 bug 反推，上游的 fix 记录是最好的用例种子库；可复现等于隔离加钉版加全量 trace，三者缺一个，红绿对照就不成立；每个行为都要有数字，每个数字都要有门禁，否则「质量」只是形容词；eval 系统本身也要被 eval，judge 上岗前先校准——且校准集有保质期。</p>
+<p>这轮对撞最后改变的是我对「门禁」二字的理解。门禁不是判官，是反馈回路：trace 提供观测，eval 提供误差度量，gate 把误差框在可接受的范围内，版本切换和标准漂移提醒你这个框本身也要定期重校。判官追求一次判对，回路追求永远不跑偏太远。</p>
+<p>四年前我读《工程控制论》时写过一段笔记，当时只是摘抄，现在看它就是对这套东西的表述：</p>
+<blockquote>
+<p>任何复杂系统都不是孤立的输入输出模块，而是自带反馈机制的动态体系；系统的核心价值从来不是单次运行的最优表现，而是长期不崩溃、不跑偏的稳健性；面对不确定性不必强求零误差，只要靠控制+反馈把误差框在可接受范围，再逐步拉回正轨即可。</p>
+</blockquote>
+<p>「不是单次运行的最优表现，而是长期不崩溃、不跑偏」——这是 pass^k 优于 pass@1 的哲学表述，也是治理偶发失败的全部意义。agent 的工程质量不在 prompt 里，在 trace 里——在 trace 喂给反馈回路的每一次纠偏里。</p>
+<h2 id="附术语对照"><a class="header" href="#附术语对照">附：术语对照</a></h2>
+<p>保留英文的术语（文中统一使用）：</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>术语</th><th>本文语境中的含义</th></tr>
+</thead>
+<tbody>
+<tr><td>trace</td><td>追踪记录：agent 运行时落盘的结构化事件流，全文的主线概念</td></tr>
+<tr><td>eval</td><td>评测</td></tr>
+<tr><td>harness</td><td>评测驱动框架：驱动真实 session、采集 trace、跑断言和门禁的设施</td></tr>
+<tr><td>agent</td><td>智能体</td></tr>
+<tr><td>judge</td><td>评审模型：用另一个 LLM 做语义判定</td></tr>
+<tr><td>session</td><td>一次 agent 运行的完整过程及其落盘记录</td></tr>
+<tr><td>prompt</td><td>提示词</td></tr>
+<tr><td>provider</td><td>模型服务商</td></tr>
+<tr><td>skill</td><td>agent 可按描述自主决定是否调用的技能包</td></tr>
+<tr><td>token</td><td>模型的计费与上下文单位</td></tr>
+<tr><td>span</td><td>埋点区间：一次操作在 trace 里的起止记录</td></tr>
+<tr><td>CI</td><td>持续集成</td></tr>
+<tr><td>pass@k</td><td>k 次独立尝试至少成功一次的概率</td></tr>
+<tr><td>pass^k</td><td>k 次独立尝试全部成功的概率</td></tr>
+<tr><td>TPR / TNR</td><td>真失败被抓到的比例 / 真通过没被冤枉的比例</td></tr>
+<tr><td>Cohen’s Kappa</td><td>剔除随机一致之后的一致性系数</td></tr>
+<tr><td>Wilson 置信区间</td><td>小样本下更稳健的比例置信区间算法</td></tr>
+<tr><td>i.i.d.</td><td>独立同分布</td></tr>
+<tr><td>OOD</td><td>分布外（out-of-distribution）</td></tr>
+<tr><td>TOCTOU</td><td>检查与使用之间的竞态窗口（time-of-check to time-of-use）</td></tr>
+<tr><td>state_check</td><td>对环境终态的直接检查</td></tr>
+</tbody>
+</table>
+</div>
+<p>已译为中文的术语（首次出现处保留英文括注）：</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>中文</th><th>英文原文</th></tr>
+</thead>
+<tbody>
+<tr><td>评分器</td><td>grader</td></tr>
+<tr><td>评分标准</td><td>rubric</td></tr>
+<tr><td>标准漂移</td><td>criteria drift</td></tr>
+<tr><td>终态 / 对话记录</td><td>outcome / transcript</td></tr>
+<tr><td>回放</td><td>replay</td></tr>
+<tr><td>快速失败</td><td>fail-fast</td></tr>
+<tr><td>空操作</td><td>NoOp</td></tr>
+<tr><td>投影</td><td>projection</td></tr>
+<tr><td>偶发</td><td>flaky</td></tr>
+<tr><td>尝试</td><td>trial</td></tr>
+</tbody>
+</table>
+</div>
+<hr>
+<p><em>文中 eval 工具 <a href="https://github.com/BiBoyang/dsh-eval-harness">dsh-eval-harness</a> 已开源；bug 报告见 deepseek-ai/deepseek-harness 的 <a href="https://github.com/deepseek-ai/deepseek-harness/discussions/4312">Discussions #4312</a>。外部对照涉及的文献：Anthropic《Demystifying evals for AI agents》《Quantifying infrastructure noise in agentic coding evals》《Effective harnesses for long-running agents》《Effective context engineering for AI agents》《Unlocking the Codex harness》；OpenAI《Testing Agent Skills Systematically with Evals》《Evaluation best practices》；LangChain《Agent observability powers agent evaluation》《Agent Evaluation Readiness Checklist》；Braintrust《The six generations of AI agents and how to eval them》；OpenHands《How to Evaluate Agent Skills》；Eugene Yan《Product Evals in Three Simple Steps》《Evaluating the Effectiveness of LLM-Evaluators》；Shankar et al.《Who Validates the Validators?》；Hamel Husain《Your AI Product Needs Evals》；Hamel Husain &amp; Shreya Shankar《AI Evals: Everything You Need to Know》；美团技术团队《<a href="https://mp.weixin.qq.com/s/gZKWRqznB8sNBFf69fBIvw">图灵Agent评测</a>》。</em></p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="guide.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="ch02.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="guide.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="ch02.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr-ef4e11c1.min.js"></script>
+        <script src="mark-09e88c2c.min.js"></script>
+        <script src="searcher-09f2665d.js"></script>
+
+        <script src="clipboard-1626706a.min.js"></script>
+        <script src="highlight-abc7f01d.js"></script>
+        <script src="book-609e4cb8.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

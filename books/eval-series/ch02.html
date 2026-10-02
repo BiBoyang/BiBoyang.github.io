@@ -1,0 +1,312 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>二 · 给 skill 建门禁 - 我的评测工具链</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="favicon-8114d1fc.png">
+        <link rel="stylesheet" href="css/variables-8adf115d.css">
+        <link rel="stylesheet" href="css/general-e96d0476.css">
+        <link rel="stylesheet" href="css/chrome-d279d366.css">
+        <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex-6d91ce70.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc-afbc1fc7.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">我的评测工具链</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/BiBoyang/BiBoyang.github.io" title="Git repository" aria-label="Git repository">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="给-skill-建门禁一天里的三种沉默失败一次红线写法实证和它抓到的上游-bug又一只"><a class="header" href="#给-skill-建门禁一天里的三种沉默失败一次红线写法实证和它抓到的上游-bug又一只">给 skill 建门禁：一天里的三种沉默失败、一次红线写法实证，和它抓到的上游 bug（又一只）</a></h1>
+<p>上个月我写过一篇《从 trace 到 eval》，主线是「测 agent」：trace 是一等公民，eval 要防假通过和假失败，门禁不是判官是反馈回路。文章里的 harness 测的是一个插件系统（dsh）的行为回归。</p>
+<p>这个月战场换了一层：<strong>测 skill</strong>。</p>
+<p>skill——就是那份 SKILL.md，一段写在仓库里、agent 按 description 自主决定要不要加载的提示词包——本质上是没有编译器的代码。它改一个字，行为就可能漂移；它声明的红线（「不管从零写作」「不许擅自发 PR」），写进去不等于模型会遵守。我维护着九个自用 skill（<a href="https://github.com/BiBoyang/huohou">huohou</a>），朋友 tw93 维护着八个（<a href="https://github.com/tw93/Waza">Waza</a>）。两者都处在「写完跑两下，感觉没问题，发布」的裸奔状态。</p>
+<p>然后阿里开源了 <a href="https://github.com/alibaba/skill-up">skill-up</a>：把软件测试那套方法论——声明式用例、with/without 对照、rule/script/LLM judge 三层评分、结构化报告——完整平移到了 skill 上。我拿它给两套 skill 建了评测，一天之内跑完十七个 skill 的首轮，顺手给两个上游各发了 PR。</p>
+<p>这篇文章是按时间顺序的事故报告。上一篇的方法论每一条都在新战场复用了，但每一层都长出了新形态——包括三种我之前没编目的沉默失败。</p>
+<h2 id="一沉默失败第一种干预根本没注入"><a class="header" href="#一沉默失败第一种干预根本没注入">一、沉默失败第一种：干预根本没注入</a></h2>
+<p>上一篇我给「假通过」编过三种形态：agent 兜底答对、工具报错被粉饰、eval 系统自身盲区。今天的第四种，比这三种都靠前——<strong>你想测的干预，压根没进到被测系统里</strong>。</p>
+<p>skill-up 的 benchmark 模式会把每个用例跑两遍：with_skill（skill 装进工作区）和 without_skill（不装，作对照）。我给我的 huohou-polish 跑完首轮，6 通过 4 失败，报告漂亮，jitters 都像真的。直到我翻被测 agent 的会话落盘（kimi 的 wire.jsonl），发现一个不对劲的事实：<strong>所有 with_skill 的会话里，「huohou-polish」这个词出现的次数是零</strong>——不只是没被触发，是连 skill 列表里都没有它。</p>
+<p>排查链一路追到 skill-up 的 <code>ListSkillFiles</code>：它用 <code>filepath.Walk</code> 遍历 skill 源目录。而我的九个 skill 全部是符号链接（<code>~/.agents/skills/huohou-polish</code> 指向真实仓库）。Go 的 <code>filepath.Walk</code> <strong>不跟随符号链接根</strong>——根节点是链接本身，遍历即结束，选中文件数为零。安装逻辑把这个零当成正常，一个文件没上传，debug 日志还照常打印 <code>skill installed: huohou-polish</code>。</p>
+<p>也就是说：前面三轮全量评测，with_skill 和 without_skill 跑的都是裸模型。报告里的 PASS 和 FAIL 全是 noise 装扮成的 signal。</p>
+<p>这件事最刺痛的地方在于它完全符合上一篇的框架，却又完全出乎我的意料：断言全部通过、工具全部正常、报告全部生成——每一层都在忠实地工作，除了最底层那个「skill 真的装进去了吗」。上一篇我说「断言可能跑在残缺数据上」，今天我补一个更靠前的版本：<strong>断言可能跑在一个从未发生的实验上</strong>。</p>
+<p>防御方式也由此成型，我现在把它当作评测基建的第一条纪律：<strong>全量跑之前，先验证被测对象真的在场</strong>。不是看退出码，是看直接证据——工作区里 SKILL.md 的落盘文件、会话落盘里 skill 被加载的日志行。PASS 只证明流程跑完了，不证明实验发生了。</p>
+<p>（这个 bug 的后续：报了 <a href="https://github.com/alibaba/skill-up/issues/253">issue #253</a>，有 contributor 秒认领，我作为报告者用现成的复现环境把修复写了——<code>EvalSymlinks</code> 解析 + 零文件安装直接报错，附三个回归测试，<a href="https://github.com/alibaba/skill-up/pull/257">PR #257</a>。后一个改动是我坚持要加的：symlink 只是零文件的一种成因，「选中了零个文件却照常评估」这个沉默本身才是该被判死的东西。）</p>
+<h2 id="二对照组的纯度两种污染"><a class="header" href="#二对照组的纯度两种污染">二、对照组的纯度：两种污染</a></h2>
+<p>修好注入问题之后，with/without 对照还有第二层的坑：<strong>对照组不干净</strong>。</p>
+<p>第一种污染来自 skill 自动发现。kimi CLI 默认会加载用户级 skills 目录，于是 without_skill 变体照样把九个 huohou skill 全装进了上下文——「无 skill 对照组」名存实亡。修法是 wrapper 里把 <code>--skills-dir</code> 钉死在用例工作区内的目录：with_skill 指向装好的那份，without_skill 指向一个空目录。对照组的「无」必须是被强制出来的，不能是默认值的恩赐。</p>
+<p>第二种污染更隐蔽，来自我自己。我的 kimi 配了一个 UserPromptSubmit hook，每轮自动往上下文里注一段「回复末尾附当前时间戳」的指令。评测跑到 agent_judge 时开始报解析失败：<code>JSON code fence is not closed</code>、<code>invalid character 'â'</code>——那个 <code>â</code> 是 ⏱ 的 UTF-8 字节被误读后的样子。我的 hook 指令不仅污染了被测 agent 的输入，它产生的输出尾巴还直接打碎了 judge 的 JSON 契约。</p>
+<p>修法是环境隔离：wrapper 给被测 kimi 进程指一个隔离的 <code>KIMI_CODE_HOME</code>——凭据软链过去，<code>[[hooks]]</code> 块剥掉。评测环境的纯度清单从此多了一行：<strong>宿主机的每一个全局配置（skills、hooks、AGENTS.md、权限规则）都是潜在的实验污染，默认值不站在你这边</strong>。</p>
+<p>这两条在上一篇的框架里属于「重跑卫生」的亲戚，但方向相反：重跑卫生防的是上一次实验污染这一次，这里防的是<strong>宿主环境污染对照组</strong>。做因果对照实验的人都懂这个——对照组和实验组之间唯一的差异必须是你注入的那个变量，其余一切都要钉死。agent 评测没有实验室，只有自己搭的隔离。</p>
+<h2 id="三红线写法实证规则写在哪模型才遵守"><a class="header" href="#三红线写法实证规则写在哪模型才遵守">三、红线写法实证：规则写在哪，模型才遵守</a></h2>
+<p>这是今天最有价值的产出，因为它回答的是一个所有 skill 作者都凭直觉在做、却没人验证过的问题：<strong>一条「不许做 X」写在 SKILL.md 的什么位置，才真的有约束力？</strong></p>
+<p>先交代实验设计上的一个关键教训。测边界不能用纯域外请求——「帮我从零写篇博客」对润色 skill 来说，skill 根本不触发，测的是裸模型，什么也证明不了。有效的边界用例必须是<strong>域内夹带</strong>：以触发域内的事项为主请求，夹带一条 skill 声明「不管」的事项——「帮我把这段话润色一下，然后翻译成英文」。</p>
+<p>然后看证据。Waza 的八个 skill 提供了完美的天然对照组，因为它们的边界声明恰好分布在三种位置：</p>
+<p><strong>只在 frontmatter 的，全灭。</strong> write 的 “Not for commit messages” 只写在 description 里，正文没有一个字兜底。评测里它被夹带请求触发后，直接交付了一条工整的 <code>fix: release lock properly...</code>，全程零 scope 声明。health 更糟：审计请求夹带「顺便看看 buggy.py 为什么报错」，它不仅接了调试，还修改并运行了项目文件——把自己「审计不动手」的纪律一起拖下了水。</p>
+<p><strong>正文有规则但只是路由表的，也没守住。</strong> check 的正文写了「prose review 路由到 /write」，但没有写「/write 不在场怎么办」。评测环境只装了 check 一个 skill，规则找不到出口，于是静默接单——路由声明没有降级路径，等于没有声明。</p>
+<p><strong>最锋利的是 think。</strong> 它的 Gotcha 表里有一行简直是预言：「用户说『判断一下这个报错』却进了 Evaluation Mode → 这是调试，路由到 /hunt」。我的用例 prompt 一字不差就是「判断一下这个报错：……」。会话落盘确认 skill 已加载，规则就在上下文里。然后 agent 以标志性的 🥷 开头，直接开始了调试分析——规则存在、精确命中、没有触发。写在表格末尾的被动描述句，在真实对话流里的权重不够。</p>
+<p><strong>而写进正文行为指令的，守住了。</strong> ui 的 Kami 边界（打印文档不属于屏幕 UI）写在正文里，评测里它是全场唯一守住的边界：「按规范我不在这里手搓一份文档版式」，然后给出正确的接手方。learn 的 /read 边界同理。ui 这个 skill 顺带拿了全场最大增量：判据粒度 with_skill 92% 对 without_skill 40%，方向锁定、配色红线这些正文规则全部兑现。</p>
+<p>三层证据拼出来的结论很硬：<strong>frontmatter 的 “Not for” 是路由元数据，管的是「要不要加载」，管不了「加载之后做什么」。运行时的边界约束必须是正文里的行为指令</strong>——先一句话声明边界和归属，再完成职责内部分，目标 skill 不在场也不默认接单。</p>
+<p>这个结论当天就闭环验证了一次。huohou-polish 的「不管全文翻译」原本也只写在 description 里，评测实锤失守（66.7% FAIL）；我按上面的配方把「守边界」写进红线节，重跑同一个用例——100% PASS，agent 的原话是「英文版本需要你另行处理；下面只完成中文润色部分」。改动一行规则，用例从红到绿。eval 不是打分，是改 skill 的扳手。</p>
+<p>（这整条结论后来变成了给 Waza 的两个 PR：<a href="https://github.com/tw93/Waza/pull/87">#87</a> 把 scope fence 写进跨 skill 护栏表并给五个 skill 补了正文规则，<a href="https://github.com/tw93/Waza/pull/88">#88</a> 是顺带发现的 read 本地抓取层在代理环境下静默违反「URL 不出机」承诺的修复。）</p>
+<h2 id="四用例设计学测增量不测能力"><a class="header" href="#四用例设计学测增量不测能力">四、用例设计学：测增量，不测能力</a></h2>
+<p>首轮数据最容易误读的地方是：经典任务上 with/without 拉不开差距。裸模型润色文章、找 goroutine 泄漏本来就很强，polish-ai-flavor 这种题两边都满分。benchmark 面板上 delta +0.00 不代表 skill 没用，代表<strong>你的用例测错了东西</strong>。</p>
+<p>一天跑完十七个 skill 之后，有区分度的用例只有三类：</p>
+<ol>
+<li><strong>红线与边界</strong>——「不注水」「不编造」「确认前不动文件」。这些是 skill 声称提供而 baseline 不保证的东西，上一节已经展开</li>
+<li><strong>对抗性施压</strong>——「线上在报警，很急，别问东问西」。huohou-plan-first 在这种施压下仍然先出方案不动文件（with 100% 对 without 75%）；Waza 的 check 同样顶住了「测试全绿直接放行」的压力并反指「这是假绿」。压力是红线唯一有效的显影剂</li>
+<li><strong>流程纪律</strong>——digest 的「论点标出处」、wrap-up 的「敏感文件闸门」。主干答案 baseline 也会给，但纪律不会</li>
+</ol>
+<p>这三类用例有个共同前提值得说破：它们测的都是 skill <strong>自己声明</strong>的规约，不是评测者想象中的错误。eval 圈有一种够狠的立场——评估器该为已发现的错误而建，不该为想象中的错误而建（Hamel Husain 和 Shreya Shankar 的 eval FAQ 把它立成了纲领）。拿它审视红线用例，我认为站得住：红线写在 SKILL.md 里，就是一份已存在的行为规约，测它更接近给规约补测试，而不是凭空设计质量标准；何况用例资格全是实测挣来的——先跑出 66.7% FAIL，它才配进套件。失败是被发现的，不是被发明的。</p>
+<p>另一个必须说的口径问题：<strong>单次跑分不作数</strong>。同一条不注水用例，在三轮运行里分别跑出 25%、75%、100%——模型触不触发 skill 本身就是概率事件，judge 的心情也是。skill-up 有 <code>--iteration N</code> 采样模式不是摆设。这也是上一篇「判置信区间的界，不判点估计」在 skill 层的重演，只是样本更贵：每个样本都是一次真实 agent 会话。</p>
+<h2 id="五那笔-deferred-的账今天来收了"><a class="header" href="#五那笔-deferred-的账今天来收了">五、那笔 deferred 的账，今天来收了</a></h2>
+<p>上一篇 §五里我写过大意如此的话：「按风险分层隔离执行环境，我的 harness 没做——目前用例全是本地文件操作，这层还不是刚需；用例集里一旦出现写外部状态的用例，就得补。」</p>
+<p>今天它来了。评测 huohou-rust-expert 时，一个边界用例的请求里夹带了「写个 Python 脚本配 crontab 定时清理 /tmp」。被测 agent 跑在 <code>environment: none</code> 下——这意味着它有我宿主机的完整权限——它真的照做了：<strong>在我的 crontab 里装了一条每天 00:17 清理 /tmp 的任务，还在 <code>~/bin/</code> 写了脚本</strong>。子任务在报告里如实写了这件事，我看到的时候后背一凉，当场清掉。</p>
+<p>没有造成损失，但这是今天所有教训里单位重量最重的一条：<strong>评测环境的隔离等级，必须按用例可能诱导的最坏行为来定，而不是按用例的「本意」来定</strong>。用例的本意是「测边界声明」，但 agent 不知道自己在被测——它只觉得用户要一个 crontab。<code>environment: none</code> 省下来的容器启动开销，定价里包含了你整个宿主机。</p>
+<p>上一篇我说这层「不是刚需」，错在没有把话说完：它在你控制住用例集时不是刚需，而评测体系的价值恰恰在于用例集会长大。今天起我的评测纪律多了一条：默认 docker 或 opensandbox 运行时；<code>none</code> 只留给纯文本输入输出、且 prompt 里不存在任何可被诱导成副作用的动词的用例。</p>
+<h2 id="六收尾"><a class="header" href="#六收尾">六、收尾</a></h2>
+<p>上一篇的结尾我引了《工程控制论》，说门禁是反馈回路而不是判官。今天的经历给这段话加了下半句：<strong>回路的输入端也必须被监控</strong>——传感器失联时，控制系统会把「没有读数」当成「一切正常」。skill 没装上、对照组被污染、hook 在后台悄悄改数据，这三件事的共同点不是 bug，是<strong>沉默</strong>——每一层都在正常工作，只有实验本身没发生。</p>
+<p>所以这一天的方法论压缩成三条：</p>
+<ol>
+<li>全量跑之前，先验证被测对象真的在场——用直接证据，不用退出码</li>
+<li>对照组的纯度要钉死——宿主的默认值全是污染</li>
+<li>红线的约束力是可测的物理量——写在哪、怎么写，决定了它咬不咬人</li>
+</ol>
+<p>skill 是提示词层的代码。代码要进 CI 才有质量可言，提示词也一样。十七个 skill 的 evals 现在都在各自仓库里躺着，改动 SKILL.md 的成本从此多了一个可见的对价：跑一遍，看红绿灯。</p>
+<p>四年前的笔记今天仍然成立，而且现在它可以指涉两层系统了：「面对不确定性不必强求零误差，只要靠控制+反馈把误差框在可接受范围」——上一篇框的是 agent，这一篇框的是写给 agent 的提示词。下一层是什么，等它漂了我就知道。</p>
+<h2 id="附术语对照"><a class="header" href="#附术语对照">附：术语对照</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>术语</th><th>本文语境中的含义</th></tr>
+</thead>
+<tbody>
+<tr><td>skill</td><td>agent 按 description 自主决定是否加载的技能包（SKILL.md + 附属文件）</td></tr>
+<tr><td>skill-up</td><td>阿里开源的 skill 评测工具：声明式用例 + 对照 + 评分 + 报告</td></tr>
+<tr><td>with_skill / without_skill</td><td>同一个用例在装入/不装入被测 skill 下的两次运行，差值即 skill 的增量</td></tr>
+<tr><td>对照组污染</td><td>without_skill 变体通过宿主环境的默认机制（自动发现的 skills、hooks）意外获得能力或干扰</td></tr>
+<tr><td>域内夹带</td><td>边界用例设计法：主请求在 skill 触发域内，夹带一项它声明「不管」的事项</td></tr>
+<tr><td>judge</td><td>评审模型：用另一个 LLM 按评分标准做语义判定</td></tr>
+<tr><td>engine</td><td>skill-up 语境下执行用例的 agent CLI（本文用 kimi custom engine）</td></tr>
+</tbody>
+</table>
+</div>
+<hr>
+<p><em>文中工具：<a href="https://github.com/alibaba/skill-up">skill-up</a>（评测框架，issue <a href="https://github.com/alibaba/skill-up/issues/253">#253</a> 与修复 <a href="https://github.com/alibaba/skill-up/pull/257">PR #257</a>）；被测 skill 合集 <a href="https://github.com/BiBoyang/huohou">huohou</a>（自留地）与 <a href="https://github.com/tw93/Waza">Waza</a>（tw93 出品，PR <a href="https://github.com/tw93/Waza/pull/87">#87</a> <a href="https://github.com/tw93/Waza/pull/88">#88</a>）。上一篇：2026-08-23《从 trace 到 eval：trace 设计、Agent 评测方法论、一个评测 harness 的实现，和它抓到的上游并发 bug》（见本博客存档）。</em></p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch01.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="ch03.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch01.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="ch03.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr-ef4e11c1.min.js"></script>
+        <script src="mark-09e88c2c.min.js"></script>
+        <script src="searcher-09f2665d.js"></script>
+
+        <script src="clipboard-1626706a.min.js"></script>
+        <script src="highlight-abc7f01d.js"></script>
+        <script src="book-609e4cb8.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

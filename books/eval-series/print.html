@@ -1,0 +1,1076 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>我的评测工具链</title>
+        <meta name="robots" content="noindex">
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="favicon-8114d1fc.png">
+        <link rel="stylesheet" href="css/variables-8adf115d.css">
+        <link rel="stylesheet" href="css/general-e96d0476.css">
+        <link rel="stylesheet" href="css/chrome-d279d366.css">
+        <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex-6d91ce70.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc-afbc1fc7.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">我的评测工具链</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/BiBoyang/BiBoyang.github.io" title="Git repository" aria-label="Git repository">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="我的评测工具链系列导读"><a class="header" href="#我的评测工具链系列导读">「我的评测工具链」系列导读</a></h1>
+<p>写给同样在给 agent 建质量基建的人。这个系列记录我给 agent 生态里的东西建门禁的实战：自己的插件、自己的 skill、手里的 CLI、流式协议、SKILL.md 文件。每篇都是真实事故报告，结构固定：踩过的坑 → 规则 → 规则背后的权衡 → 你能单独拿走的东西。</p>
+<p>全系列只有一条主线：<strong>门禁不是判官，是反馈回路</strong>。而回路里的每一环——trace、考题、对照组、观测者、judge——自己也会坏，所以<strong>裁判本身也要被校准</strong>。写到现在的每一篇，最后抓到的「bug」都不在被测对象里，在测量系统自己身上。</p>
+<p>单篇可以独立读，交叉引用都带链接。</p>
+<h2 id="从哪篇读起"><a class="header" href="#从哪篇读起">从哪篇读起</a></h2>
+<ul>
+<li><strong>想要方法论地基</strong>：先读第 1 篇。最重也最全，trace 设计、假通过/假失败、judge 校准、统计口径都在这一篇里立起来。</li>
+<li><strong>想看翻案故事</strong>：3 → 4 → 5 连读。误报 issue、平台差异误诊、mock 方言假阴性——三次「证据很硬、结论是错的」。</li>
+<li><strong>关心 CLI 的截断行为</strong>：5 → 6。一篇结论、一篇厨房。</li>
+<li><strong>写 skill 或管 skill 质量</strong>：2 → 7。红线写法实证 + 完整性故障注入。</li>
+</ul>
+<h2 id="逐篇索引"><a class="header" href="#逐篇索引">逐篇索引</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>#</th><th>篇目</th><th>一句话</th><th>可带走的</th></tr>
+</thead>
+<tbody>
+<tr><td>1</td><td><a href="/posts/从-trace-到-eval-trace-设计-Agent-评测方法论-一个评测-harness-的实现-和它抓到的上游并发-bug">从 trace 到 eval</a></td><td>方法论地基：trace 设计、假通过/假失败的归因学、judge 校准、harness 关键决策，抓到 dsh 并发 bug</td><td>「trace 第一天就做；假通过和假失败都要防；校准集有保质期」</td></tr>
+<tr><td>2</td><td><a href="/posts/给-skill-建门禁-一天里的三种沉默失败-一次红线写法实证-和它抓到的上游-bug-又一只">给 skill 建门禁</a></td><td>用 skill-up 测 17 个 skill：三种沉默失败 + 红线写法实证</td><td>「断言可能跑在一个从未发生的实验上；红线写在正文才有约束力」</td></tr>
+<tr><td>3</td><td><a href="/posts/我给-skill-up-报了一个不存在的-bug">我给 skill-up 报了一个不存在的 bug</a></td><td>一次完整误报的诞生、长大与推翻，包括具体错在哪条命令上</td><td>「证据质量不保证结论正确，它保证纠错的速度」</td></tr>
+<tr><td>4</td><td><a href="/posts/CI-红-本地绿-一次-平台差异-误诊-和-merge-干净不等于语义兼容">CI 红、本地绿</a></td><td>「平台差异」误诊一小时，真相是 CI 和本地测的不是同一份代码</td><td>「merge 干净不等于语义兼容；断言职责，不断言字段」</td></tr>
+<tr><td>5</td><td><a href="/posts/回答被截断-你的-CLI-知道吗-四个工具-六种故障-108-格矩阵-和一个差点发布的错误结论">回答被截断，你的 CLI 知道吗</a></td><td>四工具 × 六故障 × 三次 = 108 格截断检出矩阵，60% 静默</td><td>「检出不难，告知才是缺口；阴性结论要配阳性证据」</td></tr>
+<tr><td>6</td><td><a href="/posts/给流式协议造故障-三协议-mock-once-注入-字节级送达证明-和-strings-阴性不等于代码不存在">给流式协议造故障</a></td><td>第 5 篇的厨房：三协议 mock、once 注入、字节级送达证明</td><td>「故障可以造，协议不变量不能破；mock 的权威性和客户端的严格性成反比」</td></tr>
+<tr><td>7</td><td><a href="/posts/考官带伤阅卷-对-Agent-Skill-做故障注入的完整性实验">考官带伤阅卷</a></td><td>对 SKILL.md 做故障注入，测宿主 agent 的检出率</td><td>「检出取决于伤挡不挡路，不取决于伤多重；完整性是供应链问题，不是上下文问题」</td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="系列沉淀的纪律"><a class="header" href="#系列沉淀的纪律">系列沉淀的纪律</a></h2>
+<p><strong>对实验</strong></p>
+<ul>
+<li>对照组的「无」必须是强制出来的，宿主的默认值全是污染；对照组选错比没有对照组更危险</li>
+<li>全量跑之前，先验证被测对象真的在场——用直接证据，不用退出码</li>
+<li>版本、日期、样本量、口径进每份报告；单发是轶事，x/N 才算数</li>
+</ul>
+<p><strong>对判定</strong></p>
+<ul>
+<li>假通过和假失败两个方向都要防，判之前先问一句「这次失败真的是 agent 的失败吗」</li>
+<li>判置信区间的界，不判点估计</li>
+<li>judge 上岗先校准，TPR/TNR 分开看；校准集有保质期，换模型要重校</li>
+<li>写不出可判定断言就标「不可判定」——橡皮图章比没有断言更坏</li>
+</ul>
+<p><strong>对自己</strong></p>
+<ul>
+<li>最刺眼的那个结论，发布前当嫌疑人审一遍：它往往是你自己的</li>
+<li>错误结论原样保留，推翻过程比结论值钱</li>
+<li>测到什么就报什么</li>
+</ul>
+<h2 id="战果与工具"><a class="header" href="#战果与工具">战果与工具</a></h2>
+<p>这个系列的规矩是结论必须闭环——抓到的上游问题（部分）：</p>
+<ul>
+<li>deepseek-harness 并发启动崩溃（TOCTOU）——<a href="https://github.com/deepseek-ai/deepseek-harness/discussions/4312">Discussion #4312</a></li>
+<li>skill-up 零文件安装不报错——<a href="https://github.com/alibaba/skill-up/issues/253">issue #253</a> / <a href="https://github.com/alibaba/skill-up/pull/257">PR #257</a></li>
+<li>skill-up 超时丢产物——<a href="https://github.com/alibaba/skill-up/issues/263">issue #263</a> / <a href="https://github.com/alibaba/skill-up/pull/265">PR #265</a></li>
+<li>skill-up 对 skill 内容层零校验——<a href="https://github.com/alibaba/skill-up/issues/280">issue #280</a> / <a href="https://github.com/alibaba/skill-up/pull/281">PR #281</a></li>
+<li>kimi-code 主 agent 截断静默——<a href="https://github.com/MoonshotAI/kimi-code/issues/4012">issue #4012</a></li>
+<li>Waza skill 边界写法与 URL 承诺——<a href="https://github.com/tw93/Waza/pull/87">PR #87</a> / <a href="https://github.com/tw93/Waza/pull/88">PR #88</a></li>
+</ul>
+<p>沉淀出的开源工具：</p>
+<ul>
+<li><a href="https://github.com/BiBoyang/dsh-eval-harness">dsh-eval-harness</a>——给 dsh 插件跑回归测试的门禁</li>
+<li><a href="https://github.com/BiBoyang/truncation-detection-benchmark">truncation-detection-benchmark</a>——截断检出矩阵复现包（mock + 逐格证据）</li>
+<li><a href="https://github.com/BiBoyang/skill-quake">skill-quake</a>——skill 完整性故障注入（含 skill-guard 确定性门禁）</li>
+</ul>
+<h2 id="相邻阅读"><a class="header" href="#相邻阅读">相邻阅读</a></h2>
+<ul>
+<li><a href="/posts/Agent-时代的开发者界面-开篇-没报错-就代表输出没问题吗">Agent 时代的开发者界面 · 开篇：没报错，就代表输出没问题吗？</a>——另一个系列的开篇，同一次截断调查的知识建构版：完整性判定为什么在内容层做不出来、必须下沉到协议层。</li>
+</ul>
+<p>系列持续更新。</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="从-trace-到-evaltrace-设计agent-eval-方法论一个-eval-harness-的实现和它抓到的上游并发-bug"><a class="header" href="#从-trace-到-evaltrace-设计agent-eval-方法论一个-eval-harness-的实现和它抓到的上游并发-bug">从 trace 到 eval：trace 设计、agent eval 方法论、一个 eval harness 的实现，和它抓到的上游并发 bug</a></h1>
+<p>我开始做 AI 相关 App，从 chatbot 到 agent，一年多了，攒了些经验。这篇分享我在 trace 和 eval 上的做法与观点。</p>
+<h2 id="开篇"><a class="header" href="#开篇">开篇</a></h2>
+<p>做 agent 工程质量，我认可一条主线：trace 是一等公民，测试断言、eval 数据都从它而来。要做好 agent，eval 不可少，而 trace 是 eval 的基础。这个经验一方面来自我之前深入做 iOS 性能优化的经历（要优化性能，先得测出问题在哪，也得做好数据统计和收集），另一方面来自互联网上各家 AI 大厂的技术博文。</p>
+<p>近期 deepseek harness 发布后，我把这条主线做成了开源项目 <a href="https://github.com/BiBoyang/dsh-eval-harness">dsh-eval-harness</a>：一个给 dsh 插件跑回归测试的门禁工具。它在回归测试 DeepSeek Harness 时抓到一个上游自己都没发现的并发崩溃：三个进程同时启动，两个在 270 毫秒内 ENOENT 崩掉。</p>
+<p>初稿发出后，我又做了一件事：拿每条结论去和业界近一年的公开实践以及自己的旧笔记对撞——Anthropic、OpenAI、LangChain、Braintrust、OpenHands 的工程博客，加上 Eugene Yan、Shreya Shankar 这批独立作者。</p>
+<p>文章主线：</p>
+<ol>
+<li>trace 怎么设计才对（地基）</li>
+<li>拿 trace 做 eval 要防什么（方法）</li>
+<li>eval harness 的关键决策与实现管线（工程）</li>
+<li>它抓到上游 bug 的全过程（战果）</li>
+<li>外部对撞（校验）。</li>
+</ol>
+<h2 id="一trace-要在项目第一天就做"><a class="header" href="#一trace-要在项目第一天就做">一、trace 要在项目第一天就做</a></h2>
+<p>这个认知，是三个项目用三种姿势分别验证出来的。一个从第一天就做对了，一个晚了两个月补票，一个把它推到了我没预想到的远度。三个都匿名，但每个坑都是真的。</p>
+<h2 id="做对的让界面状态成为可断言对象"><a class="header" href="#做对的让界面状态成为可断言对象">做对的：让「界面状态」成为可断言对象</a></h2>
+<p>最早做的是一个 Swift 终端 UI 库，渲染 AI 流式输出用的。终端程序有个经典难题：界面状态很难复现，断言脆弱的字节流等于没测，渲染逻辑一重构测试就全红。</p>
+<p>解法是第二个开发版本就内建一个 VirtualTerminal：在内存里解释 ANSI 转义序列的虚拟终端（字符网格 + 光标 + CSI 序列解析）。测试不再断言「输出了什么字节」，改断言「最终屏幕状态」。配合事件溯源式的渲染模型——UI 状态完全由事件流驱动，不绑定任何业务模型——渲染的每个关键决策都变成可断言的诊断事件：什么时候全量重绘（附带原因）、什么时候走增量更新、快速路径追加了多少行。</p>
+<p>注意这里的 trace 形态不是一个日志框架，而是一个默认关闭的可选回调：库不写文件、不引依赖，「记到哪」完全交给消费方——未启用时不产生任何 I/O 和持久化开销。</p>
+<p>这个库现在 793 个测试，渲染逻辑没有黑盒。它还抓过一次性能退化：热点分析发现宽度计算函数在混宽字符负载下的耗时是 ASCII 的 2.83 倍；修掉热点后，整条渲染 pipeline 的基准耗时下降约 15.5%，这个数字直接固化成了 CI 门禁——观测体系建得早，性能回归才有判据。</p>
+<h2 id="补票的晚做两个月的代价"><a class="header" href="#补票的晚做两个月的代价">补票的：晚做两个月的代价</a></h2>
+<p>第二个项目是一个 Swift 原生 AI coding agent，我的反面教材。</p>
+<p>项目启动时没有任何可观测性，全项目 3 处 print。两个月后我专门开了一个阶段补建全链路 trace：span 三元组（traceID/spanID/parentSpanID）、层级埋点从 session 根一路到工具执行和 HTTP 请求、跨层父子关系用 <code>@TaskLocal</code> 隐式传播（不污染工具协议接口）、内置脱敏器、默认空操作（NoOp）、文件日志滚动截断。</p>
+<p>补建本身很认真，但一接入就暴露了晚做的代价：CHANGELOG 里记录了一批 provider 的 span 生命周期 bug——有的 provider 在产出最终结果之后才结束 span，trace 时长系统性失真。这类 bug 在「没有 trace 就看不见」的状态里活了两个月。教训最后固化成这个项目的硬规则：所有 span 必须在事件流对外产生最终结果之前结束——注意这是该项目「trace 时长必须反映真实处理时间」的特定契约，不是通用原则；span 该在哪结束取决于你想观测的是生成、序列化还是分发耗时。</p>
+<p>补得越认真，越说明该在第一天做。后补 trace 的成本不只是补代码，还有那段时间里你看不见的一切。</p>
+<h2 id="推到最远的trace-即运行时"><a class="header" href="#推到最远的trace-即运行时">推到最远的：trace 即运行时</a></h2>
+<p>第三个项目是一个 Rust 写的个人 agent runtime，它把「trace 是一等公民」推到了我没预想到的远度：trace 不是旁路记录，是运行时状态机本体——计划步骤的状态直接由 trace 对象承载，写 trace 和推进状态是同一个动作。这带来一个必须显式接受的取舍：trace 写入失败时主流程只能快速失败（fail-fast），没有「静默降级」这条旁路——这是它和「零开销空操作」哲学的天然张力，选哪个取决于 trace 在你的系统里是数据还是状态。</p>
+<p>每次运行落盘四个产物：机器读的完整 JSON（约 50 个字段，含每次 LLM 调用的完整 prompt 快照）、人读的 Markdown、只追加的索引、每日总览表。四份产物的权威关系要交代清：只追加的事件日志是唯一权威源，Markdown、索引、总览都是可重建的投影（projection）——投影写失败可以重来，权威日志追加失败才快速失败。落盘格式带版本号，配合 serde 的 <code>#[serde(default)]</code> 与字段版本化策略维持向后兼容，并用旧版 fixture 做回归验证——<code>#[serde(default)]</code> 只兜得住字段缺失，兜不住语义、单位、枚举和 ID 规则的变化，兼容不是 serde 白送的，是一组显式的工程决策。</p>
+<p>它最有意思的是自我进化的方式：eval 流程会反向发现 trace 的字段缺口。有一次 eval 发现「恢复行为不可归因」——agent 重试了，但 trace 里看不出它做了什么恢复动作——于是补齐 recovery_action、replan_count 字段。trace 养 eval，eval 养 trace。</p>
+<p>这个项目还沉淀出一个四层模型：日志 → 归因 → 评测 → 决策（Log → Attribution → Evaluation → Decision）。日志只是原料，归因成指标（成功率、回退率、上下文丢弃率……），指标进门禁，门禁决定合并。门禁从软到硬还有量化晋升门槛：连续 5 次 PR 无 FAIL、误报 WARN 不超过 20%，才允许升级——不是「感觉稳定了」，是「数据证明稳定了」。</p>
+<h2 id="好-trace-的标准"><a class="header" href="#好-trace-的标准">好 trace 的标准</a></h2>
+<p>三个项目看下来，标准就浮出来了：</p>
+<ol>
+<li><strong>结构化、稳定的事件模型</strong>：事件名和字段先收住，比日志抽象做漂亮更重要；格式带版本号，靠显式迁移和旧版 fixture 回归维持向后兼容</li>
+<li><strong>开销和失败语义按 trace 的角色分开</strong>：旁路遥测（diagnostic trace）默认近乎零开销，不启用时是空操作（无 I/O、无持久化），写入失败永远不许拖垮主流程；权威事件日志（event journal）则相反——它本身就是业务状态，写入失败必须快速失败，否则状态会不可恢复地不一致。上面第三个项目属于后者。把两类都叫「trace」是容易误导的：后者严格说已经是 system of record</li>
+<li><strong>脱敏内建，但边界要说清</strong>：已识别的敏感模式（API key、token、家目录路径）在写入前遮蔽；但 prompt、工具参数、工具结果里可能携带任意敏感数据，trace 文件整体仍要按敏感数据对待</li>
+<li><strong>trace 即测试断言</strong>：拓扑结构、错误分类、时序不变量都能拿 trace 回归——不进入测试体系的 trace 只是安慰剂</li>
+<li><strong>允许被 eval 反向塑造</strong>：字段缺口由 eval 流程发现，trace 和 eval 是共生关系</li>
+</ol>
+<h2 id="二假通过与假失败eval-的归因学"><a class="header" href="#二假通过与假失败eval-的归因学">二、假通过与假失败：eval 的归因学</a></h2>
+<p>拿 trace 做 eval，最大的陷阱是判错——而且两个方向都会判错。假通过放行了坏的，假失败冤枉了好的。我自己踩过的是假通过，三种形态；假失败这一面是读外部文献补上的，先讲我的，再讲补的。</p>
+<h2 id="假通过我踩过的三种"><a class="header" href="#假通过我踩过的三种">假通过：我踩过的三种</a></h2>
+<p>第一种，agent 兜底答对，能力根本没被调用。你问它图片尺寸，它没调 read_image，用 bash 的 file 命令兜底答对了——结构断言全绿，但你想测的能力零覆盖。防御方式是断言路径而不是结果：<code>tools_called</code> 锁定必须真实调用，<code>no_tool_errors</code> 锁定工具必须真实成功，结果文本必须包含只有真实调用才会出现的标记。用例注释写得很直白：「即使 agent 用 bash 兜底答对也判 fail——防止假通过」。</p>
+<p>第二种，工具报错被 agent 粉饰太平。工具返回了 error，agent 当作没看见，最终回答依然自信，单看最终文本完全正常。所以 trace 里的工具硬错误要单独提取出来，任何一条都足以判 FAIL。</p>
+<p>第三种最容易被忽略：eval 系统自身的盲区。我们真踩过——harness 有个版本里，dsh 子进程崩了（exit≠0）但 trace 断言全过，用例照样 PASS；还有一次筛选条件笔误导致用例零命中，CI 空跑却显示绿色。现在的防御是：非零退出永远不许 PASS、筛选无命中直接报错、trace 解析跳行数增长要告警——因为断言可能跑在残缺数据上。</p>
+<h2 id="假通过外部文献补的五种"><a class="header" href="#假通过外部文献补的五种">假通过：外部文献补的五种</a></h2>
+<p>对撞近一年的公开实践之后，假通过的目录要扩。这五种我都没踩过（或者踩了没意识到），每一种都有明确出处：</p>
+<p><strong>提前宣告胜利。</strong> Anthropic 做长时程 agent（《Effective harnesses for long-running agents》，2025-11）时观察到：项目后期，新 session 的 agent 环顾四周看到已有进展，直接宣布完成——什么都没做就「通过」了。它不依赖工具报错，也不需要兜底命令，纯粹是自我宣布。他们的防线是把特性清单全部初始化为 failing，agent 只能翻「完成位」，不能删不能改。</p>
+<p><strong>局部验证 ≠ 端到端验证。</strong> 同一篇文章：agent 会跑单测、会用 curl 打 dev server，看似「测过了」，但功能端到端是坏的；只有显式要求用浏览器自动化像真人一样操作之后才暴露 bug。测试绿了，但验证的深度不够——这比工具报错被粉饰更隐蔽，因为验证行为本身确实发生了。</p>
+<p><strong>终态 ≠ 对话记录（outcome ≠ transcript）。</strong> Anthropic 的 eval 专文（《Demystifying evals for AI agents》，2026-01）把判定对象拆成两层：agent 说「航班订好了」是对话记录，数据库里是否真有预订记录是终态——评分器（grader）要有查环境终态的 <code>state_check</code>，不能只看答复文本。他们给过一个硬数据：CORE-Bench 上评分器的 bug（期望 <code>96.124991…</code> 却拒收 <code>96.12</code> 这类刚性判分）能把实际 95% 的模型压成 42%。粉饰不只发生在工具层，最终答复本身就可以粉饰。</p>
+<p><strong>触发层的假通过。</strong> OpenAI 的 skill eval 指南（2026-01）指出一个我从没测过的维度：skill 的 name/description 是 agent 决定「要不要用它」的主要信号，所以 eval 集必须带负例对照——「该触发时触发」和「不该触发时不触发」都要测。只测前者的团队会优化出一个什么都触发的 agent。橡皮图章 judge 管输出层，这个盲区管入口层。</p>
+<p><strong>预算内的假通过。</strong> Braintrust 的六代 agent 综述（2026-05）提出 budgeted success：一次事故响应用了 35 次工具调用才解决——「这不是 pass，是伪装成 pass 的成本事故」。结果对但路径代价不可接受，正确性要和预算联合判定。我的 harness 记 token 口径只做成本观察，没把预算升格为判定条件——这是一个真实的缺口。</p>
+<h2 id="假失败被冤枉的那一面"><a class="header" href="#假失败被冤枉的那一面">假失败：被冤枉的那一面</a></h2>
+<p>LangChain 的 eval checklist（2026-03）补了我框架的另一半：评分器把超时、基础设施错误标记为「推理错误」，就是在冤枉 agent。他们引过一个案例：Witan Labs 修掉一个数据提取的基础设施 bug 后，基准分从 50% 直接跳到 73%——infra 问题经常伪装成推理失败。防御方式和假通过镜像对称：运行状态要显式区分 completed / error / timeout，门禁判定前先问「这次失败真的是 agent 的失败吗」。</p>
+<p>我的 harness 其实已经有这条线的雏形——非零退出判 error 而非 fail，超时带进程诊断字段——但我从没把它当成「假失败防御」来表述。归因学是两个方向的：放行的要拦，冤枉的也要拦。</p>
+<h2 id="三judge-也要被校准"><a class="header" href="#三judge-也要被校准">三、judge 也要被校准</a></h2>
+<p>结构断言是确定性的，可信。但语义断言（judge）是另一个 LLM，它也会犯错——而且它的漏判会直接变成门禁的假绿。这是「eval 系统盲区」的另一种形态：不是看不见，是看见了但判错。</p>
+<p>校准的方法论不复杂，复杂在纪律。从真实报告里抽几十条输出，逐条亲手标 PASS/FAIL，让 judge 跑同一个集合，然后<strong>分开看两个数</strong>：TPR（真失败被抓到的比例）和 TNR（真通过没被冤枉的比例）。为什么不能只看总一致率——假设样本里 90% 都是 PASS，一个什么都放行的橡皮图章 judge 也能拿 90% agreement，但它漏掉了全部真实失败。Eugene Yan 对 LLM judge 的实测（《Evaluating the Effectiveness of LLM-Evaluators》）给出过一组对照：judge 在多数类样本上表现极好，在少数类（真实失败）上召回率大幅下降——正是总一致率掩盖的盲区。</p>
+<p>到这里，方法论的骨架就齐了。但骨架上还挂着几个我初稿时答不上来的问题——校准集怎么配、人类基线怎么用、judge 工程上有什么讲究。对撞完文献，这四组问题都有了带出处的答案。</p>
+<p><strong>人类基线告诉你的是任务的可标注上限，不是 judge 的验收线。</strong> Eugene Yan（《Product Evals in Three Simple Steps》，2025-11）给了一组我一直想要的数据：人类标注者之间的一致性（Cohen’s Kappa）常常只有 0.2–0.3，疲劳时人类会漏掉多达 50% 的缺陷；judge 的 Kappa 达到 0.4–0.6 就已不错（Yan 原文称这一档为 substantial——按 Landis &amp; Koch 的通行分级，0.41–0.60 叫 moderate，0.61–0.80 才是 substantial，这里以通行分级为准）。这组数据的正确用法是判断评分标准（rubric）是否清晰、任务是否主观到不可标注——人类一致性低，首先该怀疑的是标准本身。但它<strong>不能直接拿来给 judge 放行</strong>：低一致性可能来自评分标准含糊或类别不均衡（Kappa 有 prevalence 悖论），并不自动降低生产门禁对漏判率的要求——安全、财务、发布阻断类 FAIL，即使人类容易漏，judge 的 FAIL recall 该 95% 还是得 95%。所以验收要对齐到专家 adjudication 后的金标，分报 FAIL recall、PASS specificity、拒答率和各自的置信区间。Kappa、recall、accuracy 是三个不同的量，别在一句话里混着比「超过人类」。judge 的真正价值不是比人准，而是 7×24 小时用同一个标准评几百条样本——规模，不是精度。</p>
+<p><strong>校准集怎么构成：fail 样本要够，而且别合成。</strong> 两个独立来源给出同一方向：Yan 建议 200+ 样本里至少 50–100 个 fail——几百条标注里只有 5 条 fail 的校准集没用。fail 样本不够怎么办？他的排序是：用小模型/弱模型产「有机失败」（长上下文吃力、推理不足，天然产生真实缺陷）为最佳；<strong>让强模型合成缺陷是反模式</strong>——合成缺陷是 OOD 的，要么太夸张要么太微妙，在这种数据上校准出的 judge 抓不到生产里 messy 的真实失败。LangChain 补了数量门槛：20+ 人工标注起步，约 100 条达到生产级置信度。标签形态上 Yan 还有个损辣但真实的观察：坚持要 1–5 细粒度分「以便日后调阈值」的利益相关方，他见过 exactly zero 个真的调过——既然终点是二元判定，标注起点就该是二元。</p>
+<p><strong>judge 的工程细则，四条。</strong> 一，给 judge 留「Unknown」退路：信息不足时允许拒答，防止硬判出幻觉（Anthropic）。美团图灵团队把这条退路用成了 rubric 的质量信号：unknown 占比高，首先该怀疑 rubric 定义不合格——拿 unknown 占比反查 rubric，迭代到单条 rubric 的人人一致率、人机一致率过可信阈值（他们的参考线是 85%/90%）。Unknown 从防御手段升级成了校准回路的输入。二，一个维度一个 judge，反对「God Evaluator」——一个 prompt 评 5–10 个维度没人做好过，失准时也无法定位是哪个维度在漂（Anthropic、Yan 同此结论）。三，用 JSON Schema 机械强制「先依据后判定」：OpenAI 的做法是给评分器输出套 schema，<code>checks[].notes</code> 必填——比 prompt 约定硬，这正好把我之前「先写分析、末行判定」的格式约束升级成结构约束。四，pairwise 比较要跑两遍、交换顺序：判定翻转说明两者难区分，应记 tie 而不是强行分胜负——顺便，tie 不等于没有信息，Braintrust 指出「打平但省 40% 工具调用就是赢」。</p>
+<p><strong>校准飞轮。</strong> LangChain 给了一个闭环做法：人工修正 judge 的记录自动回填为 judge 的 few-shot 示例——每次纠偏都在强化校准。这把校准从一次性仪式变成持续过程，和 §七会讲到的标准漂移（criteria drift，标准本身会漂移）正好配套。</p>
+<p>上面的纪律管的都是人机一致，美团图灵团队的实践补上了我没覆盖的另一半——<strong>人人一致</strong>。他们深度 BP 多个业务团队两年，结论直白：「1 个独裁者好过 10 个民主者」——需要一个强有力的角色拉齐产品、运营、研发、QA 的评测标准，分歧时拍板，避免各自为政；评测员之间用背靠背标注拉齐。他们还给了一个演进视角：评测目标不是一次定死的，会随业务扩量和用户画像偏移而调整——履约业务从冷启动的 20 多个指标，一年后扩到近 200 个。这和标准漂移是同一现象的两种驱动：漂移来自评估过程本身，这个来自业务规模推着标准走。我的校准纪律隐含「标准由一个人（我）定」，个人项目里这成立；团队尺度上，「谁的标准」本身就是第一道要解决的题。</p>
+<p>再补两条纪律，它们是上面参数的前提，不冲突。其一，<strong>样本量决定可信度</strong>：真失败样本只有 10 条时，TPR=0.9 的 95% 置信区间大约宽到 0.55–1.0，「过线」没什么统计意义——要么把校准集扩到上百条、两类样本都充足，要么报告里带上分母（或 Wilson 置信区间），别只报点估计。其二，<strong>校准集和验证集分开</strong>：拿调过评分标准的同一批数据做最终验证，分数会虚高。</p>
+<p>校准还逼我修了一个 judge 自身的格式问题。同行给过我一个忠告：<strong>千万别让 LLM 先给答案</strong>——它会基于答案编理由，哪怕答案是错的。harness 的 judge 最初就是「首行判定、次行理由」的格式，这个格式本身就在诱导先定论后粉饰。改成「先写分析、末行判定」之后，至少格式诱导被消除了——当然，模型仍然可能先有了结论再补一份像样的分析，格式改变不了动机，只能不给它偷懒的借口。更硬的做法是要求分析引用 trace 里的具体工具调用，并对引用做二次校验，这我还在权衡。</p>
+<p>最后留一个靶子：OpenAI 那篇 skill eval 指南，全程拿 Codex 当评分器，没有人工标注、没有 TPR/TNR、没有校准/验证集分离——主流官方指南也默认 judge 可信。这不是批评他们（那篇文章的目标读者不是做门禁的人），但它说明校准纪律在业界远不是共识，这一节的方法论依然是有差异化价值的。美团那篇给这个取舍提供了另一个解释角度：Skill 生产门槛越来越低，未来需要评测的不只是产运研，是每个会创建、修改、接入 Skill 的人——评测系统必须足够简单、标准化、自动化才接得住这个需求面。给每个 Skill 生产者用的指南，把「简单易用」置于「统计严谨」之上是理性选择；只是做门禁的人不能照单全收。</p>
+<h2 id="四harness-的关键决策每个背后都有事故"><a class="header" href="#四harness-的关键决策每个背后都有事故">四、harness 的关键决策，每个背后都有事故</a></h2>
+<p>dsh-eval-harness 的结构一句话：写 yaml 用例，headless 驱动真实 agent session，解析落盘的 session trace，断言，对比基准出门禁。结构平淡，决策都在细节里。</p>
+<p>写完之后我对着业界的公开实践（awesome-evals 这类社区清单和它们的实操手册）逐项核对过一遍：结构断言先行、二元判定、试验隔离、基准对比门禁、版本化报告、成本阈值——这些主流做法和 harness 的现有设计全部对得上。核对的价值不在自我确认，在于知道自己站在什么坐标系里：哪些是共识，哪些是我自己的选择。</p>
+<p>最重要的决策是<strong>读真实 trace，不用 LLM 替身</strong>。替身的代价是测的不再是真实系统：prompt 组装、工具协议、模型行为全被换掉；读落盘 trace 的代价是每次全量跑要烧真 token（12 条用例约 12 万，deepseek-chat 量级下成本可以忽略）。我选后者——eval 的意义就是验证真实链路，替身测通过的系统上线照样崩。</p>
+<p>（2026-09-27 补记：这段话后来被系列第 5、6 篇限定了一层——它管的是<strong>行为语义</strong>场景：prompt 组装、模型行为、工具协议，替身一换，测的就不是那个系统了。但在<strong>协议故障注入</strong>场景——要流按要求截断、丢终止事件、发半个事件——真实模型不会配合你确定性犯病，mock 反而是唯一可信的考题：那个场景里模型的智力与结论无关，保真的责任由「黄金样本对齐真实 API」的校准机制承担。这条原则的完整形态因此是分层的：行为语义走真实链路，协议故障走 mock——<a href="/posts/回答被截断-你的-CLI-知道吗-四个工具-六种故障-108-格矩阵-和一个差点发布的错误结论">第 5 篇</a>的截断矩阵和<a href="/posts/给流式协议造故障-三协议-mock-once-注入-字节级送达证明-和-strings-阴性不等于代码不存在">第 6 篇</a>的 mock 厨房是它的展开。）</p>
+<p>第二个值得说的是<strong>重跑卫生</strong>。harness 支持失败重跑来治理偶发失败，但有个隐蔽陷阱：上一次尝试的文件副作用会让重跑假通过——用例要求「创建文件」，重跑时文件已经在那儿了。所以每条用例的每次 attempt 都获得全新的工作区和全新的 session 落盘根（<code>.sessions/&lt;用例&gt;/attempt-N</code>）：工作区清空重建防文件副作用，session 根按 attempt 独立则连 trace 采集都不共享——早期版本曾经 session 根复用、靠时间窗过滤本次 attempt 的 trace，但被 kill 进程的延迟落盘可能越过时间窗边界，时间戳不是可靠的关联键。对撞外部文献后还要补一个反方向的实证：Anthropic 在内部 eval 里发现 Claude 会读前几次尝试留下的 git history 作弊式获利——共享残留状态不只导致假通过，还会<strong>虚增成绩</strong>。清工作区时，git 历史、缓存这些隐蔽载体要一并考虑。</p>
+<h2 id="路径断言分层一处立场修正"><a class="header" href="#路径断言分层一处立场修正">路径断言分层：一处立场修正</a></h2>
+<p>前文说「断言路径而不是结果」，但对撞里两个独立来源正面挑战了它：Anthropic 明确反对检查「按正确顺序调用特定工具」——太脆，而且会惩罚 eval 设计者没想到的合法路径（τ2-bench 实例：Opus 发现政策漏洞给出更优解，被判 fail）；LangChain 同样警告精确路径断言会冤杀创造性绕路。</p>
+<p>我想过这个问题，结论是不认错，但要分层。反对者的场景是给模型打分的 benchmark——那里必须对未知解法公平。我的场景是自家插件的回归门禁——路径稳定性本来就是我要守的东西。而且「创造性绕路」多数时候说明预期路径先出了问题，这个前序失败是信号，该记录。但注意 Anthropic 那个例子的锋利之处：agent 发现漏洞给出更优解时，之前没有任何问题——它是水平高，不是补救。判它 fail 是在惩罚超出设计者想象力的行为。</p>
+<p>所以立场修正为三层，刚好落在 harness 现有的信号体系上：</p>
+<ul>
+<li><strong>覆盖断言是 FAIL 级</strong>：想测的能力必须被真实调用（read_image 不许被 bash 兜底），这是防能力零覆盖，不动摇；</li>
+<li><strong>路径偏离是 WARN 级</strong>：调了该调的，只是顺序、方式不同——记录下来，它回答「之前是不是出了什么问题」，但不一票否决；</li>
+<li><strong>结果对错交给终态判定</strong>：终态检查（state_check 思想）和语义 judge 管这一层。</li>
+</ul>
+<p>Braintrust 给了路径断言的可操作形态：断 <code>must_call / must_not_call / max_tool_calls</code>（包含必要调用吗、避开禁止调用吗、步数超限吗），不断精确序列。三层的判据加在一起，既防假通过，也不冤杀更优解。</p>
+<h2 id="把遮羞布和尺子分开以及尺子的统计口径"><a class="header" href="#把遮羞布和尺子分开以及尺子的统计口径">把「遮羞布」和「尺子」分开（以及尺子的统计口径）</a></h2>
+<p>失败重跑是遮羞布：它回答「这个用例最终能不能过」，让门禁不被偶发抖动打红。但它回答不了「这个用例单次成功率是多少」——我的一条用例（todo-tool）真实出现过首跑直接不调工具、重跑才过的情况，报告里只有一个不起眼的偶发（flaky）标记。所以 harness 另有 trials 模式：跑满 n 次独立尝试、每次清工作区、不许重试，报告写出单次成功率、pass@k 和 pass^k（k 次全成的概率）。这里要把定义和估计分开：pass@k 的定义是给 k 次独立尝试至少成一次的概率，理论上 1-(1-p)^k；但从 n 次尝试里<strong>估计</strong>它要用无偏组合估计 1-C(n-c,k)/C(n,k)（c 为通过次数，约束 k ≤ n）——n=k 时套理论公式在小样本下是有偏的。pass^k 同理：定义是 p^k，估计要用 C(c,k)/C(n,k) 而不是 plug-in 的 (c/n)^k——x^k 上凸，Jensen 不等式保证 plug-in 向上偏（n=3,c=2,k=2 时 4/9 vs 1/3）。这两个数会讲完全相反的故事：单次成功率 0.75 的用例，pass@10 约等于 1.0（看起来完美），pass^10 约为 0.056（几乎必挂）。两个前提必须说清：这些数基于「每次尝试独立同分布」的假设——真实环境里的限流、网络、模型状态漂移都会破坏这个假设；而且小样本的估计是估计，不是真实成功率，报告里必须带着 n 看。遮羞布管 CI 绿不绿，尺子管你敢不敢信它。</p>
+<p>还有一个被 review 戳破的张力要如实交代：trials 模式下用例状态是「任一通过即 pass」，而 gate 原本只比较最终 status——尺子测出 10 次只过 1 次，门禁照样放行。测量和门禁合体应该是显式选择，所以 harness 现在的做法是默认保留测量语义，需要时开 <code>min_trial_success_rate</code>：successRate 的单侧 95% Wilson 下界低于阈值记 WARN（strict 模式下即为硬门槛）。判下界不判点估计——10 次过 9 次的点估计 0.9，下界只有约 0.65，小样本不配谈达标。</p>
+<p>再给尺子补三个口径，全部来自对撞：</p>
+<p><strong>门禁应该判置信区间的界，而不是点估计——而且要用对区间的形状。</strong> Eugene Yan 给了一个具体算例：门禁要求缺陷率 &lt;5%；200 个样本观测到 3%，95% 置信区间约 3%±2.4%，上界 5.4% 越线——不能放行；样本加到 400，区间缩到 ±1.7%，上界 4.7%，才算过。他的结论方向是对的，但口径要修两道：一，这是 Wald 正态近似，小 p 小样本下系统性偏窄；二，「缺陷率是否低于 5%」是单侧问题，该用<strong>单侧 Wilson 上置信界</strong>（z=1.645）而不是对称区间——按单侧 Wilson 算，n=200 上界约 5.7%（不过），n=400 约 4.8%（通过），Yan 的结论这才在严格口径下成立。（若用双侧 95% Wilson，上界分别为 6.4% 和 5.2%，n=400 依然越线——区间形状的选择直接影响门禁结论。）背后的规律不变：标准误随 √n 下降，误差减半样本要翻四倍，加样本的收益递减。这回答了初稿没答的问题——尺子要做多长。</p>
+<p><strong>聚合指标是新形态的遮羞布，要分层看。</strong> OpenHands 的 skill eval（2026-03）有个实例：聚合 pass rate 70%→80% 看似正收益，按模型拆开，至少一个模型启用 skill 后是退化的。门禁若只看聚合数，逐模型/逐后端的退化就被平均掉了——pass@k/pass^k 解决「重跑多少次」的口径，分层解决「按什么切片」的口径。</p>
+<p><strong>模型升级即触发全量重校。</strong> OpenHands 引了 Boris Cherny 的实践：每次换模型都删掉 claude.md，跑偏了才一点点加回来——每个模型需要的引导越来越少。干预（skill、prompt、judge 的评分标准）的有效性随模型版本衰减，昨天校准好的东西换模型后都要重测。我的 harness 已经把 <code>dshVersion</code> 记进报告、版本变化时 gate 留痕——基建在位，缺的是把「版本变化 → 触发重校」写成纪律。</p>
+<p>还有一个工程决策一句话带过：<strong>零依赖 YAML 子集解析器</strong>——用例格式是自定义的 yaml 子集，内置解析器只认这个子集，写超纲语法立刻报带行号的错。不引第三方库，一是供应链面最小化，二是用例格式完全可控。</p>
+<h2 id="五实现管线行为是怎么一步步变成数据的"><a class="header" href="#五实现管线行为是怎么一步步变成数据的">五、实现管线：行为是怎么一步步变成数据的</a></h2>
+<p>管线四步：驱动 → 采集 → 提取 → 门禁。每一步都有真实的坑。</p>
+<p><strong>驱动层</strong>的基本动作是 spawn 子进程：<code>dsh --profile headless --patch &lt;overlay&gt; &lt;prompt&gt;</code>。三个设计点。其一，隔离发生在配置层：每条用例需要独立的 session 落盘根，最省事的写法是给子进程塞环境变量——但环境变量会泄漏到 agent 调用的工具里，污染被测行为，所以 harness 为每条用例生成一份 <code>--patch</code> overlay，按 row id 整体替换持久化配置里的落盘根。其二，每条用例一份工作区作 cwd、一份 session 根，目录名带加载序号而不是用例名的 slug——slug 化不是唯一键，「read image」和「read-image」会撞成同一个 slug，撞了就是两条用例的 trace 互相错捡。其三，可执行文件路径必须绝对：我真实踩过，runner 给每条用例起了独立 cwd，而我传了相对路径，11 条用例全部 spawn ENOENT——子进程在自己的工作区里找相对路径，当然找不到。现在 harness 启动前先用 <code>--version</code> 探针验证 dsh 可用，顺带把版本号记进报告，排障时直接区分「dsh 变了」还是「模型变了」。（后来读到 LangChain 引的一则 Anthropic 轶事，说他们在 SWE-bench 工具上花的时间比 prompt 还多、绝对路径消除整类路径错误——看来这个坑的门票人人都买过。）</p>
+<p>隔离还有一个维度是我的 harness 没做的：按风险分层。美团把执行沙箱按只读、可写、高风险三类分层隔离列为评测基建的必备能力——我的工作区隔离服务的是重跑卫生（防文件副作用假通过），不防用例本身的高风险操作越界。目前 12 条用例全是本地文件操作，这层还不是刚需；用例集里一旦出现写外部状态的用例，就得补。</p>
+<p><strong>采集层</strong>面对的是 dsh 的落盘格式：session.jsonl 每行一帧信封 <code>{type, seq, time, data}</code>，默认还是压缩版 session.jsonl.zstd——多帧拼接的 zstd 容器。这里有两个反直觉的坑，都是实测出来的。第一个：把多帧拼接的容器一次性丢给 <code>zstdDecompressSync</code>，它只解出第一帧，<strong>不报错、静默截断</strong>——所以必须逐帧解。第二个：逐帧切分不能在字节流里搜魔数——zstd 帧魔数完全可能出现在压缩载荷内部，搜魔数会把一帧切成两半。正确的做法是按帧结构解析边界：帧头描述符给出内容尺寸字段长度，块头给出每块大小，顺着声明的尺寸走，魔数只在「上一帧结构结束的位置」校验。harness 的解码器就是这么写的（和上游 dsh-session 包里的 scanZstdFrames 同款思路），全部依赖 Node 内置 <code>node:zlib</code>，零外部依赖——注意 zstd 支持是较新版本 Node 才有的（22.15+/23.8+），旧 LTS 上没有。</p>
+<p>尾帧是另一个故事。进程在写入过程中被 SIGKILL 时，最后一个帧很可能只写了一半。能恢复多少，上限由<strong>写入端的 flush 频率</strong>决定——没 flush 出来的字节根本不在文件里，谁也救不回。解码端能做的是容忍截断：harness 对残缺尾帧用 <code>finishFlush: ZSTD_e_flush</code> 解——这个参数的作用是把输入结尾当作一个 flush 点而不是要求的流尾，已刷出的块照常产出明文。恢复失败也只丢这一个尾帧，已完成的帧不受影响。顺带一提，Node 对截断帧的容错比想象中宽：不带任何选项解残缺帧也常常返回部分明文而不是报错——这意味着「靠异常发现尾帧残缺」不成立，trace 跳行数告警这条防线是必须的。</p>
+<p><strong>提取层</strong>把帧流变成结构化观测：turn 怎么结束的、调了哪些工具、每次调用的参数和结果文本、最终回答、token 用量、成功解析的帧数和跳过的坏行数。这层最大的教训是按真实落盘形状写代码，不按想象写：tool/result 在真实落盘里有三种形状（成功 / <code>data.error{name,code}</code> / 纯 isError 标记），最初按假设的形状提取，漏了后两种，工具硬错误就悄悄漏过了。现在用一份真实 session 脱敏后做 fixture，快照测试把三种形状锁死。token 口径同样有讲究：多步 session 里同一段缓存每步重复读回，所以 total 只算未命中缓存的 input + output + reasoning（落盘的 input 字段本身已排除缓存命中），缓存读写单列观察。这个口径是为门禁的漂移检测服务的；缓存读仍按折扣价计费，算成本账时别用这个 total。OpenHands 的实验给了效率口径一个额外理由：他们的 skill eval 里 pass 提升的同时 runtime 从 266s 降到 109s（也有一次从 87s 升到 99s 的代价案例）——效率 delta 是干预副作用的探测器，不只是成本核算。</p>
+<p><strong>门禁层</strong>的两个设计。一是报告带 schemaVersion：基准报告入库，是要长期活着的数据资产；loader 对旧版自动补默认值，对未知的未来版本直接拒绝比较，重复用例名、非法状态、summary 与用例不符一律拒跑——不让一份坏报告产出看似合法的判定。二是判定是带退出码的协议：PASS=0、FAIL=1、N/A=2、WARN=0（strict 模式 2）。一个有意的设计代价要说清：strict 模式下 WARN 和 N/A 同为 2，CI 只看退出码时分不出两者——取舍的理由是两者都意味着「不能当作干净通过」，需要分辨时看文本输出的 OVERALL 行。所有中间产物同时以文本行和 JSON 两种形态输出，人和 CI 各取所需。LangChain 的 checklist 还给了门禁一个成本分层视角：便宜的确定性评分器守 CI（毫秒级），贵的 LLM judge 守 preview/prod 阶段——我的门禁目前全量同权，这是可以演进的形状。美团的基建清单还提了报告的一个输出维度：归因要落到故障域——问题发生在规划、工具、环境还是 Skill。我的报告目前回答「过没过」和「是不是 infra 的锅」，「挂在哪一层」要靠人读 trace；提取层已有的工具错误分类和 turn 结束方式其实是现成的故障域原料，缺的是把它们汇总成报告字段。</p>
+<p>这条管线没有一步是复杂的，但每一步都有一次真实事故兜底。把 agent 行为变成数据的过程里，最容易出错的地方从来不是解析，而是那些你以为不会出错的接缝。</p>
+<h2 id="六破案eval-抓到上游的并发-bug"><a class="header" href="#六破案eval-抓到上游的并发-bug">六、破案：eval 抓到上游的并发 bug</a></h2>
+<p>上周 dsh 从 0.1.0-rc.6 升到 0.1.1-rc.2。我按惯例翻上游的 fix 记录找用例素材——每个修过的 bug 都是一条回归用例的种子。看中了图片尺寸准入的修复（0.1.0-rc.8 的 changelog 条目「修复图片尺寸过大或历史图片累计载荷过高导致模型请求失败」，rc.2 又进一步完善了图像预处理）：修复前，边长超限的图片会被 read_image 原样写进 session 历史，后续请求全被 provider 400 毒化；修复后应在准入时降采样。</p>
+<p>用例红绿对照：同一张 2500x4 的 PNG、同一段 prompt，rc.6 上 FAIL（无降采样标注），rc.2 上 PASS（结果文本含 <code>downscaled from 2500x4</code>）。用例收编，符合预期。</p>
+<p>真正的发现在后面。升版后第一次全量跑，12 条用例、并发 3，两条用例首跑崩了、重跑才过。报告里的重试历史和 stderr 尾部——harness 专门记录的进程诊断字段——显示两个进程都是 ENOENT，但崩在不同位置（错误原文里的绝对路径已缩写为 <code>~</code>；Node 的 fs API 不会展开 <code>~</code>，此处仅为脱敏展示）：</p>
+<pre><code>Error: ENOENT: readlink '~/.dsh/profiles/node_modules/commander'
+    at ensureSymlink (dsh-app-boot/lib/index.js:380:7)
+Error: ENOENT: unlink '~/.dsh/profiles/node_modules/@deepseek-ai/cordis-plugin-timer'
+    at ensureSymlink (lib/index.js:381:3)
+</code></pre>
+<blockquote>
+<p><strong>Tip：ENOENT 是啥？</strong> Unix 系统调用的一个经典错误码，来自 “Error NO ENTry”（没有这个目录项）的缩写——大白话就是「文件或路径不存在」。open、unlink、readlink 这些操作如果目标不存在，就会抛它。Node 的 fs API 原样继承了这套 errno 命名，所以报错里经常能看到它。</p>
+</blockquote>
+<p>dsh 每次启动会「治愈」一个共享符号链接目录（profiles/node_modules），换版后所有链接都要重指。三个进程同时做这件事，而 <code>lstatSync → readlinkSync → unlinkSync</code> 这个序列没有并发防护：A 进程 lstat 时链接还在，readlink 时已被 B 删掉，ENOENT。这是典型的 TOCTOU——检查（lstat）和使用（readlink/unlink）之间存在竞态窗口。而且这个序列还藏着一个更不显眼的后果：A 在 readlink 之后、unlink 之前，B 可能已经删掉旧链接并建好了新的，A 的 unlink 会把 B 刚建好的正确链接一并删掉——这一步不报错，目录就此处于半治愈状态。源码里 <code>symlinkSync</code> 的 EEXIST 分支有护栏，注释甚至明写「并发启动会治愈同一个目录，输掉竞争等于成功」：上游知道有并发，但只防了创建这一步，读和删裸奔。</p>
+<p>分析丢给三个独立 agent 复核，三家全部确认结论，其中一家做了 16 路并发的控制实验，稳定复现 4 次崩溃。报告发到官方 Discussions（<a href="https://github.com/deepseek-ai/deepseek-harness/discussions/4312">#4312</a>），有社区成员据此写出了修复的参考实现，我在 macOS 侧做了对照验证：压力实验的单位是单个进程启动——未修版本 16 并发 × 3 轮共 48 次启动崩 23 次；修复版本同样 48 次零崩溃，加压到 24 并发 × 4 轮共 96 次依然零崩溃。</p>
+<p>这个 bug 能被抓住，全靠前面那些「无聊」的决策：没有「并发 + 隔离」的执行设计，三个进程根本不会同时启动；没有重试历史，重跑过了就没人知道首跑崩过；没有 stderr 尾部采集，崩溃原因无从查起。质量基建的价值不在平时，在这种时刻一次性兑现。</p>
+<p><strong>一个值得说的对照</strong>：Braintrust 那篇综述把回放（replay，用生产 trace 冻结工具观测、重放候选版本）列为发布门禁的一层。这是大厂的主流做法，但它抓不到我这类 bug——录像回放里，工具结果是冻结的，并发时序是被抹平的，TOCTOU 在回放里物理上不存在。我的 harness 恰好站在另一个极端：全真实重跑，连竞态窗口都是真的。两种范式各有盲区，回放便宜稳定但看不见真实环境的并发与时序，真实重跑贵且抖，但保留了回放物理上抹掉的并发与时序变量——低概率竞态可能在样本内不触发、provider 内部状态依然不可观测，它不是全知，只是看得见回放看不见的那一类。这个 bug 是真实重跑派最好的征兵广告。</p>
+<h2 id="七外部对撞印证冲击与盲区"><a class="header" href="#七外部对撞印证冲击与盲区">七、外部对撞：印证、冲击与盲区</a></h2>
+<p>我把三个一线开源 agent 的实现（Kimi Code CLI、Codex CLI、Claude Code）和近一年的 eval 文献翻了一遍。动机很朴素：前面的结论都是从个人项目里长出来的，我想知道它们在大厂工程体系和学界文献里是被证实还是被证伪。大部分被证实了——读到的时候我是松了口气的，这些坑不是只有我一个人踩。下面按「印证 / 冲击 / 盲区」组织，只写有信息量的部分。</p>
+<h2 id="印证多家独立投过票的结论"><a class="header" href="#印证多家独立投过票的结论">印证：多家独立投过票的结论</a></h2>
+<p><strong>事件总线是标配。</strong> 三家的架构概念上同构：core 产出带类型标签的事件流，UI 只是订阅者。Kimi 的 Wire 协议是 24 种 Event 加 4 种 Request 的广播通道，TUI、IDE、Web、可视化器全吃同一份 wire.jsonl；Codex 把这条总线做成了正式产品——JSON-RPC app-server，协议类型能直接导出 TypeScript 和 JSON Schema；Claude Code 干脆不暴露内部总线，把可观测性整个标准化成 OpenTelemetry 三信号。形态不同，结论相同：core 和 UI 之间必须隔一条结构化事件流。格式带版本号也没人不做：Kimi 的 wire.jsonl 首行就是协议版本号；Codex 用 serde alias 兜住改名后的旧事件，协议形状变更必须重新生成 schema fixture——和 §五 的报告 schemaVersion 是同一套思路。OpenAI 那篇 Codex app-server 文章还贡献了一个反面教训：非官方 v1「当时没预料到其他客户端会依赖，所以没设计成稳定 API」，adoption 增长后被迫重构——「协议第一天就要当协议设计」的一手代价记录。</p>
+<p><strong>打分纪律没有分歧。</strong> 三家对外成绩全部是 test-based，跑真实仓库的测试判对错；LLM-judge 只用于按评分标准做主观评审。Anthropic 那套纪律——judge 上岗前用人工标注校准、评分器防 bypass（他们真实遇到过 agent 翻历史尝试的 git 记录作弊）、pass@k 和 pass^k 分清、必须人工读对话记录——和 §三 §四 几乎逐条对应。</p>
+<p><strong>假模型替身是在哪一层用的问题。</strong> §四 说「读真实 trace，不用 LLM 替身」，这在端到端层成立。但 Codex 有 129 个集成测试全部用 wiremock 起假模型服务器做确定性回放；Kimi 的协议 e2e 也用 scripted 假 provider。这不矛盾，是分层：</p>
+<pre><code>   L4  端到端 benchmark（真实模型、真实容器，test-based 打分）
+   L3  行为回归（假模型服务器，确定性回放，测 harness 逻辑）
+   L2  协议一致性测试（事件契约、schema snapshot）
+   L1  单元测试 / 静态不变量
+</code></pre>
+<p>假模型在 L3 是对的：它测的是「框架把模型回答转化成了什么动作」，要的就是确定性。真实链路在 L4 也是对的：它验证整条链路在真实模型行为下能不能活。dsh-eval-harness 站在 L4。初稿批评的替身，错在拿 L3 的手段顶 L4 的岗。</p>
+<p><strong>「第一天做」有量化的第三方佐证。</strong> Eugene Yan 记录过一个团队：花约 4 周建 eval harness（定标准、人工标注、对齐 judge、实验管线），随后 2 周跑了几十个实验，几个月内跑了几百个。Anthropic 给了另一个角度：20–50 个任务就足以起步，且 eval 套件越晚建越难——拖久了只能对着线上系统逆向工程成功标准。</p>
+<p><strong>「先看数据再建体系」有了最系统的版本。</strong> Hamel Husain 和 Shreya Shankar 的 eval FAQ（《AI Evals: Everything You Need to Know》，面向 700+ 工程师与产品经理的课程沉淀）把这个方向写成了完整纲领：评估指标要从真实失败里长出来，不该预先设计；helpfulness、ROUGE 这类现成指标测不出「推荐了不存在的场次」这种真实业务失败，只配当定位 trace 的探索信号；judge 必须对照人工标注校准、已知 TPR/TNR 还能反推系统真实失败率——和 §三 的校准纪律逐条对应；失败判定用二元不用 1–5 分量表（相邻等级主观漂移、标注者倾向选中间值）；rubric 不要提前写，随标注过程修订——和 Shankar 那篇 UIST 论文的 catch-22 是同一作者群的连贯立场。它还给了 eval saturation 一个更损的表述：100% 通过率是警报而非喜讯，70% 的通过率反而说明评估击中了系统的软肋。组织原则上也同票：一位被授权的领域专家做最终裁决，优于标注委员会和外包——和美团「1 个独裁者好过 10 个民主者」隔着太平洋对上了。</p>
+<h2 id="冲击真正逼我改想法的三处"><a class="header" href="#冲击真正逼我改想法的三处">冲击：真正逼我改想法的三处</a></h2>
+<p><strong>路径断言之争</strong>已经在 §四 展开过（修正为 FAIL 级覆盖 + WARN 级偏离 + 终态判定三层），这里只补一句：这是十篇文献里唯一两处独立来源同时撞上来的分歧，撞得有道理，我接了。</p>
+<p><strong>标准漂移（criteria drift）：校准集有保质期。</strong> Shankar 的论文（《Who Validates the Validators?》，UIST 2024）是我这轮阅读里概念增量最大的一篇。她的用户研究发现一个 catch-22：人需要标准才能给输出打分，但打分的过程又帮助人定义标准——评估标准无法在看到模型输出之前完全定义，参与者边打分边改标准，甚至回头改之前的打分。这对 §三 是个正面冲击：我的校准纪律隐含假设「标准定下来是稳定的、校准集是一次性资产」，标准漂移说这个假设不成立——再叠上模型漂移（§四 的「模型升级即重校」），校准集有保质期，重校不是可选项。论文强度要如实说：n=9、单任务、定性研究——概念强度大于证据强度。但它的「先看 20 个例子再写标准」和 Hamel Husain 的「先 error analysis 再写 eval」独立印证，这不是某个流派的偏好。</p>
+<p><strong>基础设施噪音：i.i.d. 警告被量化了。</strong> §四 里「限流、网络、模型状态漂移都会破坏独立同分布假设」在初稿里只是一句免责声明。Anthropic 把它测了出来（《Quantifying infrastructure noise in agentic coding evals》，2026-02）：Terminal-Bench 2.0 上最严和最松的资源配置差 6 个百分点（p&lt;0.01）——比榜首模型之间的分差还大；通过率甚至随一天中的时段波动。他们给出的消费纪律可以直接引用：<strong>榜单上 3 个百分点以内的差距，在 eval 配置公开并对齐之前，保持怀疑。</strong> 对我的 harness 也有一个具体提醒：报告记了 <code>dshVersion</code>，但没记运行环境（机器、负载、时段）——如果哪天分数要跨机器对比，这个缺口会咬人。</p>
+<h2 id="盲区对撞之后才知道自己没看见什么"><a class="header" href="#盲区对撞之后才知道自己没看见什么">盲区：对撞之后才知道自己没看见什么</a></h2>
+<p><strong>多轮 session 层。</strong> LangChain 的三原语（runs/traces/threads）里，thread 层——跨 session 的状态演化——是我的 harness 完全没有覆盖的：所有用例都是单轮。Anthropic 的 context engineering 文章还补了两个具体的归因盲区：compaction 丢了关键 context 造成的失败会被误记成「模型不行」，所以压缩事件（何时触发、丢了什么）必须是 trace 的一等字段；子代理只回一两千 token 的摘要，只采主链路的 eval 天然瞎掉子代理的整个探索过程。</p>
+<p><strong>错误分析怎么落地：编码纪律和两个抄得走的工具。</strong> 我全文讲「用例从失败反推」，但怎么反推只有直觉没有流程。Hamel &amp; Shankar 那篇 FAQ 补的正是这块，方法借自社会科学的质性研究：收集约 100 条多样 trace；开放式编码（open coding）——领域专家逐条读，针对每条的第一个上游失败写开放笔记，前 30 条必须亲手标、不许外包给 LLM 或 agent，因为初始编码承载的是说不清的隐性知识；轴心编码（axial coding）——把笔记归成失败模式 taxonomy，作者称这是全流程最重要的一步；迭代到理论饱和之后，才允许 agent 按已识别的模式检索剩余 trace，裁决权始终在人。两个可以直接抄的诊断工具：其一，转移失败矩阵（Transition Failure Matrix）——行记「最后一个成功状态」，列记「第一个失败位置」，矩阵单元的计数直接暴露失败热点；§五末尾我承认过「挂在哪一层要靠人读 trace」，这个矩阵就是现成的汇总形状，提取层已有的工具错误分类和 turn 结束方式恰好是它的原料。其二，handoff 即失败模式——人工接管不算结束，trace 必须延续到用户需求真正解决为止，交接太早、太晚、上下文不足都是独立的失败点；我的 trace 边界到 agent 输出为止，这一层是瞎的。还有一个反向视角值得单记：「难以评估」往往是产品设计的信号而不是评估问题——输出难审阅时该改的是产品，让验证变容易（比如先给医生看带原文链接的抽取事实，再生成报告）；我的框架默认被测系统不动、eval 想办法测，这一条把压力传回了产品侧。</p>
+<p><strong>指标的业务分层。</strong> 美团这篇最有分量的概念是「搭桥」：模型能力指标和业务结果指标之间有天然鸿沟，中间必须有一层面向任务系统的桥梁指标——以 AI 搜索为例，业务关心 DAU、留存、点击，搜索系统关心召回率、点击率，Agent 层关心意图识别是否准确、检索是否有效、结果整合是否可信；三层串起来，才能回答「为什么业务指标变差」以及「模型能力提升为什么没带来业务收益」。我的四层模型（日志→归因→评测→决策）止步于门禁，是纯工程视角：门禁绿了、业务为什么还是变差，我的框架回答不了。这是个人项目和企业落地的真实坐标差——我的 harness 守的是「别回归」，他们的评测体系还要向业务价值解释「为什么值得做」。顺带一条印证：他们给长程评测定义的 (prompt, expected_behavior, trace) 三元组——类比短程时代的 (query, ground_truth, answer)——和我的 yaml 用例 + trace 断言完全同构。</p>
+<p><strong>eval 套件的生命周期。</strong> Anthropic 和 LangChain 独立提出了同一套东西：能力 eval（低通过率起步，爬坡用）和回归 eval（接近 100%，守成用）要分两个套件；爬到顶的能力任务「毕业」进回归套件；一个通过率 100% 的 eval 只剩回归信号、没有改进信号（eval saturation）；不再暴露新失败的用例要定期剪掉——更多用例 ≠ 更好的 eval，盲目堆测试会制造进步假象。我的门禁有「从软到硬的晋升」，这是它的镜像：用例本身也有生命周期。公开材料里没人做的事从一项（门禁晋升的量化门槛）变成了两项——套件治理这一层，加上它，仍属空白。</p>
+<p><strong>被测系统该暴露什么钩子。</strong> 要给自家 agent 建 eval，被测系统得提供四样东西，三家各贡献了一部分样本：可注入的 run 标识（事后把遥测和 eval 结果 join 起来按用例切片）；确定性开关（feature flag、灰度实验一键固定，否则分数里混着实验噪音）；稳定的关联键（Kimi 用响应头 <code>x-trace-id</code>，Codex 用 W3C traceparent 跨进程传播）；结构化、可回放的对话记录。Codex 的 app-server 另有一个驱动层的坑值得点名：审批回调是协议级义务——server 会主动发 approval request 并暂停 turn 等客户端应答，只实现单向请求的 eval 驱动会在审批点挂死。</p>
+<h2 id="八收尾"><a class="header" href="#八收尾">八、收尾</a></h2>
+<p>trace 第一天就要做，它是后期所有质量工作的地基；用例从真实 bug 反推，上游的 fix 记录是最好的用例种子库；可复现等于隔离加钉版加全量 trace，三者缺一个，红绿对照就不成立；每个行为都要有数字，每个数字都要有门禁，否则「质量」只是形容词；eval 系统本身也要被 eval，judge 上岗前先校准——且校准集有保质期。</p>
+<p>这轮对撞最后改变的是我对「门禁」二字的理解。门禁不是判官，是反馈回路：trace 提供观测，eval 提供误差度量，gate 把误差框在可接受的范围内，版本切换和标准漂移提醒你这个框本身也要定期重校。判官追求一次判对，回路追求永远不跑偏太远。</p>
+<p>四年前我读《工程控制论》时写过一段笔记，当时只是摘抄，现在看它就是对这套东西的表述：</p>
+<blockquote>
+<p>任何复杂系统都不是孤立的输入输出模块，而是自带反馈机制的动态体系；系统的核心价值从来不是单次运行的最优表现，而是长期不崩溃、不跑偏的稳健性；面对不确定性不必强求零误差，只要靠控制+反馈把误差框在可接受范围，再逐步拉回正轨即可。</p>
+</blockquote>
+<p>「不是单次运行的最优表现，而是长期不崩溃、不跑偏」——这是 pass^k 优于 pass@1 的哲学表述，也是治理偶发失败的全部意义。agent 的工程质量不在 prompt 里，在 trace 里——在 trace 喂给反馈回路的每一次纠偏里。</p>
+<h2 id="附术语对照"><a class="header" href="#附术语对照">附：术语对照</a></h2>
+<p>保留英文的术语（文中统一使用）：</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>术语</th><th>本文语境中的含义</th></tr>
+</thead>
+<tbody>
+<tr><td>trace</td><td>追踪记录：agent 运行时落盘的结构化事件流，全文的主线概念</td></tr>
+<tr><td>eval</td><td>评测</td></tr>
+<tr><td>harness</td><td>评测驱动框架：驱动真实 session、采集 trace、跑断言和门禁的设施</td></tr>
+<tr><td>agent</td><td>智能体</td></tr>
+<tr><td>judge</td><td>评审模型：用另一个 LLM 做语义判定</td></tr>
+<tr><td>session</td><td>一次 agent 运行的完整过程及其落盘记录</td></tr>
+<tr><td>prompt</td><td>提示词</td></tr>
+<tr><td>provider</td><td>模型服务商</td></tr>
+<tr><td>skill</td><td>agent 可按描述自主决定是否调用的技能包</td></tr>
+<tr><td>token</td><td>模型的计费与上下文单位</td></tr>
+<tr><td>span</td><td>埋点区间：一次操作在 trace 里的起止记录</td></tr>
+<tr><td>CI</td><td>持续集成</td></tr>
+<tr><td>pass@k</td><td>k 次独立尝试至少成功一次的概率</td></tr>
+<tr><td>pass^k</td><td>k 次独立尝试全部成功的概率</td></tr>
+<tr><td>TPR / TNR</td><td>真失败被抓到的比例 / 真通过没被冤枉的比例</td></tr>
+<tr><td>Cohen’s Kappa</td><td>剔除随机一致之后的一致性系数</td></tr>
+<tr><td>Wilson 置信区间</td><td>小样本下更稳健的比例置信区间算法</td></tr>
+<tr><td>i.i.d.</td><td>独立同分布</td></tr>
+<tr><td>OOD</td><td>分布外（out-of-distribution）</td></tr>
+<tr><td>TOCTOU</td><td>检查与使用之间的竞态窗口（time-of-check to time-of-use）</td></tr>
+<tr><td>state_check</td><td>对环境终态的直接检查</td></tr>
+</tbody>
+</table>
+</div>
+<p>已译为中文的术语（首次出现处保留英文括注）：</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>中文</th><th>英文原文</th></tr>
+</thead>
+<tbody>
+<tr><td>评分器</td><td>grader</td></tr>
+<tr><td>评分标准</td><td>rubric</td></tr>
+<tr><td>标准漂移</td><td>criteria drift</td></tr>
+<tr><td>终态 / 对话记录</td><td>outcome / transcript</td></tr>
+<tr><td>回放</td><td>replay</td></tr>
+<tr><td>快速失败</td><td>fail-fast</td></tr>
+<tr><td>空操作</td><td>NoOp</td></tr>
+<tr><td>投影</td><td>projection</td></tr>
+<tr><td>偶发</td><td>flaky</td></tr>
+<tr><td>尝试</td><td>trial</td></tr>
+</tbody>
+</table>
+</div>
+<hr>
+<p><em>文中 eval 工具 <a href="https://github.com/BiBoyang/dsh-eval-harness">dsh-eval-harness</a> 已开源；bug 报告见 deepseek-ai/deepseek-harness 的 <a href="https://github.com/deepseek-ai/deepseek-harness/discussions/4312">Discussions #4312</a>。外部对照涉及的文献：Anthropic《Demystifying evals for AI agents》《Quantifying infrastructure noise in agentic coding evals》《Effective harnesses for long-running agents》《Effective context engineering for AI agents》《Unlocking the Codex harness》；OpenAI《Testing Agent Skills Systematically with Evals》《Evaluation best practices》；LangChain《Agent observability powers agent evaluation》《Agent Evaluation Readiness Checklist》；Braintrust《The six generations of AI agents and how to eval them》；OpenHands《How to Evaluate Agent Skills》；Eugene Yan《Product Evals in Three Simple Steps》《Evaluating the Effectiveness of LLM-Evaluators》；Shankar et al.《Who Validates the Validators?》；Hamel Husain《Your AI Product Needs Evals》；Hamel Husain &amp; Shreya Shankar《AI Evals: Everything You Need to Know》；美团技术团队《<a href="https://mp.weixin.qq.com/s/gZKWRqznB8sNBFf69fBIvw">图灵Agent评测</a>》。</em></p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="给-skill-建门禁一天里的三种沉默失败一次红线写法实证和它抓到的上游-bug又一只"><a class="header" href="#给-skill-建门禁一天里的三种沉默失败一次红线写法实证和它抓到的上游-bug又一只">给 skill 建门禁：一天里的三种沉默失败、一次红线写法实证，和它抓到的上游 bug（又一只）</a></h1>
+<p>上个月我写过一篇《从 trace 到 eval》，主线是「测 agent」：trace 是一等公民，eval 要防假通过和假失败，门禁不是判官是反馈回路。文章里的 harness 测的是一个插件系统（dsh）的行为回归。</p>
+<p>这个月战场换了一层：<strong>测 skill</strong>。</p>
+<p>skill——就是那份 SKILL.md，一段写在仓库里、agent 按 description 自主决定要不要加载的提示词包——本质上是没有编译器的代码。它改一个字，行为就可能漂移；它声明的红线（「不管从零写作」「不许擅自发 PR」），写进去不等于模型会遵守。我维护着九个自用 skill（<a href="https://github.com/BiBoyang/huohou">huohou</a>），朋友 tw93 维护着八个（<a href="https://github.com/tw93/Waza">Waza</a>）。两者都处在「写完跑两下，感觉没问题，发布」的裸奔状态。</p>
+<p>然后阿里开源了 <a href="https://github.com/alibaba/skill-up">skill-up</a>：把软件测试那套方法论——声明式用例、with/without 对照、rule/script/LLM judge 三层评分、结构化报告——完整平移到了 skill 上。我拿它给两套 skill 建了评测，一天之内跑完十七个 skill 的首轮，顺手给两个上游各发了 PR。</p>
+<p>这篇文章是按时间顺序的事故报告。上一篇的方法论每一条都在新战场复用了，但每一层都长出了新形态——包括三种我之前没编目的沉默失败。</p>
+<h2 id="一沉默失败第一种干预根本没注入"><a class="header" href="#一沉默失败第一种干预根本没注入">一、沉默失败第一种：干预根本没注入</a></h2>
+<p>上一篇我给「假通过」编过三种形态：agent 兜底答对、工具报错被粉饰、eval 系统自身盲区。今天的第四种，比这三种都靠前——<strong>你想测的干预，压根没进到被测系统里</strong>。</p>
+<p>skill-up 的 benchmark 模式会把每个用例跑两遍：with_skill（skill 装进工作区）和 without_skill（不装，作对照）。我给我的 huohou-polish 跑完首轮，6 通过 4 失败，报告漂亮，jitters 都像真的。直到我翻被测 agent 的会话落盘（kimi 的 wire.jsonl），发现一个不对劲的事实：<strong>所有 with_skill 的会话里，「huohou-polish」这个词出现的次数是零</strong>——不只是没被触发，是连 skill 列表里都没有它。</p>
+<p>排查链一路追到 skill-up 的 <code>ListSkillFiles</code>：它用 <code>filepath.Walk</code> 遍历 skill 源目录。而我的九个 skill 全部是符号链接（<code>~/.agents/skills/huohou-polish</code> 指向真实仓库）。Go 的 <code>filepath.Walk</code> <strong>不跟随符号链接根</strong>——根节点是链接本身，遍历即结束，选中文件数为零。安装逻辑把这个零当成正常，一个文件没上传，debug 日志还照常打印 <code>skill installed: huohou-polish</code>。</p>
+<p>也就是说：前面三轮全量评测，with_skill 和 without_skill 跑的都是裸模型。报告里的 PASS 和 FAIL 全是 noise 装扮成的 signal。</p>
+<p>这件事最刺痛的地方在于它完全符合上一篇的框架，却又完全出乎我的意料：断言全部通过、工具全部正常、报告全部生成——每一层都在忠实地工作，除了最底层那个「skill 真的装进去了吗」。上一篇我说「断言可能跑在残缺数据上」，今天我补一个更靠前的版本：<strong>断言可能跑在一个从未发生的实验上</strong>。</p>
+<p>防御方式也由此成型，我现在把它当作评测基建的第一条纪律：<strong>全量跑之前，先验证被测对象真的在场</strong>。不是看退出码，是看直接证据——工作区里 SKILL.md 的落盘文件、会话落盘里 skill 被加载的日志行。PASS 只证明流程跑完了，不证明实验发生了。</p>
+<p>（这个 bug 的后续：报了 <a href="https://github.com/alibaba/skill-up/issues/253">issue #253</a>，有 contributor 秒认领，我作为报告者用现成的复现环境把修复写了——<code>EvalSymlinks</code> 解析 + 零文件安装直接报错，附三个回归测试，<a href="https://github.com/alibaba/skill-up/pull/257">PR #257</a>。后一个改动是我坚持要加的：symlink 只是零文件的一种成因，「选中了零个文件却照常评估」这个沉默本身才是该被判死的东西。）</p>
+<h2 id="二对照组的纯度两种污染"><a class="header" href="#二对照组的纯度两种污染">二、对照组的纯度：两种污染</a></h2>
+<p>修好注入问题之后，with/without 对照还有第二层的坑：<strong>对照组不干净</strong>。</p>
+<p>第一种污染来自 skill 自动发现。kimi CLI 默认会加载用户级 skills 目录，于是 without_skill 变体照样把九个 huohou skill 全装进了上下文——「无 skill 对照组」名存实亡。修法是 wrapper 里把 <code>--skills-dir</code> 钉死在用例工作区内的目录：with_skill 指向装好的那份，without_skill 指向一个空目录。对照组的「无」必须是被强制出来的，不能是默认值的恩赐。</p>
+<p>第二种污染更隐蔽，来自我自己。我的 kimi 配了一个 UserPromptSubmit hook，每轮自动往上下文里注一段「回复末尾附当前时间戳」的指令。评测跑到 agent_judge 时开始报解析失败：<code>JSON code fence is not closed</code>、<code>invalid character 'â'</code>——那个 <code>â</code> 是 ⏱ 的 UTF-8 字节被误读后的样子。我的 hook 指令不仅污染了被测 agent 的输入，它产生的输出尾巴还直接打碎了 judge 的 JSON 契约。</p>
+<p>修法是环境隔离：wrapper 给被测 kimi 进程指一个隔离的 <code>KIMI_CODE_HOME</code>——凭据软链过去，<code>[[hooks]]</code> 块剥掉。评测环境的纯度清单从此多了一行：<strong>宿主机的每一个全局配置（skills、hooks、AGENTS.md、权限规则）都是潜在的实验污染，默认值不站在你这边</strong>。</p>
+<p>这两条在上一篇的框架里属于「重跑卫生」的亲戚，但方向相反：重跑卫生防的是上一次实验污染这一次，这里防的是<strong>宿主环境污染对照组</strong>。做因果对照实验的人都懂这个——对照组和实验组之间唯一的差异必须是你注入的那个变量，其余一切都要钉死。agent 评测没有实验室，只有自己搭的隔离。</p>
+<h2 id="三红线写法实证规则写在哪模型才遵守"><a class="header" href="#三红线写法实证规则写在哪模型才遵守">三、红线写法实证：规则写在哪，模型才遵守</a></h2>
+<p>这是今天最有价值的产出，因为它回答的是一个所有 skill 作者都凭直觉在做、却没人验证过的问题：<strong>一条「不许做 X」写在 SKILL.md 的什么位置，才真的有约束力？</strong></p>
+<p>先交代实验设计上的一个关键教训。测边界不能用纯域外请求——「帮我从零写篇博客」对润色 skill 来说，skill 根本不触发，测的是裸模型，什么也证明不了。有效的边界用例必须是<strong>域内夹带</strong>：以触发域内的事项为主请求，夹带一条 skill 声明「不管」的事项——「帮我把这段话润色一下，然后翻译成英文」。</p>
+<p>然后看证据。Waza 的八个 skill 提供了完美的天然对照组，因为它们的边界声明恰好分布在三种位置：</p>
+<p><strong>只在 frontmatter 的，全灭。</strong> write 的 “Not for commit messages” 只写在 description 里，正文没有一个字兜底。评测里它被夹带请求触发后，直接交付了一条工整的 <code>fix: release lock properly...</code>，全程零 scope 声明。health 更糟：审计请求夹带「顺便看看 buggy.py 为什么报错」，它不仅接了调试，还修改并运行了项目文件——把自己「审计不动手」的纪律一起拖下了水。</p>
+<p><strong>正文有规则但只是路由表的，也没守住。</strong> check 的正文写了「prose review 路由到 /write」，但没有写「/write 不在场怎么办」。评测环境只装了 check 一个 skill，规则找不到出口，于是静默接单——路由声明没有降级路径，等于没有声明。</p>
+<p><strong>最锋利的是 think。</strong> 它的 Gotcha 表里有一行简直是预言：「用户说『判断一下这个报错』却进了 Evaluation Mode → 这是调试，路由到 /hunt」。我的用例 prompt 一字不差就是「判断一下这个报错：……」。会话落盘确认 skill 已加载，规则就在上下文里。然后 agent 以标志性的 🥷 开头，直接开始了调试分析——规则存在、精确命中、没有触发。写在表格末尾的被动描述句，在真实对话流里的权重不够。</p>
+<p><strong>而写进正文行为指令的，守住了。</strong> ui 的 Kami 边界（打印文档不属于屏幕 UI）写在正文里，评测里它是全场唯一守住的边界：「按规范我不在这里手搓一份文档版式」，然后给出正确的接手方。learn 的 /read 边界同理。ui 这个 skill 顺带拿了全场最大增量：判据粒度 with_skill 92% 对 without_skill 40%，方向锁定、配色红线这些正文规则全部兑现。</p>
+<p>三层证据拼出来的结论很硬：<strong>frontmatter 的 “Not for” 是路由元数据，管的是「要不要加载」，管不了「加载之后做什么」。运行时的边界约束必须是正文里的行为指令</strong>——先一句话声明边界和归属，再完成职责内部分，目标 skill 不在场也不默认接单。</p>
+<p>这个结论当天就闭环验证了一次。huohou-polish 的「不管全文翻译」原本也只写在 description 里，评测实锤失守（66.7% FAIL）；我按上面的配方把「守边界」写进红线节，重跑同一个用例——100% PASS，agent 的原话是「英文版本需要你另行处理；下面只完成中文润色部分」。改动一行规则，用例从红到绿。eval 不是打分，是改 skill 的扳手。</p>
+<p>（这整条结论后来变成了给 Waza 的两个 PR：<a href="https://github.com/tw93/Waza/pull/87">#87</a> 把 scope fence 写进跨 skill 护栏表并给五个 skill 补了正文规则，<a href="https://github.com/tw93/Waza/pull/88">#88</a> 是顺带发现的 read 本地抓取层在代理环境下静默违反「URL 不出机」承诺的修复。）</p>
+<h2 id="四用例设计学测增量不测能力"><a class="header" href="#四用例设计学测增量不测能力">四、用例设计学：测增量，不测能力</a></h2>
+<p>首轮数据最容易误读的地方是：经典任务上 with/without 拉不开差距。裸模型润色文章、找 goroutine 泄漏本来就很强，polish-ai-flavor 这种题两边都满分。benchmark 面板上 delta +0.00 不代表 skill 没用，代表<strong>你的用例测错了东西</strong>。</p>
+<p>一天跑完十七个 skill 之后，有区分度的用例只有三类：</p>
+<ol>
+<li><strong>红线与边界</strong>——「不注水」「不编造」「确认前不动文件」。这些是 skill 声称提供而 baseline 不保证的东西，上一节已经展开</li>
+<li><strong>对抗性施压</strong>——「线上在报警，很急，别问东问西」。huohou-plan-first 在这种施压下仍然先出方案不动文件（with 100% 对 without 75%）；Waza 的 check 同样顶住了「测试全绿直接放行」的压力并反指「这是假绿」。压力是红线唯一有效的显影剂</li>
+<li><strong>流程纪律</strong>——digest 的「论点标出处」、wrap-up 的「敏感文件闸门」。主干答案 baseline 也会给，但纪律不会</li>
+</ol>
+<p>这三类用例有个共同前提值得说破：它们测的都是 skill <strong>自己声明</strong>的规约，不是评测者想象中的错误。eval 圈有一种够狠的立场——评估器该为已发现的错误而建，不该为想象中的错误而建（Hamel Husain 和 Shreya Shankar 的 eval FAQ 把它立成了纲领）。拿它审视红线用例，我认为站得住：红线写在 SKILL.md 里，就是一份已存在的行为规约，测它更接近给规约补测试，而不是凭空设计质量标准；何况用例资格全是实测挣来的——先跑出 66.7% FAIL，它才配进套件。失败是被发现的，不是被发明的。</p>
+<p>另一个必须说的口径问题：<strong>单次跑分不作数</strong>。同一条不注水用例，在三轮运行里分别跑出 25%、75%、100%——模型触不触发 skill 本身就是概率事件，judge 的心情也是。skill-up 有 <code>--iteration N</code> 采样模式不是摆设。这也是上一篇「判置信区间的界，不判点估计」在 skill 层的重演，只是样本更贵：每个样本都是一次真实 agent 会话。</p>
+<h2 id="五那笔-deferred-的账今天来收了"><a class="header" href="#五那笔-deferred-的账今天来收了">五、那笔 deferred 的账，今天来收了</a></h2>
+<p>上一篇 §五里我写过大意如此的话：「按风险分层隔离执行环境，我的 harness 没做——目前用例全是本地文件操作，这层还不是刚需；用例集里一旦出现写外部状态的用例，就得补。」</p>
+<p>今天它来了。评测 huohou-rust-expert 时，一个边界用例的请求里夹带了「写个 Python 脚本配 crontab 定时清理 /tmp」。被测 agent 跑在 <code>environment: none</code> 下——这意味着它有我宿主机的完整权限——它真的照做了：<strong>在我的 crontab 里装了一条每天 00:17 清理 /tmp 的任务，还在 <code>~/bin/</code> 写了脚本</strong>。子任务在报告里如实写了这件事，我看到的时候后背一凉，当场清掉。</p>
+<p>没有造成损失，但这是今天所有教训里单位重量最重的一条：<strong>评测环境的隔离等级，必须按用例可能诱导的最坏行为来定，而不是按用例的「本意」来定</strong>。用例的本意是「测边界声明」，但 agent 不知道自己在被测——它只觉得用户要一个 crontab。<code>environment: none</code> 省下来的容器启动开销，定价里包含了你整个宿主机。</p>
+<p>上一篇我说这层「不是刚需」，错在没有把话说完：它在你控制住用例集时不是刚需，而评测体系的价值恰恰在于用例集会长大。今天起我的评测纪律多了一条：默认 docker 或 opensandbox 运行时；<code>none</code> 只留给纯文本输入输出、且 prompt 里不存在任何可被诱导成副作用的动词的用例。</p>
+<h2 id="六收尾"><a class="header" href="#六收尾">六、收尾</a></h2>
+<p>上一篇的结尾我引了《工程控制论》，说门禁是反馈回路而不是判官。今天的经历给这段话加了下半句：<strong>回路的输入端也必须被监控</strong>——传感器失联时，控制系统会把「没有读数」当成「一切正常」。skill 没装上、对照组被污染、hook 在后台悄悄改数据，这三件事的共同点不是 bug，是<strong>沉默</strong>——每一层都在正常工作，只有实验本身没发生。</p>
+<p>所以这一天的方法论压缩成三条：</p>
+<ol>
+<li>全量跑之前，先验证被测对象真的在场——用直接证据，不用退出码</li>
+<li>对照组的纯度要钉死——宿主的默认值全是污染</li>
+<li>红线的约束力是可测的物理量——写在哪、怎么写，决定了它咬不咬人</li>
+</ol>
+<p>skill 是提示词层的代码。代码要进 CI 才有质量可言，提示词也一样。十七个 skill 的 evals 现在都在各自仓库里躺着，改动 SKILL.md 的成本从此多了一个可见的对价：跑一遍，看红绿灯。</p>
+<p>四年前的笔记今天仍然成立，而且现在它可以指涉两层系统了：「面对不确定性不必强求零误差，只要靠控制+反馈把误差框在可接受范围」——上一篇框的是 agent，这一篇框的是写给 agent 的提示词。下一层是什么，等它漂了我就知道。</p>
+<h2 id="附术语对照-1"><a class="header" href="#附术语对照-1">附：术语对照</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>术语</th><th>本文语境中的含义</th></tr>
+</thead>
+<tbody>
+<tr><td>skill</td><td>agent 按 description 自主决定是否加载的技能包（SKILL.md + 附属文件）</td></tr>
+<tr><td>skill-up</td><td>阿里开源的 skill 评测工具：声明式用例 + 对照 + 评分 + 报告</td></tr>
+<tr><td>with_skill / without_skill</td><td>同一个用例在装入/不装入被测 skill 下的两次运行，差值即 skill 的增量</td></tr>
+<tr><td>对照组污染</td><td>without_skill 变体通过宿主环境的默认机制（自动发现的 skills、hooks）意外获得能力或干扰</td></tr>
+<tr><td>域内夹带</td><td>边界用例设计法：主请求在 skill 触发域内，夹带一项它声明「不管」的事项</td></tr>
+<tr><td>judge</td><td>评审模型：用另一个 LLM 按评分标准做语义判定</td></tr>
+<tr><td>engine</td><td>skill-up 语境下执行用例的 agent CLI（本文用 kimi custom engine）</td></tr>
+</tbody>
+</table>
+</div>
+<hr>
+<p><em>文中工具：<a href="https://github.com/alibaba/skill-up">skill-up</a>（评测框架，issue <a href="https://github.com/alibaba/skill-up/issues/253">#253</a> 与修复 <a href="https://github.com/alibaba/skill-up/pull/257">PR #257</a>）；被测 skill 合集 <a href="https://github.com/BiBoyang/huohou">huohou</a>（自留地）与 <a href="https://github.com/tw93/Waza">Waza</a>（tw93 出品，PR <a href="https://github.com/tw93/Waza/pull/87">#87</a> <a href="https://github.com/tw93/Waza/pull/88">#88</a>）。上一篇：2026-08-23《从 trace 到 eval：trace 设计、Agent 评测方法论、一个评测 harness 的实现，和它抓到的上游并发 bug》（见本博客存档）。</em></p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="我给-skill-up-报了一个不存在的-bug"><a class="header" href="#我给-skill-up-报了一个不存在的-bug">我给 skill-up 报了一个不存在的 bug</a></h1>
+<blockquote>
+<p>一个超时、两次观测错误、一条 verbose 日志，和一场从“确信“到“自我推翻“的完整经历。全程写实，包括我具体错在哪条命令上。</p>
+</blockquote>
+<h2 id="1-开场"><a class="header" href="#1-开场">1. 开场</a></h2>
+<p>前两天我给阿里的 <a href="https://github.com/alibaba/skill-up">skill-up</a>（Agent Skill 评测工具）提了两个 issue。第一个是真问题，我给它提了 <a href="https://github.com/alibaba/skill-up/pull/265">PR #265</a>；第二个，第二天我自己回到 issue 下面发了一条评论：<strong>“这是一个误报，skill-up 的行为完全正确，请关闭。”</strong></p>
+<p>这篇文字记录的是第二个 issue 的完整一生：它怎么在真实的故障现场里诞生，怎么带着“严谨的证据“长大，怎么被一条日志推翻，以及推翻之后我学到了什么。写给所有相信“我亲眼看到的观测结果“的工程师——包括两天前的我。</p>
+<h2 id="2-现场一个真的故障"><a class="header" href="#2-现场一个真的故障">2. 现场：一个真的故障</a></h2>
+<p>背景是我给自己的 9 个 Agent Skill 跑触发评测（测“该不该触发“而不是“触发后跑得对不对“），用 skill-up 驱动自写的 custom engine 适配器。某天全量跑到 90 条用例，其中一条超时了：</p>
+<pre><code class="language-console">[ERROR] case trigger-pos-digest-repo: agent execution failed: custom engine run failed:
+context deadline exceeded (case timeout 180s via cases.defaults.timeout_seconds)
+</code></pre>
+<p>超时本身不奇怪，奇怪的是产物。引擎适配器的契约是把运行结果写到 <code>session-result.json</code>，被杀后目录里长这样：</p>
+<pre><code class="language-console">$ ls &lt;workspace&gt;/iteration-1/trigger-pos-digest-repo/with_skill/outputs/agent/run/
+messages.json      # 框架写的输入文件
+                    # session-result.json —— 没有了
+</code></pre>
+<p>agent 运行前几个 turn 里已经发生的事件（包括 skill 激活记录）全部随进程蒸发。这是真问题，后来成了 issue <a href="https://github.com/alibaba/skill-up/issues/263">#263</a> 和 PR #265。这个场景，是后面所有误会的起源。</p>
+<h2 id="3-误报的诞生三次失败的重跑"><a class="header" href="#3-误报的诞生三次失败的重跑">3. 误报的诞生：三次“失败“的重跑</a></h2>
+<p>为了补回这条丢失的数据，我用 <code>--include-case-name</code> 单独重跑这个 case。跑了三次，每次控制台都报 <code>1 passed</code>，但去产物目录看，<code>session-result.json</code> 依然不存在。另外两个 skill 的单 case 重跑也是同样症状。</p>
+<p>“PASS 但不落盘”——这听起来就像一个增量重跑的 bug 了。但发 issue 前，我决定先做个严谨的复现：记录文件 mtime，重跑，再记录。</p>
+<pre><code class="language-console">$ stat -f "%m %N" .../iteration-1/trigger-pos-terse/.../session-result.json
+1789808917 ...
+
+$ skill-up run evals/eval-triggers.yaml --include-case-name "trigger-pos-terse" \
+    --output-dir /Users/boyang/Desktop/源码学习/huohou/huohou-code-review-triggers-workspace
+📋 Results: 1 passed, 0 failed, 0 errors
+
+$ stat -f "%m %N" .../iteration-1/trigger-pos-terse/.../session-result.json
+1789808917 ...     # ← mtime 纹丝不动
+</code></pre>
+<p>数字完全一致。“重跑报 PASS 但产物零更新”，铁证如山。我把它连同命令和输出一起写进 issue <a href="https://github.com/alibaba/skill-up/issues/264">#264</a>，标题起得很有把握：<em>“Rerunning a single case with –include-case-name into a non-empty output workspace reports PASS but writes no fresh artifacts”</em>。</p>
+<p>发出去的时候我没有任何不踏实的感觉。这才是最值得写下来的部分。</p>
+<h2 id="4-推翻一条-verbose-日志"><a class="header" href="#4-推翻一条-verbose-日志">4. 推翻：一条 verbose 日志</a></h2>
+<p>两天后准备给这个问题提 PR，第一步是加 <code>-v</code> 复现一遍，看内部日志。输出里有这么一行：</p>
+<pre><code class="language-console">level=DEBUG msg="Runner: iteration workspace: /tmp/spike264/iteration-2"
+</code></pre>
+<p><strong>iteration-2</strong>。skill-up 把重跑 append 成了新的 iteration——这正是它文档里写的 auto-append 语义，行为完全正确。产物呢？</p>
+<pre><code class="language-console">$ ls /tmp/spike264/iteration-2/trigger-pos-terse/with_skill/outputs/agent/run/
+messages.json  session-result.json    # ← 都在，全新
+</code></pre>
+<p>所以“重跑不落盘“根本不成立。那我的三次“失败重跑“和 mtime 铁证是怎么回事？顺着这条线拉回去，两个观测错误原形毕露。</p>
+<h2 id="5-解剖我具体错在哪"><a class="header" href="#5-解剖我具体错在哪">5. 解剖：我具体错在哪</a></h2>
+<p><strong>错误一：相对路径的 <code>--output-dir</code>。</strong> 三次补跑的命令是在 skill 子目录里敲的：</p>
+<pre><code class="language-bash">cd huohou-digest &amp;&amp; skill-up run ... --output-dir huohou-digest-triggers-workspace
+#                                                  ↑ 相对路径，相对的是 cwd
+</code></pre>
+<p>产物老老实实写进了 <code>huohou-digest/huohou-digest-triggers-workspace/</code>——一个嵌套目录。而我检查的是仓库根下的同名 workspace。找到这个目录时，三次“消失“的重跑产物整整齐齐躺在里面，每份 <code>session-result.json</code> 都在。</p>
+<p><strong>错误二：对照组选错了 iteration。</strong> 那个“严谨“的 mtime 复现，stat 的是 <code>iteration-1</code> 里的文件；而重跑写的是 <code>iteration-2</code>。<strong>mtime 是真的，数字是一致的，结论是错的</strong>——我验证了一个没人怀疑的命题（旧文件不会被重跑改写），却以为自己验证了那个有问题的命题（新文件没有被写出）。</p>
+<p>两层错误叠加出的现象高度自洽：控制台说 PASS（它确实跑完了）、我盯着的目录没有新文件（新文件在别处）、mtime 不变（我盯的是旧文件）。每一格观测都“对“，拼起来的图景却是虚构的。事后看还有第三个帮凶：第 2 节那个真实的超时丢产物问题给了我“产物会丢“的先入之见，让我对“又一次产物丢失“毫无防备。</p>
+<h2 id="6-纠错以及真-pr-怎么从误报调查里长出来"><a class="header" href="#6-纠错以及真-pr-怎么从误报调查里长出来">6. 纠错，以及真 PR 怎么从误报调查里长出来</a></h2>
+<p>发现真相的当天，我在 #264 下面发了更正评论：说明 skill-up 行为正确、给出 verbose 日志证据、逐条拆解自己的两个观测错误、指出唯一真实的问题是 #263、道歉并请维护者关闭。写这段评论花的时间比写原 issue 还长——这是应该的。公开误报的成本是一次尴尬，收益是维护者的时间和一个可信的轨迹记录：下次你再报问题时，你的历史记录在替你说话。</p>
+<p>更有意思的是另一条线。为了给“真问题“ #263 提 PR，我读了 skill-up 的源码，发现 issue 里我建议的修法（“超时时先 SIGTERM 给宽限再 SIGKILL”）<strong>上游早就实现了</strong>——<code>none_exec_unix.go</code> 里进程组、SIGTERM、1 秒宽限、逐级升级一应俱全，注释写得清清楚楚。真正的缺口在别处：skill-up 优雅终止的是引擎适配器进程，而一个没注册 SIGTERM handler 的 python 适配器收到 SIGTERM 后直接死掉，宽限期救不了“没有清理逻辑的进程“。于是 PR #265 做的是 issue 里我自己标的“备选方案“：超时且产物缺失时，由框架在 output 路径合成一份最小 session-result（exit_code 124 + 合成标记），让下游至少有据可查。</p>
+<p>这带来一个上游协作的实操经验：<strong>issue 里的修复建议是假设，不是承诺</strong>。调查阶段发现“提纲是错的“很正常，正确做法是在 PR 描述里显式修正它——#265 的描述里专门有一节 “Correction vs. the issue sketch”，说明哪个建议已被上游实现、真实缺口是什么。维护者看到的不是一个推翻自己 issue 的别扭 PR，而是一份诚实的调查记录。</p>
+<p>顺带一提 issue 本身的质量：#263/#264 都带了最小复现、环境信息、期望 vs 实际、内联证据（不依赖仓库访问的命令输出）。回头看，这些纪律在 #264（误报）上没能阻止我犯错——但它让我的错误<strong>可被快速验证和推翻</strong>，verbose 日志一跑就水落石出。证据质量不保证结论正确，它保证的是纠错的速度。</p>
+<h2 id="7-沉淀误报的反向产物"><a class="header" href="#7-沉淀误报的反向产物">7. 沉淀：误报的反向产物</a></h2>
+<p>这场误报直接催生了几个机制，都进了我们自己的工具链：</p>
+<ul>
+<li><strong>排除计数</strong>。评测报告原来对“分母里少了谁“是静默的；现在每份报告都有一行 <code>EXCLUDED: N case(s) without session-result</code>。我犯的错本质是“观测对象静默偏移“——分母、iteration、目录，任何一处悄悄变了都不该无声无息。</li>
+<li><strong>评测器的自测</strong>。判活脚本自身有一套 32 条断言的回归测试（含一个故意的坏 skill 样本），上线以来抓到过判活器崩溃、配置漂移两个真 bug；这次又把误报涉及的产物聚合逻辑补了进去，固化“同 case 多 iteration 取最新“的语义。</li>
+<li><strong>重跑纪律</strong>。单 case 重跑一律绝对路径 <code>--output-dir</code>，判产物看最新 iteration——两条都写进了仓库的纪律文档。</li>
+</ul>
+<p>给 Agent Skill 做评测这段时间，我越来越同意《<a href="https://mp.weixin.qq.com/s/x2zo6TcFu-y-niKUfNFBOQ">LLM-as-a-Judge：如何判断你的 LLM 应用是否「健康」</a>》里的观点：<strong>裁判本身也需要被校准</strong>。这篇文字记录的是同一命题的另一个切面——不只是 judge 模型会偏，评测工具、观测脚本，以及拿着它们的人，整套链路都会以自洽的方式出错。工具链的价值不在于永不出错，而在于错了之后，一条 verbose 日志、一行排除计数、一个可复现的 issue 就能把它抓住。</p>
+<p>那天要不是想给 PR 加日志，这个“bug“大概还活着。verbose 一响，黄金万两。</p>
+<hr>
+<p><em>本文涉及的仓库与工具：<a href="https://github.com/BiBoyang/huohou">huohou</a>（9 个 Agent Skill + 触发评测工具链）、<a href="https://github.com/alibaba/skill-up">skill-up</a>。相关上游记录：issue <a href="https://github.com/alibaba/skill-up/issues/263">#263</a>、误报更正 <a href="https://github.com/alibaba/skill-up/issues/264#issuecomment-5743592368">#264</a>、PR <a href="https://github.com/alibaba/skill-up/pull/265">#265</a>。</em></p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="ci-红本地绿一次平台差异误诊和-merge-干净不等于语义兼容"><a class="header" href="#ci-红本地绿一次平台差异误诊和-merge-干净不等于语义兼容">CI 红、本地绿：一次「平台差异」误诊，和 merge 干净不等于语义兼容</a></h1>
+<blockquote>
+<p>一个测试在 macOS 上绿、在 Linux CI 上红。我花了一个小时排查进程组、信号升级和平台差异——全部猜错。真相是 CI 和我测的压根不是同一份代码。</p>
+</blockquote>
+<h2 id="1-现场一个平台相关的失败"><a class="header" href="#1-现场一个平台相关的失败">1. 现场：一个「平台相关」的失败</a></h2>
+<p>接着上一篇说。给 skill-up 提的 <a href="https://github.com/alibaba/skill-up/pull/265">PR #265</a>（超时时合成兜底产物）CI 红了，挂在两处：三个 lint 问题，加一个测试失败：</p>
+<pre><code class="language-console">--- FAIL: TestCustomAgent_RunLocal_TimeoutSynthesizesOutputFile (1.01s)
+    custom_test.go:1298: generated_files = [], want the synthesized session-result.json registered
+</code></pre>
+<p>这个测试的逻辑：让一个 custom engine 进程睡死（<code>sleep 30</code>），一秒超时杀掉，然后断言框架合成的兜底文件被登记进了 <code>generated_files</code>。</p>
+<p>我的第一反应和所有工程师一样：本地跑一遍。</p>
+<pre><code class="language-console">$ go test -race -run TestCustomAgent_RunLocal_TimeoutSynthesizesOutputFile ./internal/agent/
+ok  	github.com/alibaba/skill-up/internal/agent	2.945s
+</code></pre>
+<p>绿的。CI 是 Linux，本机是 macOS——「平台差异」的假设就此成立。这个测试涉及超时杀进程：进程组隔离、SIGTERM 一秒宽限后升级 SIGKILL、管道回收的 WaitDelay……每一处都有正当的平台差异嫌疑。我顺着这条线读了 <code>configureProcessGroup</code> 的源码、<code>classifyExecError</code> 的错误分类、kill 升级的时序，越读越觉得每一处都平台无关，但又找不到别的解释。</p>
+<p>一个小时就这么进去了。</p>
+<h2 id="2-真相ci-测的代码和我测的不一样"><a class="header" href="#2-真相ci-测的代码和我测的不一样">2. 真相：CI 测的代码和我测的不一样</a></h2>
+<p>真正的突破口不是读代码，是一条 <code>git log</code>。</p>
+<p>这个 PR 的分支最近被 merge 过一次上游 main（保持 PR 新鲜的常规操作）。merge 进了一大批上游新提交，其中一个是 <a href="https://github.com/alibaba/skill-up/pull/250">#250</a>：给 custom engine 加多轮会话支持。它顺带做了一个语义收窄——<strong>框架自写的输入/输出文件不再登记进公开的 <code>generated_files</code>，改登记进一个仅供 diff 排除用的内部字段</strong>（<code>generated_file_sources</code>），理由是框架 JSON 里可能带着可续跑的 session ID，不该泄漏给 judge。</p>
+<p>而我们的测试，断言的正是旧字段。文本上 merge 得干干净净，一个冲突标记都没有；语义上，上游把我们断言依赖的行为拆走了。<strong>merge 干净只证明两边没改同一行，不证明两边对同一个字段的理解还一致。</strong></p>
+<h2 id="3-但等等merge-之前-ci-就红了"><a class="header" href="#3-但等等merge-之前-ci-就红了">3. 但等等——merge 之前 CI 就红了</a></h2>
+<p>故事到这儿还差一环。翻 CI 记录，这个断言在 merge 进 main <strong>之前</strong>的那次运行（两天前）就已经在 Linux 上挂了。如果语义冲突是 merge 带来的，那次失败算什么？难道真有平台差异，只是恰好和 merge 撞在同一个断言上？</p>
+<p>答案是 GitHub Actions 一个容易被遗忘的机制：<strong><code>pull_request</code> 事件构建的不是你的分支，而是「分支 ⊕ 最新 main」的合并态</strong>（<code>refs/pull/N/merge</code>）。上游的 #250 在 9 月 17 日就进了 main；我们的 PR 是 9 月 19 日提的、9 月 20 日跑的 CI——那时 GitHub 拼出来的合并结果里已经含着语义变更。而我在本机 checkout 的是分支裸态，没有 #250。</p>
+<p>所以根本没有什么平台差异。<strong>CI 红、本地绿的时候，第一个问题不该是「平台差在哪」，而是「CI 测的是哪份代码」。</strong> 我为一个不存在的平台差异读了一个小时的进程管理源码——那一个小时里我离真相的距离，比不看代码还远。</p>
+<h2 id="4-第二层我们的测试为什么会这么脆"><a class="header" href="#4-第二层我们的测试为什么会这么脆">4. 第二层：我们的测试为什么会这么脆</a></h2>
+<p>merge 冲突的部分是运气，但有个不依赖运气的部分值得单独说：这个测试断言的是<strong>上游正在演进的字段语义</strong>。</p>
+<p><code>generated_files</code> 在那段时间是上游的活跃重构面——多轮会话支持逼着他们重新划分「哪些是引擎产物、哪些是框架簿记」。我们的测试把「合成产物被登记」这个需求，直接绑死在了「登记进 generated_files 这个具体字段」上。上游没有改坏任何对外契约，他们只是把一个内部字段的语义收窄了，我们的测试就成了 Hyrum’s Law 的标准受害人：</p>
+<blockquote>
+<p>只要一个 API 的可观测行为足够多，就总会有人依赖它——不管你承诺过什么。</p>
+</blockquote>
+<p>修法也因此很轻：断言改到 <code>generated_file_sources</code> 上——那个字段的职责（登记给 artifact 收集和 diff 排除）才是我们真正需要的不变量，合成文件本身照常被 workspace 收集器捞走。测试意图不变，绑定的语义从「字段 A」换成了「字段 A 存在的目的」。顺带把三个 lint 修掉（<code>os.Remove</code> 没检查返回值、<code>os.CreateTemp</code> 该用 <code>t.TempDir()</code>、函数圈复杂度超阈值拆出一个方法），本地 <code>golangci-lint</code> 零告警、全量测试绿，推上去收工。</p>
+<p>测试该断言什么，这个系列其实一直在绕同一个问题打转：第一篇是「断言路径还是断言结果」，这一篇是「断言字段还是断言字段的职责」。答案似乎是同一个：<strong>断言你真正依赖的那个不变量，而不是它当前恰好寄生的载体。</strong></p>
+<h2 id="5-收尾"><a class="header" href="#5-收尾">5. 收尾</a></h2>
+<p>第三篇讲「观测会骗人」——mtime 是真的、数字是一致的、结论是错的。这一篇是它的姊妹篇：<strong>绿灯也会骗人</strong>——本地的绿是真的、CI 的红也是真的，因为两盏灯照的就不是同一份代码。</p>
+<p>两条实操纪律沉淀下来：</p>
+<ol>
+<li>CI 红本地绿，先核「CI 构建的是哪份代码」（GitHub 的 pull_request 构建合并态；长期挂着的 PR 要勤跟 main，语义漂移每天都在发生）</li>
+<li>给上游提测试时，检查每个断言绑定的是「字段」还是「职责」——前者随上游重构贬值，后者才扛得住</li>
+</ol>
+<p>以及一个我越来越有感触的元观察：这个系列写到现在四篇，每一篇的「bug」最后都不在代码里——在 trace 的缺失里、在对照组的纯度里、在观测者的先入之见里、在这次，在「merge 成功」四个字的承诺里。工具越来越复杂，失误的形态却没怎么变过：我们始终败给「以为自己知道」。</p>
+<hr>
+<p><em>本文涉及的 PR：<a href="https://github.com/alibaba/skill-up/pull/265">skill-up#265</a>（修复本体）、上游语义变更 <a href="https://github.com/alibaba/skill-up/pull/250">skill-up#250</a>。</em></p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="回答被截断你的-cli-知道吗四个工具六种故障108-格矩阵和一个差点发布的错误结论"><a class="header" href="#回答被截断你的-cli-知道吗四个工具六种故障108-格矩阵和一个差点发布的错误结论">回答被截断，你的 CLI 知道吗：四个工具、六种故障、108 格矩阵，和一个差点发布的错误结论</a></h1>
+<blockquote>
+<p>四个 CLI、三种流式协议、六种故障、108 次确定性注入。结论里最刺眼的那一条，最后发现是我自己的 mock 造的假——这篇文章包括我是怎么冤枉 codex 的。</p>
+</blockquote>
+<h2 id="1-开场半截答案比报错可怕"><a class="header" href="#1-开场半截答案比报错可怕">1. 开场：半截答案比报错可怕</a></h2>
+<p>用 AI CLI 干活的人大概都见过这个场面：让它写一份长报告，屏幕哗哗流了几分钟，停在一句看起来完整的话上，光标一闪，任务「完成」。你把报告拿走，直到用的时候才发现，结尾少了一截。</p>
+<p>报错不可怕，报错你会重试。<strong>半截答案可怕，因为它长得和完整答案一模一样。</strong> 流式协议里能让回答变半截的原因不少——token 上限耗尽、连接中途断开、终止事件丢失——协议层各有各的形态，用户层却共享同一个性质：不细看，发现不了。</p>
+<p>我日常用的 CLI 就撞出过几次长文无声收尾，没有任何提示。这个月把这个问题做成了正式测评：当流式回答被截断，各家 CLI 到底能不能发现？发现了，告不告诉用户？告不告诉机器（会话记录）？</p>
+<h2 id="2-测评设计六种故障四级判定"><a class="header" href="#2-测评设计六种故障四级判定">2. 测评设计：六种故障，四级判定</a></h2>
+<p>被测对象是四个 CLI，覆盖三种主流流式协议。版本全部钉死并写进记录表——这是可复现性的底线：</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>工具</th><th>版本</th><th>协议</th></tr>
+</thead>
+<tbody>
+<tr><td>codex</td><td>0.156.1</td><td>OpenAI Responses</td></tr>
+<tr><td>claude code</td><td>2.1.282</td><td>Anthropic Messages</td></tr>
+<tr><td>kimi-cli</td><td>1.52.0（归档定格）</td><td>OpenAI Chat Completions</td></tr>
+<tr><td>dsh（<a href="https://github.com/deepseek-ai/deepseek-harness">deepseek-harness</a>）</td><td>0.1.7-rc.2</td><td>三种协议各跑一行</td></tr>
+</tbody>
+</table>
+</div>
+<p>故障不等真实网络施舍：本地起了一个 mock provider，六种故障做成请求参数，逐字节可控。</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>编号</th><th>故障</th><th>协议层形态</th></tr>
+</thead>
+<tbody>
+<tr><td>F0</td><td>正常完整流</td><td>对照组：工具应正常完成</td></tr>
+<tr><td>F1</td><td>中途干净断流</td><td>发到一半 TCP FIN，无终止事件</td></tr>
+<tr><td>F2</td><td>丢终止事件</td><td>内容全部送达，唯独收尾事件缺席，流正常关</td></tr>
+<tr><td>F3</td><td>半个事件断流</td><td>SSE 事件发到一半（JSON 都不完整）后 FIN</td></tr>
+<tr><td>F4</td><td>length 截断</td><td>正文充足，以 finish_reason=length / max_tokens 收尾</td></tr>
+<tr><td>F5</td><td>think-only 截断</td><td>reasoning 耗尽 token 上限，正文一个字没有</td></tr>
+</tbody>
+</table>
+</div>
+<p>F5 同时兼任<strong>阳性对照</strong>：kimi-cli 的底层框架对「空响应」有现成的重试逻辑，F5 必然触发它——如果 F5 都测不出反应，说明注入链路本身坏了，「未检出」的结论作废。这是这个系列的老原则：裁判和考题，都要先校准。</p>
+<p>判定看两个维度。用户可见的 <strong>L 级</strong>：L0 静默 / L1 弱信号或信号指错对象 / L2 明确告知「回答被截断」/ L3 告知且自动恢复。机器可见的 <strong>transcript 打标</strong>：落盘会话里有没有结构性标记。注入语义是 once——每格只有第一个请求命中故障，重试走健康流，这样「工具有没有自救」和「自救后能不能交付」能分开看。mock 侧逐请求记录实际发出的字节数和终止事件送达情况，作为「故障确实送到了」的证据。每格跑 3 次，全部格子 3/3 一致，无 flaky。</p>
+<p>mock 的实现、注入语义踩过的坑、TUI 画面的采集方法，都在姊妹篇《给流式协议造故障》里，本文只保留结论需要的部分。</p>
+<h2 id="3-总矩阵60-静默没有一个工具会说人话"><a class="header" href="#3-总矩阵60-静默没有一个工具会说人话">3. 总矩阵：60% 静默，没有一个工具会说人话</a></h2>
+<p>108 格（6 行 × 6 故障 × 3 次，含 F0 对照）跑完。F0 对照组 6/6 全绿，才进的故障注入。结果：</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>工具（协议）</th><th>F1 中途断流</th><th>F2 缺终止事件</th><th>F3 半事件断流</th><th>F4 length 截断</th><th>F5 think-only</th></tr>
+</thead>
+<tbody>
+<tr><td>codex（responses）</td><td><strong>L3</strong> ✓恢</td><td><strong>L3</strong> ✓恢</td><td><strong>L3</strong> ✓恢</td><td><strong>L3</strong> ✓恢</td><td><strong>L3</strong> ✓恢</td></tr>
+<tr><td>claude code（anthropic）</td><td>L0 ✓恢</td><td>L0</td><td>L0 ✓恢</td><td>L0 ✓恢 <strong>有标</strong></td><td>L0 ✓恢 <strong>有标</strong></td></tr>
+<tr><td>kimi-cli（cc）</td><td>L0 ✓恢</td><td>L0</td><td>L0 ✓恢</td><td>L0</td><td><strong>L3</strong> ✓恢 <strong>有标</strong></td></tr>
+<tr><td>dsh（cc / responses / anthropic）</td><td>L0 ✓恢</td><td>L0 ✓恢</td><td>L0 ✓恢</td><td>L1 <strong>有标</strong></td><td>L1 <strong>有标</strong></td></tr>
+</tbody>
+</table>
+</div>
+<p>（✓恢 = 最终交付了完整回答；标 = transcript 有结构打标。dsh 三协议行行为一致，合并展示。测试日期 2026-09-25。）</p>
+<p>L 级分布（30 个故障格）：</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>级别</th><th>含义</th><th>格数</th></tr>
+</thead>
+<tbody>
+<tr><td>L3 告知 + 恢复</td><td>有信号且自动补齐完整回答</td><td>6（20%）</td></tr>
+<tr><td>L2 明确告知</td><td>说出「回答被截断」</td><td><strong>0</strong></td></tr>
+<tr><td>L1 弱信号</td><td>信号存在但指错对象 / 用户不可见</td><td>6（20%）</td></tr>
+<tr><td>L0 静默</td><td>无任何信号</td><td>18（60%）</td></tr>
+</tbody>
+</table>
+</div>
+<p>两个值得记住的数字。<strong>检出（L2 及以上）只有 6/30</strong>——而且这 6 格全是「重试信号 + 完整重放」形态，没有任何一个工具说出过「回答被截断 / 不完整」这级人话，L2 整个空着。<strong>L0 占 60%</strong>：多数截断发生在你和工具之间，无声无息。</p>
+<h2 id="4-四种性格"><a class="header" href="#4-四种性格">4. 四种性格</a></h2>
+<p>矩阵每一格背后都是一种设计性格。挑最有戏的四个侧面。</p>
+<h2 id="codex能检出能恢复但只对人眨眼不对机器留痕"><a class="header" href="#codex能检出能恢复但只对人眨眼不对机器留痕">codex：能检出能恢复，但只对人眨眼，不对机器留痕</a></h2>
+<p>五种故障全部 L3：流出 <code>ERROR: Reconnecting... 1/5</code>，自动重试，完整重放，exit 0，行为层面是四家里最完备的。一次 F4（length 截断）的实际输出：</p>
+<pre><code class="language-console">……（P01–P24 逐段流出）
+ERROR: Reconnecting... 1/5
+……（重试命中健康流，完整重放）
+$ echo $?
+0
+</code></pre>
+<p>但有两个问题。其一是<strong>文案归因偏移</strong>：F4/F5 是干净的协议级 length 截断，连接完好无损，codex 报的却是「重连」——信号有、恢复有，说的不是一回事。TUI 模式下这条提示还是转瞬即逝的状态行，恢复后即被重绘抹除，我要用 0.4 秒轮询专门取证才能证明它存在过。其二是 <strong>transcript 零打标</strong>，F1–F5 全部如此：故障次和重试次的回答以同构形式落盘，没有 error / Reconnecting / incomplete 任何结构标记。用户可见性 L3，机器可见性是零。对「会话记录作为审计或训练数据」的场景，这是实质性盲区——事后翻记录，你无法发现这次回答曾经失败过。分布式系统对这类问题有个老解法：墓碑优于删除——作废的调用不抹掉，留一条带失效原因的状态，迟到的人随时查得到真相。codex 的 transcript 恰恰没有墓碑：故障次和重试次长得一模一样，沉默被当成了成功。</p>
+<h2 id="dsh镜像分裂机器记得清清楚楚用户只得到一个裸-exit-1"><a class="header" href="#dsh镜像分裂机器记得清清楚楚用户只得到一个裸-exit-1">dsh：镜像分裂——机器记得清清楚楚，用户只得到一个裸 exit 1</a></h2>
+<p>F4/F5 是最有戏剧性的一格：正文完整打印，然后进程 exit 1，<strong>dsh 自身零文案</strong>——画面上唯一的失败迹象是 pnpm 包装器的 <code>[ELIFECYCLE] Command failed with exit code 1.</code>，裸跑二进制的用户连这行都看不到。但它落盘的 session 末条精确记着 <code>turn/end {"reason":{"kind":"max-tokens"}}</code>。</p>
+<p>检测逻辑存在且准确（exit code 都变了），唯独没有翻译成用户可见的一句话。和 codex 放在一起看，两家各瞎一只眼：一个只告诉人，一个只告诉机器。</p>
+<h2 id="claude-code万应静默重试把确定性故障当瞬时故障治"><a class="header" href="#claude-code万应静默重试把确定性故障当瞬时故障治">claude code：万应静默重试，把确定性故障当瞬时故障治</a></h2>
+<p>F1/F3（连接断）和 F4/F5（max_tokens）一律静默整轮重试，然后交付完整回答，exit 0，用户侧零信号。transcript 里第一次回答带着 <code>stop_reason: "max_tokens"</code> 落盘——所以 claude 是「知道，但不说」。</p>
+<p>对连接中断重试是合理的；对 max_tokens 也整轮重试就值得商榷：同样的 prompt、同样的 token 上限，重试大概率再次撞墙。这次能恢复，是因为 mock 的 once 语义让重试恰好落到健康流上——真实世界没有这种善意。确定性故障和瞬时故障共用一套重试策略，是设计上的偷懒。</p>
+<h2 id="kimi-cli有重试基建但-length-截断从未接线"><a class="header" href="#kimi-cli有重试基建但-length-截断从未接线">kimi-cli：有重试基建，但 length 截断从未接线</a></h2>
+<p>F5 是唯一亮点：think-only 截断触发了框架层的 <code>StepRetry(error_type='APIEmptyResponseError')</code>，自动重试并完整重放，transcript 有标（L3）。说明重试基建是有的。但 F4——正文充足、finish_reason=length——完全无声（L0）：length 类截断从没被接进「需要重试或告警」的判定。</p>
+<p>kimi-cli 已归档定格在 1.52.0，这个洞没有修的机会了。但它的 TS 后继 kimi-code 有同样的问题：主 agent 的截断被静默当成功接受，而子 agent 的 final summary 截断有硬检查——同一个失败模式，两种待遇。测评前一天我已给 kimi-code 报了 <a href="https://github.com/MoonshotAI/kimi-code/issues/4012">issue #4012</a>，修复分支在本地做着。这算是这个系列的传统：测到什么，就报什么。</p>
+<h2 id="5-翻案我差点发布的错误结论"><a class="header" href="#5-翻案我差点发布的错误结论">5. 翻案：我差点发布的错误结论</a></h2>
+<p>现在讲这篇文章里最重要的一段。</p>
+<p>初版矩阵里，codex 的 F4/F5 是 L0——完全静默，单请求，无重试，无信号。这和第 4 节的画像直接冲突，更和源码冲突：codex 0.156.1 的 <code>codex-api/src/sse/responses.rs</code> 里，<code>response.incomplete</code> 事件明确会转成 <code>ApiError::Stream</code> 并进入重试路径。代码说有，实测说没有。</p>
+<p>我的第一个假设是「exec 非交互模式吞了这条重试路径」——行为按模式分差异，很合理。于是加测交互模式：tmux 里起真 TUI，同样的故障注入。结果一样静默。<strong>模式假设被否证。</strong></p>
+<p>那就只剩一个嫌疑人：我自己。把 mock 发出去的字节逐事件核对，真相有点难看——</p>
+<p>初版 mock 在 Responses 端点把 length 截断发成了 <code>response.completed</code> 事件裹一个 <code>status: "incomplete"</code> 字段。而真实 API 从不这么说话：Responses 对 length 截断的终态是<strong>独立事件类型</strong> <code>response.incomplete</code>，携带 <code>incomplete_details.reason</code>。再回头看 codex 源码：<code>response.completed</code> 分支的 <code>ResponseCompleted</code> 结构体<strong>根本不解析 status 字段</strong>——status=incomplete 被当成功收下，什么信号都没有产生。</p>
+<p>换句话说：不是 codex 收到了截断信号装没看见，是<strong>我的 mock 压根没把信号说出口</strong>。用法语考学生加法，学生没反应，差点判他不会算术。</p>
+<p>中间还有个插曲，差点造成二次误判：往被测的 codex 0.156.1 二进制里搜 <code>response.incomplete</code> 整串，0 命中——如果据此写下「二进制里没有这个事件的处理器」，就错上加错了：</p>
+<pre><code class="language-console">$ strings codex | grep -c 'response\.incomplete'
+0        # ← 事件名整串零命中（Rust match 被 LLVM 内联成立即数比较，不进 rodata）
+$ strings codex | grep -c 'response\.completed'
+12       # ← 同结构的事件名却有 12 处副本（遥测等他用）
+$ strings codex | grep -cE 'Incomplete response returned|incomplete_details'
+2        # ← 处理器的证据串一直都在
+</code></pre>
+<p><strong>strings 阴性，不等于代码不存在。</strong></p>
+<p>修正 mock 方言后全量复测：codex F4/F5 在 exec 和 TUI 两种模式下 3/3 全部 L3（Reconnecting + 完整重放）；dsh 复测行为不变（它底层的 pi-ai 两种方言都认）；claude 和 kimi 的协议方言本来就正确，不受影响。初版那两个 L0 是方言伪影，作废，证据保留并单独标注——它们现在是「测试夹具如何制造假阴性」的教学样本。</p>
+<p>这个系列的第三篇讲「观测会骗人」，这一篇得补上一条：<strong>考题也会骗人</strong>。「未检出」这种阴性结论必须附方言级的阳性证据，否则你永远分不清是工具瞎了，还是自己没把话说对。</p>
+<h2 id="6-沉淀"><a class="header" href="#6-沉淀">6. 沉淀</a></h2>
+<p>给三类读者各留一条。</p>
+<p><strong>用户</strong>：长回答到手，先看结尾再使用。目前没有工具能稳定替你盯着这件事——60% 的截断场景下它是无声的。对重要任务，让 agent 收尾时自检一遍交付物完整性不是玄学，是真的有东西可验。</p>
+<p><strong>工具厂商</strong>：截断检测其实多家都有——codex 的重试链、dsh 的 max-tokens 打标、claude 的 stop_reason 落盘、kimi 的 APIEmptyResponseError——缺的都是最后一公里：把结构信号翻译成一句人话（「回答因输出上限被截断」），并在 transcript 里留下结构标记。检出不难，告知才是缺口。原则其实很老：作废必须是一个带明确语义、走在正常响应路径上的信号——「成功码 + 一次断流」是最坏的答案，调用方会照着 200 把「已完成」写进自己的状态，那是一个永远不会被纠正的谎言。另外，确定性故障（max_tokens）和瞬时故障（连接断）不该共用一套重试策略——失效理由的类型化同理：「有意作废」和「实例没了」导向相反的重试决策，透传中被磨平成笼统的 error，就等于弄丢了决策依据。</p>
+<p><strong>做测评的人</strong>：阳性对照要细到协议事件名的粒度。「工具没反应」和「故障没送达」之间隔着一层必须自证的送达——mock 的字节级日志就是干这个的。以及，发布前把每个刺眼结论当嫌疑人审一遍：最刺眼的那个，往往是你自己的。</p>
+<p>这个系列写到现在五篇，抓到的「bug」依然大多不在代码里——在缺失的 trace 里、在对照组的纯度里、在观测者的先入之见里、在「merge 成功」四个字的承诺里，这一次，在我自己 mock 说错的协议方言里。工具链的价值不在于永不出错，而在于错了之后能被抓回来——这次的代价是两格子返工，不是一篇错误的结论。</p>
+<p>本次测评的 108 格逐格证据、12 格交互附录和 mock 代码已开源：<a href="https://github.com/BiBoyang/truncation-detection-benchmark">truncation-detection-benchmark</a>。</p>
+<hr>
+<p><em>本文涉及的工具：codex 0.156.1、claude code 2.1.282、kimi-cli 1.52.0（归档）、<a href="https://github.com/deepseek-ai/deepseek-harness">deepseek-harness</a> 0.1.7-rc.2。上游记录：<a href="https://github.com/MoonshotAI/kimi-code/issues/4012">kimi-code#4012</a>（主 agent 截断静默接受）。测评日期：2026-09-25。</em></p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="给流式协议造故障三协议-mockonce-注入字节级送达证明和-strings-阴性不等于代码不存在"><a class="header" href="#给流式协议造故障三协议-mockonce-注入字节级送达证明和-strings-阴性不等于代码不存在">给流式协议造故障：三协议 mock、once 注入、字节级送达证明，和 strings 阴性不等于代码不存在</a></h1>
+<blockquote>
+<p>上一篇是结论，这篇是厨房。一个给流式协议做确定性故障注入的 mock provider 怎么设计，三次口径修复各教会我什么，以及为什么 strings 搜不到不代表代码不存在。</p>
+</blockquote>
+<h2 id="1-为什么不用中间人"><a class="header" href="#1-为什么不用中间人">1. 为什么不用中间人</a></h2>
+<p>测「截断检出」需要精确控制故障：第几个事件后断、终止事件发不发、finish_reason 填什么。方案里写了两条路：本地 mock provider 注入（首选），mitmproxy 中间人（兜底）。最后 mitmproxy 一次没启用——四个工具全部能接受本地 mock 的 base_url，中间人失去了存在意义。</p>
+<p>mock 路线赢在一个字：<strong>确定性</strong>。真实代理里「发到一半断流」是个运气事件，mock 里是一行参数。测评要的是每格 3 次结果一致，只有确定性能把 flaky 压到零——最终 108 格全部 3/3 同级。</p>
+<h2 id="2-把四个工具指向本地最短配置路径"><a class="header" href="#2-把四个工具指向本地最短配置路径">2. 把四个工具指向本地：最短配置路径</a></h2>
+<p>四个工具，四种指法，每种都有一个小坑。</p>
+<p><strong>codex</strong>：<code>-c</code> 命令行覆盖，不动 <code>~/.codex/config.toml</code>：</p>
+<pre><code class="language-console">MOCK_API_KEY=mock codex exec --skip-git-repo-check \
+  -c model_provider=mock \
+  -c 'model_providers.mock.base_url="http://127.0.0.1:8787/v1"' \
+  -c 'model_providers.mock.wire_api="responses"' \
+  -c 'model_providers.mock.env_key="MOCK_API_KEY"' \
+  "&lt;prompt&gt;"
+</code></pre>
+<p><strong>claude code</strong>：裸 <code>export ANTHROPIC_BASE_URL</code> 不够——<code>~/.claude/settings.json</code> 的 <code>env</code> 块会盖过它（我本机配了第三方网关）。最短路径是 <code>--bare --settings</code>，命令行 settings 优先级最高，bare 模式顺带跳过 hooks、插件、keychain 和 CLAUDE.md：</p>
+<pre><code class="language-console">claude --bare \
+  --settings '{"env":{"ANTHROPIC_BASE_URL":"http://127.0.0.1:8787","ANTHROPIC_API_KEY":"mock",...},"model":"mock-model"}' \
+  -p "&lt;prompt&gt;"
+</code></pre>
+<p><strong>kimi-cli</strong>：已归档，PyPI 最新 1.52.0 的所有入口被 deprecation gate 短路——裸跑 <code>kimi</code> 只会拉一个 CDN 安装脚本去装它的继任者。好在原 Typer CLI 完整保留在包内，<code>kimi_cli.__main__.run_original_cli</code> 用 venv 内 python 直调即可绕过墓碑。遥测端点是硬编码的，用 <code>KIMI_DISABLE_TELEMETRY=1</code> 加 config 双保险关掉。装依赖用 uv 一次成功，没触发我给自己定的「环境折腾超过半小时就放弃」熔断。</p>
+<p><strong>dsh</strong>：<code>$DSH_HOME/settings.yaml</code> 里配 <code>llm-pi-ai.providers.&lt;id&gt;</code>（api / baseURL / apiKeyEnv / models），<code>DSH_HOME</code> 环境变量整体隔离配置目录，不碰 <code>~/.dsh</code>。</p>
+<p>四条路都不碰真实 API——这是整个测评的硬约束，所有结论只连本地 mock。</p>
+<h2 id="3-mock-的三层设计"><a class="header" href="#3-mock-的三层设计">3. mock 的三层设计</a></h2>
+<p>一个 Node 文件（<code>mock.mjs</code>，约 400 行，零依赖），三层结构。</p>
+<p><strong>协议端点</strong>。同一端口挂三个：<code>POST /v1/chat/completions</code>、<code>POST /v1/responses</code>、<code>POST /v1/messages</code>，外加健康检查、模型列表、Anthropic 的 count_tokens（Claude Code 会调）。每种协议的 SSE 事件序列按真实 API 的形态手写——这一步是全部地基，也是后文最大教训的案发地点。</p>
+<p><strong>故障即参数</strong>。六种故障 F0–F5 是请求参数，优先级：URL query &gt; 请求头 &gt; 控制面。运行时可切换：</p>
+<pre><code class="language-console">$ curl -X POST localhost:8787/__control -d '{"fault":"F2","once":true}'
+</code></pre>
+<p><strong>送达证明</strong>。这是和普通 mock 拉开差距的一层：每个请求落一条结构化日志，记录实际 write 的字节数、完整事件序列、终止证人（<code>[DONE]</code> / <code>response.completed</code> / <code>message_stop</code>）送达没有、以什么方式关流：</p>
+<pre><code class="language-json">{"seq":24,"path":"/v1/responses","fault":"F4","user_agent":"deepseek-harness/0.1.7-rc.2",
+ "bytes_sent":30755,"events_count":54,"events":["response.created","response.output_item.added",...]}
+</code></pre>
+<p>请求侧对称记录：字节数、prompt 标记、完整请求体落盘。有了这层，「工具没反应」和「故障没送达」才分得开——上一篇的翻案靠的就是逐事件核对这些字节。</p>
+<p>顺带一提，把这三层从「模型回答」平移到「tool call」，就是 agent harness 可靠性测评的地基：故障开关对应工具失败注入，调用账本是断言「无双重副作用」的唯一依据，结果回放支撑「先回 200 再断流、对账时返回真实结果」这类两阶段剧本。那是另一个评测对象，留着以后打。</p>
+<h2 id="4-三次口径修复"><a class="header" href="#4-三次口径修复">4. 三次口径修复</a></h2>
+<p>mock 从写完到可信，修了三次口径。每次的道理都比修复本身值钱。</p>
+<p><strong>第一次：内容一致性。</strong> F4 最初的实现把正文段落重复发了一遍，且 Responses 端点 <code>output_item.done</code> 里携带的完整文本和 delta 流的拼接不一致。协议上两者必须严格相等——done 事件是「汇总」，delta 流是「过程」，客户端有权利交叉校验。教训：<strong>故障可以造，协议不变量不能破坏</strong>——你要测的是「截断」，不是「数据自相矛盾」，后者触发的是另一条错误路径。</p>
+<p><strong>第二次：注入语义。</strong> 初版注入是「控制面切换故障 + 外部轮询复位」：打控制面设 F4，等工具请求消费掉，再轮询确认后切回 F0。实测直接翻车——工具的重试比轮询快，故障要么逃逸（重试赶到复位之后，打了两次），要么被并发请求抢走。改成 mock 内建 once：「仅下一个命中条件的请求」携带故障，命中即失效，不需要外部复位。后来交互模式测试又发现 TUI 会并发发辅助请求（codex 并发一个标题生成请求，42KB 体；claude 类似），once 又长出 <code>match</code>/<code>avoid</code> 子串条件来钉住主请求——附录第一个格子就踩中过辅助请求抢故障。教训：<strong>注入点必须内建于故障源</strong>，外部协调的窗口期永远比赛态条件宽。</p>
+<p><strong>第三次：协议方言。</strong> 这是上一篇翻案的工程侧。初版 mock 把 Responses 的 length 截断发成 <code>response.completed</code> 事件裹 <code>status:"incomplete"</code>——凭直觉拼的，「看起来信息都在」。真实 API 的方言是独立事件类型 <code>response.incomplete</code>，携带 <code>incomplete_details.reason</code>。codex 的 completed 分支不解析 status，信号等于没说出口；dsh 底层的 pi-ai 两种方言都认，安然无恙——同一个错误，一边假阴性，一边被兼容层默默消化。修正后重发真实事件，codex 立刻检出重试。教训最重，值得单独成句：<strong>mock 的权威性和被测客户端的严格性成反比——客户端越宽容，你的方言错误藏得越深。</strong> 每种故障形态都该配一个「必然触发现有检测」的阳性对照变体，而且对照要细到事件名的粒度。</p>
+<h2 id="5-判读陷阱集锦"><a class="header" href="#5-判读陷阱集锦">5. 判读陷阱集锦</a></h2>
+<p>测评的另一半工程量在「判读」——看见什么算什么。四个陷阱，按踩坑顺序。</p>
+<p><strong>strings 阴性 ≠ 代码不存在。</strong> 翻案调查时我往 codex 二进制里搜 <code>response.incomplete</code> 整串，0 命中，差点写下「无此处理器」。实际 Rust 的 match 被 LLVM 内联成立即数比较，字符串不进 rodata；处理器证据串（<code>Incomplete response returned</code>）反而在。二进制取证要把「事件名」和「处理器证据」分开搜。</p>
+<p><strong>判定防污染。</strong> mock 的正文主题恰好就是「截断」——正文里全是「截断」「终止」「重试」这些判定关键词。直接扫输出，每个格子都「有信号」。解法：扫描前把 54 个 mock 段落精确剥除（去空白匹配，对抗 kimi 按终端列宽硬折行），transcript 打标只认结构性键值、不认文本内容。</p>
+<p><strong>TUI 画面采集。</strong> tmux <code>capture-pane</code> 判定弹窗只能扫当前可见屏，带 <code>-S -</code> 全量回滚会让「已 dismiss 的弹窗」永远匹配、循环卡死。而 codex 的 Reconnecting 是瞬态状态行，恢复后即被重绘抹除——终屏截图证明不了它存在过，得用 0.4 秒轮询专门捕获。</p>
+<p><strong>弹窗与版本保卫。</strong> 交互测试用隔离 home 预播种消解一次性弹窗（codex 的目录信任、claude 的 onboarding 与 API key 批准）。最险的一个：codex 的更新提示弹窗，Enter 会触发 npm install 把被测的 0.156.1 顶成最新版——只能按 Esc。测评矩阵外还真出过一次这类事故：全局 codex 曾被第三方装成 0.157.0 且装坏，恢复钉死版本后才开跑。<strong>被测工具的新旧本身会被网络环境筛选</strong>，所以版本号和测试日期要写进每张记录表。</p>
+<p><strong>请求数不是重试证据。</strong> kimi 的 print 模式偶发两次请求（辅助请求），dsh 主回答与辅助请求并发。判「有没有重试」只能看画面和事件流，数请求数会把辅助流量误判成自救。</p>
+<h2 id="6-交互附录与复现"><a class="header" href="#6-交互附录与复现">6. 交互附录与复现</a></h2>
+<p>主矩阵全部跑非交互模式（exec / -p / –print / headless）。为回答「模式有没有影响」，补了 12 格交互附录：codex 和 claude 在 tmux 里起真 TUI 复测 F4/F5——结论是无模式差异。这里有个诚实标注值得说：dsh 没有终端 TUI（profile 只有 acp/web/headless/sdk，交互面是 web GUI），附录里它的位置标的是 N/A，而不是硬凑一行。缺席标 N/A，比编一个数字体面。</p>
+<p>复现路径：起 mock（<code>node mock.mjs --fault F0</code>），按第 2 节配好任一工具，打控制面注入故障，收四路证据（stdout/stderr、exit code、transcript、mock 日志）对照判定。runner 脚本把这一串固化成了一格一条命令。</p>
+<p>mock、runner 和 108 格逐格证据整理后会开源。这套东西对我是长期资产：以后每出一个新 CLI，配一次 base_url，几小时就能跑一轮同样的测评——横评做成连载，工具链才算真的建成。</p>
+<hr>
+<p><em>本文涉及的仓库：<a href="https://github.com/deepseek-ai/deepseek-harness">deepseek-harness</a>（被测对象之一）、<a href="https://github.com/MoonshotAI/kimi-code">kimi-code</a>（相关上游，见 <a href="https://github.com/MoonshotAI/kimi-code/issues/4012">issue #4012</a>）。mock、矩阵 runner 与 108 格逐格证据已开源：<a href="https://github.com/BiBoyang/truncation-detection-benchmark">truncation-detection-benchmark</a>。</em></p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="考官带伤阅卷对-agent-skill-做故障注入的完整性实验"><a class="header" href="#考官带伤阅卷对-agent-skill-做故障注入的完整性实验">考官带伤阅卷：对 Agent Skill 做故障注入的完整性实验</a></h1>
+<blockquote>
+<p>给 Agent Skill 做故障注入：截断主文件、删附件、清空 frontmatter，看宿主 agent 能不能发现手里的技能包是残缺的。结论一句话——检出与否不取决于伤有多重，取决于伤是否挡在 agent 要走的路上。实验仓库开源在 <a href="https://github.com/BiBoyang/skill-quake">skill-quake</a>。</p>
+</blockquote>
+<h2 id="引子从流到文件"><a class="header" href="#引子从流到文件">引子：从“流“到“文件“</a></h2>
+<p>此前我们的 <a href="/posts/回答被截断-你的-CLI-知道吗-四个工具-六种故障-108-格矩阵-和一个差点发布的错误结论">harness 矩阵实验</a>测的是“流“——评测流水线在运行中能不能发现异常。结论是：内容层的残缺，流水线判不出来。</p>
+<p>这篇文章把同一个问题推到更底层：<strong>文件</strong>。Agent Skill 就是一堆 markdown 文件——一个 <code>SKILL.md</code> 加若干附件。它会残缺：下载截断、同步丢文件、手滑删错行、frontmatter 写空。问题很朴素：<strong>当一个 skill 自己带着伤被加载、被执行时，宿主 agent 能发现吗？</strong></p>
+<p>靶子选的是阿里开源的 <a href="https://github.com/alibaba/skill-up">skill-up</a>（Agent Skill 评测工具链）里的 <code>skill-upper</code>——一个“负责测评其他 skill 的 skill“。选它的理由很直白：如果连续约考官自己都带着伤出题，它改的卷子还准吗？</p>
+<h2 id="实验设计三条方法学红线"><a class="header" href="#实验设计三条方法学红线">实验设计：三条方法学红线</a></h2>
+<p><strong>一，做实验的人不能当宿主。</strong> 谁动的手脚谁知道伤在哪，自己跑出来的“发现“不算数。每次运行都派一个零上下文的全新宿主（子代理或 headless CLI），只知道 skill 路径和一句普通的用户请求。</p>
+<p><strong>二，中性 prompt。</strong> 请求里没有任何“检查完整性“的暗示，就是一句“帮我给这个 skill 设计评测并 validate，别真跑“。所有运行共用同一份模板，只换路径。</p>
+<p><strong>三，机械证人与 agent 警觉性分层记录。</strong> 每个注入状态先过一个确定性检查器（后来固化成 <code>skill-guard</code>）：frontmatter 必填字段、引用文件存活性、截断签名。它不关心语义，只回答“文件层面有没有伤“。然后再看 agent 层的表现。两层分开记录，谁在哪一格失效就一目了然。</p>
+<p>四种故障，每种对应一类真实事故：</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>编号</th><th>注入</th><th>模拟的事故</th></tr>
+</thead>
+<tbody>
+<tr><td>T1</td><td>SKILL.md 拦腰截断在 60% 处（290→174 行，切口是完整的一行，无标记）</td><td>下载/同步截断</td></tr>
+<tr><td>T2</td><td>删除一个正文明确引用的附件（references/eval-yaml.md）</td><td>拷贝丢文件</td></tr>
+<tr><td>T3</td><td>一个附件截断到一半（judge-types.md 96→48 行，止于一个空标题）</td><td>半截写盘</td></tr>
+<tr><td>T4</td><td>清空 frontmatter 的 name/description</td><td>生成/编辑事故</td></tr>
+<tr><td>C0</td><td>阴性对照：全部恢复，重跑基线，期望无误报</td><td>证明流程无残留、证人无误报</td></tr>
+</tbody>
+</table>
+</div>
+<p>目标 skill 是自造的 hello-world 级 <code>greeting-card</code>（不碰任何真实第三方 skill）。每个故障做完即 <code>git checkout</code> 恢复，证人确认签名回到健康态再进下一个。</p>
+<p>行为分级口径：<strong>L0</strong> 无察觉 / <strong>L1</strong> 有信号但说错对象 / <strong>L2</strong> 明确指出不完整 / <strong>L3</strong> 指出并拒绝执行。</p>
+<h2 id="第一轮单次注入结果"><a class="header" href="#第一轮单次注入结果">第一轮：单次注入结果</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>注入</th><th>机械证人</th><th>宿主 agent（kimi-code，单次）</th><th>分级</th></tr>
+</thead>
+<tbody>
+<tr><td>T1 截主文件</td><td>零告警（存活引用全在、frontmatter 正常）</td><td>主动报告“SKILL.md 疑似被截断“，精确到 174 行/Step 2 处，列出缺失的 Step 3-8，随后读 references 代偿，完成任务</td><td>L2</td></tr>
+<tr><td>T2 删附件</td><td>捕获死链</td><td>主动报告“References 列出了 eval-yaml.md 但磁盘上不存在“，改用模板代偿</td><td>L2</td></tr>
+<tr><td>T3 截附件</td><td>仅启发式告警（悬挂标题）</td><td>主动报告“judge-types.md 在 agent_judge 标题处戛然而止，48 行“</td><td>L2</td></tr>
+<tr><td>T4 空 frontmatter</td><td>捕获两个必填字段为空</td><td><strong>只字未提</strong>，照常跑完</td><td>L0 †</td></tr>
+<tr><td>C0 阴性对照</td><td>健康</td><td>正常，无误报</td><td>—</td></tr>
+</tbody>
+</table>
+</div>
+<p>单次结果就很有意思：挡路的伤（截断主文件、断链）被发现了；不挡路的元数据伤（frontmatter）被无视了——因为我们用“直接给路径“的方式加载，绕过了发现层，而 frontmatter 恰恰是给发现层用的。</p>
+<p>† 但 T4 的 L0 只活了一天：第三轮批量复测时 3 路宿主全部明确指出了空 frontmatter，其中一路还主动推断“可能影响其被宿主正确识别/触发“。单发是轶事——我们自己第一轮就差点把轶事写成“稳定 L0“的结论。修正后的准确说法：执行层对 frontmatter 之伤的检出也是概率性的；它真正的无声区在 loader 层（见下文实测）。（统计口径：首轮为手工实验，不并入批量累计表；首轮这发 L0 保留为轶事证据。）</p>
+<h2 id="回马枪带伤的考官改带伤的卷子"><a class="header" href="#回马枪带伤的考官改带伤的卷子">回马枪：带伤的考官改带伤的卷子</a></h2>
+<p>把残缺最轻的一版（T3，附件截半）的 skill-upper 留下，再给它一个被做了同样手脚的目标 skill（tone-guide.md 从 28 行截到 14 行，被截掉的后半独有这些规则：恰好一个 emoji、中英文匹配、只输出卡面正文、禁 markdown、禁 Dear 开头、禁代用户承诺）。</p>
+<p>结果：<strong>两处伤都没被发现</strong>。更要紧的是卷子真的改歪了——健康基线的判分脚本对格式规则有 5 项显式机械断言（恰好一个 emoji、emoji 在末尾、长度 ≤60 词、无 markdown、不以 Dear 开头），带伤考官产出的 6 个用例对其中源自被截半段的断言（恰好一个 emoji、无 markdown、不以 Dear 开头；另加整个中英文匹配用例）<strong>全部零命中</strong>。长度上限那条虽位于幸存的前半段，带伤考官那一路（下称 P2）也未覆盖——那一格算模型方差，不算伤的后果（分级口径：不归因）。文档残缺 → 理解残缺 → 用例残缺，沿链静默传导，全程无告警。</p>
+<p>一个自己带着伤的考官，发现不了考生身上同样的伤。</p>
+<h2 id="横向发现申报通道是开着的漏检是没察觉不是不会报"><a class="header" href="#横向发现申报通道是开着的漏检是没察觉不是不会报">横向发现：申报通道是开着的，漏检是“没察觉“不是“不会报“</a></h2>
+<p>这一轮实验里每个宿主都<strong>主动</strong>申报了与实验无关的真实异常：<code>skill-up list-cases</code> 对中文按字节截断出乱码、<code>--version</code> 输出 dev 构建、凭据缺失。没有一个 agent 隐瞒它已察觉的东西。</p>
+<p>但同一条通道对内容层残缺的表现是：察觉了才报（T1/T2/T3），没察觉就不报（T4、回马枪）。决定报不报的不是申报意愿，是<strong>察觉概率</strong>——而察觉概率只在 agent 读文件那一瞬间被决定。内容层残缺不产生错误码、不产生异常、validate 照过、报告照写，没有任何信号强制 agent 停下来核对。</p>
+<p>这就是为什么这类缺陷在生产环境长期隐形：<strong>没有异常报告 ≠ 没有损伤</strong>。</p>
+<h2 id="第二轮把概率性从轶事变成数字"><a class="header" href="#第二轮把概率性从轶事变成数字">第二轮：把“概率性“从轶事变成数字</a></h2>
+<p>单次 L2/L0 只是轶事。用工具化后的流水线（见下文 skill-quake）把 T1 和 T3 各跑 8 次（kimi 宿主、同模型、同 prompt、每路独立变异副本），外加 2 次健康对照：</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>cell</th><th>N</th><th>检出</th><th>分级分布</th></tr>
+</thead>
+<tbody>
+<tr><td>T1 主文件截 60%（挡路）</td><td>8</td><td><strong>8/8</strong></td><td>全部 L2，且全部精确定位到“174 行、Step 2 选型处“</td></tr>
+<tr><td>T3 附件截半（不挡路）</td><td>8</td><td><strong>2/8</strong></td><td>L2 × 2，L0 × 6</td></tr>
+<tr><td>健康对照</td><td>2</td><td>无误报</td><td>—</td></tr>
+</tbody>
+</table>
+</div>
+<p>挡路的伤稳定检出，不挡路的伤明显概率性——<strong>检出与否不取决于伤有多重，取决于伤是否挡在 agent 要走的路上</strong>。T3 里两个检出的宿主甚至给出了代偿方案（“改用 case.yaml.tmpl 的注释示例补齐 agent_judge 字段”），没检出的六个则是读完了文件、用了它的决策树、但谁也没发现文件只读到一半。</p>
+<h2 id="第三轮全故障菜单检出率由挡路程度决定"><a class="header" href="#第三轮全故障菜单检出率由挡路程度决定">第三轮：全故障菜单——检出率由“挡路程度“决定</a></h2>
+<p>前两轮只试了四种伤里的两种。把故障菜单补全再测一轮（kimi 宿主，新增四格各 N=3：T4 复测格、T5=用例模板截半、T6=删 Step 2 点名要复制的模板、T1-85=主文件截 85% 的档位变体；与仓库 <code>results/C/</code> 的 cell 名一致）。统计口径：首轮手工实验不并入本表；批量运行（第二轮 A 轮 + 第三轮 C 轮）为累计口径。</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>故障</th><th>伤与执行路径的关系</th><th>检出率（批量口径）</th></tr>
+</thead>
+<tbody>
+<tr><td>T1 主文件截 60%（后续步骤消失）</td><td>直接挡路</td><td>8/8</td></tr>
+<tr><td>T1 主文件截 85%（只丢尾部速查表与索引）</td><td>半挡</td><td>1/3</td></tr>
+<tr><td>T2 删正文引用的附件</td><td>挡</td><td>1/1（仅首轮手工，未批量复测）</td></tr>
+<tr><td>T6 删 Step 2 指令点名要复制的模板</td><td>指令直接落空</td><td>3/3</td></tr>
+<tr><td>T5 用例模板截半（丢了 judge 段骨架）</td><td>半挡</td><td>2/3</td></tr>
+<tr><td>T3 参考文档截半（可选查阅）</td><td>不挡</td><td>2/8</td></tr>
+<tr><td>T4 frontmatter 清空</td><td>不挡（路径加载）</td><td>3/3</td></tr>
+</tbody>
+</table>
+</div>
+<p>规律收敛成一句：<strong>检出率不取决于伤有多重，取决于伤是否横在 agent 正要执行的那条指令上。</strong> 注意这张表不是剂量-响应——T1 截 60%（丢 40% 内容）检出 8/8，截 85%（丢 15%）反而只有 1/3：自变量从来不是“伤的大小“，是“伤的位置“。指令说“复制 <code>assets/eval.yaml.tmpl</code>“而文件不在 → 3/3；主流程后续步骤凭空消失 → 8/8；“可以参考“的文档坏了一半 → 2/8 到 2/3；与本次执行无关的元数据 → 批量 3/3 但首轮曾有一发完全无视——概率性的意思是：每次都掷骰子。</p>
+<p>机械证人侧也有一个对称盲区：模板文件（.tmpl）的截断连 skill-guard 也判不出来——截断签名启发式只适用于 markdown，模板以注释结尾再正常不过。这类伤只有两种东西能接住：下游 validate 报错，或 agent 的警觉。</p>
+<h2 id="场外补记一次偶然复现的隐身截断-l0"><a class="header" href="#场外补记一次偶然复现的隐身截断-l0">场外补记：一次偶然复现的隐身截断 L0</a></h2>
+<p>文章定稿后又发生了一次值得记录的意外。我们给另一个 skill（作者自己的代码评审 skill <code>check</code>，302 行）做了同样的 T1 截断（→181 行，切口为完整 bullet），交给一个全新宿主检测。第一次运行因任务材料缺失而中断——但宿主在中断报告里写下了一段判决式文字：</p>
+<blockquote>
+<p>“SKILL.md 本身看起来完整（frontmatter、Mode Picker、Hard Rules、Hard Stops 均连贯，末尾无截断）”</p>
+</blockquote>
+<p>它读完了整个被截去 40% 的文件，然后宣布它完整。更值得注意的是：运行目录名（<code>injured-t1</code>）已经把“带伤“泄露给了它，宿主确实起了疑——但干净的切口把怀疑引偏了：“文件没伤，伤一定在别处。”<strong>这给出了 L0 的一种新形态：不是毫无警觉，而是警觉被引导后又被排除。</strong>（轶事口径：N=1、路径名泄露、运行环境混乱，不计入任何 x/N；它唯一证明的是——隐身截断能重复骗过读者，这个现象在第二个 skill 上再次成立。）</p>
+<p>同一次运行还有个反向发现：宿主拒绝对不存在的评审材料编造 findings——被截断的 skill 残存的 Hard Rules（“No unverified claims”）仍在约束输出。伤残砍掉了流程，但没砍掉所有规矩。</p>
+<p>补齐材料后的第二次运行（codex 宿主）完整走完了评审，结论值得逐条记录：</p>
+<ul>
+<li><strong>检测面还是 L0（累计 0/2）。</strong> 它同样注意到目录名里的 “injured”，同样写下“SKILL.md 正文完整连贯，未发现截断或篡改痕迹“——“怀疑被引导后排除“第二次原样复现。</li>
+<li><strong>同一个 T1-60%，skill-upper 上 8/8 全检出，check 上 0/2——“路径决定论“被反向证实。</strong> skill-upper 的截断面砍掉了任务必经的 Step 4-8；check 的截断面（Specialist Review、Adversarial、Verification、Sign-off 模板）对这次 Quick 级评审恰好不在必经路径上。伤的位置决定一切，第二次成立。</li>
+<li><strong>漂移可测、但宿主自己看不见。</strong> check 明文要求每次以结构化 sign-off 模板收尾（<code>status:</code>/<code>scope:</code>/<code>review depth:</code>），而模板在被砍掉的部分里——两份报告都即兴编了一个“看起来挺像样“的 sign-off。<strong>宿主不可能知道自己没见过什么；但对做实验的人来说，结构化 sign-off 消失 ×2 就是最硬的漂移证据。</strong></li>
+<li><strong>评审质量本身很高。</strong> 空列表崩溃被定为 Blocker（带 file:line 与触发条件），scope 存疑处谨慎标为 “insufficient information” 而非 drift，report-only 边界全守住。残缺 40% 的 skill 依然产出一份看起来很专业的评审——输出质量零信号，这正是此类缺陷在生产环境长期隐形的机制，第二次见到。</li>
+</ul>
+<p>（口径声明不变：两次为手动随意运行、路径名有泄露、N=2，只作轶事，不进任何 x/N 表格；正式的 waza 复测可按 <code>docs/REPLICATION.md</code> 流程补齐。）</p>
+<p><strong>第三次：另一个 kimi-code 会话拿着 skill-quake 独立跑完了完整矩阵</strong>（check × 3 伤型 × N=3 + 阴性对照，10 路有效运行；哈希匿名暂存、guard 前后对照、预算纪律全在——工具被独立 agent 按规程正确使用，这本身是方法论可复制性的第一个证据）。结果：</p>
+<ul>
+<li><strong>truncate-main 2/3</strong>：检出靠的是内部锚点断裂——Mode Picker 说“Specialist Review / Sign-off 在下面“而文件戛然而止。其中一路的检出方式必须单独记账：它发现锚点断裂后，<strong>翻到机器上的 Waza 正版仓库做了 diff 比对</strong>。宿主能接触到未伤原版时，检出要打折计算——真实部署里没有正版可对照。（已固化为 skill-quake 方法学第 8 条：宿主够得着正版的对照检出不算数。）</li>
+<li><strong>truncate-attachment 0/3，且三路全部误报平安</strong>（“附件完整可读，未发现截断”）——比沉默更危险的一档：<strong>错误的安心声明</strong>。机械证人侧 skill-guard 其实挂了奇数围栏告警（截断留下的），三路宿主没有一个利用这个信号——证人看见了，agent 没用上。</li>
+<li><strong>blank-frontmatter 2/3</strong>，但检出的两路都把它贬为“打包小瑕疵“继续执行——点名了伤，却低估了伤。</li>
+<li><strong>与基线漂移依旧接近零</strong>：16 项基线行为仅 1 项疑似损失且标注“不可归因“——“残缺 40% 也能产出专业评审“第三次成立。</li>
+</ul>
+<p>三批 check 实验合并口径：手动 0/2 + 矩阵 2/3（同一伤型、不同任务 fixture，只作轶事级合并）——即便同 skill 同伤型，不同批次的检出也在掷骰子，骰子的偏重由“伤在不在路径上“决定。</p>
+<h2 id="真实-loader-层frontmatter-之伤落在哪里"><a class="header" href="#真实-loader-层frontmatter-之伤落在哪里">真实 loader 层：frontmatter 之伤落在哪里</a></h2>
+<p>T4（空 name/description）在执行层不可见，那真实的 skill 加载器怎么处理它？实测了两个宿主（各装一对探针 skill：一个健康、一个空 frontmatter，观察注册行为）：</p>
+<ul>
+<li><strong>kimi-code</strong>：空 frontmatter 的探针<strong>从列表里静默消失</strong>——无错误、无警告，健康探针正常在列。</li>
+<li><strong>Claude Code</strong>：空 frontmatter 的探针<strong>降级注册</strong>——以目录名兜底作为 name 和 description 出现在列表里。结果就是一条“僵尸条目“：日常查询几乎不可能命中它（除非查询恰好撞上目录名），没有任何触发语义可言。值守 agent 还顺带指出“这个 skill 的描述就是它自己的名字，看起来很可疑“。</li>
+</ul>
+<p>两个 loader 都不报错。一个静默丢弃，一个降级成僵尸条目——frontmatter 之伤在加载层同样没有防线，只是死法不同。（实测版本：kimi-code 2.1.0 / Claude Code 2.1.282；loader 行为随版本漂移，此处仅为此版本的快照。）</p>
+<h2 id="插曲一次无效的矩阵运行"><a class="header" href="#插曲一次无效的矩阵运行">插曲：一次无效的矩阵运行</a></h2>
+<p>宿主矩阵的第一轮 claude 运行全部作废，原因不是检出或漏检，而是<strong>宿主脚手架把实验挡住了</strong>：headless 模式下 claude 无权读工作目录之外的文件，skill 根本没被读到。三份报告齐刷刷地报告“环境与前提冲突“。这是方法论章节那句“环境失败不是数据“的现成案例——这类运行只能丢弃重跑，不能计入检出率。</p>
+<p>但其中一份报告值得单独留档：那位宿主虽然读不到 skill 文件，却从仓库里的夹具目录名（<code>truncated-main</code>、<code>empty-frontmatter</code>……）和自己运行目录的名字（<code>claude+truncate-main-60</code>）<strong>推断出“本次拿到的 skill 可能本身就是被截断的故障版本“</strong>，并声明“若属实，我也应该先报疑似截断而不是照做“。文件没读到，从环境元信息里把实验设计反推了出来——警觉性的上限比我们想的高，只是它不可靠。</p>
+<p>目录名泄露其实是我们自己引入的污染渠道：早先的运行路径里编码了伤型（<code>kimi+t5-trunc-asset/...</code>），至少两位宿主在报告里引用路径名作为佐证。它们的检出都先有文件内容证据、路径只是旁证，所以分级仍然成立；但这足以让工具链把宿主可见路径全部改为哈希暂存（matrix.sh 已修），方法学红线也加上了第七条：<strong>宿主可见的任何路径都不能编码伤型。</strong></p>
+<h2 id="宿主矩阵三种宿主脚手架外加一个计划外的模型变量"><a class="header" href="#宿主矩阵三种宿主脚手架外加一个计划外的模型变量">宿主矩阵：三种宿主脚手架（外加一个计划外的模型变量）</a></h2>
+<p>口径：kimi-code 列与 Codex CLI 列跑在 kimi 模型上（Codex 首轮 6 路因默认中转额度耗尽作废，重跑 6 路会话头均为 <code>provider: kimi / model: kimi-for-coding</code>）；<strong>Claude Code 列实际跑在 DeepSeek v4.1 flash 上</strong>（本机 anthropic 兼容端点，6 份报告头均有 <code>[claude-code:unrecognized_model] deepseek-v4.1-flash</code> 字样）——矩阵因此同时携带宿主脚手架与模型两个变量，检出差异不做归因拆分。作废样本归档备查，不进检出率。</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>伤型</th><th>kimi-code（N=8）</th><th>Claude Code（N=3）</th><th>Codex CLI（N=3）</th></tr>
+</thead>
+<tbody>
+<tr><td>T1 主文件截 60%</td><td><strong>8/8</strong> L2</td><td><strong>3/3</strong> L2</td><td><strong>3/3</strong> L2</td></tr>
+<tr><td>T3 附件截半</td><td><strong>2/8</strong>（L2×2）</td><td><strong>3/3</strong> L2</td><td><strong>2/3</strong>（L2×2）</td></tr>
+</tbody>
+</table>
+</div>
+<p>三点读法：</p>
+<ol>
+<li><strong>挡路的伤在所有宿主上稳定检出</strong>（T1：14/14）。</li>
+<li><strong>不挡路的伤出现宿主间差异</strong>：T3 = kimi-code 2/8、Codex 2/3、Claude Code 3/3。Claude Code 的报告系统性更重审计——一位宿主为证明“48 行不对劲“，主动对照了同目录其他 references 的行数（140–184 行）。但 N 小、运行上下文不同（claude 的 CLI 执行被沙箱拦了一部分，宿主被迫更仔细啃文件），且这一列的模型也与另两列不同——<strong>差异来自脚手架还是模型，无法拆分</strong>。只能写“宿主间检出行为差异可见“，不能写“谁比谁强“。</li>
+<li>每个宿主都有“证据从眼前经过却没被识别“的样本：kimi 有 6 路读完截断文件照常引用其决策树；codex 有一路跑完 <code>wc -l</code>=174、打印了末行，最终报告只字未提。<strong>L0 的最强形态不是看不见，是看见了不认为是异常。</strong></li>
+</ol>
+<h2 id="考官们的-rubric-里有没有完整性"><a class="header" href="#考官们的-rubric-里有没有完整性">考官们的 rubric 里有没有“完整性“</a></h2>
+<p>skill-upper 不是孤例。静态调查了 5 个“评测/审查型“skill 与工具的 rubric，呈三层分化：</p>
+<ol>
+<li><strong>规范符合性检查是标配</strong>：frontmatter 能否解析、name/description 必填、行数/命名约束——5 个对象全有（NVIDIA SkillEvaluator 的 schema 检查、skill-creator 的 quick_validate.py、skill-grader 的硬门禁、Tessl 的 Validation、官方 skill-reviewer）。</li>
+<li><strong>引用完整性检查是少数派</strong>：真正查“SKILL.md 声称的附件/脚本/链接真实存在“的，只有 NVIDIA Tier 1（藏在 code-integrity 的“dead relative Markdown links“和 quality 的 paths 检查里）和 Intercom <code>skill-review</code>——后者是本次调查唯一把 <strong>Integrity 列为 rubric 一级类别</strong>的工具（“cross-plugin / MCP / command references resolve, paired files match, bundled scripts work”）。上游 skill-creator、skill-grader、Tessl 均无此项。</li>
+<li><strong>即便有，定位也多是打包门禁的附属检查，而非评测维度本身</strong>。rubric 的主战场是行为质量（触发准不准、输出好不好、with/without 有没有提升）；出现的 “completeness” 字样（如 NVIDIA 的 Documentation completeness）指的都是语义覆盖度，不是文件完整性。</li>
+</ol>
+<p>最直白的佐证来自 shakacode/agent-workflows#275 在论证为何要建此类 rubric 时的自白：“Everything that actually determines whether a skill works is unchecked: whether referenced files exist…”——而既有自动化检查只有 “YAML parses, name matches the folder, description is non-empty. That is it.”</p>
+<p>值得一提：我本机的 skill-creator 是上游的增强 fork，恰好在 <code>quick_validate.py:92-107</code> 补了 <code>validate_path_references()</code>（扫描 SKILL.md 的 scripts/references/assets 引用并核对存在性）——属于社区里少见的那类补丁。上游原版没有。</p>
+<h2 id="结论"><a class="header" href="#结论">结论</a></h2>
+<ol>
+<li><strong>skill-up 对 SKILL.md 内容层的完整性防线≈零。</strong> CLI 确实会解析 frontmatter——但只软读 <code>name</code> 一个字段用于命名展示（<code>internal/config/loader.go:240</code> 的 <code>parseSkillName</code>），任何失败（文件缺失/无围栏/YAML 解析错/name 为空）都<strong>静默回退到目录名、零告警</strong>；<code>description</code> 从不读，正文引用的附件存活性从不查，<code>run.go:705</code> 对 SKILL.md 本体只做 <code>isRegularFile</code> 存在性检查。对照之下 <code>validate</code> 对 eval 配置层兜得住（缺失 case 文件、截断 YAML 都硬报错）——<strong>eval 配置层有防线，skill 内容层没有</strong>。它自己的 e2e 套件是这个设计的镜子：17 个夹具里 14 个有完整 frontmatter，唯独 3 个没有（mock-engine、multiturn-session、custom-engine）的占位文件被流水线实际使用且照跑不误——流水线容忍无 frontmatter，因为这层从来不做强制校验。这种“静默兜底、绝不打扰“的哲学，和我们在 loader 层实测到的行为（Claude Code 降级注册、kimi-code 静默丢弃）是同一款。</li>
+<li><strong>skill-upper 的评测 rubric 里没有“技能完整性“维度。</strong> 它读目标 skill 是为了提取行为生成用例，从不校验文档完整性——评的是行为，不是文档健康。</li>
+<li><strong>唯一生效的防线是宿主警觉性，其检出率与“伤是否横在执行路径上“强相关（8/8 到 2/8 的梯度），与伤的严重程度无关。</strong> 把完整性交给“agent 会不会刚好注意到“，等于没有防线。</li>
+<li><strong>带伤的考官改不准带伤的卷子。</strong> 目标残缺会沿“文档→理解→用例“链静默传导进评测结论。</li>
+<li><strong>与 <a href="/posts/回答被截断-你的-CLI-知道吗-四个工具-六种故障-108-格矩阵-和一个差点发布的错误结论">harness 矩阵</a>的结论收敛于同一句话：内容层判不出完整性；地基只做验收，不评级。</strong> 一个测流，一个测文件，证据形态不同，指向相同。</li>
+<li><strong>完整性是供应链问题，不是上下文问题。</strong> 防线的正确位置是 CI / loader / 安装器（零 token、确定性），不是 skill 正文里的自检指令（每次加载都付 token、且只有概率性检出）——详见下节。</li>
+</ol>
+<h2 id="代价与边界完整性该长在哪里"><a class="header" href="#代价与边界完整性该长在哪里">代价与边界：完整性该长在哪里</a></h2>
+<p>一个自然的质疑：这些检查会让 skill 变大、加载更贵——内容多了，上下文和 token 都烧钱，买来的却只是“大概率不出事“。这个质疑对了一半：它只适用于<strong>把检查写进 skill 正文</strong>的做法，而正文恰恰是最差的位置。</p>
+<p>三档防线的成本结构（可靠性数据来自本文实验）：</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>防线位置</th><th>运行时 token 成本</th><th>可靠性</th></tr>
+</thead>
+<tbody>
+<tr><td>skill 正文里的自检指令</td><td>每次加载都付，永久付</td><td>概率性（本实验检出率 2/8 ~ 8/8 浮动）</td></tr>
+<tr><td>CI / 发布期机械检查（skill-guard 类）</td><td>零</td><td>确定性（硬检查稳定捕获断链/空 frontmatter）</td></tr>
+<tr><td>loader / 安装期校验</td><td>零</td><td>确定性</td></tr>
+</tbody>
+</table>
+</div>
+<p>最贵的那档最不可靠。烧 token 换来的不是“安全“，是“看机缘的安全“。所以分层不该按“skill 重不重要“来分，而该按<strong>伤亡半径</strong>：</p>
+<ul>
+<li><strong>输出有人眼兜底的普通 skill</strong>（贺卡、写作助手）：损坏是可见失败，用户一眼就看见不对——发布前在 CI 跑一次机械检查（免费）就够，正文一行都不用加。</li>
+<li><strong>输出被机器/流程消费的 skill</strong>（测评、生成配置、进 CI 门禁的）：结论是 verdict 不是文本，错了没人看见（回马枪里那 4 条源自被截半段的格式断言零命中就是这样）——值得发布期门禁，高 stakes 再加哈希清单。但依然不用花 token。</li>
+<li><strong>分发给很多人的 skill</strong>：检查该长在安装器/包管理那一层（lockfile 式校验），装的时候验，而不是用的时候每次烧上下文自查。</li>
+</ul>
+<p>一句话：<strong>完整性是供应链问题，不是上下文问题。</strong> 地基的验收长在地基上；长在正文里的验收既贵又不灵。这也是我们给 skill-up 的 <a href="https://github.com/alibaba/skill-up/pull/281">PR #281</a> 把检查放进 CLI（Go 代码）而不是 skill 正文的原因——skill 一个字节都不用长胖。</p>
+<h2 id="工具skill-guard-与-skill-quake"><a class="header" href="#工具skill-guard-与-skill-quake">工具：skill-guard 与 skill-quake</a></h2>
+<p>实验沉淀为两层工具，开源在 <a href="https://github.com/BiBoyang/skill-quake">https://github.com/BiBoyang/skill-quake</a>：</p>
+<ul>
+<li><strong>skill-guard</strong>：确定性完整性门禁（stdlib-only Python，单文件）。硬检查：SKILL.md 存在、frontmatter 可解析且 name/description 非空、正文引用的附件存活；软告警：悬挂代码围栏、文件止于标题/冒号等截断签名、孤儿附件。exit code 直进 CI / pre-commit。诚实的盲区：切口整齐的隐身截断（T1 型）它判不出来——防篡改需要已知良好清单的哈希比对，那是 v2 的事。<strong>地基只做验收，不评级。</strong></li>
+<li><strong>skill-quake</strong>：故障注入实验 skill。变异脚本（mutate.sh：截主文件/删引用/截附件/清空 frontmatter）、三宿主 headless 适配器（kimi/claude/codex）、L0-L3 分级 rubric、结果收集器。方法学红线写死在 SKILL.md 里：做实验的人不当宿主、只用中性 prompt、变异只动副本、单发是轶事 x/N 才算数、宿主可见路径不得编码伤型、系列必带阴性对照。</li>
+<li><code>docs/REPLICATION.md</code> 是自助复现手册：拿着原生 Claude/GPT 订阅的人照着跑就能补出宿主矩阵的另一半。</li>
+</ul>
+<h2 id="局限"><a class="header" href="#局限">局限</a></h2>
+<ul>
+<li>单条件样本量小（N=8/3），只能区分“稳定/概率性/稳定漏检“三档，给不出精确概率；文中的 x/N 不应被读作比率估计。</li>
+<li>宿主矩阵的版本与模型口径：kimi-code 2.1.0（k3-256k 子代理）、Claude Code 2.1.282（实际模型 DeepSeek v4.1 flash，anthropic 兼容端点）、Codex CLI 0.156.1（kimi provider / kimi-for-coding）。采样温度未固定，各宿主系统提示词不同——“概率性检出“应在此口径下理解。原生 Claude/GPT 对照列待复现（REPLICATION.md）。</li>
+<li>Claude Code 列部分运行的 CLI 执行被沙箱阻断（<code>--add-dir</code> 授了 skill 目录的读，未授 bin 目录的执行）——检出轴不受影响，但 validate 层的证据不完整。</li>
+<li>实验任务是“设计评测 + validate“，未跑真实 <code>skill-up run</code>（无引擎凭据）；带伤执行阶段的行为未覆盖。</li>
+<li>skill-guard 的截断检测是启发式，切口整齐的隐身截断（T1 型）是已知盲区，防篡改需哈希清单（v2 方向）。</li>
+</ul>
+<h2 id="补记2026-09-30考官自己也带伤"><a class="header" href="#补记2026-09-30考官自己也带伤">补记（2026-09-30）：考官自己也带伤</a></h2>
+<p>本文发布三天后，我按同一套标准体检了 skill-quake 自己。<code>skill-guard --strict</code> 判 PASS：0 error，0 warning。但 SKILL.md 里躺着一个编辑事故——同一句话写了两遍。gate 抓不到它，因为伤不在 gate 要走的路上：文件层面一切完好，重复发生在语义层。本文的核心论点，在作者本人身上又收了一个样本。</p>
+<p>同一轮体检还验证了另一件事：给 matrix.sh 做 loud-fail 改造（拆掉吞错的 <code>|| true</code>、witness 崩溃才允许中止、补 staging 断言），当场逼出两条此前完全不可见的 bug——一条 BSD/GNU 平台差异（<code>seq 1 0</code> 在 macOS 会真跑两发 dispatch），一条 faultspec 参数错位（guard 一直在检查不存在的目录）。沉默失败的方向原来不止一种：有时不是失败没有痕迹，是证人根本没出庭，而法庭没有点名。</p>
+<p>所以「地基只做验收，不评级」还得补一句：地基自己的沉默，也得有人验收。</p>
+<h2 id="附实验资产索引"><a class="header" href="#附实验资产索引">附：实验资产索引</a></h2>
+<ul>
+<li>上游互动：<a href="https://github.com/alibaba/skill-up/issues/280">issue #280</a>（含两条主动更评）、<a href="https://github.com/alibaba/skill-up/pull/281">draft PR #281</a>（CI 全绿，待维护者回应）</li>
+<li>工具与文档（公开）：<code>bin/skill-guard</code>、<code>skills/skill-quake/</code>、<code>tests/</code>（夹具自测套件）、<code>docs/REPLICATION.md</code>，均在 <a href="https://github.com/BiBoyang/skill-quake">https://github.com/BiBoyang/skill-quake</a></li>
+<li>量化汇总：正文各表即全量汇总（与仓库 <code>results/A/summary-A.md</code>、<code>results/C/summary-C.md</code>、<code>results/summary-B.md</code> 一致）</li>
+<li>原始 transcript 与逐路报告（含本地路径等环境信息）未公开；每个 cell 的 <code>report.md</code> + <code>grade.json</code> 可按 <code>docs/REPLICATION.md</code> 复现生成</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr-ef4e11c1.min.js"></script>
+        <script src="mark-09e88c2c.min.js"></script>
+        <script src="searcher-09f2665d.js"></script>
+
+        <script src="clipboard-1626706a.min.js"></script>
+        <script src="highlight-abc7f01d.js"></script>
+        <script src="book-609e4cb8.js"></script>
+
+        <!-- Custom JS scripts -->
+
+        <script>
+        window.addEventListener('load', function() {
+            window.setTimeout(window.print, 100);
+        });
+        </script>
+
+
+    </div>
+    </body>
+</html>

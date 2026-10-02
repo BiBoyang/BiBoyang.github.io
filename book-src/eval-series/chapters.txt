@@ -1,0 +1,15 @@
+! 我的评测工具链 · 小册目录（唯一顺序权威）
+! 调顺序 / 微调标题 = 改这份文件，然后重跑: python3 book-src/build-books.py eval-series
+! 行格式同 agent-ui。mode post = 源是博客 _posts 页面，构建时剥 front matter 和
+! 文首系列导航块、注入 H1 标题、正文 H1 降一级。
+!mode post
+
+@ guide | 导读 | /Users/boyang/Documents/UGit/BiBoyang.github.io/eval-series.md
+
+- ch01 | 一 · 从 trace 到 eval | /Users/boyang/Documents/UGit/BiBoyang.github.io/_posts/2026-08-23-从 trace 到 eval：trace 设计、Agent 评测方法论、一个评测 harness 的实现，和它抓到的上游并发 bug.md
+- ch02 | 二 · 给 skill 建门禁 | /Users/boyang/Documents/UGit/BiBoyang.github.io/_posts/2026-09-17-给 skill 建门禁：一天里的三种沉默失败、一次红线写法实证，和它抓到的上游 bug（又一只）.md
+- ch03 | 三 · 我给 skill-up 报了一个不存在的 bug | /Users/boyang/Documents/UGit/BiBoyang.github.io/_posts/2026-09-20-我给 skill-up 报了一个不存在的 bug.md
+- ch04 | 四 · CI 红、本地绿 | /Users/boyang/Documents/UGit/BiBoyang.github.io/_posts/2026-09-22-CI 红、本地绿：一次「平台差异」误诊，和 merge 干净不等于语义兼容.md
+- ch05 | 五 · 回答被截断，你的 CLI 知道吗 | /Users/boyang/Documents/UGit/BiBoyang.github.io/_posts/2026-09-25-回答被截断，你的 CLI 知道吗：四个工具、六种故障、108 格矩阵，和一个差点发布的错误结论.md
+- ch06 | 六 · 给流式协议造故障 | /Users/boyang/Documents/UGit/BiBoyang.github.io/_posts/2026-09-25-给流式协议造故障：三协议 mock、once 注入、字节级送达证明，和 strings 阴性不等于代码不存在.md
+- ch07 | 七 · 考官带伤阅卷 | /Users/boyang/Documents/UGit/BiBoyang.github.io/_posts/2026-09-27-考官带伤阅卷：对 Agent Skill 做故障注入的完整性实验.md

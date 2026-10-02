@@ -1,0 +1,473 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>03 · Markdown 在 TUI 上的流式地狱 - Agent 时代的开发者界面</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="favicon-8114d1fc.png">
+        <link rel="stylesheet" href="css/variables-8adf115d.css">
+        <link rel="stylesheet" href="css/general-e96d0476.css">
+        <link rel="stylesheet" href="css/chrome-d279d366.css">
+        <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex-dae990a6.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc-c656fa20.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Agent 时代的开发者界面</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/BiBoyang/BiBoyang.github.io" title="Git repository" aria-label="Git repository">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="agent-时代的开发者界面三markdown-在-tui-上的流式地狱"><a class="header" href="#agent-时代的开发者界面三markdown-在-tui-上的流式地狱">Agent 时代的开发者界面（三）：Markdown 在 TUI 上的流式地狱</a></h1>
+<blockquote>
+<p>系列第三篇。上一篇拆解了 TUI 渲染引擎的底层——ANSI 序列、字符网格、物理行计算、增量 diff。这一篇聚焦 Agent 场景里最让人头疼的问题之一：在只有字符的终端里，把流式输出的 Markdown 渲染成可读的样子。</p>
+</blockquote>
+<hr>
+<h2 id="一markdown-天生反感流式"><a class="header" href="#一markdown-天生反感流式">一、Markdown 天生反感流式</a></h2>
+<p>Markdown 是 John Gruber 在 2004 年设计的，设计目标很明确：一种“写起来像纯文本、看起来像格式化文档“的轻量标记语言。它的解析模型是“写完 → 一次性解析 → 渲染“。</p>
+<p>这里有一个结构性的矛盾：</p>
+<pre><code>Markdown 的设计前提:          Agent 的实际输出:
+─────                         ─────
+完整文档                      token-by-token 流式到达
+闭合的块级结构                随时可能出现半个代码块
+确定的语法树                  下一个 token 可能反转已解析的结构
+</code></pre>
+<p>举一个简单的例子。Agent 输出到一半时：</p>
+<pre><code>我们今天讨论三个要点：
+1. TUI 的字符网格
+2. Markdown
+</code></pre>
+<p>此时解析器会把这两行识别为有序列表的头部。但下一个 token 可能是：</p>
+<pre><code>不是唯一的选择
+</code></pre>
+<p>这行没有数字前缀——按 CommonMark 的 lazy continuation 规则，它会续接到最后一个打开的块上，也就是第二项的多行续文，不是新列表项也不是普通段落。但解析器在流式到达的那一刻根本不知道。</p>
+<p>更致命的情况：</p>
+<pre><code>```swift        ← 代码块开始
+let x = 1
+```             ← 闭合了。但模型下一秒又吐出一行代码——
+let y = 2        ← 它是新段落，还是代码？
+</code></pre>
+<p>严格说这不是 Markdown 的词法歧义——CommonMark 的规则是确定的。歧义来自流式本身：解析器每一帧都要对“目前已到达的内容“给出确定结论，而这个结论随时可能被后续 token 推翻。更典型的例子是更长的开 fence：四个反引号打开的块里，三连反引号是合法内容，一行 ``` 到底是内容还是闭合，要看到更多上下文才能判定——而“更多上下文“还没生成出来。</p>
+<hr>
+<h2 id="二降级映射把视觉语义翻译成字符"><a class="header" href="#二降级映射把视觉语义翻译成字符">二、降级映射：把视觉语义翻译成字符</a></h2>
+<p>第 2 篇讲过，TUI 只有字符。Heading 用不了 24pt 字号，ForgeLoopTUI 的选择是符号前缀。这就是“降级映射“——把 Markdown 的视觉语义翻译成终端字符网格能表达的形式。</p>
+<h3 id="21-heading"><a class="header" href="#21-heading">2.1 Heading</a></h3>
+<pre><code class="language-swift">switch markerCount {
+case 1: prefix = "█ "    // &lt;h1&gt;
+case 2: prefix = "▓ "    // &lt;h2&gt;
+case 3: prefix = "▶ "    // &lt;h3&gt;
+case 4: prefix = "▹ "    // &lt;h4&gt;
+case 5: prefix = "• "    // &lt;h5&gt;
+default: prefix = "· "   // &lt;h6&gt;
+}
+</code></pre>
+<p>六种前缀符号对应六级标题。“█“比”·“视觉重量大，读者自然把它解读为更高级别的标题。另一条路线是颜色和样式：glow 把所有标题统一加粗染蓝，层级仍靠 <code>#</code> 前缀数量区分（仅 H1 额外去掉 <code>#</code> 并加整行背景高亮）；Claude Code 更省——标题仅加粗（H1 加下划线），无颜色、无层级区分。ForgeLoopTUI 走的是纯符号路线。</p>
+<h3 id="22-代码块"><a class="header" href="#22-代码块">2.2 代码块</a></h3>
+<pre><code>┌─ code swift
+│ func main() {
+│     print("hello")
+│ }
+└─ end code
+</code></pre>
+<p>Box-drawing 字符画出边框。语言标签放在起始行。算不上漂亮，但边界在任何终端里都清晰可见。另一条路线是背景色（glow 给代码块整体加背景色，delta 在 diff 场景用整行背景色），视觉区分度更好，代价是依赖终端的背景色渲染——box-drawing 不依赖任何颜色能力。</p>
+<h3 id="23-有序无序列表"><a class="header" href="#23-有序无序列表">2.3 有序/无序列表</a></h3>
+<pre><code>• 第一项
+◦ 嵌套项
+▪ 更深嵌套
+▫ 再深一层
+</code></pre>
+<p>四个不同符号按嵌套层级循环。任务列表用 <code>☐</code> 和 <code>☑</code>。</p>
+<h3 id="24-blockquote"><a class="header" href="#24-blockquote">2.4 Blockquote</a></h3>
+<p>用 <code>│ </code> 前缀加左侧竖线。嵌套引用叠加前缀：<code>│ │ 二级嵌套</code>。</p>
+<h3 id="25-内联格式"><a class="header" href="#25-内联格式">2.5 内联格式</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Markdown</th><th>TUI 渲染</th><th>ANSI 序列</th></tr>
+</thead>
+<tbody>
+<tr><td><code>`code`</code></td><td>反色显示</td><td><code>ESC[7m</code></td></tr>
+<tr><td><code>**bold**</code></td><td>粗体</td><td><code>ESC[1m</code></td></tr>
+<tr><td><code>*italic*</code></td><td>斜体</td><td><code>ESC[3m</code></td></tr>
+<tr><td><code>~~strike~~</code></td><td>删除线</td><td><code>ESC[9m</code></td></tr>
+<tr><td><code>[text](url)</code></td><td>下划线文本 + 灰色 URL</td><td><code>ESC[4m</code> / <code>ESC[2m</code></td></tr>
+</tbody>
+</table>
+</div>
+<p>斜体 <code>ESC[3m</code> 的兼容性不可靠——有的终端渲染成反色，有的直接忽略。</p>
+<p>这里有一个值得注意的细节：<code>applyInlineFormatting</code> 不依赖任何 Markdown 解析库。它是手写的逐字符扫描，自己找 <code>**</code>、<code>*</code>、<code>`</code>、<code>~~</code>、<code>[text](url)</code> 的边界。不引入 cmark 或任何第三方依赖。原因很简单：终端里不需要 HTML 语义树，只需要知道“这两个星号之间加粗体 ANSI 序列“。</p>
+<h3 id="26-表格最复杂的子系统"><a class="header" href="#26-表格最复杂的子系统">2.6 表格——最复杂的子系统</a></h3>
+<p>表格是整个 Markdown 引擎里代码量最大的部分，连实现带配置接近 400 行。终端里的表格有三种失败模式：</p>
+<p><strong>模式一：列太宽，终端放不下。</strong> 解决策略由 <code>TableOverflowBehavior</code> 控制：</p>
+<pre><code>compactThenTruncateThenDegrade（默认）：
+  1. 先挤压每列宽度（不低于 minColumnWidth = 6）
+  2. 还不够 → 截断单元格内容（加截断符 "…"）
+  3. 仍然不够 → 退化：放弃 box-drawing，回退到原始 Markdown 文本
+</code></pre>
+<p>退化是最后手段——box-drawing 表格变成原始 <code>| col1 | col2 |</code> 格式，可读性下降但至少不溢出。</p>
+<p><strong>模式二：列被截得太狠，内容看不清。</strong> <code>autoReadable</code> 策略在截断比例超过阈值时自动退化：</p>
+<pre><code class="language-swift">if truncatedCellRatio &gt; 0.4  // 超过 40% 的单元格被截断
+   || trimmedWidthRatio &gt; 0.3  // 或总宽度被砍掉 30% 以上
+{ return nil }  // 退化
+</code></pre>
+<p>每列被压到只剩 6 字符宽的表格比原始 Markdown 更难读，不如直接退化。</p>
+<p><strong>模式三：表格还在流式输入中。</strong> 这是最棘手的。Agent 输出到一半：</p>
+<pre><code>| Name | Value |
+|------|-------|
+| CPU  | 85%   |
+| Mem  | ← 这里还在写
+</code></pre>
+<p><code>TableStreamingBehavior</code> 控制行为：<code>.monotonic</code> 立即渲染所有已完成的行，<code>.strict</code> 等到表格块完全结束才渲染。但默认的 <code>.monotonic</code> 还有一个隐藏的防御逻辑——<code>retreatToAvoidSplittingTrailingStreamingTable</code>，这是第三节要讲的核心机制。</p>
+<h3 id="27-先决条件宽度得算对"><a class="header" href="#27-先决条件宽度得算对">2.7 先决条件：宽度得算对</a></h3>
+<p>以上三种失败模式都建立在一个前提上：宽度算得对。而终端里的宽度不等于字符数——CJK 字符占两列，多数 emoji 占两列，ANSI 序列占零列。ForgeLoopTUI 的 <code>DisplayWidth.visibleWidth</code> 先剥掉 CSI 序列，再按 Unicode 区间判定宽字符计 2、其余计 1，表格的列宽求解和截断全部走这个函数。</p>
+<p>它的局限也值得知道：判定是按单个 Unicode scalar 做的，不处理组合序列——ZWJ 序列（如 👨‍💻）和 VS16 变体选择符会被算错宽度，表格边框随之错位。这是所有按 scalar 判定宽度的实现的共同盲区，不独 ForgeLoopTUI；中文 Agent 场景里 CJK 是家常便饭，宽度问题比纯英文场景暴露得更频繁。</p>
+<hr>
+<h2 id="三stable-prefix-cache在流式里偷懒"><a class="header" href="#三stable-prefix-cache在流式里偷懒">三、Stable Prefix Cache：在流式里偷懒</a></h2>
+<p>第 2 篇讲了 TUI 的增量 diff 机制——记住上一帧，只重绘变化部分。Markdown 渲染引擎也用了类似的思路，但不是 diff 行，而是缓存“稳定前缀“。</p>
+<h3 id="31-为什么只能在换行符处切分"><a class="header" href="#31-为什么只能在换行符处切分">3.1 为什么只能在换行符处切分</a></h3>
+<pre><code class="language-swift">public func render(text: String, isFinal: Bool) -&gt; [String] {
+    // 1. 如果新文本不以缓存的 stableSource 开头 → 缓存失效
+    if !stableSource.isEmpty, !text.hasPrefix(stableSource) { reset() }
+
+    // 2. 切掉已缓存的前缀，只处理新增部分
+    let suffix = String(text.dropFirst(stableSource.count))
+    let advance = stableAdvance(in: suffix, isFinal: isFinal)
+    if advance &gt; 0 {
+        let stableDelta = String(suffix.prefix(advance))
+        stableSource += stableDelta
+        stableRendered += renderFully(text: stableDelta, isFinal: true)
+    }
+
+    // 3. 不稳定后缀（最后一行）每次重新渲染
+    let unstable = String(text.dropFirst(stableSource.count))
+    let unstableRendered = renderFully(text: unstable, isFinal: isFinal)
+    return stableRendered + unstableRendered
+}
+</code></pre>
+<p><code>stableAdvance</code> 只在换行符处将文本标记为“稳定“。因为 Markdown 的块级结构——段落、标题、列表项、代码块边界——都以换行符分隔。一行没写完之前，你无法确定它是什么块级元素。</p>
+<pre><code>稳定区（已渲染，缓存）         不稳定区（每次重渲）
+─────                         ─────
+## 标题\n                      代码块开始\n
+列表项1\n                      代码内容\n
+列表项2\n                      正在输出的这行...
+</code></pre>
+<h3 id="32-流式表格的稳定性陷阱"><a class="header" href="#32-流式表格的稳定性陷阱">3.2 流式表格的稳定性陷阱</a></h3>
+<p><code>stableAdvance</code> 有一个关键的防御机制。如果文本以换行符结尾，它会把到那个换行符为止的部分标记为稳定——但如果这个换行符恰好在一张未完成的流式表格中间呢？</p>
+<pre><code>| Name | Value |
+|------|-------|
+| CPU  | 85%   |          ← 这行以换行结尾，会被标记为稳定
+| Mem  | 正在输出...        ← 没有换行，不稳定
+</code></pre>
+<p>如果第三行被标记为稳定（因为它以换行符结尾），渲染后的 box-drawing 表格会包含底部边框 <code>└─┴─┘</code>。下一帧第四行到了，需要加一行——但第三行已经“稳定“了，底部边框被锁死在缓存里。</p>
+<p><code>retreatToAvoidSplittingTrailingStreamingTable</code> 就是这个防御（节选自源码，部分局部变量定义省略）：</p>
+<pre><code class="language-swift">private func retreatToAvoidSplittingTrailingStreamingTable(
+    lines: [String], remainder: String
+) -&gt; Int? {
+    // 如果剩余部分以 "|" 开头 → 可能是不完整表格的续行
+    guard trimmedRemainder.hasPrefix("|") else { return nil }
+
+    // 从尾部向上扫描，找到完整的表格头+分隔行
+    // 然后退回到表格开始之前
+    for start in stride(from: end - 2, through: 0, by: -1) {
+        guard let headerCells = parseTableCells(lines[start]),
+              let divider = parseDividerCells(lines[start + 1]),
+              divider.count == headerCells.count else { continue }
+
+        // 验证所有数据行列数匹配
+        var allRowsMatch = true
+        for rowIndex in (start + 2)...end {
+            guard let rowCells = parseTableCells(lines[rowIndex]),
+                  rowCells.count == headerCells.count else {
+                allRowsMatch = false; break
+            }
+        }
+        if allRowsMatch {
+            // 找到完整表格 → 回退到表格头之前，整个表格保持不稳定
+            return retreat
+        }
+    }
+    return nil
+}
+</code></pre>
+<p>逻辑：如果下一个 token 以 <code>|</code> 开头，检测候选文本的末尾是否构成一张完整的表格（表头 + 分隔行 + 至少一行数据）。如果是，整个表格都不标记为稳定——等表格块彻底结束后才一次性缓存。</p>
+<h3 id="33-盲区代码块没有同等的防御"><a class="header" href="#33-盲区代码块没有同等的防御">3.3 盲区：代码块没有同等的防御</a></h3>
+<p>表格有 retreat 机制，代码块没有。一个未闭合的代码块可能被切进稳定区，而 <code>renderFully</code> 每次调用都从 <code>inCodeFence = false</code> 重新开始，fence 状态不会被记录。后果是连锁的：</p>
+<pre><code>第一帧: "```swift\nlet x = 1\n"
+  → 全部进入稳定区，渲染为:
+    ┌─ code swift
+    │ let x = 1
+
+第二帧: "let y = 2\n"
+  → 落在不稳定区，但 inCodeFence 状态已丢失
+  → 被当成普通段落渲染，没有 │ 前缀
+
+第三帧: "```\n"（真正的闭合 fence）
+  → 不稳定区把它误判为开 fence
+  → 渲染成一个新的 "┌─ code"
+</code></pre>
+<p>这是 v1.2.0 及之前版本的一个真实盲区。修复思路和表格一致——retreat 时检测候选末尾是否处于未闭合的代码块内，是则回退到 fence 开始之前。该修复（<code>retreatToAvoidSplittingUnclosedCodeFence</code>）已在 v1.2.1 合入：fence retreat 先于表格 retreat 执行（未闭合 fence 之内的表格状行不是真表格），fence 判定复用 <code>isCodeFenceDelimiter</code>，与 <code>renderFully</code> 的状态切换语义保持一致。在 v1.2.0 上，规避方案见第四节的路线二。</p>
+<h3 id="34-65k-字符上限"><a class="header" href="#34-65k-字符上限">3.4 65K 字符上限</a></h3>
+<pre><code class="language-swift">private let maxStableSourceChars = 65_536
+
+if stableSource.count &gt; maxStableSourceChars { reset() }
+</code></pre>
+<p>稳定缓存不能无限增长。一次长对话的流式输出可能超过几万个字符。65K 是折中值：超出后 reset，下一帧把全部内容重新渲染一次，重新开始缓存。</p>
+<hr>
+<h2 id="四流式期间到底要不要渲染-markdown"><a class="header" href="#四流式期间到底要不要渲染-markdown">四、流式期间到底要不要渲染 Markdown</a></h2>
+<p>第 2 篇和第 7 篇（GUI 部分）都会涉及这个问题，值得把账算清楚。</p>
+<p>Agent 流式输出时，每秒几十个 token 到达。即使有 Stable Prefix Cache，每次渲染仍然需要：</p>
+<ol>
+<li>跑 <code>stableAdvance</code>——扫描候选文本，检测是否是流式表格（可能 O(n) 回退扫描）</li>
+<li>渲染不稳定后缀——即使只有一行，也要跑完整的管线：代码块检测 → 表格检测 → structured line 检测 → inline formatting</li>
+</ol>
+<p>面对这笔成本，工程上有两条路线：</p>
+<p><strong>路线一：全程渲染 Markdown，用缓存摊薄成本。</strong> ForgeLoopTUI 的实际选择——<code>TranscriptRenderer</code> 持有一个 <code>StreamingMarkdownEngine</code>，流式和结束走同一个引擎，靠 Stable Prefix Cache 保证每帧只处理增量。代价是第三节的防御逻辑（以及 v1.2.0 之前存在的代码块盲区）。</p>
+<p><strong>路线二：流式期间纯文本，结束后一次性切换。</strong> Markdown 在流式期间提供的是“好看“而不是“必要“——代码、列表以纯文本展示，可读性损失很小。等流式结束，所有块级结构闭合，解析器不需要做任何防御性猜测，一次完整渲染搞定。这条路同时绕开了代码块盲区。</p>
+<p>ForgeLoopTUI 为路线二保留了 <code>PlainTextMarkdownEngine</code>：</p>
+<pre><code class="language-swift">public func render(text: String, isFinal: Bool) -&gt; [String] {
+    guard !text.isEmpty else { return [] }
+    return text.split(separator: "\n", omittingEmptySubsequences: false).map(String.init)
+}
+</code></pre>
+<p>它就是 <code>split("\n")</code>——零解析开销，零防御逻辑，零缓存状态。接入方完全可以在流式期间注入它，<code>isFinal</code> 时再切回 <code>StreamingMarkdownEngine</code>。</p>
+<p>两条路线没有对错，是纯工程权衡。中间态也存在——做一个“轻量 Markdown 引擎“，只做 inline formatting 和代码块检测，跳过表格和 blockquote，在流式期间保留最基本的可读性。</p>
+<hr>
+<h2 id="五代码块检测的边界"><a class="header" href="#五代码块检测的边界">五、代码块检测的边界</a></h2>
+<p>ForgeLoopTUI 的代码块检测不依赖完整 Markdown 解析——先去掉行首尾空白，再检查是否以三个或以上的 <code>`</code> 或 <code>~</code> 开头：</p>
+<pre><code class="language-swift">private func isCodeFenceDelimiter(_ line: String) -&gt; Bool {
+    let trimmed = line.trimmingCharacters(in: .whitespaces)
+    guard let first = trimmed.first, first == "`" || first == "~" else { return false }
+    let run = trimmed.prefix(while: { $0 == first })
+    return run.count &gt;= 3
+}
+</code></pre>
+<p>这和 CommonMark 规范有两个微妙区别。其一，CommonMark 要求闭合 fence 的长度不小于开 fence——三个反引号打开，三个或更多才能关闭；四个反引号打开的块里，三连反引号只是内容。ForgeLoopTUI 不检查长度匹配，只要看到三连反引号就切换 in-code-fence 状态。其二，先 trim 意味着 CommonMark“fence 最多允许 3 格缩进“的规则被丢弃——缩进 4 格以上的行若以三连反引号开头，会被误判为 fence。</p>
+<p>这是一个有意的简化。在 Agent 流式场景下，代码块的内容来自 LLM 输出，不太会出现“四个反引号打开、三个反引号在内容里“的边界情况。而且实现正确的分隔符匹配需要回溯——代码块可能在几十行之前打开——与 Stable Prefix Cache 的假设冲突。</p>
+<hr>
+<h2 id="六从这里出发"><a class="header" href="#六从这里出发">六、从这里出发</a></h2>
+<p>TUI 上 Markdown 流式渲染的核心矛盾可以总结为三句话：</p>
+<ol>
+<li><strong>Markdown 是“写完再解析“的语言，Agent 是“边想边输出“的过程。</strong> 两者的设计哲学根本冲突。</li>
+<li><strong>终端只有字符，Markdown 的视觉语义必须降级映射。</strong> 降级不等于功能缺失——true color 语法高亮和 OSC 8 可点击超链接在终端里都可行，成本是手写 tokenizer 而非调库。</li>
+<li><strong>流式渲染 Markdown 的成本可以靠 Stable Prefix Cache 摊薄，但防御逻辑和盲区是必要之恶。</strong> 纯文本 fallback（流式期间跳过 Markdown、结束再切换）是更省的选择。</li>
+</ol>
+<p>下一篇讲 Agent TUI 最核心的难题——流式输出、工具调用、thinking 展开后，这些问题如何从“难“变成“几近失控“。第 1 篇提过一个判断：Agent 的真实输出不是 1D 的。下一篇会把这句话完整展开。</p>
+<hr>
+<p><em>本文所有技术细节基于 <a href="https://github.com/BiBoyang/ForgeLoopTUI">ForgeLoopTUI</a> v1.2.0 的实际源码。§3.3 的代码块盲区已在 v1.2.1 修复（<code>retreatToAvoidSplittingUnclosedCodeFence</code>），正文保留该盲区的完整分析作为案例。</em></p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch02.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="ch04.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch02.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="ch04.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr-ef4e11c1.min.js"></script>
+        <script src="mark-09e88c2c.min.js"></script>
+        <script src="searcher-09f2665d.js"></script>
+
+        <script src="clipboard-1626706a.min.js"></script>
+        <script src="highlight-abc7f01d.js"></script>
+        <script src="book-609e4cb8.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

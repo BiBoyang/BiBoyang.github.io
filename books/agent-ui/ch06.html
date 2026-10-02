@@ -1,0 +1,353 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>06 · 为什么 Agent GUI 这么难 - Agent 时代的开发者界面</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="favicon-8114d1fc.png">
+        <link rel="stylesheet" href="css/variables-8adf115d.css">
+        <link rel="stylesheet" href="css/general-e96d0476.css">
+        <link rel="stylesheet" href="css/chrome-d279d366.css">
+        <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex-dae990a6.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc-c656fa20.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Agent 时代的开发者界面</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/BiBoyang/BiBoyang.github.io" title="Git repository" aria-label="Git repository">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="agent-时代的开发者界面六为什么做一个不错的-agent-gui-这么难"><a class="header" href="#agent-时代的开发者界面六为什么做一个不错的-agent-gui-这么难">Agent 时代的开发者界面（六）：为什么做一个“不错“的 Agent GUI 这么难</a></h1>
+<blockquote>
+<p>系列第六篇，第三幕开篇。前五篇完成了 TUI 侧的完整深潜和 Event Sourcing 的理论框架。从这一篇开始，同一个 Agent 场景进入像素世界——拥有原生控件、滚动视图和 GPU 合成器之后，技术问题完全不同。</p>
+</blockquote>
+<hr>
+<h2 id="一不错的标准不在同一基线"><a class="header" href="#一不错的标准不在同一基线">一、“不错“的标准不在同一基线</a></h2>
+<p>TUI 用户看到 box-drawing 字符画的表格——<code>┌───┬───┐</code>——会觉得“这是个表格“。GUI 用户看到表格没有交替行背景色、没有列排序按钮、不能横向滚动，就会觉得“这做得不好“。</p>
+<p>这不是用户挑剔。这是两个媒介的基线不同：</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th></th><th>TUI 用户期望</th><th>GUI 用户期望</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>表格</strong></td><td>字符对齐即可</td><td>原生表格、可排序、可滚动</td></tr>
+<tr><td><strong>代码块</strong></td><td>等宽字体即可</td><td>语法高亮、复制按钮、行号</td></tr>
+<tr><td><strong>滚动</strong></td><td>能滚动就行</td><td>惯性滚动、回弹、流畅 60fps</td></tr>
+<tr><td><strong>颜色</strong></td><td>有颜色区分就行</td><td>Dark Mode 自适应、无障碍对比度</td></tr>
+<tr><td><strong>动画</strong></td><td>没有也正常</td><td>掉帧就是 bug</td></tr>
+<tr><td><strong>多模态</strong></td><td>不期望</td><td>图片、文件、语音是基本功能</td></tr>
+</tbody>
+</table>
+</div>
+<p>TUI 的“功能完备“往往已经接近 GUI 的“勉强可用“。要在 GUI 上做到“不错“，你需要处理的子系统数量通常会比 TUI 多出数倍。</p>
+<p>第 1 篇引过一个判断：做 GUI 要么 VSCode 换皮（上限被封死），要么自研（至少半年以上）。这里把它量化：自研到底要做多少东西？以 FlowDown——我见过的开源原生 iOS Agent 客户端里技术拆分最完整的一个——为例。</p>
+<hr>
+<h2 id="二flowdown-的七个子系统"><a class="header" href="#二flowdown-的七个子系统">二、FlowDown 的七个子系统</a></h2>
+<p>FlowDown 的界面层建立在这些独立库之上：</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>子系统</th><th>职责</th><th>为什么需要独立库</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>MarkdownView</strong></td><td>流式 Markdown 渲染</td><td>Markdown 解析 + Litext 布局，约 8500 行（3.9.1）</td></tr>
+<tr><td><strong>完整聊天 UI</strong>（内置，后开源为 LanguageModelChatUI）</td><td>聊天界面主体</td><td>消息列表、流式动画、工具调用展示、语音输入</td></tr>
+<tr><td><strong>ChatClientKit</strong></td><td>OpenAI 兼容 API 客户端</td><td>SSE 流式解析、请求管理、重试逻辑</td></tr>
+<tr><td><strong>ColorfulX</strong></td><td>动画颜色/渐变渲染</td><td>打字机效果中的背景动画、品牌色渐变</td></tr>
+<tr><td><strong>ListViewKit</strong></td><td>高性能列表视图</td><td>diffable data source、cell 复用、动态高度缓存</td></tr>
+<tr><td><strong>GlyphixTextFx</strong></td><td>文字特效</td><td>打字机逐字 reveal 效果</td></tr>
+<tr><td><strong>AlertController</strong></td><td>弹窗系统</td><td>工具确认弹窗、MCP 授权弹窗</td></tr>
+</tbody>
+</table>
+</div>
+<p><code>ChatClientKit</code> 是两边共担的协议层成本——TUI 同样需要 SSE 解析和请求管理。真正拉开差距的是其余六个 UI 子系统。</p>
+<p>对照 TUI：</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>GUI 子系统</th><th>TUI 对应</th><th>成本差异</th></tr>
+</thead>
+<tbody>
+<tr><td>MarkdownView</td><td>StreamingMarkdownEngine（~800 行 Swift）</td><td>TUI 略省（~800 行 vs 8500 行，布局成本在渲染引擎里另算）——第 3 篇和第 7 篇各自展开</td></tr>
+<tr><td>ListViewKit</td><td>TranscriptBuffer（一个 <code>[String]</code> 数组）</td><td>TUI 零成本</td></tr>
+<tr><td>ColorfulX / GlyphixTextFx</td><td>不需要——没有像素和动画</td><td>GUI 独占</td></tr>
+<tr><td>AlertController</td><td>一行 <code>[y/n]</code> 提示</td><td>GUI 独占</td></tr>
+<tr><td>完整聊天 UI（内置）</td><td>RenderLoop + commit/live 分区</td><td>GUI 重得多</td></tr>
+</tbody>
+</table>
+</div>
+<p>这就是为什么第 1 篇说 TUI 的复杂度天花板低。你不需要做动画渲染引擎，因为没有动画。不需要做 cell 复用，因为终端不回收行。不需要做 MCP 授权弹窗，因为终端只有键盘输入。</p>
+<hr>
+<h2 id="三agent-让-gui-的复杂度再翻倍"><a class="header" href="#三agent-让-gui-的复杂度再翻倍">三、Agent 让 GUI 的复杂度再翻倍</a></h2>
+<p>普通聊天应用的状态：用户消息 → AI 回复。线性，两个方向。</p>
+<p>Agent 应用的状态：用户消息 → thinking → 工具调用 × N（可能并行）→ 乱序返回 → thinking → 流式回复 + 中途取消 + 重试。第 4 篇和第 5 篇已经充分展示了这棵树的复杂程度。</p>
+<p>每种状态在 GUI 上都是一个独立的 UI 子系统。</p>
+<h3 id="31-工具调用的四态状态机"><a class="header" href="#31-工具调用的四态状态机">3.1 工具调用的四态状态机</a></h3>
+<p>一个工具调用在 GUI 上需要展示至少四个状态：</p>
+<pre><code>pending  → 灰色图标 + 工具名称（等待执行）
+running  → 旋转动画 + 状态文本（执行中）
+success  → 绿色勾 + 结果摘要（可展开查看详情）
+error    → 红色叉 + 错误信息（可重试按钮）
+</code></pre>
+<p>而且多个工具调用可能并行。第 4 篇讲的 <code>pendingTools</code> 稳定槽位队列 + <code>shiftIndices</code> 索引追踪，在 GUI 上对应的是 <code>UICollectionView</code> 的多 section diffable snapshot——底层数据结构类似（事件 → 索引 → 局部更新），但 UI 表达成本不在同一量级：TUI 是替换一行文本，GUI 是独立的卡片、独立的加载动画、独立的结果展开/折叠、独立的错误重试按钮。</p>
+<h3 id="32-mcp-工具确认"><a class="header" href="#32-mcp-工具确认">3.2 MCP 工具确认</a></h3>
+<p>MCP（Model Context Protocol）工具在执行前可能需要用户确认——“此工具将读取你的日历数据，是否允许？”</p>
+<p>GUI 上这是一个弹窗或内联确认卡片，含工具描述、权限列表、允许/拒绝/总是允许三个按钮。TUI 上是一行 <code>[y/n]</code> 提示。后者可以很轻，前者是一个完整的弹窗子系统——AlertController 的代码量不亚于一个小型 UI 库。</p>
+<h3 id="33-上下文窗口可视化"><a class="header" href="#33-上下文窗口可视化">3.3 上下文窗口可视化</a></h3>
+<p>Agent 的上下文窗口是有限资源。GUI 上可以展示 token 用量进度条、上下文溢出预警、历史消息压缩提示——<code>UIProgressView</code> + <code>UILabel</code> + 动画过渡，组合在一起就是一套完整的子系统。TUI 上你最多在状态栏展示 <code>[context: 85%]</code>。</p>
+<p>机制上这个子系统有三层。数据层：token 用量从哪来——API 响应里的 usage 字段是滞后值（一次请求完成后才知道），流式期间的实时用量要靠本地 tokenizer 估算，两个数据源的口径并不一致，界面上要决定显示哪一个。状态层：用量是会话级的单调递增状态，但历史消息压缩会让它突然回落——进度条要处理这种非单调跳变，动画方向是反的。交互层：预警阈值触发后做什么——只是变红，还是给出“开启新会话 / 压缩历史“的操作入口——这是产品决策，不是 UI 决策。</p>
+<h3 id="34-多模态嵌入"><a class="header" href="#34-多模态嵌入">3.4 多模态嵌入</a></h3>
+<p>GUI Agent 客户端需要支持图片附件（Vision 模型输入）、文件附件（代码文件、PDF）、语音输入（转写）。每种附件类型都需要自己的缩略图渲染、上传进度指示、错误重试、点击放大/预览。TUI 上多模态是文件路径字符串——<code>file:///path/to/image.png</code>。</p>
+<p>每种附件背后是一条完整的管线：选取（系统 picker 或拖拽）→ 本地校验（格式、大小）→ 缩略图生成（后台线程，主线程不能卡）→ 上传（进度回调、失败重试）→ 发送后预览（点击放大、长按保存）。管线的每一环都是一个状态机，而它们共享同一个 cell——附件还在上传途中用户就点了发送，“文本已发、附件未完成“这个中间态怎么展示，是没有现成答案的问题。TUI 绕开了整条管线：路径字符串不需要状态机。</p>
+<hr>
+<h2 id="四长会话的性能"><a class="header" href="#四长会话的性能">四、长会话的性能</a></h2>
+<p>第 2 篇讲过 TUI 在长会话下的困境——帧超过终端高度触发全量重绘，Live Budget Planner 把超预算的 live 行沉降到 committed 区，物理行缓存全部重算。</p>
+<p>GUI 在长会话下的性能问题是不同性质的。<code>UITableView</code> / <code>UICollectionView</code> 天生支持 cell 复用：屏幕外 cell 被回收，屏幕内 cell 被复用填充新数据。这是 iOS SDK 内建能力，不需要手写。</p>
+<p>但这不意味 GUI 没有性能挑战。万级消息的列表仍然需要：</p>
+<ul>
+<li>分页加载（滚到顶部时异步加载更早的消息）</li>
+<li>动态高度缓存（避免每次 <code>heightForRowAt</code> 都重新 layout cell——iOS 8+ 的 self-sizing cell 能自动算高，但对流式更新、高度异构的富文本 cell，自动计算意味着反复 layout，手写缓存仍有必要）</li>
+<li>图片/文件附件的缩略图缓存（NSCache + 磁盘 LRU）</li>
+</ul>
+<p>TUI 和 GUI 在长会话性能上的关系是“难的方向不同“。TUI 难在物理行计算和增量 diff；GUI 难在内存管理和 cell 复用策略。</p>
+<hr>
+<h2 id="五dark-mode-和无障碍tui-相对省事gui-要逐项手写"><a class="header" href="#五dark-mode-和无障碍tui-相对省事gui-要逐项手写">五、Dark Mode 和无障碍——TUI 相对省事，GUI 要逐项手写</a></h2>
+<p>这是 TUI 相对省事的能力，但不是免费。终端设置的颜色方案通常会自动带到 ANSI 渲染上；无障碍支持取决于终端和具体实现。</p>
+<p>GUI 上这两个是实打实的工作量——但要分开说。Dark Mode 对系统颜色免费，对自定义颜色不免费：每个自定义颜色都要定义 light/dark variant，每个自定义 view 都要在 <code>traitCollectionDidChange</code> 里刷新。还有一个隐蔽成本是动态色解析——<code>UIColor.systemBlue</code> 这类动态颜色在 trait 变化时重新解析，但自定义绘制（<code>draw(_:)</code>、CALayer）里的颜色不会自动跟随，需要手动监听并重绘；渐变、阴影这类叠加效果在两种模式下的对比度要分别调。</p>
+<p>无障碍同样分两半：标准控件（UIButton、UILabel）由系统免费获得 VoiceOver 支持；自定义绘制的 view 则全是手写工作量——为每个交互元素设置 <code>accessibilityLabel</code> / <code>accessibilityHint</code>，为自定义容器实现 <code>UIAccessibilityContainer</code>，为图表类内容提供文字化描述。而 Agent 客户端恰好多是自定义绘制：tool card、diff 视图、流式动画。不难，但多——每个自定义 view 都要做，漏一个就是 bug。</p>
+<hr>
+<h2 id="六跨平台从零成本到选阵营"><a class="header" href="#六跨平台从零成本到选阵营">六、跨平台：从零成本到选阵营</a></h2>
+<p>第 2 篇讲过 TUI 的跨平台——同一套 ANSI 序列，所有终端通用。</p>
+<p>GUI 没有这个选项。选了 UIKit → 只有 Apple 平台。选了 Electron → 全平台但有 150MB+ 基线。选了 Flutter → 全平台但 Dart 生态有限。选了 Compose Multiplatform → iOS 已稳定，但生态和三方库覆盖仍比 UIKit / SwiftUI 薄。</p>
+<p>对于独立开发者或小团队，这个选择直接决定能做多大。FlowDown 选择 UIKit——所以当前实现只覆盖 Apple 平台。覆盖 Android 和 Web 基本等于重写整个 UI 层。</p>
+<hr>
+<h2 id="七回到-event-sourcing同一套事件翻倍的投影成本"><a class="header" href="#七回到-event-sourcing同一套事件翻倍的投影成本">七、回到 Event Sourcing：同一套事件，翻倍的投影成本</a></h2>
+<p>第 5 篇的核心论点是：CLI/TUI/GUI 都是同一事件流的不同投影。第 2–4 篇展示了 TUI 的投影成本。这一篇展示的是同一个东西在 GUI 上的投影成本。</p>
+<p>同样一个 <code>tool.started</code> 事件：TUI 里是一行文本，GUI 里是一个带旋转动画的卡片。同样是 <code>file.changed</code>：TUI 里是路径字符串，GUI 里是 diff 审查面板。同样是 <code>permission.requested</code>：TUI 里是 <code>[y/n]</code>，GUI 里是完整弹窗。</p>
+<p><strong>投影成本不消失，只是换了形态。TUI 的成本集中在渲染管线的精确性（物理行、帧状态、增量 diff），GUI 的成本分散在子系统数量和交互细节。</strong> 哪个更难？取决于你的团队结构和目标平台。但有一件事是确定的——做一个“看起来还不错“的 Agent GUI，起点就是七个子系统。</p>
+<hr>
+<h2 id="八从这里出发"><a class="header" href="#八从这里出发">八、从这里出发</a></h2>
+<p>这一篇回答了一个看似矛盾的问题：既然 TUI 有那么多结构性优势（第 1、2 篇），为什么还有人做 GUI？因为 GUI 的结构性优势同样真实——像素级渲染让历史回看不被终端行数限制、多面板比较天然成立、语法高亮和视觉化 diff 不需要手写 tokenizer、无障碍对标准控件由系统免费获得。</p>
+<p>不是谁更好。选 TUI 是因为你必须在受限环境中交付——ssh、低配机器、管道化、CI 集成。选 GUI 是因为你的用户期望“不错“——而“不错“在 GUI 上的门槛，比很多人想象的高得多。</p>
+<p>下一篇聚焦这个门槛里最核心的一块：GUI 上的 Markdown 流式渲染——打字机效果背后的三层管线（解析 → 构建 → 布局），以及为什么全量重建才是瓶颈。</p>
+<hr>
+<p><em>本文的 GUI 子系统拆解基于 <a href="https://github.com/Lakr233/FlowDown">FlowDown</a> 的实际架构分析。TUI 对照部分基于 <a href="https://github.com/BiBoyang/ForgeLoopTUI">ForgeLoopTUI</a> v1.2.0。</em></p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch05.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="ch07.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch05.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="ch07.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr-ef4e11c1.min.js"></script>
+        <script src="mark-09e88c2c.min.js"></script>
+        <script src="searcher-09f2665d.js"></script>
+
+        <script src="clipboard-1626706a.min.js"></script>
+        <script src="highlight-abc7f01d.js"></script>
+        <script src="book-609e4cb8.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

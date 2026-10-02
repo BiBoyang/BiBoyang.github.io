@@ -1,0 +1,339 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>引子：没报错，就代表输出没问题吗 - Agent 时代的开发者界面</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="favicon-8114d1fc.png">
+        <link rel="stylesheet" href="css/variables-8adf115d.css">
+        <link rel="stylesheet" href="css/general-e96d0476.css">
+        <link rel="stylesheet" href="css/chrome-d279d366.css">
+        <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex-dae990a6.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc-c656fa20.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Agent 时代的开发者界面</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/BiBoyang/BiBoyang.github.io" title="Git repository" aria-label="Git repository">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="agent-时代的开发者界面--引子没报错就代表输出没问题吗"><a class="header" href="#agent-时代的开发者界面--引子没报错就代表输出没问题吗">Agent 时代的开发者界面 · 引子：没报错，就代表输出没问题吗？</a></h1>
+<blockquote>
+<p>系列引子。正文十二篇从“为什么 Agent 从 CLI 和 TUI 开始“讲起，偏知识建构。写它们之前，我想先从一类反复出现的故障说起——它是我做 Agent 界面这几年见过的最典型的坑，也是这个系列“看不见的另一半“。</p>
+</blockquote>
+<hr>
+<h2 id="一最坑的坏法不是报错而是不报错"><a class="header" href="#一最坑的坏法不是报错而是不报错">一、最坑的坏法不是报错而是不报错</a></h2>
+<p>这段时间做agent,得到了很多经验和教训, 其中有一条经验越来越确定：<strong>流式输出最容易漏的一种坏法不是报错，是答案被截断了，而它看起来是完整的。</strong></p>
+<p>这条教训的起点是我的非常烂的网络和代理.我的代理链路一直不太稳，断流、超时是家常便饭。上个月我让模型写一份比较长的分析，出来的东西格式工整、段落齐全,但总觉得话说到一半就没了，末尾该有的一半内容根本没有(因为我在提示词里做了一些设置,缺少了一些短小但是非常关键的内容)。</p>
+<p>最开始我以为是上下文过长的问题,但是后来在上下文明显充足的情况下还是发生了,就引起了我的注意了.</p>
+<p>接下来我以为这就是代理的锅，网络修好了事就算了。但是又一次发生之后,就激起了我的好奇心和斗志了,开始深究下去.</p>
+<p>但真正研究下去才发现：<strong>就算代理完全OK，这个问题照样有概率触发</strong>,包括但不限于以下几种情况:</p>
+<ol>
+<li>token 上限会把回答拦腰截断，</li>
+<li>网关可能弄丢最后一个 chunk，</li>
+<li>SDK 的默认值会把“连接被悄悄关了“当成正常结束。</li>
+</ol>
+<p>代理的问题只是让我撞见它的那扇门，门后面是一整类故障，而它们共同的特点是：问题发生了,工具从头到尾不告诉我!!!</p>
+<p>这引出了我给“一次流式输出到底完不完整“设计判定逻辑时定的规矩：complete 只能放在最后,它不能也不应该是默认值，而是前面的检查全都没命中才轮得到的兜底。换句话说，<strong>“没证据说坏了”</strong> 不等于 <strong>“证据说没坏”</strong>，看起来完整，得举证才能算数。</p>
+<p>于是我动手去翻手里几个我比较熟悉的开源项目的代码，想找到相关内容,看看它们是如何做的。结果就发现了一些很有意思的事.</p>
+<p>先把结论放这：<strong>判定一条流式回答完不完整，在内容层永远做不出来，必须下沉到协议层。</strong> 下面讲为什么，以及三个真实项目各自是怎么（没有）解决它的。</p>
+<h2 id="二为什么看起来完整是常态"><a class="header" href="#二为什么看起来完整是常态">二、为什么“看起来完整“是常态</a></h2>
+<p>先交代背景.做过 Markdown 相关应用的人都知道,Markdown 的格式是后置的，代码块要看到收尾的三个反引号才知道代码结束了，表格要看到下一行才知道上一行是不是最后一行,这个会在这个系列的后续展开，这里只说它和截断的关系：</p>
+<p><strong>因为格式后置，很多时候截断的回答渲染出来毫无破绽。</strong></p>
+<p>模型通过 SSE 流式吐内容，每个事件大概长这样：</p>
+<pre><code>data: {"choices":[{"delta":{"content":"## 结"},"finish_reason":null}]}
+
+data: {"choices":[{"delta":{"content":"论\n\n好的"},"finish_reason":null}]}
+
+data: {"choices":[{"delta":{},"finish_reason":"stop"}]}
+
+data: [DONE]
+</code></pre>
+<p>正文一个 chunk 一个 chunk 来，每个 chunk 自己不带结束信息。现在假设流在第二个 chunk 之后因为网络问题<strong>断了</strong>。你拼出来的文本是 <code>## 结论\n\n好的</code>. 看起来渲染出来是一段完全正常的 Markdown，没有任何报错,也符合我们阅读的习惯,我们无法感觉到这里出现了问题.</p>
+<p>所以“看起来对不对“不能作为判据。</p>
+<h2 id="三complete-不是默认给的"><a class="header" href="#三complete-不是默认给的">三、complete 不是默认给的</a></h2>
+<p>到了协议层，第一个要纠正的是默认值。</p>
+<p>绝大多数系统的默认值是反的：拿到流，就默认当完整。try 包住、异常没有抛出、循环正常结束就代表这次回答可用。这个默认值错在哪？<strong>“没证据说坏了“不等于“证据说没坏”。</strong> 结束不是一个自然发生的事实，是一个需要证明的事件。所以我的规矩是：complete 只能放在最后,因为它不是默认值，是前面的检查全都没命中才轮得到的兜底档。</p>
+<h3 id="31-从故障形态推状态机"><a class="header" href="#31-从故障形态推状态机">3.1 从故障形态推状态机</a></h3>
+<p>“结束需要举证”，那要举哪些证？我的做法是把失败形态一个一个枚举出来，每种形态对应一个状态：</p>
+<pre><code>transport_error        连接本身就失败了
+no_end_marker          连接活着，但流被关了，结束标记没等到
+buffer_residual        流正常关了，可缓冲区里还剩半个没解析的事件
+missing_finish_reason  一切正常，但从头到尾没见过结束原因
+complete               以上全部排除，才轮到我
+</code></pre>
+<p>这五个状态是我多次尝试后得到的失败模式的穷举——从外往里数，网络连接、网络流、事件、信号，每一层各有一种坏法。 complete 排在最后，是因为它是排除下来的兜底产物。</p>
+<p>枚举的价值在于它和 “try/except” 的区别：<strong>异常只能抓到你预想过的失败，枚举强迫你把“一条流可能怎么坏“逐层看过一遍</strong>。看完你会发现，多数实现的防御只覆盖了第一层: <strong>网络连接错误依靠异常体系兜底，但是后面三层全是裸的</strong>。</p>
+<h3 id="32-结束需要双保险"><a class="header" href="#32-结束需要双保险">3.2 结束需要双保险</a></h3>
+<p>直接看第四层，这是最容易被省掉的一层。</p>
+<p>一条流正常收尾，应该有两个<strong>互相独立</strong>的信号：关闭标记（SSE 的 <code>data: [DONE]</code>）和结束原因（最后一个数据 chunk 里的 <code>finish_reason</code>：<code>stop</code> / <code>length</code> / <code>tool_calls</code>…）。结束原因可以理解为协议替 Markdown“补发的结尾信息“,我们在正文里看不出来的事，协议单独告诉你一次。</p>
+<p>这两个信号缺一不可，因为它们会单独阵亡。最典型的死法：网关转发时把最后一个数据 chunk 弄丢了，只放行了 <code>[DONE]</code>。只查关闭标记的实现，对这种故障全线失守；反过来只查 <code>finish_reason</code> 也一样。我的判定标准是三条，任一命中就判不完整：<strong>结束标记没等到</strong>、<strong>缓冲区里有没解析完的字节</strong>、<strong>从头到尾没见过一个结束原因</strong>–前两条各管一层，第三条管的就是“证人缺了一个“的现场。</p>
+<p>如果你认真的看了之前的文字,会注意到：前面枚举了四个失败状态，这里怎么只剩三条？不矛盾。transport_error 和 no_end_marker 在观测上折叠成了同一条,因为<strong>连接都死了，结束标记必然没等到</strong>。状态机按原因分四类，是为了标准化的进行原因归类,而这条录制到底是“连接断了“还是“连接活着但流被关了“，事后排查时是两回事。</p>
+<p>一句话：<strong>结束需要双保险，缺一个都不算数。</strong></p>
+<h3 id="33-收尾不能押注在一个等不来的信号上"><a class="header" href="#33-收尾不能押注在一个等不来的信号上">3.3 收尾不能押注在一个等不来的信号上</a></h3>
+<p>第三类坏法藏得更深(也是源自于我稀烂的网络,笑)。SSE 的事件之间靠空行分隔，解析器攒到一个空行才敢处理前面的事件。如果某个超大事件中间网络卡住，空行永远不来，这个“攒了一半的事件“就<strong>无界地占着内存</strong>——业务逻辑永远不触发，而且没有任何报错，进程看上去完全健康。</p>
+<p>对付它的办法不是“耐心等“，而是大小上限：<strong>上限到了必须自己能触发收尾</strong>，落到的状态是 <code>limit_exceeded</code>，不是“再等等“。等不来的信号不能做唯一的收尾条件–这是同一条规矩的第二个侧面：complete 不能当默认值，“结束“也不能押在一个不保证会来的信号上。</p>
+<h3 id="34-记状态不抄现场"><a class="header" href="#34-记状态不抄现场">3.4 记状态，不抄现场</a></h3>
+<p>最后一条和前面几条画风不同，但同样来自实践(依然源自于我稀烂的网络,笑哭)：失败记录里<strong>只许记状态，不许抄原始报文</strong>。</p>
+<p>原因是断流没有体面的死法。一条被掐断的流，断点可以停在任何字节上,正好停在一段敏感文本中间是常态。所以摘要和日志里写的是“这条录制落在 <code>missing_finish_reason</code>“，而不是把半截报文抄进去。因为要知道的是它坏了、坏在哪一类，不是它坏成什么样。这条值得做成测试断言，而不只是代码约定：<strong>约定很容易在某次重构里被悄悄拆掉，断言则不太会</strong>。</p>
+<h2 id="四拿这把尺子去量真实世界"><a class="header" href="#四拿这把尺子去量真实世界">四、拿这把尺子去量真实世界</a></h2>
+<p>带着这套判定标准，我去翻了三个主流开源项目的源码。过程和结果给我带来了很多有意思的事,尺子还没落下，先撞上两个反转。</p>
+<p><strong>反转一：连“数清楚装了多少个检查“都得先搞清架构。</strong> 我最初的结论是“截断检查缺失在某个库的 generate 主循环里“，顺着代码查下去才发现，这个仓库里有<strong>两套同构的 LLM 引擎</strong>:我看的那套库，主 agent 根本不走；真正的主引擎在另一个包里，有自己的 requester、自己的 finish reason 枚举、自己的空响应检查。完整性检查这种事，装错了包等于没装。如果不做这一层核实，我后续所有的“有没有防护“结论都会张冠李戴。</p>
+<p><strong>反转二：不是静默，是写错了对象。</strong> 搞清楚架构之后再问“主 agent 的回答被截断时，用户看到什么“：截断标志其实被算出来了，却在 turn 结束事件里被丢弃；TUI 倒是会弹一条提示，但文案是从工具调用视角写的——纯文本回答被截断时，用户看到的是“Model hit max_tokens — no tool call was emitted“，<strong>不会意识到上面的回答本身是半截的</strong>；无头模式和编辑器插件客户端则完全没有感知。所以准确的表述不是“毫无防护“，是：<strong>他们知道截断发生了，但警告写错了对象。</strong></p>
+<p>把尺子正式放上去，三个项目是三个数据点：</p>
+<p><strong>kimi-cli（Python，已归档）——零个检查。</strong> <code>finish_reason</code> 全库生产代码零处读取。SSE 解析整个委托给 SDK，而 SDK 的默认行为恰恰是最差的那种：<code>[DONE]</code> 只是提前退出，服务端直接关连接时循环自然耗尽，不抛任何错，“收到 <code>[DONE]</code>“和“连接被悄悄关了“对上层完全不可区分；半个事件没有空行分隔则被静默丢弃。它仅有的防线是看“收到了什么内容“的形状启发式——空响应报错、纯思考无正文报错——但只要流出过任何一段正文，半截回答就被无条件收下。讽刺的是它每次请求都主动设 <code>max_completion_tokens</code>，token 截断是常态风险。上个月它发了 1.52.0，最终版，仓库归档。这个漏洞<strong>永远定格了</strong>——库默认值照单全收的代价是永久的。</p>
+<p><strong>kimi-code（TypeScript，继任者）——装了一个点，还是对的点。</strong> 它修了前者的可观测性：统一的 finish reason 体系（OpenAI <code>length</code>、Anthropic <code>max_tokens</code>、Gemini <code>MAX_TOKENS</code> 归一化），信号一路透传到事件和错误文案。截断的硬检查也确实存在——在子 agent 的 final summary 边界上：summary 被截断，整个 run 失败。这个点的位置选得很有水平，因为 summary 是给 parent 的机器消费的契约，半截契约比没有契约更糟。<strong>但主 agent 自己的回答，就是上面反转二的那一幕</strong>——同一个故障模式，在一个边界上硬检查，在另一个边界上静默加写错对象的提示。</p>
+<p><strong>codex（Rust）——四层检查，做成了协议层不变量。</strong> 它走的协议不同，等价信号是 <code>response.completed</code> 事件。这个检查它不是做了一层，是四层：SSE 层、WebSocket 层、事件映射层、turn 主循环，各自独立校验“流关了但终止事件没见过“，任何一层命中就显式注入错误，默认重试数次，重试期间 TUI 显示重连计数且<strong>不写入聊天历史</strong>。底层 SSE 库对流关闭但无终止标记的情况什么都不做——所以这四层是手工固化的。在 codex 里，“流断了、回合却看似正常结束“这条路径不存在。</p>
+<p>吐槽一句,codex 不愧是成熟的优秀产品,在进行其他方面的对比研究的时候,codex 明显在各种边界处理上更加优秀.</p>
+<p>三个数据点放在一起，规律很清楚了：<strong>完整性判定不是“有或没有“的问题，是“在多少个边界上装了多少个检查“的问题。</strong> 而比数量更难得的是质量——装在正确的边界上，写给正确的读者看。装检查不难，这才是难的部分。</p>
+<p>我把 kimi-code 那个不对称整理成了 <a href="https://github.com/MoonshotAI/kimi-code/issues/4012">一个 issue</a> 提给官方，附了复现和修法建议，等 approve 后提 PR。</p>
+<h2 id="五核实先于判断"><a class="header" href="#五核实先于判断">五、核实先于判断</a></h2>
+<p>这次从发现问题到发出 issue，最大的教训不在技术层面：<strong>一句不实的描述足以让整个报告的可信度归零。</strong></p>
+<p>如果我按最初的口径发出去——<strong>“主循环对截断零防护”</strong>——维护者第一次打开 TUI 代码就能证伪我。是复查推翻了两个假设之后，论点才站得住的。而好的缺陷报告还有一个技巧：<strong>论点落在不对称上。</strong>“这里坏了“不如“同一个故障模式在 A 处硬检查、在 B 处静默“有说服力——后者把项目自己已有的价值判断当成了标尺，维护者很难拒绝补平自己的逻辑。</p>
+<p>这和第 3 节那条“记状态，不抄现场“其实是同一件事的两面：对自己的日志脱敏，对别人的报告核实;都只交付经过验证的状态，不交付未经核实的现场。</p>
+<h2 id="六这个系列要讲什么"><a class="header" href="#六这个系列要讲什么">六、这个系列要讲什么</a></h2>
+<p>回到开头那句：截断的回答看起来是完整的。</p>
+<p>我最开始的想法,是因为我做了 agent 的 TUI 和 GUI,尤其是对于 Markdown 的流式输出那部分踩了很多坑,有了很多的经验和教训,准备分享出来,但是随着其他的工作也在深入,想法和思考深入一天一个样,所以整个系列的文章放了很久的鸽子.</p>
+<p>现在是时候慢慢的放出这一系列文章了.</p>
+<p>这个系列剩下的部分，很多篇讲的是可见的那一半：从 ANSI 转义序列、字符网格、Markdown 流式渲染，到权限 UX 和多端架构。</p>
+<p>而这一篇是看不见的另一半：<strong>渲染引擎再聪明，也只能渲染“已经到达的字节“；字节到没到、到全没有，是协议层的事，渲染层永远无权裁决。</strong> 两个世界的接缝处，就是这个引子里的全部事故。</p>
+<p>后话：这个 bug 还有个更尴尬的处境。现在评测 Agent 的流行框架喜欢把指标分成结果、过程、效率、风险四层——而它哪一层都放不进去：它不改变 agent 的行为，只改变“你看到的是不是真的“。四层评的是能力，它考问的是评测的地基。这个话题值得单独写一篇，这里先立个旗子。</p>
+<hr>
+<h3 id="附我自己设计的流式完整性检查清单"><a class="header" href="#附我自己设计的流式完整性检查清单">附：我自己设计的流式完整性检查清单</a></h3>
+<pre><code>状态机（前面的先判）：
+  transport_error / no_end_marker / buffer_residual
+  / missing_finish_reason / complete（兜底，非默认）
+
+判定不完整的三个充分条件（任一命中）：
+  □ 结束标记未收到（如 SSE 的 [DONE]）
+  □ 缓冲区有未解析残留
+  □ 全程没有任何 chunk 携带结束原因
+    ⚠ 结束需要两个独立证人（关闭标记 + 结束原因），缺一个都不算
+
+半帧防护：
+  □ 单事件/单缓冲有大小上限
+  □ 上限到达自行收尾 → limit_exceeded
+    ⚠ 等不来的信号不能做唯一收尾条件
+
+记录边界：
+  □ 失败摘要只记状态与类别，不抄原始报文
+    ⚠ 截断的报文可能停在敏感文本中间
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="preface.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="ch01.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="preface.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="ch01.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr-ef4e11c1.min.js"></script>
+        <script src="mark-09e88c2c.min.js"></script>
+        <script src="searcher-09f2665d.js"></script>
+
+        <script src="clipboard-1626706a.min.js"></script>
+        <script src="highlight-abc7f01d.js"></script>
+        <script src="book-609e4cb8.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

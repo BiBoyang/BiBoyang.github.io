@@ -1,0 +1,346 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>12 · 双模渲染 - Agent 时代的开发者界面</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="favicon-8114d1fc.png">
+        <link rel="stylesheet" href="css/variables-8adf115d.css">
+        <link rel="stylesheet" href="css/general-e96d0476.css">
+        <link rel="stylesheet" href="css/chrome-d279d366.css">
+        <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex-dae990a6.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc-c656fa20.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Agent 时代的开发者界面</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/BiBoyang/BiBoyang.github.io" title="Git repository" aria-label="Git repository">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="agent-时代的开发者界面十二双模渲染同一引擎里的两种所有权"><a class="header" href="#agent-时代的开发者界面十二双模渲染同一引擎里的两种所有权">Agent 时代的开发者界面（十二）：双模渲染——同一引擎里的两种所有权</a></h1>
+<blockquote>
+<p>系列第十二篇。第 11 篇讲了 TUI 渲染的两条路线——全屏自管派与 inline viewport 派——以及一个新事实：头部 Agent TUI 没有一家押注单边，分界线在每家内部都成了开关（默认形态 2:2）。月之暗面 2026 年把 Kimi Code 的源码放了出来（MoonshotAI/kimi-code，MIT，TypeScript monorepo），它是这条线上最适合解剖的样本：<strong>它的渲染引擎同时实现了两种所有权模型，用同一个接口、同一棵组件树，运行时二选一</strong>，而且代码里处处留着两派交锋过的事故记录。这篇是这个案例的解剖。</p>
+</blockquote>
+<hr>
+<h2 id="一基本面一个-vendored-fork两个渲染器"><a class="header" href="#一基本面一个-vendored-fork两个渲染器">一、基本面：一个 vendored fork，两个渲染器</a></h2>
+<p>Kimi Code 的 TUI 框架在 <code>packages/pi-tui</code>，是从上游 pi-mono 项目的 pi-tui vendored 进来的 fork。这个 fork 的自我管理方式值得先说一句：<code>pi-tui/AGENTS.md</code> 逐条列出“我们和上游的 8 处分歧“，每条都带守护测试，并明确规定——每次从上游同步后，这 8 条必须逐条重新验证，测试挂了就意味着本地分歧被覆盖丢失。这是把“fork 的维护成本“显性化的做法，和第 11 篇说的“纪律比天才便宜“是同一个精神。</p>
+<p>渲染层的关键结构是：<code>TuiBase</code> 提供共享的组件树、overlay 合成、光标提取；<code>TUI</code> 是个接口，有两个实现——</p>
+<pre><code>apps/kimi-code/src/tui/tui-state.ts:
+
+  fullscreen = KIMI_CODE_TUI_FULL_SCREEN === '1'
+    ? new TuiAltScreen(terminal, ...)   // 实验性全屏
+    : new TuiMainScreen(terminal)       // 默认
+</code></pre>
+<p>（写法以文末标注的版本为准：8 月中它还是环境变量开关，到 9 月底，main 分支已经把这个开关升格为正式的 <code>tuiMode</code> 配置项——“实验开关“转正成“产品配置”，方向正是本篇和第 11 篇判断的那条路。）</p>
+<ul>
+<li><code>TuiMainScreen</code>（629 行）：渲染进终端主屏 + scrollback。<strong>inline 派，但是差分变种。</strong></li>
+<li><code>TuiAltScreen</code>（1302 行）：alt screen 全屏，应用自管视口。<strong>全屏自管派，工业级形态。</strong></li>
+</ul>
+<p>也就是说，第 11 篇那条我以为只存在于不同公司之间的分界线，在这个仓库里是同一个 <code>if</code> 的两个分支。这给了我一个前所未有的对照机会：<strong>同一棵组件树、同一份组件代码，喂给两种所有权模型，各自的账单会开在哪里。</strong></p>
+<hr>
+<h2 id="二主屏渲染器inline-派的差分变种"><a class="header" href="#二主屏渲染器inline-派的差分变种">二、主屏渲染器：inline 派的差分变种</a></h2>
+<h3 id="21-模型全量渲染增量落地"><a class="header" href="#21-模型全量渲染增量落地">2.1 模型：全量渲染，增量落地</a></h3>
+<p><code>TuiMainScreen.doRender()</code> 的模型一句话：每帧把<strong>整棵组件树</strong>（全部历史消息 + 编辑器）渲染成一个扁平行数组 <code>newLines</code>，和上一帧 <code>previousLines</code> 逐行比较，只把变化补丁写入终端。</p>
+<p>等等——每帧重渲整棵树？这和 Grok Build 的“发射即销账“不一样。关键在它对历史的处理方式：历史行渲染一次之后，靠<strong>引用相等缓存</strong>摊薄成本。组件的渲染缓存对未变化内容返回同一个字符串引用，于是稳态帧的成本是 O（总行数） 次指针比较，只为真正变化的行付处理费（<code>tui-main-screen.ts:237-261</code>，注释原文：“a steady frame only pays for the lines that actually changed”）。</p>
+<p>所以准确地说，它不是 Grok 那种“定型后彻底不管“，而是：<strong>逻辑上整棵树都活着，物理上只补丁视口可达的部分。</strong></p>
+<h3 id="22-所有权分界线被压缩成一个整数"><a class="header" href="#22-所有权分界线被压缩成一个整数">2.2 所有权分界线被压缩成一个整数</a></h3>
+<p>渲染器维护一个 <code>previousViewportTop</code>：逻辑行数组里，这个下标以上的行已经滚进 scrollback，归终端；以下的行在屏幕上，光标可达，归引擎。</p>
+<p>第 11 篇用了一整节讲“已完成的内容归谁记账“，在这里它就是一个整数加一句检查。整个 <code>doRender()</code> 的题眼是这几行（<code>tui-main-screen.ts:449-455</code>）：</p>
+<pre><code class="language-typescript">// Differential rendering can only touch what was actually visible.
+// If the first changed line is above the previous viewport, we need a full redraw.
+if (firstChanged &lt; prevViewportTop) {
+    fullRender(true);
+    return;
+}
+</code></pre>
+<p>变化落在视口之内 → 局部补丁；变化越界进 scrollback → <code>fullRender(true)</code>：<code>\x1b[2J\x1b[H\x1b[3J</code> 清屏、清 scrollback、全量重印。这就是第 11 篇“历史可改写：不可能，除非整体重印“的判官代码。</p>
+<h3 id="23-决策树一串快速失败路径"><a class="header" href="#23-决策树一串快速失败路径">2.3 决策树：一串快速失败路径</a></h3>
+<p><code>doRender()</code> 的主体是一串按优先级排列的兜底分支（319-455 行），每条都对应一类真实事故：</p>
+<ol>
+<li><strong>首帧</strong>：<code>fullRender(false)</code>，不清屏直接写——假设屏幕是干净的；</li>
+<li><strong>宽度变化</strong>：核平重印。换行全变，没有局部解——和 Grok Build 的 <code>resize_purge_rerender</code> 逐字相同；</li>
+<li><strong>高度变化</strong>：原则上也核平——<strong>但 Termux 除外</strong>。注释写着：Android 软键盘弹出/收起会改高度，如果每次核平，“the entire history to replay on every toggle”（整个历史在每次键盘切换时重播）。一条特例就是一份事故报告；</li>
+<li><strong>内容收缩到历史峰值以下</strong>：核平（否则残留的空行清不掉）；</li>
+<li>以上都不命中，才进入差分主路：扫描出 <code>firstChanged</code>/<code>lastChanged</code>，只重绘<strong>变化区间</strong>而非“变化行到末尾“——注释明说动机：“reduces flicker when only a single line changes (e.g., spinner animation)”；</li>
+<li>纯追加（流式输出的常态）走 append 快速路径：光标滚到底直接写。</li>
+</ol>
+<p>外加两个通用工程点：所有写包在 <code>\x1b[?2026h/l</code> 同步输出里（原子帧，防撕裂）；kitty 图片协议有一整套影子账本（图片行占位行数、changed-range 膨胀、按 id 删除），因为图片在终端里是字节流之外的第二套状态。</p>
+<h3 id="24-和-grok-的哲学分野预防-vs-检测"><a class="header" href="#24-和-grok-的哲学分野预防-vs-检测">2.4 和 Grok 的哲学分野：预防 vs 检测</a></h3>
+<p>把两家并排，inline 派内部其实有两个档位：</p>
+<ul>
+<li><strong>Grok Build（实验 minimal 模式）：数据层预防。</strong> block 不到 committed frontier 不发射，发射即归终端——从架构上保证“变化永远不可能越界“。（内存里仍保留完整数据模型，供 <code>full_view</code> 导出和搜索用，只是不再参与逐帧渲染；见第 11 篇的税单一节。）</li>
+<li><strong>Kimi Code 主屏：渲染层检测 + 核平兜底。</strong> 整棵树每帧都可变，渲染器不假设应用守纪律；它在每帧末尾检查变化是否越界，越界就付核平的代价。</li>
+</ul>
+<p>前者把正确性建立在纪律上，后者把正确性建立在一句话的运行时检查上。代价结构不同：Grok 的 resize 和“历史变了“都走重印；Kimi 主屏的 resize 走重印，“历史变了“也是重印——但因为整树活着，<strong>它不需要额外的纪律来维持不变式，应用层可以随便改数据</strong>，渲染层总会收敛到正确画面。这是用偶尔的重印换架构上的免维护。</p>
+<h3 id="25-变更史里的税单实录"><a class="header" href="#25-变更史里的税单实录">2.5 变更史里的税单实录</a></h3>
+<p>第 11 篇推导的 inline 派三大代价，在 Kimi Code 的 CHANGELOG 里每条都有对应事故（#1353、#1367 见 <code>packages/pi-tui/CHANGELOG.md</code>，#2442、#1188 见 <code>apps/kimi-code/CHANGELOG.md</code>）：</p>
+<ul>
+<li><strong>scrollback 不可改</strong>：#1353——流式输出收缩/膨胀循环时，视口锚定出错，把内容重复堆进 scrollback（重复发射）；</li>
+<li><strong>自我修正的成本</strong>：#1367——这个 fork 曾经自己改过 viewport/scrollback 的渲染行为，后来<strong>整体回退</strong>，回归上游的差分渲染（<code>AGENTS.md</code> 里写着“the fork’s viewport/scrollback rendering patches were reverted“）。在 scrollback 边界上自作聪明，最后被介质教育了；</li>
+<li><strong>I/O 与重绘风暴</strong>：#2442、#1188 反复压全屏重绘次数（“Reduce frequent full-screen redraws”）。</li>
+</ul>
+<p>读别人的 CHANGELOG 读到这些条目，感觉是看到自己文章里的推导在别人的事故报告里逐条兑现。</p>
+<hr>
+<h2 id="三全屏渲染器全屏自管派的工业级形态"><a class="header" href="#三全屏渲染器全屏自管派的工业级形态">三、全屏渲染器：全屏自管派的工业级形态</a></h2>
+<p><code>TuiAltScreen</code> 是我那派的实现——但它的成熟度远超我自己的 ForgeLoopTUI，值得逐块拆。</p>
+<h3 id="31-模型文档--scrolltop--视口重绘"><a class="header" href="#31-模型文档--scrolltop--视口重绘">3.1 模型：文档 + scrollTop + 视口重绘</a></h3>
+<p>进 alt screen（<code>\x1b[?1049h</code>），关自动换行，开鼠标。文档是完整行数组，<code>ScrollView</code> 持有 <code>scrollTop</code>；每帧经 <code>renderLayoutFrame</code> 只排出<strong>可见的 height 行</strong>，然后逐行和上一屏 <code>previousScreen</code> 比较，变化的行用光标寻址覆写（<code>\x1b[row;1H\x1b[2K</code> + 新行）。没有 scrollback 参与，没有任何“发射“。</p>
+<p>先看我那派的核心优势在代码里的直接兑现——<strong>resize</strong>。尺寸变化只是把 <code>fullRedraw</code> 置真，代价是 <code>\x1b[2J</code> + 重画一屏 height 行（<code>tui-alt-screen.ts:1270-1276</code>）。没有 <code>3J</code>，没有历史重印，没有 I/O 爆发。主屏那条路的“核平“在这里是 O（屏高） 的平价操作。第 11 篇说全屏自管派的 resize 成本是 CPU 且量级是一屏——这里是逐字的证据。</p>
+<h3 id="32-赎回清单终端免费给的全部自建"><a class="header" href="#32-赎回清单终端免费给的全部自建">3.2 赎回清单：终端免费给的，全部自建</a></h3>
+<p>第 11 篇说 inline 派“终端免费给的能力“是红利，反过来说，全屏派要把这些能力一件件赎回来。这份赎单在 <code>tui-alt-screen.ts</code> 里是明码标价的：</p>
+<ul>
+<li><strong>滚动</strong>：<code>ScrollView</code> 抽象（<code>scrollTop</code>、<code>follow: "end"</code>、<code>overscroll: "contain"</code>），而且是<strong>嵌套滚动</strong>——滚轮事件按坐标在布局树里命中测试，命中最内层 ScrollView，滚不动的余量溢出给外层（<code>routeWheel</code>）。这是 GUI 的 nested scroll view 语义，在字符网格上重建了一份；</li>
+<li><strong>搜索</strong>（Ctrl+Shift+F）：匹配在<strong>数据层</strong>做（对完整文档行全文查找），高亮在<strong>绘制层</strong>做——<code>applySearchHighlights</code> 把命中文段从渲染好的行里切出来、包上样式、再拼回去，数据一个字不动。跳转有 anchor 保持和 next/previous 环绕；</li>
+<li><strong>选择复制</strong>：alt screen 里终端的原生选择是废的（你在不停重绘），于是实现了应用级选择——SGR 鼠标事件、单击拖选、<strong>双击选词、三击选行</strong>（<code>getClickCount</code> 按 500ms 窗口计次）、拖到视口边缘 50ms 定时器自动滚屏、反色高亮同样是绘制层拼接（还会小心地保留原行的 ANSI 序列）、松手时 OSC 52 写系统剪贴板。这一段占了文件将近一半的行数；</li>
+<li><strong>语义锚点（OSC 133）</strong>：transcript 的消息带着 OSC 133 区域标记下发，绘制时剥掉，但滚动导航用它实现“上一个/下一个 prompt“跳转——<strong>用终端的 shell 集成协议，给应用级滚动加了语义站点</strong>。这个设计我觉得是全文件最优雅的一笔；</li>
+<li><strong>kitty 图片预算缓存</strong>：滚出视口的图片不删会泄漏终端显存，于是屏外缓存带预算上限（16 张 / 32MB 传输字节 / 64MB 解码字节），超预算逐出。</li>
+</ul>
+<p>还有一处环境妥协值得记：鼠标默认开全量移动追踪，但检测到 tmux/zellij/screen 就降级为“仅按键时追踪“——复用器转发鼠标事件会卡。<strong>每个免费能力的赎回价里，都包含一笔兼容性税。</strong></p>
+<h3 id="33-最妙的一笔退出时归还-scrollback"><a class="header" href="#33-最妙的一笔退出时归还-scrollback">3.3 最妙的一笔：退出时归还 scrollback</a></h3>
+<p><code>afterTerminalStop</code>（305-328 行）：全屏模式退出时，把<strong>整个文档重新打印回主屏</strong>——逐行 <code>\r\x1b[2K</code> + 内容，写完 <code>\r\n</code> 收笔。</p>
+<p>效果是：会话期间历史归应用（可滚动、可搜索、可选择、resize 免费），<strong>退出之后历史落进终端原生 scrollback</strong>，用户照常往上翻、Cmd+F、用终端自己的选择复制。</p>
+<p>第 11 篇的两派在这里出现了第三种所有制：</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>实现</th><th>会话期间</th><th>会话结束后</th></tr>
+</thead>
+<tbody>
+<tr><td>Grok Build / Claude Code / Codex</td><td>历史归终端</td><td>归终端</td></tr>
+<tr><td>ForgeLoopTUI（我的）</td><td>历史归引擎</td><td>留在主屏，但无干净归档（全量重印会把陈旧副本顶进 scrollback）；内存模型随进程蒸发</td></tr>
+<tr><td>Kimi Code alt 模式</td><td>历史归引擎</td><td><strong>归还终端</strong></td></tr>
+</tbody>
+</table>
+</div>
+<p><strong>生前归自己，死后归终端。</strong> 运行期享受全屏自管的全部自由，退出时把资产清算回介质本身。两派的优点被串行地各取了一段。</p>
+<hr>
+<h2 id="四这个案例对本系列意味着什么"><a class="header" href="#四这个案例对本系列意味着什么">四、这个案例对本系列意味着什么</a></h2>
+<p><strong>1. 第 11 篇的分界线被复用了，但没有被推翻。</strong> 那条分界是真实的结构——真实到四家的开关都压在同一条线上，而 Kimi Code 是在同一个接口后面把两边都实现得最完整的一个。默认主屏（inline 派）说明：对一个要集成进用户日常终端的 CLI，“历史归终端“仍是默认正确答案；实验性全屏说明：会话内体验（滚动、搜索、选择、resize）的诉求强到值得再养一套引擎。</p>
+<p><strong>2. inline 派内部要分两档。</strong> 第 11 篇把 inline 派写成一种做法（发射即定型），Kimi 主屏的差分变种给出了第二种：全量渲染 + 增量落盘 + 越界检测 + 核平兜底。两档的不变式相同（scrollback 不可触碰），但维持不变式的方式一个是数据层纪律、一个是渲染层检查。这个区分应该补进第 11 篇的框架里。</p>
+<p><strong>3. 我那派的“赎回清单“有了工业参照。</strong> 第 2 篇我写的是引擎的渲染核心；Kimi 的 alt 模式展示了渲染核心之外，把一个全屏 TUI 做到产品级还需要什么：嵌套滚动、应用级选择、数据层搜索、OSC 133 锚点、图片显存预算、复用器降级。每一项都是“终端免费给的“对照项。</p>
+<p><strong>4. “退出归还 scrollback“是一个新的架构选项。</strong> 它回避了两派各自最难堪的时刻：inline 派在会话中无法提供可交互的历史，全屏派在退出后把历史带走。串行混合——运行期自管、终态归还——让“所有权“从一个静态选择变成了一个随生命周期变化的转移过程。如果 ForgeLoopTUI 未来要解决“退出后没有干净归档“的问题（它跑在主屏，退出后最后一帧仍在屏幕上，但全量重印顶进 scrollback 的陈旧副本让那份记录不可用），这是可以直接借鉴的范式。</p>
+<hr>
+<h2 id="五收束"><a class="header" href="#五收束">五、收束</a></h2>
+<p>第 11 篇的结论是：两派没有高下，是同一条公理（终端没有 undo）的两种缴税方式。Kimi Code 这个案例把结论往前推了一步：<strong>既然只是缴税方式，就可以按生命周期分期缴。</strong></p>
+<p>运行期，把历史留在自己手里，缴“自建滚动/搜索/选择“的税，换来可交互的会话；退出时，把历史打印回 scrollback，缴一次“全量重印“的税，换来用户终端里的完整记录。甚至同一个引擎里还可以再备一套 inline 差分实现，缴“核平兜底“的税，作为默认模式的日常形态。</p>
+<p>所有权模型因而从一道单选题变成了一份调度表：什么东西、在什么阶段、归谁记账——每个问题都可以单独回答。介质还是那个只进不退的电传打字机，但和地基的关系，比第 11 篇设想的还要再自由一点。</p>
+<hr>
+<p><em>本文基于 <a href="https://github.com/MoonshotAI/kimi-code">Kimi Code</a> 源码的实际阅读：<code>packages/pi-tui/src/tui-main-screen.ts</code>（主屏差分渲染器）、<code>packages/pi-tui/src/tui-alt-screen.ts</code>（全屏渲染器）、<code>apps/kimi-code/src/tui/tui-state.ts</code>（模式选择）、<code>packages/pi-tui/AGENTS.md</code> 与两处 CHANGELOG（fork 分歧与事故史）。行文时 Kimi Code 版本为 commit <code>1e553fc</code>（2026-08-18）。ForgeLoopTUI 的退出行为核对基于其 v1.2.0 源码：主屏渲染，无 alt screen，无退出时清屏/归还逻辑。</em></p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch11.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="ch13.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch11.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="ch13.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr-ef4e11c1.min.js"></script>
+        <script src="mark-09e88c2c.min.js"></script>
+        <script src="searcher-09f2665d.js"></script>
+
+        <script src="clipboard-1626706a.min.js"></script>
+        <script src="highlight-abc7f01d.js"></script>
+        <script src="book-609e4cb8.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

@@ -85,3 +85,15 @@ defaults:
     values:
       layout: single
       author_profile: true
+
+# 小册子构建源目录不进 _site（产物 books/ 会被原样透传）
+# 自定义 exclude 会覆盖 Jekyll 默认列表，故默认项一并保留
+exclude:
+  - .sass-cache
+  - .jekyll-cache
+  - gemfiles
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor
+  - book-src

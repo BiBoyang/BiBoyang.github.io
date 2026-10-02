@@ -1,0 +1,392 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>11 · 渲染的所有权模型 - Agent 时代的开发者界面</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="favicon-8114d1fc.png">
+        <link rel="stylesheet" href="css/variables-8adf115d.css">
+        <link rel="stylesheet" href="css/general-e96d0476.css">
+        <link rel="stylesheet" href="css/chrome-d279d366.css">
+        <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex-dae990a6.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc-c656fa20.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Agent 时代的开发者界面</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/BiBoyang/BiBoyang.github.io" title="Git repository" aria-label="Git repository">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="agent-时代的开发者界面十一渲染的所有权模型谁为已完成内容记账"><a class="header" href="#agent-时代的开发者界面十一渲染的所有权模型谁为已完成内容记账">Agent 时代的开发者界面（十一）：渲染的所有权模型——谁为已完成内容记账</a></h1>
+<blockquote>
+<p>系列第十一篇——严格说是续篇：第 0–10 篇构成系列正文，第十篇是原定的收官篇；本篇与下一篇是正文写完后的续写。本篇的写作动机是一次自我修正。第 2 篇我以 ForgeLoopTUI 为样本拆解了 TUI 渲染引擎的完整构造，并默认了一个前提：主流的 Agent TUI 都长这样。写完之后我去读了 Codex、Grok Build（xai-org/grok-build，2026 年 7 月开源）的源码和 Claude Code 的发布产物——发现这个前提是错的。但错的方式比“另一条路线“更有意思：这条被我漏掉的分界线真实存在，而 2026 年中的头部实现没有一家把赌注押在单边——<strong>分界线在每家内部都成了一个开关</strong>。这篇讲这条分界线，以及四家各自站在线上的什么位置。</p>
+</blockquote>
+<hr>
+<h2 id="一一个我以为不存在的问题"><a class="header" href="#一一个我以为不存在的问题">一、一个我以为不存在的问题</a></h2>
+<p>第 2 篇的结论是：Agent TUI 的渲染，核心是在“终端没有 undo“这片地基上，做增量 diff、物理行计算、帧状态记忆、commit/live 分区。这些内容全部基于 ForgeLoopTUI 的实际源码，描述本身没有错误。</p>
+<p>问题在于一个隐含假设：我以为 Claude Code 和 Codex 也是这么做的——毕竟用起来是一样的，流式输出原地更新，工具调用状态行被结果替换，底部输入框固定不动。</p>
+<p>直到我在 Codex 仓库里看到这个文件：</p>
+<pre><code>codex-rs/tui/src/insert_history.rs
+</code></pre>
+<p>名字就说明了一切：把完成的内容<strong>插入历史</strong>（<code>insert_history_lines()</code>，用 DECSTBM 滚动区把内容注入 viewport 上方）。配套的测试文件叫 <code>vt100_live_commit.rs</code>——live 区内容“提交“进历史。快照测试里还有 <code>zellij_raw_terminal_wrap_above_viewport.snap</code> 这种为冷门终端复用器准备的用例。</p>
+<p>Claude Code 建在自己的 Ink fork 上（发布产物中可见 <code>src/ink/</code> 目录），它的渲染层保留着同一个分裂：<code>shouldRenderStatically()</code> 判定一条消息是否可以“静态化“，静态内容打印进 scrollback 后不再参与重绘——<code>CompanionSprite.tsx</code> 里一句注释把约束说得很白：“floating into Static scrollback can’t be cleared”（飘进 Static scrollback 的东西就擦不掉了）。</p>
+<p>再翻 Grok Build，找到一个独立 crate <code>xai-ratatui-inline</code>，核心函数就叫 <code>emit_to_scrollback</code>——“发射进 scrollback”。我以为找到了第三个同路人。但继续追调用方，故事拐了弯：<strong>这个函数在生产代码里没有调用者</strong>，只出现在 crate 自带的示例和测试里。Grok Build 的默认形态（<code>[terminal] alt_screen = auto</code>）是一个进 alt screen 的全屏 pager，应用自管 scrollback——那恰恰是第 2 篇那条路的工业化版本。真正的 inline 形态是一个默认关闭的实验模式（<code>xai-grok-pager-minimal</code>），而且它也不用 <code>emit_to_scrollback</code>：它用 ratatui 自带的 <code>insert_before</code>（DECSTBM 滚动区）提交定型内容，还立了一个编译期守护测试，禁止任何人把 purge 重印机制接进 minimal 模式。</p>
+<p>把四家的默认形态摆在一起，得到的不是收敛，是一张 2:2 的记分牌：</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>产品</th><th>默认形态（普通终端）</th><th>内置的另一形态</th></tr>
+</thead>
+<tbody>
+<tr><td>Claude Code</td><td>inline（Ink <code>&lt;Static&gt;</code> 静态化）</td><td>可选全屏 <code>/tui fullscreen</code>（2026 年中起，alt screen）</td></tr>
+<tr><td>Kimi Code</td><td>inline 差分（主屏）</td><td>实验性全屏（<code>KIMI_CODE_TUI_FULL_SCREEN=1</code>，详见第 12 篇；到 9 月底已升格为正式配置项 <code>tuiMode</code>）</td></tr>
+<tr><td>Codex</td><td>alt screen（<code>tui.alternate_screen = auto</code>，无条件生效——官方文档仍称“auto 在 Zellij 里跳过“，与代码脱节数月，见第七节第 7 条的补正）</td><td>inline viewport（<code>insert_history.rs</code> 那套）</td></tr>
+<tr><td>Grok Build</td><td>全屏 pager（auto；tmux 控制模式和 Zellij 里降级为全高 inline）</td><td>实验 minimal inline（<code>xai-grok-pager-minimal</code>）</td></tr>
+</tbody>
+</table>
+</div>
+<p>第 2 篇描述的引擎不是一条“少数派的错路“——它是四家全都内置着的一半。真正的新问题是这条分界线本身：<strong>一个 block 完成之后，谁继续为它记账？</strong> 以及，为什么每家都在同一产品里养着线的两边。</p>
+<hr>
+<h2 id="二分界线已完成的内容谁继续为它记账"><a class="header" href="#二分界线已完成的内容谁继续为它记账">二、分界线：已完成的内容，谁继续为它记账</a></h2>
+<p>先把两个学派定义清楚。</p>
+<p><strong>全屏自管派（ForgeLoopTUI；Grok Build 和 Codex 的默认形态所属）</strong>：屏幕上每一行都归引擎管。每一帧合成完整画面，与上一帧 diff，精确改写变化的行。已完成的历史内容虽然逻辑上“只追加“，但只要它还显示在屏幕上（或活在自己接管的 alt screen 里），就持续参与每帧的 diff 计算和 resize 重算——引擎为它持续记账。</p>
+<p><strong>inline viewport 派（Claude Code 与 Kimi Code 的默认、Codex 与 Grok Build 的内置降级路径所属）</strong>：内容一旦“定型“就立刻打印进终端的原生 scrollback，从此归终端管，引擎销账。引擎自己只维护底部一小块“活区“（viewport），用双缓冲 diff 重绘。</p>
+<pre><code>全屏自管派:                     inline viewport 派:
+┌─ scrollback ────────────┐    ┌─ scrollback ────────────┐
+│ （滚出屏幕才归终端）      │    │ 历史（定型即归终端）      │
+├─ 屏幕 ──────────────────┤    │ 历史（定型即归终端）      │
+│ 历史      ← 引擎管       │    ├─ 屏幕 ──────────────────┤
+│ 历史      ← 引擎管       │    │ 历史（可见但不可触碰）    │
+│ live 区   ← 引擎管       │    │ viewport ← 引擎管（仅此处）│
+│ 输入框    ← 引擎管       │    │ 输入框（在 viewport 内）  │
+└──────────────────────────┘    └──────────────────────────┘
+</code></pre>
+<p>这里要特别强调：<strong>两派的 live 区是同构的。</strong> ForgeLoopTUI 的增量 diff、Codex 的 ratatui 双缓冲、Ink 的行级 erase-rewrite，做的是同一件事——这正是我当初误判阵营的原因。表层行为一模一样。</p>
+<p>真正的分歧只有一个问题：<strong>一个 block 完成之后，谁还继续为它记账？</strong></p>
+<ul>
+<li>ForgeLoopTUI：完成了也继续记。<code>committedLines</code>、<code>lastCommittedPhysicalRows</code> 等帧状态字段持续追踪它，直到它滚出屏幕顶边。</li>
+<li>inline 派：完成即销账。之后它的滚动、搜索、选择、复制都是终端模拟器的事，引擎一行代码都不用写。</li>
+</ul>
+<hr>
+<h2 id="三inline-派的机制发射即定型"><a class="header" href="#三inline-派的机制发射即定型">三、inline 派的机制：发射即定型</a></h2>
+<p>这套机制最干净的教科书版本在 Grok 的 crate 里——<code>emit_to_scrollback</code> 全部逻辑只有 60 行（<code>xai-ratatui-inline/src/scrollback.rs</code>，以下为简化伪代码）：</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn emit_to_scrollback(terminal, content) {
+    // ① 光标移到 viewport 顶部，从这里往下全部擦掉
+    //    —— viewport 里现在画着输入框，发射前先把自己的活区擦干净
+    move_to(0, viewport.y);
+    print("\x1b[J");
+
+    // ② 把内容打印在擦出来的区域。长行不做换行计算——
+    //    wrapping 是终端的工作
+    print(content_segments);
+
+    // ③ 打印 viewport.height 个空行，在内容下方"顶"出一块空白
+    for _ in 0..viewport.height { print("\r\n") }
+
+    // ④ 光标移到新的 viewport 位置，再擦一次
+    move_to(0, new_viewport_y);
+    print("\x1b[J");
+
+    // ⑤ 双缓冲作废，viewport 全量重画；记账只有一个 Rect
+    terminal.reset_back_buffer();
+    terminal.set_viewport_area(new_viewport_y);
+}
+<span class="boring">}</span></code></pre>
+<p>不变式值得逐字读：<strong>viewport 是可擦除的墨水，scrollback 是泼出去的水。</strong> 每发射一批内容，就先擦掉自己画的输入框、把内容印在那个位置、再在下方顶出新的空白区。从终端的视角看，这个程序从头到尾只做两件事：往下打印、在底部反复涂改一小块。</p>
+<p>但要如实说一句：这个参考实现在 Grok 产品里目前没有生产调用方。真正在跑的生产路径用的是同一思想的更保守版本——Codex 的 <code>insert_history_lines()</code> 和 ratatui 自带的 <code>insert_before</code> 都走 DECSTBM 滚动区，把内容“插“到 viewport 上方而不是擦掉重印；Grok 的 minimal 模式直接复用后者。思想是同一条，工程上各家选了介质兼容性更好的变体。</p>
+<p>这套机制的纪律性质，在 Grok 仓库里有一个字面物证。<code>xai-grok-pager-minimal/src/guard.rs</code> 是一个守护测试：它用 <code>include_str!</code> 扫描 minimal 模式的每一个源码文件，断言其中<strong>不出现</strong> <code>emit_to_scrollback</code>、<code>resize_purge_rerender</code>、<code>resize_viewport_height</code> 这三个标识符——注释把理由写得很白：这些函数会重印已经归终端的历史，结果是 “double-printing (or, with ED3, wiping) committed scrollback”。这条路线赖以生存的纪律，在这里不是口头约定，是一个挂了就算构建失败的测试。</p>
+<p>对照第 2 篇的记账成本。全屏自管派维护 8 个帧状态字段，错一个全屏偏位；inline 派的全部渲染状态是一个 <code>Rect</code>（实质只有 <code>y</code> 在变）加一块可以随时作废的双缓冲。<strong>它不追求“记住屏幕“，它追求“随时能重建“。</strong></p>
+<p>发射时机的选择也随之改变。第 2 篇的 Live Budget Planner 是空间驱动——live 区超预算就把旧行沉降到 committed。inline 派是语义驱动——一个 block 在事件流里完成了（工具返回了、回复结束了）才发射。<strong>“什么时候算定型“从几何问题变成了生命周期问题。</strong> Claude Code 的 <code>shouldRenderStatically()</code>（<code>src/components/Messages.tsx</code>）把这个判定写得很直白：一条消息想“静态化”，需要它关联的 tool use 不在 streaming、不在 in-progress、已全部 resolved，连同组的兄弟 tool use 和 PostToolUse hooks 都结束了才行。推论是：未定型的内容必须钉在 viewport 里。一个跑五分钟的工具调用，它的 block 就在 viewport 里被反复重绘五分钟，直到拿到结果、定型、发射。</p>
+<p>这个变化和第 5 篇的 Event Sourcing 框架是自洽的：事件完成 → 投影定稿 → 归档。inline 派相当于把 Event Sourcing 在渲染层做到了底——投影一旦定稿，连撤回投影的能力都主动放弃。</p>
+<hr>
+<h2 id="四第-2-篇的痛点在这条路线下的命运"><a class="header" href="#四第-2-篇的痛点在这条路线下的命运">四、第 2 篇的痛点在这条路线下的命运</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>第 2 篇的问题</th><th>全屏自管派的解法</th><th>inline 派的答案</th></tr>
+</thead>
+<tbody>
+<tr><td>物理行/逻辑行错位</td><td>每行 <code>visibleWidth</code> + <code>physicalRows</code>，每帧依赖</td><td>只在发射瞬间做一次切分；发射后永不再算</td></tr>
+<tr><td>8 个帧状态字段</td><td>持续维护，错一处全盘偏</td><td>一个 Rect + 可作废的双缓冲</td></tr>
+<tr><td>Live Budget Planner</td><td>超预算沉降，不做部分行切割</td><td>机制消失，由 block 生命周期替代</td></tr>
+<tr><td>用户两帧之间滚动</td><td>假设破坏，diff 坐标出错</td><td>历史区滚动是终端的事，不构成假设</td></tr>
+<tr><td>历史的搜索/选择/复制</td><td>需要自己实现（或放弃）</td><td>终端原生免费——Cmd+F 直接可用</td></tr>
+<tr><td>resize</td><td>缓存全失效，重算重绘当前屏</td><td>见下节，这是 inline 派交税的地方</td></tr>
+</tbody>
+</table>
+</div>
+<p>前五行是真实的收益。但税没有消失，只是换了征收点。</p>
+<hr>
+<h2 id="五税单inline-派的代价"><a class="header" href="#五税单inline-派的代价">五、税单：inline 派的代价</a></h2>
+<h3 id="51-发射后的内容不可触碰"><a class="header" href="#51-发射后的内容不可触碰">5.1 发射后的内容不可触碰</a></h3>
+<p>ANSI 光标序列只能寻址可见屏幕。一行内容滚过顶边进入 scrollback 后，不存在任何转义序列能再碰到它。而对还停在屏幕上、位于 viewport 上方的历史，inline 派给自己立了纪律：<strong>光标从不越过 viewport 顶边</strong>——一旦回写，就重新背上了帧状态记账的债，这条路线的全部意义就消失了。</p>
+<p>产品后果：用户想展开一个三分钟前完成的折叠 block，历史不能改。Grok Build 的 minimal 模式的答案是 <code>full_view.rs</code>——把整个 transcript 以强制展开模式重新渲染成一段 ANSI 文本，交给 <code>$PAGER</code>（<code>less -R</code>）。<strong>“重新消费历史“的需求被路由到外部 pager，而不是历史改写。</strong> 不可变历史 + 按需导出，是这条路线对“可改写性“需求的最终回答。（应用内的模态查看器 Grok 也有——<code>block_viewer.rs</code>，Ctrl-F 打开，提供搜索、选择、复制——但它长在默认的全屏 pager 里。那边的历史本来就归应用管，模态查看器是功能，不是妥协。）</p>
+<h3 id="52-resize-的核平重印"><a class="header" href="#52-resize-的核平重印">5.2 resize 的核平重印</a></h3>
+<p>终端 resize 时，终端会先自动 reflow scrollback，应用随后才收到 SIGWINCH——边框被拆花，且各家终端的 reflow 行为不一致（grok 的注释原话：试过按字符数自己算 reflow，被各家终端的边界行为打回来了）。inline crate 里留着的解法是不修，直接重建（<code>xai-ratatui-inline/src/resize.rs</code>）：</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>// 注释是个事故报告：本来可以用 RIS (\x1bc) 硬重置，
+// 但 RIS 在 iTerm/Terminal.app 里不清 scrollback
+write("\x1b[2J\x1b[3J\x1b[H");   // 清屏 + 清 scrollback + 归位
+print(history);                  // 内存里的全部历史按新宽度重新打印
+// 顶出 viewport 空行、重算位置、clear
+<span class="boring">}</span></code></pre>
+<p>（同一个文件的文档注释和 README 还写着“用 RIS 重建“的旧方案——文档滞后于代码，以代码里这段事故报告式的注释为准。）</p>
+<p>走这条路的前提是必须在内存里保留完整的 block 数据模型——不是为了逐帧渲染，是为了 resize 后能重印，以及支撑应用内的搜索/选择/导出。值得记下的是，Grok 的 minimal 模式<strong>拒绝</strong>走这条路：它宁可使用终端内建的 autoresize、忍受各家 reflow 的差异，也绝不调用 purge 重印——因为 <code>\x1b[3J</code>（ED3）会把已经归终端的 scrollback 一起清掉。guard.rs 那个守护测试，禁的正是这条路。</p>
+<p>代价有两笔。一是 <strong>I/O 爆发</strong>：pty 是串行字节流，3 小时会话的历史是几万行、几 MB 文本，每次 resize 都重推一遍（用同步输出模式压住闪烁）。二是 <code>ESC[3J</code> <strong>误伤无辜</strong>：它清空终端的整个 scrollback，包括启动 agent 之前 shell 里留下的内容。</p>
+<p>对照第 2 篇：全屏自管派的 resize 成本是 CPU（物理行重算），量级是一屏；inline 派是 I/O 带宽，量级是整场会话。账单寄到了不同的地址。</p>
+<h3 id="53-终端免费给的能力想用就得自建一份"><a class="header" href="#53-终端免费给的能力想用就得自建一份">5.3 终端免费给的能力，想用就得自建一份</a></h3>
+<p>终端 scrollback 的滚动/搜索/选择对人免费，但对程序是黑箱：不能导出会话、不能程序化跳转、不能带格式复制。想把历史当数据用，只能靠内存里那份模型自建。Grok Build 那份 4242 行的 <code>text_selection.rs</code>（连同独立的 scrollback pane、history search、export 模块）就是这类自建的样子——不过严格按所有权划分，它长在默认的全屏 pager 里，是全屏派赎回原生能力的赎单（第 12 篇会逐条点这张赎单）；inline 派的 minimal 模式反而没有补这张票，它把“再看一眼历史“导出给了 <code>$PAGER</code>。</p>
+<h3 id="54-活区膨胀的退化"><a class="header" href="#54-活区膨胀的退化">5.4 活区膨胀的退化</a></h3>
+<p>长任务场景下（后台任务跑 20 分钟、权限等待用户离开），未定型 block 一直钉在 viewport 里参与每帧 diff。“活区极小“的优势被稀释，渲染负担向全屏自管派回归。</p>
+<hr>
+<h2 id="六为什么分界线变成了开关"><a class="header" href="#六为什么分界线变成了开关">六、为什么分界线变成了开关</a></h2>
+<p>我初稿把四家写成了“收敛到 inline“，那是错的。真实的图景是 2:2 的默认分岔 + 全员双模。逐项分析之后，我认为有几个结构性原因。</p>
+<p><strong>1. 对话的介质本性。</strong> Agent 会话天然 append-only。为“历史原地改写“这个低频需求维护一条常驻的精确 diff 管道，是三条路线里最不划算的一笔投资。模态 viewer 和 <code>$PAGER</code> 导出覆盖了真实需求的大部分。这是 inline 派的拉力。</p>
+<p><strong>2. 失败模式的不对称。</strong> 全屏自管派的失败形态是屏幕上出现无法解释的乱码——IME 劫持光标、tmux 不同步、resize 时机错误——难复现、难定位，且发生在用户最看重的地方（别忘了这是一个需要用户审计 agent 行为的产品）。inline 派的失败形态是 resize 时闪一下——可见、有界、可恢复。对商业产品，这个不对称是决定性的。</p>
+<p><strong>3. 纪律比天才便宜。</strong> 8 个帧状态字段时刻正确，是一个只有引擎作者本人才能长期维护的承诺；“发射后永不触碰“是任何新人都能遵守的纪律。大组织选架构，选的是“不容易被改坏”。Grok 把这个论点推向了字面化：minimal 模式的纪律不是 Code Review 把关，是 guard.rs 里一个扫描全部源码的守护测试——<strong>纪律被写进了构建</strong>。</p>
+<p><strong>4. 成本支付频率的不对称。</strong> 全屏自管派的维护成本每天都在付（任何渲染改动都要过帧状态）；inline 派的爆发成本只在“长会话 + 用户拖窗口“的交集发生时付。pty 本身的吞吐是几十 MB/s，瓶颈其实在终端模拟器的解析渲染，但即便保守估计，几 MB 重印也只是百毫秒级的事。为罕见事件付重税，为日常事件零税。</p>
+<p><strong>5. 可测试性。</strong> <code>emit_to_scrollback</code> 的测试是 MockTerminal 接住字节流、断言 clear 了几次、flush 了几次——简单到近乎无聊，因为逻辑本身就简单。系统越聪明，证明它正确的基础设施越贵。</p>
+<p>以上五条解释了 inline 派的拉力，但解释不了为什么 Grok 和 Codex 把<strong>默认</strong>押在了全屏。把开关另一端的原因补上：</p>
+<p><strong>6. 会话内体验是真需求。</strong> 滚动、搜索、选择复制、平价 resize（全屏派 resize 是 O(屏高) 的 CPU 操作，没有 I/O 爆发）、鼠标交互——长会话用户每天都会用到。终端原生 scrollback 免费提供这些，但只对“人“免费，不对“程序“免费；而全屏派自建一份之后，这些能力对人和程序同时成立。</p>
+<p><strong>7. 用户环境是分裂的——但对分裂的回应正在换代。</strong> 同一家公司必须同时服务 iTerm2 用户和 tmux/Zellij 用户，复用器（尤其 Zellij 和 tmux 控制模式）的 scrollback 语义确实让 alt screen 变成事故现场。Grok 的答案保留至今：auto 在 tmux 控制模式和 Zellij 里降级 inline。Codex 的答案则经历了一次转向，还留下一个文档与代码脱节的活案例：它曾经有同款特判——<code>tui.alternate_screen = auto</code> 在 Zellij 里跳过 alt screen，官方配置文档至今仍写着这句话；但代码在 2026 年 5 月中就把特判整个删掉了（#22214，提交标题就叫 “remove Zellij TUI workarounds”），auto 从此无条件进 alt screen，还配了一个测试（<code>alternate_screen_auto_uses_alt_screen</code>）把新行为钉死。我初稿按文档口径写了“auto 在 Zellij 里跳过“，发布前对源码才核出这个脱节，此处补正。特判也并非被简单扔掉，而是换了一层活法：新的 <code>ScrollbackStrategy</code> 在运行时检出 Standard/Zellij/FullScreen 三档终端，决定历史插入和视口生长各自用什么手法（9 月又为 Windows Terminal 补了一档——部分 DEC 滚动区在那儿会丢行）。按终端切模式的开关退役了，按终端选策略的适配接了班。用户环境的分裂没有变，变的是行业对它的回答：从“检测终端、切换模式“走向“统一模式、下放策略“——顺带证明，连“开关是必然产物“这种判断，保质期也可能只有几个月。</p>
+<p><strong>8. 历史有两种消费场景。</strong> 会话中（要交互、要导航）和退出后（要在终端里向上翻、Cmd+F、复制）对所有权的要求恰好相反。两个场景都真实、都高频——于是四家长出了同一答案：都养一套，或者串行地各管一段。这正是第 12 篇的主题。</p>
+<hr>
+<h2 id="七这对本系列意味着什么"><a class="header" href="#七这对本系列意味着什么">七、这对本系列意味着什么</a></h2>
+<p>先说修正范围，比预想的小：</p>
+<ul>
+<li><strong>第 2 篇</strong>的技术内容不需要改——它描述 ForgeLoopTUI，而 ForgeLoopTUI 确实那样工作。需要补的是一个坐标系：TUI 渲染引擎存在两个学派，第 2 篇解剖的是全屏自管派的手工形态（Grok Build 的默认 pager 是它的工业化形态），而 Claude Code 与 Kimi Code 的默认属于 inline viewport 派。两派的分界不在“live 区怎么画“（那层同构），在“已完成的内容，谁继续为它记账“。</li>
+<li><strong>第 4 篇</strong>只需一句限定：槽位队列和 shiftIndices 作用于 live 区；inline 派把乱序配对提前到了数据层——block 按稳定 id 在内存模型里配对完成后才发射，乱序问题从坐标手术退化为字典查找。</li>
+<li><strong>第 3、5、6–10 篇</strong>不受影响。第 5 篇的 Event Sourcing 框架反而被 Grok Build 的架构（TUI/headless/ACP 三端共用同一事件流）实证加强。</li>
+</ul>
+<p>然后说我的引擎的位置。ForgeLoopTUI 是少数派，但不是错误——Grok Build 和 Codex 的默认形态证明了全屏自管在大组织手里同样能产品化。这条路能做到 inline 派结构性做不到的事：任意可见历史的原地改写、每一帧每一个 ANSI 字节的精确控制、会话内完整的交互能力。如果未来出现“历史必须活“的产品需求——实时协作标注、历史中的 diff 就地更新——inline 派三个实现都得重构，全屏自管派不用。</p>
+<p>但演进方向也因此清晰了：ForgeLoopTUI 的 committed 区在语义上已经是 append-only，和 inline 派的 scrollback 只差最后一步——<strong>物理上还归不归我管</strong>。四家的开关给出了同一个提示：这道题不必一次答完，可以按生命周期分期回答。这笔交换是否值得，取决于约束集合——这正是第 9 篇“端的选择由约束决定“的同一个逻辑，在渲染层又成立了一次。</p>
+<hr>
+<h2 id="八收束"><a class="header" href="#八收束">八、收束</a></h2>
+<p>第 2 篇说：TUI 渲染是在“终端没有 undo“的地基上建引擎。这篇补上下半句：<strong>地基没法换，但你可以选择和地基的关系。</strong></p>
+<p>全屏自管派征服介质：终端没有 undo，就造一个 undo（光标手术 + 帧状态），换来 GUI 级的控制力。inline viewport 派顺应介质：终端的本性就是电传打字机，只进不退——那就不退，把“不可变“从限制变成架构原则。</p>
+<p>两种选择没有高下，是同一条公理的两种缴税方式：一个持续为“可改写性“纳税，一个一次性买断“不可改写“、再为重印机制和应用内补偿补票。2026 年中的头部产品用配置开关承认了这一点：<strong>四家全都内置了两种所有权模型</strong>，区别只在默认押哪边、以及另一边做到什么完成度。</p>
+<p>我漏掉这条分界线的原因值得记下来：两条路线在视觉上无法区分。我是读了源码才发现的。这也是本系列反复出现的主题的另一个实例——<strong>看起来一样的界面，底下的成本结构可以完全不同。</strong> 区别不在像素里，在所有权里。</p>
+<p>下一篇（第 12 篇）把这个问题推进到工程细节：既然双模已成事实，那“同一引擎里两种所有权共存“到底怎么实现？Kimi Code 在四家里给出了接口最干净的一个样本——包括一个前无古人的设计：退出时把历史归还给终端。</p>
+<hr>
+<p><em>本文基于 <a href="https://github.com/xai-org/grok-build">Grok Build</a>（commit <code>9fabade</code>，2026-08-16；<code>xai-ratatui-inline</code>、<code>xai-grok-pager</code>、<code>xai-grok-pager-minimal</code>）、<a href="https://github.com/openai/codex">Codex</a>（<code>codex-rs/tui/src/insert_history.rs</code>、<code>tests/suite/vt100_live_commit.rs</code>；<code>tui.alternate_screen</code> 的 Zellij 特判已于 2026-05-13 在 #22214 中移除，官方配置文档至今仍写旧行为——本文初稿按文档口径转述，2026-09-29 依本地源码（main <code>6b9826e3</code>，2026-09-09）补正，见第七节第 7 条）与 Claude Code 发布产物中的源码（<code>src/components/Messages.tsx</code> 的 <code>shouldRenderStatically</code>、<code>src/utils/staticRender.tsx</code>、<code>src/ink/</code> 内置 fork）的实际阅读。对照部分基于 <a href="https://github.com/BiBoyang/ForgeLoopTUI">ForgeLoopTUI</a> v1.2.0。</em></p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="ch10.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="ch12.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="ch10.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="ch12.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr-ef4e11c1.min.js"></script>
+        <script src="mark-09e88c2c.min.js"></script>
+        <script src="searcher-09f2665d.js"></script>
+
+        <script src="clipboard-1626706a.min.js"></script>
+        <script src="highlight-abc7f01d.js"></script>
+        <script src="book-609e4cb8.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

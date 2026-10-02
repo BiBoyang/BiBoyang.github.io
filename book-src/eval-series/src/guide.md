@@ -1,12 +1,4 @@
----
-layout: single
-title: "「我的评测工具链」系列导读"
-permalink: /eval-series/
-toc: true
-author_profile: true
----
-
-> 本系列已集结成网页版小册 → [《我的评测工具链》](/books/eval-series/)，侧边目录逐章阅读更方便。
+# 「我的评测工具链」系列导读
 
 写给同样在给 agent 建质量基建的人。这个系列记录我给 agent 生态里的东西建门禁的实战：自己的插件、自己的 skill、手里的 CLI、流式协议、SKILL.md 文件。每篇都是真实事故报告，结构固定：踩过的坑 → 规则 → 规则背后的权衡 → 你能单独拿走的东西。
 
