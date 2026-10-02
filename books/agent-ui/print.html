@@ -36,7 +36,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-0701b1e0.js";
+            window.path_to_searchindex_js = "searchindex-8e84c794.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-5870c396.js"></script>
@@ -540,7 +540,7 @@ private func consumePlacementUndo() -&gt; String {
 </ul>
 <h3 id="72-记忆的脆弱性"><a class="header" href="#72-记忆的脆弱性">7.2 记忆的脆弱性</a></h3>
 <p>所有帧状态基于一个未明文的假设：终端模拟器行为与预期一致。但实际中不同终端对 wrap 行上的 <code>ESC[nA]</code> 行为并不一致，IME 候选窗会临时劫持光标，tmux buffer 可能与外部终端不同步，用户可能在两帧之间滚动。</p>
-<p>任何一个假设被打破，diff 坐标就出错。没有全局恢复——等下一帧全量重绘来“洗屏“。</p>
+<p>任何一个假设被打破，diff 坐标就出错，没有全局恢复。</p>
 <hr>
 <h2 id="八renderloop帧合并调度器"><a class="header" href="#八renderloop帧合并调度器">八、RenderLoop：帧合并调度器</a></h2>
 <p>TUI 渲染的频率上限没必要对齐显示器的 60Hz，因为终端 ANSI 输出是串行字节流，没有垂直同步的概念。ForgeLoopTUI 的 16ms tick 是合帧窗口的上限，不是目标帧率，也不是承诺值。</p>
@@ -631,7 +631,7 @@ while settleCount &lt; maxSettle, remaining &gt; budget {
 <h2 id="总结"><a class="header" href="#总结">总结</a></h2>
 <p>TUI 的技术全景：在终端这片上世纪 70 年代末的地基上，用几十个 ANSI 转义序列构建增量 diff 渲染引擎。</p>
 <p>困境：协议层没有声明式 API、没有 undo——声明式要靠 Ink 这类库在应用侧补，undo 要靠引擎自己存上一帧；物理行与逻辑行的认知错位让 diff 每一步都依赖 O(n) 的显式宽度计算、帧状态记忆脆弱到一次 resize 就能全盘失效。</p>
-<p>优势：语言无关、资源占用极低、跨平台零成本、管道可测试、tmux 断线恢复。GUI 并非做不到这些，只是要做到同等体验，工程成本和基础设施门槛高一个数量级。第一篇讲过信任模型，这一篇补充了另一面：CLI/TUI 给开发者 agent 提供了一个可以精确控制每一帧的渲染基座。这个基座不漂亮，但可靠。</p>
+<p>优势：资源占用极低、跨平台零成本、管道可测试、tmux 断线恢复。GUI 并非做不到这些，只是要做到同等体验，工程成本和基础设施门槛高一个数量级。第一篇讲过信任模型，这一篇补充了另一面：CLI/TUI 给开发者 agent 提供了一个可以精确控制每一帧的渲染基座。</p>
 <p>下一篇讲 Markdown 在 TUI 上的流式渲染——降级映射、Stable Prefix Cache、表格 retreat 机制，以及为什么“流式期间要不要渲染 Markdown“是一个真正的工程难题。</p>
 <hr>
 <h2 id="参考与延伸"><a class="header" href="#参考与延伸">参考与延伸</a></h2>
