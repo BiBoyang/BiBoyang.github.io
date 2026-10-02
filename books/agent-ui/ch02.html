@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-00815607.js";
+            window.path_to_searchindex_js = "searchindex-b96e77b5.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-5870c396.js"></script>
@@ -188,7 +188,7 @@
 <p>这条路能做出来。很多项目也确实走通了。但这条路和“手写一个 TUI 渲染引擎“之间，隔着一段很少有人细看过的距离。框架帮你做了什么？框架没帮你做什么？不搞清楚这些，TUI 就永远只是“GUI 的低配模仿“。</p>
 <p>这篇文章做的事：以 ForgeLoopTUI（我写的一个用 Swift 写的 TUI 渲染引擎）的实际源码为参照，逐层拆开一个 TUI 渲染引擎到底在处理什么问题。从 ANSI 字节到屏幕上的字符这一完整的链路。</p>
 <ul>
-<li>注:之所以拿这个项目做参照,是因为这是我使用 swift 做的一个实验性质的产品,虽然一开始的目的并非实验品,但是实际上后期因为缺乏各种 TUI 相关的基础组件,导致我想要实现各种功能都需要手搓,在这个过程中我学到了很多更加底层的知识.</li>
+<li>注:之所以拿这个项目做参照,是因为这是我使用 Swift 做的一个实验性质的产品,虽然一开始的目的并非实验品,但是实际上后期因为缺乏各种 TUI 相关的基础组件,导致我想要实现各种功能都需要手搓,在这个过程中我学到了很多更加底层的知识.</li>
 </ul>
 <hr>
 <h2 id="二字符网格一切困境的根源也是一切优势的根源"><a class="header" href="#二字符网格一切困境的根源也是一切优势的根源">二、字符网格：一切困境的根源，也是一切优势的根源</a></h2>
@@ -202,9 +202,9 @@
 <h2 id="三终端没有-undo你只能向前写"><a class="header" href="#三终端没有-undo你只能向前写">三、终端没有 undo，你只能向前写</a></h2>
 <p>先把楼层分清楚。<strong>声明式不是 GUI 的专利，命令式也不是 TUI 的本质</strong>——Ink 让你在终端里写 JSX，框架 diff 完再发 ANSI；GUI 自己也命令式了几十年（QuickDraw、UIKit 手写 frame），声明式要到 React（2013）才在 Web 端成为主流。这是框架层的事，两种介质上都能长。</p>
 <p>真正的差异在更底下一层——<strong>程序和显示端之间的契约</strong>。</p>
-<p>GUI 的显示端是有状态的：window server 和合成器持有每个窗口的像素，窗口被挡住再露出来，不用你的代码重画；点击落在哪个 view，系统替你做命中测试。你手写 frame 也站在这套基础设施上。</p>
+<p>GUI 的显示端是有状态的：window server 和合成器持有每个窗口的像素，窗口被挡住再露出来，不用你的代码重画；点击落在哪个 view，系统替你做命中测试。手写 frame 也站在这套基础设施上。</p>
 <p>终端给程序的契约是一条<strong>只写的字节流</strong>：字符发出去就进了模拟器的网格，你既不能回读“第三行第五列现在是什么“，也没有“撤销上一次写入“的 API。想改？只能用 ANSI 转义序列回到目标位置 → 擦除 → 重写。模拟器自己当然持有网格（否则它没法显示），但那份状态不在你的契约里。</p>
-<p>整个增量 diff 渲染机制的复杂性都源于这一点。如果你不需要 undo，你只需要 <code>print()</code>。但是你没法不需要 undo,因为 Agent 的流式输出会高频触发渲染，不断改写已显示的内容，所以你需要精确知道光标在哪、上一帧是什么、差异从第几行开始，然后生成一串 ANSI 序列，像手术一样修改终端屏幕上的内容。</p>
+<p>整个增量 diff 渲染机制的复杂性都源于这一点。理想情况下不需要 undo，只需要 <code>print()</code>。但是真做起来你没法不需要 undo,因为 Agent 的流式输出会高频触发渲染，不断改写已显示的内容（比如说表格），所以你需要精确知道光标在哪、上一帧是什么、差异从第几行开始，然后生成一串 ANSI 序列，像手术一样修改终端屏幕上的内容。</p>
 <hr>
 <h2 id="四ansi-转义序列半个世纪的遗产"><a class="header" href="#四ansi-转义序列半个世纪的遗产">四、ANSI 转义序列：半个世纪的遗产</a></h2>
 <h3 id="41-工作原理"><a class="header" href="#41-工作原理">4.1 工作原理</a></h3>
@@ -244,13 +244,13 @@
 </code></pre>
 <p>它处理了分片到达（一次 <code>write()</code> 只收到半个序列）、连续 ESC、非法中间字节等所有边界。解析器本身不赋予样式语义——只区分“文本字符“和“CSI 序列“，语义由上层的 <code>SGRState</code> 和 <code>VirtualTerminal</code> 赋予。</p>
 <h3 id="43-终端能力的降级链"><a class="header" href="#43-终端能力的降级链">4.3 终端能力的降级链</a></h3>
-<p>不同终端的能力差异巨大。ForgeLoopTUI 用 <code>TerminalCapability</code> 枚举建模了降级链：</p>
+<p>不同终端的能力差异巨大。我写的 ForgeLoopTUI 用 <code>TerminalCapability</code> 枚举建模了降级链：</p>
 <pre><code>truecolor (16M 色)   ← iTerm2, kitty, Windows Terminal, WezTerm
 ansi256 (256 色)     ← tmux（screen-256color 常见配置）, 老 xterm
 ansi16 (16 色)       ← 最老的 xterm, 嵌入式终端
 plain (无颜色)       ← 管道输出 (&gt; file.txt), dumb terminal
 </code></pre>
-<p><code>NO_COLOR</code>、<code>TERM=dumb</code>、<code>isatty()</code> 等环境检测，自动完成降级。GUI 里的 Dark Mode 自适应是手写的工作量——TUI 里靠终端颜色方案自动继承，但代价是你不知道用户终端到底是什么配色。</p>
+<p><code>NO_COLOR</code>、<code>TERM=dumb</code>、<code>isatty()</code> 等环境检测，自动完成降级。GUI 里的 Dark Mode 自适应是手写的工作量，TUI 里靠终端颜色方案自动继承，但代价是你不知道用户终端到底是什么配色。</p>
 <hr>
 <h2 id="五物理行-vs-逻辑行所有计算的放大器"><a class="header" href="#五物理行-vs-逻辑行所有计算的放大器">五、物理行 vs 逻辑行：所有计算的放大器</a></h2>
 <p>TUI 渲染中一个绕不开的错位：</p>
@@ -278,7 +278,7 @@ plain (无颜色)       ← 管道输出 (&gt; file.txt), dumb terminal
     return (vw + width - 1) / width       // 向上取整
 }
 </code></pre>
-<p>公式简单。麻烦在 <code>visibleWidth</code>——要先剥离 ANSI 序列（不占宽度但占字节），然后对每个 Unicode scalar 判定宽度。<code>scalarIsWide</code> 硬编码了 98 个 Unicode 区间，覆盖 CJK、假名、韩文、全角标点、emoji。这不是规范性的，是经验性的——Unicode 每年更新，新 emoji 不断加入，各终端对“模糊宽度“字符的处理各异。所有按 scalar 判定宽度的实现，在 ZWJ 序列（如 👨‍💻）和 VS16 变体选择符上都会算错——这是行业级的共同盲区。</p>
+<p>公式简单，麻烦在 <code>visibleWidth</code> 要先剥离 ANSI 序列（不占宽度但占字节），然后对每个 Unicode scalar 判定宽度。<code>scalarIsWide</code> 硬编码了 98 个 Unicode 区间，覆盖 CJK、假名、韩文、全角标点、emoji。这不是规范性的，是经验性的——Unicode 每年更新，新 emoji 不断加入，各终端对“模糊宽度“字符的处理各异。所有按 scalar 判定宽度的实现，在 ZWJ 序列（如 👨‍💻）和 VS16 变体选择符上都会算错，这是行业级的共同盲区。</p>
 <hr>
 <h2 id="六全量重绘-vs-增量-diff"><a class="header" href="#六全量重绘-vs-增量-diff">六、全量重绘 vs 增量 diff</a></h2>
 <h3 id="61-两种策略"><a class="header" href="#61-两种策略">6.1 两种策略</a></h3>
@@ -322,9 +322,9 @@ lastCommittedPhysicalRows
 previousLiveLines        // live 区上一帧
 lastLivePhysicalRows
 </code></pre>
-<p>任何一个值算错——比如 physicalRows 差了 1——光标回退就差 1 行，整帧偏位。</p>
+<p>任何一个值算错——比如 physicalRows 差了 1，光标回退就差 1 行，整帧偏位。</p>
 <h3 id="71-光标放置的-undo-机制"><a class="header" href="#71-光标放置的-undo-机制">7.1 光标放置的 undo 机制</a></h3>
-<p>Agent TUI 的典型布局：内容在上、输入框在下。渲染只能从上往下写——写完内容，光标在底部。然后需要把光标移到输入行。</p>
+<p>Agent TUI 的典型布局：内容在上、输入框在下。渲染只能从上往下写，写完内容，光标在底部。然后需要把光标移到输入行。</p>
 <p>ForgeLoopTUI 的做法：渲染内容后发出位移序列把光标移到目标位置，同时记录这次位移。下一帧渲染前，先发反向序列把光标移回“规范锚点“（最后一行末尾），再做 diff：</p>
 <pre><code class="language-swift">// 渲染后：记录位移
 pendingPlacementUndoUp = upClamped
@@ -342,11 +342,11 @@ private func consumePlacementUndo() -&gt; String {
 <li><strong><code>.marker</code></strong>：物理行计算 + <code>ESC[colG]</code>（CHA 绝对列），对中文输入法更可靠</li>
 </ul>
 <h3 id="72-记忆的脆弱性"><a class="header" href="#72-记忆的脆弱性">7.2 记忆的脆弱性</a></h3>
-<p>所有帧状态基于一个未明文的假设：终端模拟器行为与预期一致。实际中不同终端对 wrap 行上的 <code>ESC[nA]</code> 行为并不一致，IME 候选窗会临时劫持光标，tmux buffer 可能与外部终端不同步，用户可能在两帧之间滚动。</p>
+<p>所有帧状态基于一个未明文的假设：终端模拟器行为与预期一致。但实际中不同终端对 wrap 行上的 <code>ESC[nA]</code> 行为并不一致，IME 候选窗会临时劫持光标，tmux buffer 可能与外部终端不同步，用户可能在两帧之间滚动。</p>
 <p>任何一个假设被打破，diff 坐标就出错。没有全局恢复——等下一帧全量重绘来“洗屏“。</p>
 <hr>
 <h2 id="八renderloop帧合并调度器"><a class="header" href="#八renderloop帧合并调度器">八、RenderLoop：帧合并调度器</a></h2>
-<p>TUI 渲染的频率上限没必要对齐显示器的 60Hz——终端 ANSI 输出是串行字节流，没有垂直同步的概念。ForgeLoopTUI 的 16ms tick 是合帧窗口的上限，不是目标帧率，也不是承诺值。</p>
+<p>TUI 渲染的频率上限没必要对齐显示器的 60Hz，因为终端 ANSI 输出是串行字节流，没有垂直同步的概念。ForgeLoopTUI 的 16ms tick 是合帧窗口的上限，不是目标帧率，也不是承诺值。</p>
 <pre><code>normal submit  → 更新 pendingFrame → 启动 16ms 定时器
 normal submit  → 覆盖 pendingFrame（只保留最新，不渲染中间帧）
 normal submit  → 覆盖 pendingFrame
@@ -403,7 +403,7 @@ normal submit  → 覆盖 pendingFrame
   committed: [历史消息1, 历史消息2, 流式行1, ..., 流式行10]
   live:      [流式行11, ..., 流式行50]
 </code></pre>
-<p>核心约束：<strong>不做部分行切割</strong>。一行要么在 live，要么全部沉降——因为部分切割意味着处理被切开的 Markdown 语法（表格边界、代码块边界），复杂度不可承受。</p>
+<p>核心约束：<strong>不做部分行切割</strong>。一行要么在 live，要么全部沉降，因为部分切割意味着处理被切开的 Markdown 语法（表格边界、代码块边界），复杂度不可承受。</p>
 <p>两种预算模式：<code>.logicalLines</code>（按逻辑行数限制）和 <code>.physicalRows</code>（按 wrap 后物理行限制，适合 Markdown）。算法是 O(n) 单次前缀累加：</p>
 <pre><code class="language-swift">let rowsPerLine = live.map { rows(for: $0) }
 var remaining = rowsPerLine.reduce(0, +)
@@ -416,23 +416,28 @@ while settleCount &lt; maxSettle, remaining &gt; budget {
 <hr>
 <h2 id="十所有权模型谁为已完成内容记账"><a class="header" href="#十所有权模型谁为已完成内容记账">十、所有权模型：谁为已完成内容记账</a></h2>
 <blockquote>
-<p>本节为 2026.08 补记（同月二次修订）。本篇写完后我读了 Codex、Grok Build 的源码和 Claude Code 的发布产物，发现这里漏掉了一条重要的分界线，完整论述见第 11 篇，这里只补坐标系。</p>
+<p>本节为 2026.09 补记。本篇写完后我读了 Codex、Grok Build 的源码和 Claude Code 的发布产物，发现这里漏掉了一条重要的分界线，完整论述见第 11 篇，这里只补坐标系。</p>
 </blockquote>
-<p>本篇从头到尾解剖的是一种特定范式：<strong>全屏自管</strong>——屏幕上每一行都归引擎管，committed 区虽然“只追加、不改写“，但只要还显示在屏幕上，就持续参与每帧的 diff 和 resize 重算，引擎为它持续记账。</p>
+<p>本篇从头到尾解剖的是一种特定范式：<strong>全屏自管</strong>，即屏幕上每一行都归引擎管，committed 区虽然“只追加、不改写“，但只要还显示在屏幕上，就持续参与每帧的 diff 和 resize 重算，引擎为它持续记账。</p>
 <p>另一种范式是 <strong>inline viewport</strong>：内容一旦在语义上定型（工具调用完成、回复结束），就立刻打印进终端的原生 scrollback，从此归终端管，引擎销账；引擎只维护底部一小块活区。但要特别说明：<strong>2026 年中的头部实现没有一家单边押注</strong>——Claude Code 和 Kimi Code 默认 inline（前者是内置 Ink fork，<code>Messages.tsx</code> 的 <code>shouldRenderStatically()</code> 决定一条消息何时“静态化“），Codex 和 Grok Build 默认反而是全屏（都内置 inline 降级路径，前者是 <code>insert_history.rs</code>，测试直接叫 <code>vt100_live_commit</code>）——四家全都把这条分界线做成了产品内部的开关。细节见第 11 篇。</p>
-<p>两派的 live 区渲染是同构的——增量 diff、双缓冲、erase-rewrite 大家都做。分歧只在所有权：一个 block 完成之后，谁继续为它记账。全屏自管派换来任意可见历史的可改写性，代价是帧状态的持续脆弱；inline 派换来状态表面积的急剧缩小，代价是历史不可触碰（改写需求路由到模态查看器或导出）、resize 需要核平重印。完整的机制解剖和税单对照见第 11 篇。</p>
+<p>两派的 live 区渲染是同构的：增量 diff、双缓冲、erase-rewrite 大家都做。</p>
+<p>分歧只在所有权：一个 block 完成之后，谁继续为它记账。全屏自管派换来任意可见历史的可改写性，代价是帧状态的持续脆弱；inline 派换来状态表面积的急剧缩小，代价是历史不可触碰（改写需求路由到模态查看器或导出）、resize 需要核平重印。完整的机制解剖和税单对照见第 11 篇。</p>
 <hr>
 <h2 id="十一为什么框架教不会你这些"><a class="header" href="#十一为什么框架教不会你这些">十一、为什么框架教不会你这些</a></h2>
-<p>回到开头的问题。用 Bubble Tea 或 Ink 写一个 TUI，你不需要知道 ANSI 状态机怎么处理分片到达、不需要手动计算物理行、不需要自己维护 8 个帧状态字段。框架帮你做了这些——但框架的选择也定义了你的上限。</p>
+<p>回到开头的问题。用 Bubble Tea 或 Ink 写一个 TUI，你不需要知道 ANSI 状态机怎么处理分片到达、不需要手动计算物理行、不需要自己维护 8 个帧状态字段。框架帮你做了这些，但框架的选择也定义了你的上限。</p>
 <p>ForgeLoopTUI 走的路是<strong>渲染引擎级别</strong>的控制。它没有引入第三方 Markdown 库（手写逐字符 inline formatting 扫描），没有引入 Myers diff（终端窗口 &lt;100 行不值得），没有依赖任何 UI 框架的组合模型。代价是代码量上去了，回报是：你可以精确控制每一帧的每一个 ANSI 字节。</p>
+<ul>
+<li>代价就是项目的复杂度直线上升，我遇到的每个在其他第三方框架能处理的问题，我都需要和 AI 一起研究解决，极度耗费精力，当然好处就是我也从中学到了不少知识</li>
+</ul>
 <p>哪种路更好？取决于你在什么约束下交付。但如果你要做的是 Agent TUI——流式输出、工具调用乱序返回、中途取消、thinking 展开/折叠——框架的通用抽象迟早会撞墙。第 4 篇会展示这些墙具体长什么样。</p>
 <hr>
-<h2 id="十二从这里出发"><a class="header" href="#十二从这里出发">十二、从这里出发</a></h2>
+<h2 id="总结"><a class="header" href="#总结">总结</a></h2>
 <p>TUI 的技术全景：在终端这片上世纪 70 年代末的地基上，用几十个 ANSI 转义序列构建增量 diff 渲染引擎。</p>
-<p>困境面：协议层没有声明式 API、没有 undo——声明式要靠 Ink 这类库在应用侧补，undo 要靠引擎自己存上一帧；物理行与逻辑行的认知错位让 diff 每一步都依赖 O(n) 的显式宽度计算、帧状态记忆脆弱到一次 resize 就能全盘失效。</p>
-<p>优势面：语言无关、资源占用极低、跨平台零成本、管道可测试、tmux 断线恢复。GUI 并非做不到这些——只是要做到同等体验，工程成本和基础设施门槛高一个数量级。第一篇讲过信任模型，这一篇补充了另一面：CLI/TUI 给开发者 agent 提供了一个可以精确控制每一帧的渲染基座。这个基座不漂亮，但可靠。</p>
+<p>困境：协议层没有声明式 API、没有 undo——声明式要靠 Ink 这类库在应用侧补，undo 要靠引擎自己存上一帧；物理行与逻辑行的认知错位让 diff 每一步都依赖 O(n) 的显式宽度计算、帧状态记忆脆弱到一次 resize 就能全盘失效。</p>
+<p>优势：语言无关、资源占用极低、跨平台零成本、管道可测试、tmux 断线恢复。GUI 并非做不到这些，只是要做到同等体验，工程成本和基础设施门槛高一个数量级。第一篇讲过信任模型，这一篇补充了另一面：CLI/TUI 给开发者 agent 提供了一个可以精确控制每一帧的渲染基座。这个基座不漂亮，但可靠。</p>
 <p>下一篇讲 Markdown 在 TUI 上的流式渲染——降级映射、Stable Prefix Cache、表格 retreat 机制，以及为什么“流式期间要不要渲染 Markdown“是一个真正的工程难题。</p>
 <hr>
+<h2 id="参考与延伸"><a class="header" href="#参考与延伸">参考与延伸</a></h2>
 <p><em>本文所有技术细节基于 <a href="https://github.com/BiBoyang/ForgeLoopTUI">ForgeLoopTUI</a> v1.2.0 的实际源码。Agent TUI 的另一条实现路径可参考 <a href="https://github.tiankonguse.com/blog/2026/05/19/agent-tui.html">tiankonguse 的 Bubble Tea + Lipgloss 方案</a>。两条路线的差别值得说透：组合框架（Bubble Tea + Lipgloss）给你 widget 树和声明式布局，渲染细节由框架代劳；手写 ANSI 状态机则要自己做物理行计算、增量 diff、合帧调度——也就是本篇从头到尾展示的这套东西。前者上手快，但上限由框架定义；后者代码量上去了，换来对每一帧每一个 ANSI 字节的精确控制。两条路线的深度差一个数量级。</em></p>
 
                     </main>
