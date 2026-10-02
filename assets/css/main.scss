@@ -338,6 +338,13 @@ body .greedy-nav .visible-links a {
     padding-inline: 16px !important;
   }
 }
+/* 宽屏下主题会把面包屑列表向右浮动并收窄 200~300px，导致文字缩到右侧；取消浮动、恢复全宽 */
+@media (min-width: 64em) {
+  .breadcrumbs ol {
+    float: none !important;
+    width: 100% !important;
+  }
+}
 .breadcrumbs .current {
   color: var(--text);
   font-weight: 500;
