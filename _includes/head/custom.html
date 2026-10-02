@@ -1,4 +1,17 @@
 <script>
+  // 缓存破坏：每次构建给 main.css 追加版本号，发布后浏览器/CDN 必定拉取最新样式
+  (function () {
+    var v = '{{ site.time | date: "%s" }}';
+    var links = document.querySelectorAll('link[rel="stylesheet"][href*="main.css"]');
+    for (var i = 0; i < links.length; i++) {
+      var raw = links[i].getAttribute('href') || '';
+      if (raw.indexOf('?v=') === -1) {
+        links[i].setAttribute('href', raw.split('?')[0] + '?v=' + v);
+      }
+    }
+  })();
+</script>
+<script>
   window.MathJax = {
     tex: {
       inlineMath: [['\\(', '\\)']],
