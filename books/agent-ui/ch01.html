@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-d2701c98.js";
+            window.path_to_searchindex_js = "searchindex-f6940d03.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-5870c396.js"></script>
@@ -216,12 +216,12 @@ cargo test 2&gt;&amp;1 | head -40                # 跑测试，看失败输出
 <li>diff：需要并排对比视图 + 行级高亮 + 部分采纳/拒绝交互</li>
 <li>日志：需要虚拟滚动 + 搜索过滤 + 级别着色</li>
 </ul>
-<p>每一项在 TUI 里是 <code>print()</code>，在 GUI 里是一个子系统。当然，<code>print()</code> 只是输出的起点,如果想让输出在流式场景下保持可读、可排版，是另一套引擎的成本，下一节就会看到。GUI 并非做不了，只是在 agent 还在快速迭代、工具调用协议还在变化、权限模型还在试探的阶段，每加一个 GUI 子系统就是一笔债务。</p>
+<p>每一项在 TUI 里是 <code>print()</code>，在 GUI 里是一个子系统。当然，<code>print()</code> 只是输出的起点，如果想让输出在流式场景下保持可读、可排版，是另一套引擎的成本，下一节就会看到。GUI 并非做不了，只是在 agent 还在快速迭代、工具调用协议还在变化、权限模型还在试探的阶段，每加一个 GUI 子系统就是一笔债务。</p>
 <p>我之前看一个说法：做 GUI 要么 VSCode 换皮（功能上限被封死），要么自研（至少半年以上）。而 CLI 是每个 agent 无论如何都要提供的核心功能——SSH 进去、WSL 里跑、CI 里执行，CLI 是唯一通用解。这笔账算下来很朴素：GUI 太贵，CLI 绕不开。</p>
 <hr>
 <h2 id="三1d--1d这个说法对吗"><a class="header" href="#三1d--1d这个说法对吗">三、“1D → 1D“这个说法对吗？</a></h2>
 <p>我看有人提过一个简洁的直觉判断：<strong>LLM 的输出是 1D 的（线性 token 流），CLI 也是 1D 的（线性文本输出），所以天然匹配。</strong></p>
-<p>这个判断对了一部分:对于最简单的“用户问 → AI 答“场景，确实如此。</p>
+<p>这个判断对了一部分：对于最简单的“用户问 → AI 答“场景，确实如此。</p>
 <p>token 到达 → 显示字符 → 下一个 token → 追加字符。算得上一条直线。</p>
 <p>但 Agent 的真实输出不是一条直线。它是这样的：</p>
 <pre><code>用户消息
@@ -234,8 +234,8 @@ cargo test 2&gt;&amp;1 | head -40                # 跑测试，看失败输出
 </code></pre>
 <p>这是一棵树。而且节点到达的顺序不满足这棵树的拓扑序（父节点、靠前的子树并不保证先到）。工具调用 2 可能比工具调用 1 先返回，thinking 块可能在流式输出的中途插入，用户随时可能按取消键。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch01-1d-vs-tree.svg" alt="“1D → 1D”的直觉，与 Agent 真实的乱序事件树"><span class="img-wrapper"><img src="assets/ch01-1d-vs-tree.svg" alt="“1D → 1D”的直觉，与 Agent 真实的乱序事件树"></span></label></p>
-<p>CLI 之所以“看起来适配“，不是因为 Agent 的输出真的是 1D 的,而是 TUI 渲染引擎在背后做了大量工作，把一棵乱序到达的树强行展平成了线性输出。</p>
-<p>这套展平机制（稳定槽位队列、shiftIndices 偏移追踪、thinking 原地替换、有上限的 FIFO 通知队列）的核心只有几百行 Swift 代码。本系列第 4 篇会详细拆解。这里我们先接受一个结论：“1D → 1D“是用户看到的最终效果，不是 Agent 的真实结构,而且这个效果的实现成本不低。</p>
+<p>CLI 之所以“看起来适配“，不是因为 Agent 的输出真的是 1D 的，而是 TUI 渲染引擎在背后做了大量工作，把一棵乱序到达的树强行展平成了线性输出。</p>
+<p>这套展平机制（稳定槽位队列、shiftIndices 偏移追踪、thinking 原地替换、有上限的 FIFO 通知队列）的核心只有几百行 Swift 代码。本系列第 4 篇会详细拆解。这里我们先接受一个结论：“1D → 1D“是用户看到的最终效果，不是 Agent 的真实结构，而且这个效果的实现成本不低。</p>
 <hr>
 <h2 id="四更深层的原因agent-的状态模型还没稳定"><a class="header" href="#四更深层的原因agent-的状态模型还没稳定">四、更深层的原因：Agent 的状态模型还没稳定</a></h2>
 <p>一个普通 GUI 应用的信息架构通常很清晰：列表、详情、表单、编辑器、设置、通知。这些状态是预设的、有限的、可以画成状态机的。</p>
@@ -303,7 +303,7 @@ SSH config      → 私有仓库、远程服务器
 <li>是否访问了网络？是否改了 lockfile？</li>
 <li>是否提交或推送了？</li>
 </ul>
-<p>CLI/TUI 在这个维度上有天然优势——命令、输出、diff、错误堆栈，全部以原生形态展示在终端里。GUI 要做到同等可见性，需要设计专门的信息面板——命令历史面板、输出日志面板、diff 审查面板。这部分的复杂性远比 TUI 要大的多.</p>
+<p>CLI/TUI 在这个维度上有天然优势——命令、输出、diff、错误堆栈，全部以原生形态展示在终端里。GUI 要做到同等可见性，需要设计专门的信息面板——命令历史面板、输出日志面板、diff 审查面板。这部分的复杂性远比 TUI 大得多。</p>
 <h3 id="72-可复现"><a class="header" href="#72-可复现">7.2 可复现</a></h3>
 <p>agent 做的事，用户自己能复现吗？</p>
 <p>CLI Agent 的每一个操作——读文件、跑测试、git diff——用的都是项目里的真实命令。输出是这些命令的真实输出。如果 agent 说“测试通过了“，用户可以在自己的终端里跑同一行命令验证。</p>
@@ -311,7 +311,7 @@ SSH config      → 私有仓库、远程服务器
 <h3 id="73-可回滚"><a class="header" href="#73-可回滚">7.3 可回滚</a></h3>
 <p>所有 agent 的代码变更都在 git 工作区里。</p>
 <p>用户可以 <code>git diff</code> 逐行审查，可以 <code>git add -p</code> 分块暂存，可以 <code>git checkout -- &lt;file&gt;</code> 撤销。git 本身就是最可靠的安全网——不是因为 agent 不会犯错，而是因为错误可以被精确回退。</p>
-<p>这三条:<strong>可观察、可复现、可回滚</strong>，合在一起，构成了程序员对自动化工具的信任边界。程序员不讨厌自动化。但程序员讨厌<strong>不可解释的自动化</strong>，一个黑箱告诉你“搞定了“，但你看不到它做了什么、无法验证、也无法回退。</p>
+<p>这三条：<strong>可观察、可复现、可回滚</strong>，合在一起，构成了程序员对自动化工具的信任边界。程序员不讨厌自动化。但程序员讨厌<strong>不可解释的自动化</strong>，一个黑箱告诉你“搞定了“，但你看不到它做了什么、无法验证、也无法回退。</p>
 <hr>
 <h2 id="八三种界面在信任模型上的差异"><a class="header" href="#八三种界面在信任模型上的差异">八、三种界面在信任模型上的差异</a></h2>
 <div class="table-wrapper">
@@ -329,7 +329,7 @@ SSH config      → 私有仓库、远程服务器
 </table>
 </div>
 <p>这张表不是要证明 CLI/TUI 在所有维度上优于 GUI，事实上不管是我自己的思考还是现实发展都证明了 GUI 化是发展的目标。GUI 在 diff 审查（并排对比、行级采纳/拒绝）、长会话管理（cell 复用、分页加载）、多模态附件（图片、文件预览）上有结构性优势。这些在本系列后篇会展开。</p>
-<p>这里要说明的是另一件事：<strong>CLI/TUI 在当前阶段相对胜出，理由不在“更好“，在这三条信任基线它天然满足。做 GUI 的时候如果忽视了这三个维度，把 agent 包装成一个“一键完成“的按钮，反而会失去开发者用户，而之后随着 Agent 水平继续提升并进入同质化，那么 GUI 的需求就会马上跟进</strong>。</p>
+<p>这里要说明的是另一件事：<strong>CLI/TUI 在当前阶段相对胜出，理由不在“更好“，而在于它天然满足这三条信任基线。做 GUI 的时候如果忽视了这三个维度，把 agent 包装成一个“一键完成“的按钮，反而会失去开发者用户；之后随着 Agent 水平继续提升并进入同质化，GUI 的需求自然会跟进</strong>。</p>
 <hr>
 <h2 id="九不只是早期形态"><a class="header" href="#九不只是早期形态">九、不只是“早期形态“</a></h2>
 <p>有一种观点认为 CLI/TUI 只是 agent 的“早期原型“，等产品成熟了自然会转向 GUI。目前是探索 Agentic 框架的阶段，界面是次要的——Claude Desktop 和 Codex App（2026 年 7 月起已整合进 ChatGPT 桌面应用）的出现似乎也在印证这个方向。</p>
