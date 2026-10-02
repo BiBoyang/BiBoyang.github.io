@@ -41,6 +41,8 @@
   --accent-hover: #0f766e;
   --accent-light: #ccfbf1;
   --accent-bg: #f0fdfa;
+  --text-faint: #a39b8f;
+  --accent-soft: #f0fdfa;
   --code-bg: #1e293b;
   --code-text: #e2e8f0;
   --code-muted: #94a3b8;
@@ -358,45 +360,74 @@ body .greedy-nav .visible-links a {
 }
 
 /* ---- 右侧 TOC ---- */
+/* 宽屏下加宽右侧目录列（主题默认中屏 200 / 宽屏 300，中文长标题会被挤成竖条） */
+@media (min-width: 64em) {
+  .sidebar__right {
+    width: 260px;
+    margin-inline-end: -260px;
+  }
+}
+@media (min-width: 80em) {
+  .sidebar__right {
+    width: 320px;
+    margin-inline-end: -320px;
+  }
+}
 .toc {
-  background-color: var(--bg-elevated);
-  border: 1px solid var(--border-soft);
-  border-radius: var(--radius);
-  padding: 1.2em 1.4em;
-  box-shadow: var(--shadow-sm);
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
 }
-.toc__title {
-  color: var(--text-muted);
-  font-size: 0.8em;
+/* 标题：去掉主题默认的亮蓝色块，改为低调的暖灰小字 */
+.toc .nav__title {
+  background: none !important;
+  color: var(--text-faint) !important;
+  font-size: 0.78em;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin-bottom: 0.8em;
-  padding-bottom: 0.6em;
-  border-bottom: 1px solid var(--border-soft);
-}
-.toc .nav__list a {
-  color: var(--text-muted);
-  font-size: 0.9em;
-  padding: 0.35em 0;
+  letter-spacing: 0.06em;
+  padding: 0 0.6em 0.7em;
   border-bottom: none;
-  line-height: 1.5;
-  display: block;
 }
-.toc .nav__list a:hover {
-  color: var(--accent);
+.toc .nav__title i {
+  color: var(--text-faint);
+  margin-right: 0.4em;
 }
-.toc .nav__list .active > a {
+/* 目录条目：放大字号、去分割线、去粗体，避免小号中文糊成一团 */
+.toc .toc__menu,
+.toc .toc__menu a {
+  border-bottom: none !important;
+}
+.toc .toc__menu {
+  font-size: 0.92em;
+}
+@media (min-width: 64em) {
+  .toc .toc__menu {
+    font-size: 0.86em;
+  }
+}
+.toc .toc__menu a {
+  color: var(--text-muted);
+  font-weight: 400;
+  line-height: 1.55;
+  padding: 0.42em 0.6em;
+  border-radius: 7px;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.toc .toc__menu a:hover {
   color: var(--accent);
+  background-color: var(--accent-soft);
+}
+/* 当前阅读项（scrollspy 动态加类，两种结构都覆盖）：暖青文字 + 淡底 */
+.toc .toc__menu a.active,
+.toc .toc__menu li.active > a {
+  color: var(--accent) !important;
   font-weight: 600;
+  background-color: var(--accent-soft);
 }
-.toc .nav__list ul {
-  margin-left: 0.8em;
-  padding-left: 0.8em;
-  border-left: 1px solid var(--border-soft);
-}
-.toc .nav__list li {
-  margin: 0.1em 0;
+/* 多级缩进改细，弱化层级线 */
+.toc .toc__menu li ul > li a {
+  font-weight: 400;
 }
 
 /* ---- 左侧栏（作者信息） ---- */
