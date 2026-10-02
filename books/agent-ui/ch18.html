@@ -190,6 +190,7 @@
 <p>AGENTS.md 官网的自我介绍很克制：“a simple, open format for guiding coding agents, used by over 60k open-source projects”——给编码 agent 的指引格式，六万多个开源项目在用，“把它想成给 agent 看的 README”。FAQ 更克制，直说这不是正式标准，没有治理机构，各家工具自行解释。一个不设门槛的约定，被 OpenAI Codex、Gemini CLI、Cursor、GitHub Copilot、Jules、Amp、Zed、Devin、Roo Code 先后采纳，成了事实标准。著名的例外是 Claude Code，主力用自家的 <code>CLAUDE.md</code>（部分配置下也读 AGENTS.md）。</p>
 <p>它的吸引力不难理解：规则就是文本文件——可 diff、可 review、有 blame、随仓库走。改规则和改代码走同一个 PR 流程，历史清清楚楚。已经有评论主张：CLAUDE.md 的变更本质是软件变更，该用对待代码的严格程度对待它。这个主张成立的前提，正是文件派把规则变成了 git 里的资产。</p>
 <p>文件派的工程化上限长什么样，kimi-code 给了目前我见过最完整的一手样本：<strong>12 份嵌套的 AGENTS.md</strong>，从仓库根一路铺到 <code>packages/agent-core/src/services/</code> 这种深度。配套三条治理规则写在根文件里——根文件只放“热路径“规则；深层文档下沉到各自目录的 AGENTS.md；改代码前“follow the nearest <code>AGENTS.md</code> in the directory tree“（就近生效）。这就是 CSS 级联的文件版： specificity 靠目录深度实现。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch18-agents-cascade.svg" alt="12 份嵌套 AGENTS.md：CSS 级联的文件版，specificity 靠目录深度"><span class="img-wrapper"><img src="assets/ch18-agents-cascade.svg" alt="12 份嵌套 AGENTS.md：CSS 级联的文件版，specificity 靠目录深度"></span></label></p>
 <p>还有两个细节值得一提。其一，仓库根上 <code>CLAUDE.md</code> 和 <code>AGENTS.md</code> <strong>内容完全相同，双写两份</strong>——为了迁就两个 agent 各自的默认文件名，同一份规则存了两拷贝。标准割据的代价，具象成了一行 <code>cp</code>。其二，规则本身的内容已经治理到很细的地方：要求 agent 提交时不署名、不暴露自己是个 agent；公共文本里真实内部标识符要换成占位符；“人类作者必须理解这个变更，才允许提交 PR”。用文件驯服 agent，已经驯到了“不许承认自己是 agent“的粒度。</p>
 <p>生态的另一头是另一个一手事实：我把本地另外三个 agent 仓库扫了一遍——kwwk、grok-build、mcode——<strong>一份规则文件都没有</strong>。同一批做 agent 的工程团队，有的把规则文件铺成十二层的级联，有的一个字没写。文件派远不是行业共识，它是行业的一个阵营。</p>
 <p>文件派的软肋也随之清楚：加载语义是方言市场（叠加还是覆盖、就近还是显式优先级，各家各说各话）；对普通用户它是 cargo-cult 风险——到处复制粘贴的魔法文本，没有人知道哪句在生效。</p>
@@ -225,6 +226,7 @@
 <li><strong>记忆注入了什么？</strong> 条目加出处（哪次对话、何时写入）——provenance 补上，设置页从仓库升级成账本。</li>
 <li><strong>冲突时谁赢了？</strong> 就近覆盖了全局？记忆改写了规则？一条标注就够了。</li>
 </ol>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch18-computed-config.svg" alt="生效配置预览：agent 需要 Computed Styles 面板的对应物"><span class="img-wrapper"><img src="assets/ch18-computed-config.svg" alt="生效配置预览：agent 需要 Computed Styles 面板的对应物"></span></label></p>
 <p>价值清单随手可列：排错时它是第一站（“它为什么坚持用这个过时约定“十有八九是规则层的事故）；信任上它是 16 篇的感知前提（看不到携带的规则，“遵循你的约定“就是一句不可验证的话）；工程上它是文件派治理的最后一环——有 diff、有 review、有就近级联，独独没有“实际生效值”，整套 git 流程差最后一厘米。</p>
 <p>它为什么还没长出来？因为合成规则的每一层归属不同的实现：文件是用户写的，加载是客户端定的，记忆是服务端存的——<strong>恰好因为没有人拥有全部三层，才没有人有立场给出合成视图</strong>。标准割据的代价，从第二节那行 <code>cp</code> 升级成了整块缺失的界面。</p>
 <h2 id="六收束"><a class="header" href="#六收束">六、收束</a></h2>

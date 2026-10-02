@@ -185,6 +185,7 @@
 <h2 id="零先立一个不对称"><a class="header" href="#零先立一个不对称">零、先立一个不对称</a></h2>
 <p>移动端工程里所有关于“断“的决策，都由一个平台事实定价：<strong>iOS 给应用退后台后的宽限是几十秒量级，之后进程挂起</strong>——没有后台特权的应用，连接的死亡不是风险，是日程表上已排定的事件。Android 好不了多少，国产厂商的后台查杀比 AOSP 更积极。</p>
 <p>这个事实制造了一个贯穿六站的不对称：<strong>用户的输入是毫秒级的，网络的宽限是秒级的，而一场 agent 回复是分钟级的。</strong> 三件事的时间常数差着两个数量级——所以“会话不断“这个承诺，永远不能靠“连接不断“来兑现，只能靠“断了能接“来兑现。接的逻辑，就是六个站点各自的那道工序。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/infra02a-time-constants.svg" alt="三个时间常数：毫秒级的输入、秒级的宽限、分钟级的回复"><span class="img-wrapper"><img src="assets/infra02a-time-constants.svg" alt="三个时间常数：毫秒级的输入、秒级的宽限、分钟级的回复"></span></label></p>
 <h2 id="站点一输入中还没按发送就切走"><a class="header" href="#站点一输入中还没按发送就切走">站点一：输入中（还没按发送）就切走</a></h2>
 <p>用户打了 200 字，微信弹窗，切走，进程十秒后被挂起或杀死。回来时草稿还在不在？</p>
 <p>错误答案是“监听退后台事件，临走前保存“。错误在哪：挂起和杀死都可能<strong>不给回调</strong>——willResignActive 不是遗嘱，进程可能根本等不到执行它的机会。把持久化押在一个不保证送达的事件上，等于把草稿押在运气上。</p>
@@ -217,6 +218,7 @@
 <p>最好的一站——如果前三站都做对了，这一站几乎是免费的。回复完成后，内容由服务端结算落盘（15 篇拆过 FlowDown 的修补序列与 <code>save()</code>），客户端回看时读到的就是档案而不是直播。<strong>完整性在这一站不是客户端的功能，是前五站工程的总和。</strong></p>
 <h2 id="收束六个站点一个常数"><a class="header" href="#收束六个站点一个常数">收束：六个站点，一个常数</a></h2>
 <p>把六站排回去看，每站的答案其实都是同一句话的变体：<strong>把“必须记住的事“从连接和进程里搬出来，搬进比它们活得久的东西</strong>——草稿进 UserDefaults，输入进发件箱，消息进服务端 log，位置进游标，进度进锁屏投影，成品进档案。连接、进程、甚至前台界面，都只是这些事实的临时租客。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/infra02a-six-stations.svg" alt="六个站点，一个常数：用户在任一站断掉，会话都要能活下来"><span class="img-wrapper"><img src="assets/infra02a-six-stations.svg" alt="六个站点，一个常数：用户在任一站断掉，会话都要能活下来"></span></label></p>
 <p>流畅和完整这对冤家也是这么和解的：完整性靠事实外置（搬到磁盘和服务端），流畅性靠降级自由（画面可以随时扔，因为事实扔不掉）。下一篇（二·下）把这六个站点背后的架构账单一次摊开：被操作系统禁止的长连接、只肯当信号用的推送通道、替 agent 跑工具的服务端工作区——以及那句话作为第一原则的完整含义：agent loop 不能拥有 socket。</p>
 <hr>
 <p><em>一手取证：FlowDown <code>b2cecfd6</code>（<code>ConversationManager.swift</code> 的 <code>temporaryEditorObjects</code> 防抖持久化、<code>ConversationSessionManager.swift</code> 的 <code>countIncomingTokens</code>/Live Activity、<code>Pipeline/</code> 的流式与结算路径）；Claude Code 本机会话 JSONL（<code>type: "queue-operation"</code>/<code>"operation": "enqueue"</code>，2026-09-28 取证）。平台行为（iOS 后台宽限为数十秒量级、挂起与杀死可能无回调、网络切换导致 TCP 半开）为移动端工程常识，按量级表述未引具体数字。快照+尾部增量与游标机制的工程细节引自基01 的核查（kimi-code <code>1e553fc</code>）。</em></p>

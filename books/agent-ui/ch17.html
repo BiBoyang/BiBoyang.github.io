@@ -187,11 +187,13 @@
 <p>比遗忘本身更值得拆的是那个计量条。第 6 篇 3.3 节讲过它有三层麻烦（滞后值 vs 估算值、压缩后的非单调回落、预警的产品决策）；今年的公开材料把第四层也暴露了：Claude Code 为自动压缩保留了约 33K token 的缓冲区（从更早的 45K 降下来），触发点因此显著早于历史——有分析认为在 64–75% 而非早期的 90%+；GitHub 上有 2026 年 6 月的 issue 标题就叫 “Auto compact does not trigger at 100% context”。</p>
 <p>把这些摆在一起会看到一个结构性事实：<strong>仪表和熔断器各读各的表</strong>。计量条显示的是一个估算口径的用量，触发压缩的是另一个口径（窗口判定减缓冲区），两者从不承诺一致——“显示 3% 实际已压缩“这类报告不是 UI bug，是两本账各记各的必然症状。</p>
 <p>第 5 篇的投影理论在这里遇到它的反面案例：事件流的投影是完整的——tool.started、tool.finished、file.changed，条条在案，回放无损；但<strong>状态</strong>的投影被静默替换了。投影完整性不等于状态完整性。事件流记得 Agent 做过什么，窗口里装的已经是一份改写过的记忆。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch17-two-gauges.svg" alt="仪表和熔断器各读各的表：显示 3%，实际已压缩"><span class="img-wrapper"><img src="assets/ch17-two-gauges.svg" alt="仪表和熔断器各读各的表：显示 3%，实际已压缩"></span></label></p>
 <h2 id="二引擎账四级流水线与那行熔断注释"><a class="header" href="#二引擎账四级流水线与那行熔断注释">二、引擎账：四级流水线与那行熔断注释</a></h2>
 <p>把 Claude Code 的引擎侧摊开（泄露源码的多家交叉分析，出处见脚注），会发现它的压缩不是一刀切，是一条四级流水线：</p>
 <p><strong>Snip → MicroCompact → ContextCollapse → AutoCompact。</strong></p>
 <p>前三级是本地操作，不调模型：Snip 截断超长工具输出，MicroCompact 清理噪音 token，ContextCollapse 折叠旧上下文——便宜、快、基本无损。只有最后一级 AutoCompact 调 LLM 生成摘要，把历史整体替换成压缩叙事——贵的、慢的、有损的，放在最后。这个分级和渲染侧的 stable prefix / 沉降分级（第 3、14 篇）是同一个设计哲学：确定性便宜的先上，概率性昂贵的兜底。</p>
 <p>流水线自己也有防线：连续失败 3 次自动压缩就放弃（<code>MAX_CONSECUTIVE_AUTOCOMPACT_FAILURES = 3</code>）。为什么要防它？泄露源码里的注释给出了数字：加熔断之前，曾有 <strong>1,279 个会话出现 50 次以上连续失败，每天浪费约 25 万次 API 调用</strong>。失败循环的机理值得一提：压缩本身要调模型，模型失败触发重试，重试带着一个更大的上下文——垃圾回收器自己成了内存泄漏。这行注释是“压缩是分布式系统问题“的最好证词。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch17-compaction-pipeline.svg" alt="四级压缩流水线与熔断：确定性便宜的先上，概率性昂贵的兜底"><span class="img-wrapper"><img src="assets/ch17-compaction-pipeline.svg" alt="四级压缩流水线与熔断：确定性便宜的先上，概率性昂贵的兜底"></span></label></p>
 <h2 id="三别家在怎么做账"><a class="header" href="#三别家在怎么做账">三、别家在怎么做账</a></h2>
 <p>批评“静默丢失“很容易，但只盯着一家会错过全貌。我把本地能查的三家实现翻了一遍——结论是：<strong>引擎账家家都记，差别大得惊人的是账本给谁看</strong>。</p>
 <h3 id="31-kwwk压缩有自己的渲染器和预算表"><a class="header" href="#31-kwwk压缩有自己的渲染器和预算表">3.1 kwwk：压缩有自己的渲染器和预算表</a></h3>
@@ -201,6 +203,7 @@
 <h3 id="32-grok-build丢弃的内容落盘成带索引的档案"><a class="header" href="#32-grok-build丢弃的内容落盘成带索引的档案">3.2 grok-build：丢弃的内容落盘成带索引的档案</a></h3>
 <p>grok 的 <code>xai-compaction-transcript</code> crate 把压缩做成了<strong>档案系统</strong>：每个会话一个 <code>compaction/</code> 目录，<code>INDEX.md</code> 索引加 <code>segment_</code> 前缀的分段文件；分段上限 512KB，超限就地在文内写明 “[… TRUNCATED at {limit} bytes, {omitted} turns omitted …]”；逐 turn 有细节档位（verbose/balanced，后者每轮文本 2000 字符、回复 500 字符）。与 Python 实现的列头、段落、索引格式对齐。</p>
 <p>换句话说：<strong>被压缩掉的原文没有蒸发，它变成了磁盘上一份可浏览、带索引的 Markdown 档案</strong>。窗口里装摘要，档案里存全文——“丢弃“其实是“归档”。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch17-discard-as-archive.svg" alt="丢弃即归档：窗口里装摘要，磁盘上存全文"><span class="img-wrapper"><img src="assets/ch17-discard-as-archive.svg" alt="丢弃即归档：窗口里装摘要，磁盘上存全文"></span></label></p>
 <h3 id="33-flowdown用户主使的-fork-式压缩"><a class="header" href="#33-flowdown用户主使的-fork-式压缩">3.3 FlowDown：用户主使的 fork 式压缩</a></h3>
 <p>FlowDown（GUI 端）的 <code>compressConversation</code> 是另一种所有权答案：用户手动触发 → 导出整段会话为 Markdown → 调模型生成摘要 → <strong>创建一个新会话</strong>承载摘要。原始会话一个字节都不动。压缩在这里不是对历史的改写，是一次用户签字画押的衍生交易——原账本不可变，摘要是新资产。</p>
 <h2 id="四真正的分界账本的可见性"><a class="header" href="#四真正的分界账本的可见性">四、真正的分界：账本的可见性</a></h2>

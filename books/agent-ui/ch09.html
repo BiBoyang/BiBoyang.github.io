@@ -252,6 +252,7 @@
 </table>
 </div>
 <p>Mobile 的“仅摘要“来自推送通知和任务卡片——对应前面说的“任务状态查看“；副作用流（diff）则完全不投影到手机。没有一个端需要消费全部事件。CLI 和 Mobile 在消费的事件类型上几乎没有交集——但它们消费的是同一条事件流。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch09-event-matrix.svg" alt="三层事件 × 六端的消费矩阵"><span class="img-wrapper"><img src="assets/ch09-event-matrix.svg" alt="三层事件 × 六端的消费矩阵"></span></label></p>
 <blockquote>
 <p>补记（2026.09）：这张表写成后，“离场处理“一行开始在头部产品里过时——而且是以印证本文的方式。Claude Code 现在有后台会话（<code>/bg</code>）和独立的 agent 视图，配合 Remote Control 和“Push when Claude decides“配置，Agent 可以在用户离开后继续跑、必要时直接往手机推通知——第 10 篇说的“用户离开电脑后，Mobile 是唯一能触达用户的端”，已经是出货的功能，不是设想。“CLI/TUI 离场 = 挂起“从此只是默认行为，不再是能力上限。</p>
 </blockquote>
@@ -263,6 +264,7 @@
 <p><strong>统一 Permission Engine。</strong> 权限请求从 Agent Runtime 发出，所有端都可以响应。谁先响应就用谁的结果。超时策略和信任规则持久化在 Permission Engine 层，不是某个 UI 层。</p>
 <p><strong>统一 Workspace Model。</strong> cwd、git branch、文件系统状态——这些不属于任何 UI，属于 Workspace。Agent 操作的是 Workspace，不是某个端的“视图“。</p>
 <p>满足这四个统一之后，每个端只是一个轻量的投影层——消费事件、渲染 UI、发送用户输入回 Runtime。你加一个 Mobile 端不需要改 Agent 逻辑，加一个 Web 端不需要改权限模型。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch09-four-unified.svg" alt="四个统一：Runtime、Event Log、Permission Engine、Workspace Model，各端只是薄投影层"><span class="img-wrapper"><img src="assets/ch09-four-unified.svg" alt="四个统一：Runtime、Event Log、Permission Engine、Workspace Model，各端只是薄投影层"></span></label></p>
 <hr>
 <h2 id="六不是所有产品都需要所有端"><a class="header" href="#六不是所有产品都需要所有端">六、不是所有产品都需要所有端</a></h2>
 <p>六端 + API 是分析框架，不是 checklist。一个独立开发者的 Agent 工具可能只需要 CLI + TUI。一个团队协作的 Agent 平台可能需要 Web + IDE + Mobile。选哪些端，取决于用户在哪里、用户在那个场景下需要消费哪些事件。</p>

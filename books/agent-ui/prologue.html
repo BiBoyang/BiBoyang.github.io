@@ -211,6 +211,7 @@ data: [DONE]
 </code></pre>
 <p>正文一个 chunk 一个 chunk 来，每个 chunk 自己不带结束信息。现在假设流在第二个 chunk 之后因为网络问题<strong>断了</strong>。你拼出来的文本是 <code>## 结论\n\n好的</code>. 看起来渲染出来是一段完全正常的 Markdown，没有任何报错,也符合我们阅读的习惯,我们无法感觉到这里出现了问题.</p>
 <p>所以“看起来对不对“不能作为判据。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/prologue-truncation-invisible.svg" alt="断掉的流，完美的渲染：截断的回答看起来是完整的"><span class="img-wrapper"><img src="assets/prologue-truncation-invisible.svg" alt="断掉的流，完美的渲染：截断的回答看起来是完整的"></span></label></p>
 <h2 id="三complete-不是默认给的"><a class="header" href="#三complete-不是默认给的">三、complete 不是默认给的</a></h2>
 <p>到了协议层，第一个要纠正的是默认值。</p>
 <p>绝大多数系统的默认值是反的：拿到流，就默认当完整。try 包住、异常没有抛出、循环正常结束就代表这次回答可用。这个默认值错在哪？<strong>“没证据说坏了“不等于“证据说没坏”。</strong> 结束不是一个自然发生的事实，是一个需要证明的事件。所以我的规矩是：complete 只能放在最后,因为它不是默认值，是前面的检查全都没命中才轮得到的兜底档。</p>
@@ -224,6 +225,7 @@ complete               以上全部排除，才轮到我
 </code></pre>
 <p>这五个状态是我多次尝试后得到的失败模式的穷举——从外往里数，网络连接、网络流、事件、信号，每一层各有一种坏法。 complete 排在最后，是因为它是排除下来的兜底产物。</p>
 <p>枚举的价值在于它和 “try/except” 的区别：<strong>异常只能抓到你预想过的失败，枚举强迫你把“一条流可能怎么坏“逐层看过一遍</strong>。看完你会发现，多数实现的防御只覆盖了第一层: <strong>网络连接错误依靠异常体系兜底，但是后面三层全是裸的</strong>。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/prologue-five-states.svg" alt="完整性判定的五状态链：complete 是排除出来的兜底，不是默认值"><span class="img-wrapper"><img src="assets/prologue-five-states.svg" alt="完整性判定的五状态链：complete 是排除出来的兜底，不是默认值"></span></label></p>
 <h3 id="32-结束需要双保险"><a class="header" href="#32-结束需要双保险">3.2 结束需要双保险</a></h3>
 <p>直接看第四层，这是最容易被省掉的一层。</p>
 <p>一条流正常收尾，应该有两个<strong>互相独立</strong>的信号：关闭标记（SSE 的 <code>data: [DONE]</code>）和结束原因（最后一个数据 chunk 里的 <code>finish_reason</code>：<code>stop</code> / <code>length</code> / <code>tool_calls</code>…）。结束原因可以理解为协议替 Markdown“补发的结尾信息“,我们在正文里看不出来的事，协议单独告诉你一次。</p>

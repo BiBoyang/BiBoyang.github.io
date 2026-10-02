@@ -1242,6 +1242,7 @@ case operationEnd(id: "A", isError: false, result: "...")
 </table>
 </div>
 <p>这就是为什么第 1 篇说 TUI 的复杂度天花板低。你不需要做动画渲染引擎，因为没有动画。不需要做 cell 复用，因为终端不回收行。不需要做 MCP 授权弹窗，因为终端只有键盘输入。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch06-seven-subsystems.svg" alt="FlowDown 的七个子系统：GUI 独占六个，TUI 对应物大多为零"><span class="img-wrapper"><img src="assets/ch06-seven-subsystems.svg" alt="FlowDown 的七个子系统：GUI 独占六个，TUI 对应物大多为零"></span></label></p>
 <hr>
 <h2 id="三agent-让-gui-的复杂度再翻倍"><a class="header" href="#三agent-让-gui-的复杂度再翻倍">三、Agent 让 GUI 的复杂度再翻倍</a></h2>
 <p>普通聊天应用的状态：用户消息 → AI 回复。线性，两个方向。</p>
@@ -1255,6 +1256,7 @@ success  → 绿色勾 + 结果摘要（可展开查看详情）
 error    → 红色叉 + 错误信息（可重试按钮）
 </code></pre>
 <p>而且多个工具调用可能并行。第 4 篇讲的 <code>pendingTools</code> 稳定槽位队列 + <code>shiftIndices</code> 索引追踪，在 GUI 上对应的是 <code>UICollectionView</code> 的多 section diffable snapshot——底层数据结构类似（事件 → 索引 → 局部更新），但 UI 表达成本不在同一量级：TUI 是替换一行文本，GUI 是独立的卡片、独立的加载动画、独立的结果展开/折叠、独立的错误重试按钮。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch06-tool-four-states.svg" alt="工具调用的四态状态机：pending、running、success、error"><span class="img-wrapper"><img src="assets/ch06-tool-four-states.svg" alt="工具调用的四态状态机：pending、running、success、error"></span></label></p>
 <h3 id="32-mcp-工具确认"><a class="header" href="#32-mcp-工具确认">3.2 MCP 工具确认</a></h3>
 <p>MCP（Model Context Protocol）工具在执行前可能需要用户确认——“此工具将读取你的日历数据，是否允许？”</p>
 <p>GUI 上这是一个弹窗或内联确认卡片，含工具描述、权限列表、允许/拒绝/总是允许三个按钮。TUI 上是一行 <code>[y/n]</code> 提示。后者可以很轻，前者是一个完整的弹窗子系统——AlertController 的代码量不亚于一个小型 UI 库。</p>
@@ -1340,6 +1342,7 @@ error    → 红色叉 + 错误信息（可重试按钮）
   → ⑥ 布局：NSAttributedString → 像素
 </code></pre>
 <p>④⑤⑥ 深度耦合。问题不能靠单独替换某一层解决。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch07-full-rebuild-pipeline.svg" alt="从 token 到像素的六阶段管线：④⑤⑥ 每步都是全量"><span class="img-wrapper"><img src="assets/ch07-full-rebuild-pipeline.svg" alt="从 token 到像素的六阶段管线：④⑤⑥ 每步都是全量"></span></label></p>
 <h3 id="解析层最根本的限制"><a class="header" href="#解析层最根本的限制">解析层——最根本的限制</a></h3>
 <p>以 cmark 为例（Swift 侧最主流的 Markdown 解析库，被 FlowDown/MarkdownView、Down 等使用）：</p>
 <pre><code>cmark_parser_new()    → 创建 parser
@@ -1416,6 +1419,7 @@ tick  2: parse(100字) + build(100字) + layout(100字)
 tick 90: parse(3000字)+ build(3000字)+ layout(3000字)
 </code></pre>
 <p>总工作量 ≈ N²。降频让 t 不再严格正比于 N——但砍的是常数因子，复杂度阶没变。降频的收益集中在中等长度（1000-5000 字）——文本继续变长、频率触底（3Hz）之后，tick 数重新正比于 N，总工作量回归 N²。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch07-on-squared.svg" alt="O(n) 被执行了 O(n) 次：总工作量 ≈ N²"><span class="img-wrapper"><img src="assets/ch07-on-squared.svg" alt="O(n) 被执行了 O(n) 次：总工作量 ≈ N²"></span></label></p>
 <hr>
 <h2 id="四路线-b输出完毕再渲染"><a class="header" href="#四路线-b输出完毕再渲染">四、路线 B：输出完毕再渲染</a></h2>
 <p>流式期间不做任何渲染，只把 chunk 拼进 buffer。流式结束后一次性做完整 Markdown 渲染。</p>
@@ -1449,6 +1453,7 @@ tick 90: parse(3000字)+ build(3000字)+ layout(3000字)
 </tbody>
 </table>
 </div>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch07-stack-matrix.svg" alt="五个技术栈各自解决了哪一层：解析层全是全量，差距在 ⑤⑥"><span class="img-wrapper"><img src="assets/ch07-stack-matrix.svg" alt="五个技术栈各自解决了哪一层：解析层全是全量，差距在 ⑤⑥"></span></label></p>
 <p>下面展开 WebView、RN 和 Lynx 三条路——它们各自的优势、代价和适用边界。</p>
 <h3 id="61-webview增量-reflow-是出厂能力"><a class="header" href="#61-webview增量-reflow-是出厂能力">6.1 WebView：增量 reflow 是出厂能力</a></h3>
 <p>浏览器渲染引擎（Blink / WebKit）从 90 年代 Netscape 时代就在解决“网页被 JavaScript 不断修改“的问题，增量 reflow 是它的第一性能力，不是后加的特性。</p>
@@ -1538,6 +1543,7 @@ tick 90: parse(3000字)+ build(3000字)+ layout(3000字)
 </table>
 </div>
 <p>这四层不是写在协议里的——它们来自操作本身的属性。一个好的权限 UX 在展示权限请求时，应该让用户一眼看到它在哪一层，而不是把“读取文件“和“git push –force“用同一个弹窗展示。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch08-risk-four-tiers.svg" alt="风险四层模型与授权粒度：别把读文件和 push –force 用同一个弹窗"><span class="img-wrapper"><img src="assets/ch08-risk-four-tiers.svg" alt="风险四层模型与授权粒度：别把读文件和 push –force 用同一个弹窗"></span></label></p>
 <h3 id="23-授权粒度一次性-vs-会话-vs-项目-vs-全局"><a class="header" href="#23-授权粒度一次性-vs-会话-vs-项目-vs-全局">2.3 授权粒度：一次性 vs 会话 vs 项目 vs 全局</a></h3>
 <ul>
 <li><strong>一次性</strong>：仅此一次。默认对高风险操作。</li>
@@ -1575,6 +1581,7 @@ tick 90: parse(3000字)+ build(3000字)+ layout(3000字)
 <p><strong>TUI 路径：</strong> 一行 <code>[y/n]</code> 提示 → 用户读文本判断风险 → 输入 <code>y</code> → 回车。3 步，信息密度低但是零 friction。适合：快速判断、低风险操作、用户在电脑前。</p>
 <p><strong>GUI 路径：</strong> 弹窗展示（工具名 + 文件路径 + 风险等级颜色 + 操作原因）→ 用户扫一眼颜色判断风险等级 → 点击“本次允许“。1 步操作，但前置了信息摄入时间。适合：高风险操作、用户需要完整上下文才能决策、用户可能不在电脑前（异步处理）。</p>
 <p>关键洞察：<strong>两种界面在权限 UX 上的差距不是“GUI 展示更多信息所以更好“，而是“GUI 可以把线性操作变成空间决策“。</strong> TUI 里你只能按顺序读——先读工具名、再读文件路径、再判断风险——因为终端只有一维空间。GUI 里颜色标记、图标、按钮位置同时进入视野，用户可以跳读。这是第 3–4 篇讲的“降级映射“在 UX 层的对应物：TUI 把空间信息压缩成线性文本，GUI 保留了空间维度。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch08-permission-paths.svg" alt="同一个权限请求：TUI 线性 3 步，GUI 空间 1 步"><span class="img-wrapper"><img src="assets/ch08-permission-paths.svg" alt="同一个权限请求：TUI 线性 3 步，GUI 空间 1 步"></span></label></p>
 <hr>
 <h2 id="三下半篇diff-ux"><a class="header" href="#三下半篇diff-ux">三、下半篇：Diff UX</a></h2>
 <h3 id="31-对-coding-agent-来说最终产物是-diff"><a class="header" href="#31-对-coding-agent-来说最终产物是-diff">3.1 对 coding agent 来说，最终产物是 diff</a></h3>
@@ -1616,6 +1623,7 @@ tick 90: parse(3000字)+ build(3000字)+ layout(3000字)
 <p>权限是“执行前“的信任建立。Diff 是“执行后“的信任验证。</p>
 <p>把 Agent UI 设计成一个大聊天框 + 小字状态栏，等于把信任建立和信任验证都塞进了一条线性对话流里。用户需要自己从聊天的 100 行文本里挖出“它刚才请求了什么权限“和“它到底改了什么“。</p>
 <p>更好的信息架构：聊天框是指令和解释的主通道。权限请求是侧栏的独立卡片。diff 是可展开的文件树面板。三者各有各的空间，不互相抢占。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch08-trust-architecture.svg" alt="信任界面的信息架构：聊天框、权限卡片、diff 面板各有空间"><span class="img-wrapper"><img src="assets/ch08-trust-architecture.svg" alt="信任界面的信息架构：聊天框、权限卡片、diff 面板各有空间"></span></label></p>
 <p>这不是 GUI 做得“更漂亮“。这是在回答第 1 篇提出的那个根本需求：<strong>程序员需要的不是更智能的黑箱，而是可观察、可复现、可回滚的自动化。</strong> 权限 UX 做“可观察“，Diff UX 做“可复现 + 可回滚“。聊天框做“交互“。三个界面，同一个信任模型的三根柱子。</p>
 <hr>
 <h2 id="五下一篇"><a class="header" href="#五下一篇">五、下一篇</a></h2>
@@ -1698,6 +1706,7 @@ tick 90: parse(3000字)+ build(3000字)+ layout(3000字)
 </table>
 </div>
 <p>Mobile 的“仅摘要“来自推送通知和任务卡片——对应前面说的“任务状态查看“；副作用流（diff）则完全不投影到手机。没有一个端需要消费全部事件。CLI 和 Mobile 在消费的事件类型上几乎没有交集——但它们消费的是同一条事件流。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch09-event-matrix.svg" alt="三层事件 × 六端的消费矩阵"><span class="img-wrapper"><img src="assets/ch09-event-matrix.svg" alt="三层事件 × 六端的消费矩阵"></span></label></p>
 <blockquote>
 <p>补记（2026.09）：这张表写成后，“离场处理“一行开始在头部产品里过时——而且是以印证本文的方式。Claude Code 现在有后台会话（<code>/bg</code>）和独立的 agent 视图，配合 Remote Control 和“Push when Claude decides“配置，Agent 可以在用户离开后继续跑、必要时直接往手机推通知——第 10 篇说的“用户离开电脑后，Mobile 是唯一能触达用户的端”，已经是出货的功能，不是设想。“CLI/TUI 离场 = 挂起“从此只是默认行为，不再是能力上限。</p>
 </blockquote>
@@ -1709,6 +1718,7 @@ tick 90: parse(3000字)+ build(3000字)+ layout(3000字)
 <p><strong>统一 Permission Engine。</strong> 权限请求从 Agent Runtime 发出，所有端都可以响应。谁先响应就用谁的结果。超时策略和信任规则持久化在 Permission Engine 层，不是某个 UI 层。</p>
 <p><strong>统一 Workspace Model。</strong> cwd、git branch、文件系统状态——这些不属于任何 UI，属于 Workspace。Agent 操作的是 Workspace，不是某个端的“视图“。</p>
 <p>满足这四个统一之后，每个端只是一个轻量的投影层——消费事件、渲染 UI、发送用户输入回 Runtime。你加一个 Mobile 端不需要改 Agent 逻辑，加一个 Web 端不需要改权限模型。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch09-four-unified.svg" alt="四个统一：Runtime、Event Log、Permission Engine、Workspace Model，各端只是薄投影层"><span class="img-wrapper"><img src="assets/ch09-four-unified.svg" alt="四个统一：Runtime、Event Log、Permission Engine、Workspace Model，各端只是薄投影层"></span></label></p>
 <hr>
 <h2 id="六不是所有产品都需要所有端"><a class="header" href="#六不是所有产品都需要所有端">六、不是所有产品都需要所有端</a></h2>
 <p>六端 + API 是分析框架，不是 checklist。一个独立开发者的 Agent 工具可能只需要 CLI + TUI。一个团队协作的 Agent 平台可能需要 Web + IDE + Mobile。选哪些端，取决于用户在哪里、用户在那个场景下需要消费哪些事件。</p>
@@ -1735,6 +1745,7 @@ tick 90: parse(3000字)+ build(3000字)+ layout(3000字)
 <p>但移动端有一个不可替代的位置：<strong>human-in-the-loop 的最后一公里。</strong></p>
 <p>用户离开电脑。Agent 在后台继续跑（Mac 上跑着本地 daemon，或者远程服务器上跑着 Agent）。碰到一个需要确认的操作——移动端推一条通知。用户看一眼——知道 Agent 在做什么，批准或拒绝。Agent 继续。</p>
 <p>这不是“把桌面端缩小“。移动端 Companion 应该极简：当前任务状态、最近一次权限请求、一键批准/拒绝。类似远程汽车钥匙——不需要方向盘，只需要锁门和解锁。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch10-mobile-companion.svg" alt="Mobile Companion：human-in-the-loop 的最后一公里"><span class="img-wrapper"><img src="assets/ch10-mobile-companion.svg" alt="Mobile Companion：human-in-the-loop 的最后一公里"></span></label></p>
 <p>从移动端交互经验里带过来的直觉：<strong>在受限屏幕上，你学到的不是“怎么塞更多信息“，而是“什么信息值得放上去“。</strong> 这个克制力在做 Agent 的任何一端时都有用。</p>
 <hr>
 <h2 id="二一个全栈开发者的经验怎么迁移"><a class="header" href="#二一个全栈开发者的经验怎么迁移">二、一个全栈开发者的经验怎么迁移</a></h2>
@@ -1744,6 +1755,7 @@ tick 90: parse(3000字)+ build(3000字)+ layout(3000字)
 <p><strong>TUI → 高密度文本信息架构。</strong> 写 ForgeLoopTUI 的过程，就是在一个只有字符的终端里把信息组织清晰的过程——靠的不是像素能力，是信息优先级。什么该放 committed 区、什么该放 live 区（第 2 篇），通知超过 3 条就该移除（第 4 篇），这些判断不是框架给的，是在字符网格里逼出来的。这套判断力在 GUI 上同样适用——信息多了，Panel 不会帮你自动排优先级。</p>
 <p><strong>全栈 → Runtime 和持久化设计。</strong> Event log 的 append-only 模型、权限引擎的信任规则持久化、Workspace 状态管理——这些不是 UI 问题，是后端问题。全栈经验让我能同时理解 Agent 的 Runtime 层和投影层，而不是只能做其中一半。</p>
 <p><strong>大前端 → 复杂交互状态管理。</strong> 大前端的核心能力不是“会写多个平台“，而是<strong>管理复杂交互状态</strong>——一个操作触发多个副作用、多个异步事件并发到达、用户中途介入改变状态流向。这和第 4 篇拆解的 Agent 事件处理模型是完全同构的能力。我在 ForgeLoopTUI 里手写的 <code>pendingTools</code> 稳定槽位队列 + <code>shiftIndices</code> 偏移追踪，回头看就是一个手动实现的响应式状态管理系统。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch10-skill-migration.svg" alt="五项经验的迁移路径，汇聚到 Agent Workflow Engineer"><span class="img-wrapper"><img src="assets/ch10-skill-migration.svg" alt="五项经验的迁移路径，汇聚到 Agent Workflow Engineer"></span></label></p>
 <hr>
 <h2 id="三新岗位方向"><a class="header" href="#三新岗位方向">三、新岗位方向</a></h2>
 <p>如果“Agent 时代的开发者界面“成为一个独立的专业领域，这些岗位可能会出现或已经在出现：</p>
@@ -1760,6 +1772,7 @@ tick 90: parse(3000字)+ build(3000字)+ layout(3000字)
 </blockquote>
 <p>第 1 篇问：为什么 Agent 从 CLI/TUI 开始？答案不是因为 GUI 不好，是因为当前最核心的问题不是界面表达能力，而是执行过程不确定、权限边界敏感、本地工程环境复杂。CLI/TUI 以最低成本解决了当前最硬的问题。</p>
 <p>第 2–4 篇展示了这套“最低成本方案“底下的真实代价。第 5 篇把问题抽象为 Event Sourcing 框架。第 6–7 篇展示了同一套问题进入 GUI 世界后的新形态。第 8 篇是跨端的信任设计——权限与 diff 这两块“信任界面“，才是 Agent 的主界面。第 9 篇回到全局——多端并存才是终态。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch10-series-map.svg" alt="十篇，同一个问题：从 LLM token 到用户看到的画面"><span class="img-wrapper"><img src="assets/ch10-series-map.svg" alt="十篇，同一个问题：从 LLM token 到用户看到的画面"></span></label></p>
 <p>如果这个系列在读者心里留下了一件事，我希望是：</p>
 <blockquote>
 <p><strong>Agent 的界面不是聊天框的变体。它是为一种全新的执行体——不确定、长运行、可中断、可审计、会调用工具——设计的工作流界面。这个领域需要的人，不是“会写聊天 UI 的前端“，而是同时理解终端渲染、事件系统、权限模型、diff 审查和本地开发环境的工程师。</strong></p>
@@ -1801,6 +1814,7 @@ tick 90: parse(3000字)+ build(3000字)+ layout(3000字)
 </table>
 </div>
 <p>第 2 篇描述的引擎不是一条“少数派的错路“——它是四家全都内置着的一半。真正的新问题是这条分界线本身：<strong>一个 block 完成之后，谁继续为它记账？</strong> 以及，为什么每家都在同一产品里养着线的两边。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch11-scoreboard.svg" alt="2:2 的默认分岔 + 全员双模：四家都内置了两种所有权模型"><span class="img-wrapper"><img src="assets/ch11-scoreboard.svg" alt="2:2 的默认分岔 + 全员双模：四家都内置了两种所有权模型"></span></label></p>
 <hr>
 <h2 id="二分界线已完成的内容谁继续为它记账"><a class="header" href="#二分界线已完成的内容谁继续为它记账">二、分界线：已完成的内容，谁继续为它记账</a></h2>
 <p>先把两个学派定义清楚。</p>
@@ -1816,6 +1830,7 @@ tick 90: parse(3000字)+ build(3000字)+ layout(3000字)
 │ 输入框    ← 引擎管       │    │ 输入框（在 viewport 内）  │
 └──────────────────────────┘    └──────────────────────────┘
 </code></pre>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch11-ownership-two-schools.svg" alt="全屏自管派与 inline viewport 派：分歧只在 block 完成后谁继续记账"><span class="img-wrapper"><img src="assets/ch11-ownership-two-schools.svg" alt="全屏自管派与 inline viewport 派：分歧只在 block 完成后谁继续记账"></span></label></p>
 <p>这里要特别强调：<strong>两派的 live 区是同构的。</strong> ForgeLoopTUI 的增量 diff、Codex 的 ratatui 双缓冲、Ink 的行级 erase-rewrite，做的是同一件事——这正是我当初误判阵营的原因。表层行为一模一样。</p>
 <p>真正的分歧只有一个问题：<strong>一个 block 完成之后，谁还继续为它记账？</strong></p>
 <ul>
@@ -1850,6 +1865,7 @@ tick 90: parse(3000字)+ build(3000字)+ layout(3000字)
 }
 <span class="boring">}</span></code></pre>
 <p>不变式值得逐字读：<strong>viewport 是可擦除的墨水，scrollback 是泼出去的水。</strong> 每发射一批内容，就先擦掉自己画的输入框、把内容印在那个位置、再在下方顶出新的空白区。从终端的视角看，这个程序从头到尾只做两件事：往下打印、在底部反复涂改一小块。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch11-emit-scrollback.svg" alt="emit_to_scrollback 五步：viewport 是可擦除的墨水，scrollback 是泼出去的水"><span class="img-wrapper"><img src="assets/ch11-emit-scrollback.svg" alt="emit_to_scrollback 五步：viewport 是可擦除的墨水，scrollback 是泼出去的水"></span></label></p>
 <p>但要如实说一句：这个参考实现在 Grok 产品里目前没有生产调用方。真正在跑的生产路径用的是同一思想的更保守版本——Codex 的 <code>insert_history_lines()</code> 和 ratatui 自带的 <code>insert_before</code> 都走 DECSTBM 滚动区，把内容“插“到 viewport 上方而不是擦掉重印；Grok 的 minimal 模式直接复用后者。思想是同一条，工程上各家选了介质兼容性更好的变体。</p>
 <p>这套机制的纪律性质，在 Grok 仓库里有一个字面物证。<code>xai-grok-pager-minimal/src/guard.rs</code> 是一个守护测试：它用 <code>include_str!</code> 扫描 minimal 模式的每一个源码文件，断言其中<strong>不出现</strong> <code>emit_to_scrollback</code>、<code>resize_purge_rerender</code>、<code>resize_viewport_height</code> 这三个标识符——注释把理由写得很白：这些函数会重印已经归终端的历史，结果是 “double-printing (or, with ED3, wiping) committed scrollback”。这条路线赖以生存的纪律，在这里不是口头约定，是一个挂了就算构建失败的测试。</p>
 <p>对照第 2 篇的记账成本。全屏自管派维护 8 个帧状态字段，错一个全屏偏位；inline 派的全部渲染状态是一个 <code>Rect</code>（实质只有 <code>y</code> 在变）加一块可以随时作废的双缓冲。<strong>它不追求“记住屏幕“，它追求“随时能重建“。</strong></p>
@@ -1948,6 +1964,7 @@ print(history);                  // 内存里的全部历史按新宽度重新�
 <li><code>TuiAltScreen</code>（1302 行）：alt screen 全屏，应用自管视口。<strong>全屏自管派，工业级形态。</strong></li>
 </ul>
 <p>也就是说，第 11 篇那条我以为只存在于不同公司之间的分界线，在这个仓库里是同一个 <code>if</code> 的两个分支。这给了我一个前所未有的对照机会：<strong>同一棵组件树、同一份组件代码，喂给两种所有权模型，各自的账单会开在哪里。</strong></p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch12-one-interface-two-engines.svg" alt="一个 vendored fork，两个渲染器：同一接口，两种所有权"><span class="img-wrapper"><img src="assets/ch12-one-interface-two-engines.svg" alt="一个 vendored fork，两个渲染器：同一接口，两种所有权"></span></label></p>
 <hr>
 <h2 id="二主屏渲染器inline-派的差分变种"><a class="header" href="#二主屏渲染器inline-派的差分变种">二、主屏渲染器：inline 派的差分变种</a></h2>
 <h3 id="21-模型全量渲染增量落地"><a class="header" href="#21-模型全量渲染增量落地">2.1 模型：全量渲染，增量落地</a></h3>
@@ -1976,6 +1993,7 @@ if (firstChanged &lt; prevViewportTop) {
 <li>纯追加（流式输出的常态）走 append 快速路径：光标滚到底直接写。</li>
 </ol>
 <p>外加两个通用工程点：所有写包在 <code>\x1b[?2026h/l</code> 同步输出里（原子帧，防撕裂）；kitty 图片协议有一整套影子账本（图片行占位行数、changed-range 膨胀、按 id 删除），因为图片在终端里是字节流之外的第二套状态。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch12-dorender-decision-tree.svg" alt="doRender 的决策树：一串快速失败路径，每条都对应一类真实事故"><span class="img-wrapper"><img src="assets/ch12-dorender-decision-tree.svg" alt="doRender 的决策树：一串快速失败路径，每条都对应一类真实事故"></span></label></p>
 <h3 id="24-和-grok-的哲学分野预防-vs-检测"><a class="header" href="#24-和-grok-的哲学分野预防-vs-检测">2.4 和 Grok 的哲学分野：预防 vs 检测</a></h3>
 <p>把两家并排，inline 派内部其实有两个档位：</p>
 <ul>
@@ -2024,6 +2042,7 @@ if (firstChanged &lt; prevViewportTop) {
 </table>
 </div>
 <p><strong>生前归自己，死后归终端。</strong> 运行期享受全屏自管的全部自由，退出时把资产清算回介质本身。两派的优点被串行地各取了一段。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch12-return-scrollback.svg" alt="生前归自己，死后归终端：退出时把历史归还给终端"><span class="img-wrapper"><img src="assets/ch12-return-scrollback.svg" alt="生前归自己，死后归终端：退出时把历史归还给终端"></span></label></p>
 <hr>
 <h2 id="四这个案例对本系列意味着什么"><a class="header" href="#四这个案例对本系列意味着什么">四、这个案例对本系列意味着什么</a></h2>
 <p><strong>1. 第 11 篇的分界线被复用了，但没有被推翻。</strong> 那条分界是真实的结构——真实到四家的开关都压在同一条线上，而 Kimi Code 是在同一个接口后面把两边都实现得最完整的一个。默认主屏（inline 派）说明：对一个要集成进用户日常终端的 CLI，“历史归终端“仍是默认正确答案；实验性全屏说明：会话内体验（滚动、搜索、选择、resize）的诉求强到值得再养一套引擎。</p>
@@ -2100,6 +2119,7 @@ if (firstChanged &lt; prevViewportTop) {
 └── packages/ai 模型目录 ──生成──→ kwwk（ModelsCatalog，900+ 模型）
         └─ 中间层：oh-my-pi（omp），kwwk 的策略注释穿它引用 pi-tui
 </code></pre>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch13-pi-mono-lineage.svg" alt="pi-mono 血缘金字塔：三家头部公司，同一个上游"><span class="img-wrapper"><img src="assets/ch13-pi-mono-lineage.svg" alt="pi-mono 血缘金字塔：三家头部公司，同一个上游"></span></label></p>
 <p>第 11 篇对照表里的五个样本，三个共享这个上游。</p>
 <h2 id="四回到第-11-篇收敛要拆成两半"><a class="header" href="#四回到第-11-篇收敛要拆成两半">四、回到第 11 篇：收敛要拆成两半</a></h2>
 <p>第 11 篇的自我修正记录在案：我初稿把四家写成“收敛到 inline“，后来改成 2:2 记分牌 + 全员双模。现在要再修一层，这次修在“收敛“这个词本身。</p>
@@ -2108,6 +2128,7 @@ if (firstChanged &lt; prevViewportTop) {
 <li><strong>真收敛</strong>：Claude Code（Ink fork）、Codex（ratatui + <code>insert_history</code>）、Grok Build（<code>xai-ratatui-inline</code>）。三家代码毫无血缘，各自独立走到同一个答案附近。这是工程共识的证据。</li>
 <li><strong>同源收敛</strong>：kimi（vendored fork）、mcode（打包）、kwwk（移植）。相似是因为同一份代码。这是供应链的证据。</li>
 </ul>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch13-real-vs-lineage.svg" alt="真收敛 vs 同源收敛：三个亲戚点头不等于三次独立验证"><span class="img-wrapper"><img src="assets/ch13-real-vs-lineage.svg" alt="真收敛 vs 同源收敛：三个亲戚点头不等于三次独立验证"></span></label></p>
 <p>对“业界都这么做了“这类论断，两种成因的效力天差地别。三个亲戚点头，不等于三次独立验证——它们投的可能是同一张票。</p>
 <p>这同时是对本系列方法论的修正。第 11 篇拿五家样本做对照，默认样本相互独立；这一篇证明默认不成立：mcode 作为“第六个独立样本“是假的，kwwk 也得拆开看——TUI 引擎是独立数据点（Swift 自研，注释自证策略出处），agent 运行时不是。<strong>多样本对照之前，先验样本的独立性</strong>；而验独立性的办法只有一个，还是读源码。界面行为相似的两家，底下的血统可以差出一个人的一整个 monorepo——这是“看起来一样的界面，底下的成本结构可以完全不同“（第 11 篇结尾）在生态维度的重演。</p>
 <h2 id="五隐形中枢个人-monorepo-的产业位"><a class="header" href="#五隐形中枢个人-monorepo-的产业位">五、隐形中枢：个人 monorepo 的产业位</a></h2>
@@ -2159,6 +2180,7 @@ if (firstChanged &lt; prevViewportTop) {
 3. 重绘剩余预览 + live 区        tui.render(committed: 剩余预览, live: …)
 </code></pre>
 <p>并且立了铁律：<strong>永远不要在完整帧之后直接 <code>appendFrame</code></strong>。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch14-three-step-settle.svg" alt="三步结算序列与铁律：appendFrame 是永久历史的唯一通道"><span class="img-wrapper"><img src="assets/ch14-three-step-settle.svg" alt="三步结算序列与铁律：appendFrame 是永久历史的唯一通道"></span></label></p>
 <p>这条铁律有出处。TASK-27 是测试先行的——只写测试不改库。<code>CommittedPreviewAnchorTests</code> 造了一个预言机：<code>ScrollbackTerminal</code>，实现了真实终端语义（deferred wrap、宽字符、底部滚动入 scrollback，覆盖 TUI 输出的全部 ANSI 子集），每个 API 调用后断言屏幕与 scrollback 和“期望内容物理换行后的尾部“逐行一致。S1–S5 场景验证 erase→append→redraw 在各种组合下锚定正确；S6 是一个专门的探针，<strong>故意钉住直连序列的缺陷形状</strong>——满帧后直接 appendFrame，结果是永久性的窗口偏移加陈旧绘制补位。把“为什么要先擦“从一条经验升级成了一道回归约束。</p>
 <p>还有一个归属细节值得记：<code>StreamingTranscriptAppendState</code>（维护“哪些行已落卷轴、哪些未结算“的增量状态机）放在 <code>Sources/ForgeLoopTUI/Transcript/</code>，在引擎里，不在示例 app 里。合流是引擎级的决定，app 只是消费者——现在有两个消费者：MinimalAIApp 和 dsh-tui，两者帧模式一致。</p>
 <h2 id="三这件事在所有权坐标系里意味着什么"><a class="header" href="#三这件事在所有权坐标系里意味着什么">三、这件事在所有权坐标系里意味着什么</a></h2>
@@ -2178,6 +2200,7 @@ if (firstChanged &lt; prevViewportTop) {
 </table>
 </div>
 <p>比 Kimi 的“退出时归还“更早：不是终态一次性清算，是逐行按揭。第 12 篇的结论是“所有权可以按生命周期分期缴“——现在“会话期间“内部也可以分期了，<strong>稳定的程度就是所有权的边界</strong>：每行内容在它被认证稳定的那个瞬间，从引擎资产变成终端资产。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch14-per-line-mortgage.svg" alt="稳定一行，归还一行：每行内容在认证稳定的瞬间换手"><span class="img-wrapper"><img src="assets/ch14-per-line-mortgage.svg" alt="稳定一行，归还一行：每行内容在认证稳定的瞬间换手"></span></label></p>
 <p>但要说清楚：引擎没有换阵营。窗口化全帧 API 原样保留，AppKit 桥、全屏路径都在，另一个 app 仍然可以选“历史全归引擎“。引擎做的事是提供了两种语义（原地帧 + 发射通道）让 app 自选——这恰好是八月审计里“问题 2“（历史持久化路径待确认，实为 API 设计问题）的答案，也顺带回答了当时挂着的 Phase 0 决策 A：要不要提供 kwwk 式 <code>commit(_:)</code> 一等沉降语义？实践给出的答案是<strong>已经有了</strong>——<code>appendFrame</code> 就是 commit 通道，差的只是把它作为一等语义写进文档和 README 的选择指引。挂了两个月的问题，被一次修 bug 顺手回答了。</p>
 <h2 id="四新税种混合模式的账单"><a class="header" href="#四新税种混合模式的账单">四、新税种：混合模式的账单</a></h2>
 <p>第 11 篇推导过 inline 派的税单。混合模式不免税，而且发明了一个新税种。9 月 1 日的 TASK-37 是它的第一张账单。</p>
@@ -2211,8 +2234,10 @@ if (firstChanged &lt; prevViewportTop) {
 <p><strong>终端：像素不朽，数据易逝。</strong> 一行内容发射进 scrollback，终端模拟器替你保管它的像素，直到用户清屏；而引擎内存里的数据模型，进程一退就蒸发。第 12 篇记过 ForgeLoopTUI 的窘境正是这个：历史活在屏幕上，内存模型随进程蒸发，退出后没有干净归档。</p>
 <p><strong>GUI：像素速朽，数据必须不朽。</strong> 屏幕外的 cell 被回收，视图层级随时重建，前后台切换、内存警告、任何一次转场都可能让像素归零；而数据没有任何介质替你保管——你必须自己建库，一条对话不落盘，就等于没发生过。</p>
 <p>于是第 11 篇的那个问题——“一个 block 完成之后，谁继续为它记账”——在 GUI 上被改写成另一个问题：<strong>已完成的内容存到哪、什么时候存</strong>。所有权从像素层下沉到了数据层。第 5 篇讲 Event Sourcing 时说事件流是“好架构“；在 GUI 端它升级了：不是好架构，是生存必需——没有那份数据，连“刚才聊了什么“都无处可查。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch15-two-mortalities.svg" alt="像素与数据：两种速朽，两种不朽"><span class="img-wrapper"><img src="assets/ch15-two-mortalities.svg" alt="像素与数据：两种速朽，两种不朽"></span></label></p>
 <h2 id="三flowdown-的账本"><a class="header" href="#三flowdown-的账本">三、FlowDown 的账本</a></h2>
 <p>空谈不如看账。FlowDown 的历史管理拆成三件：入库、窗口化、结算。三件都有源码。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch15-flowdown-ledger.svg" alt="FlowDown 的历史管理三件套：入库、窗口化、结算"><span class="img-wrapper"><img src="assets/ch15-flowdown-ledger.svg" alt="FlowDown 的历史管理三件套：入库、窗口化、结算"></span></label></p>
 <h3 id="31-入库连解析产物都要持久化"><a class="header" href="#31-入库连解析产物都要持久化">3.1 入库：连解析产物都要持久化</a></h3>
 <p>FlowDown 的存储在独立框架 <code>Frameworks/Storage</code>，底座是 WCDB（微信开源的 SQLite 封装，<code>wcdb-spm-prebuilt</code>）。三张核心表：<code>Conversation</code>、<code>Message</code>、<code>Attachment</code>。</p>
 <p><code>Message</code> 的字段设计值得逐条看（<code>Storage/Tables/Message.swift</code>）：</p>
@@ -2255,6 +2280,7 @@ if (firstChanged &lt; prevViewportTop) {
 </tbody>
 </table>
 </div>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch15-ownership-finale.svg" alt="所有权四部曲合拢：四条路线的总账"><span class="img-wrapper"><img src="assets/ch15-ownership-finale.svg" alt="所有权四部曲合拢：四条路线的总账"></span></label></p>
 <p>四行连起来读：终端之争争的是“要不要替介质记账“，答案是开关和分期；GUI 没有这场争论，它的题目直接写在数据层——什么算定型、什么时候落盘、被杀时账本完不完整。渲染所有权的尽头是数据所有权，也就是第 5 篇那条事件流的必然形态。</p>
 <p>这也是本系列正文在这个系列里的终点站：界面的账本记完了，下一程换轨——事件流离开本地之后的命运：断线、重连、多服务器，以及一条 SSE 中断之后，谁还记得它讲到哪了。</p>
 <hr>
@@ -2284,6 +2310,7 @@ if (firstChanged &lt; prevViewportTop) {
 <li>模式开关滥用：开关括号粘贴、键盘协议、同步输出，都可能让客户端行为错乱。</li>
 </ul>
 <p>确认框劫持的完整链条，Trail of Bits 已经演示过：恶意 MCP 服务器返回的文本里带光标码 → 权限确认时刻，屏幕上“工具将执行 X“的 X 已经被擦换成了良性描述，或恶意命令被移出了可视区 → 用户核对无误，按了回车。<strong>权限 UX 的全部隐含假设——用户看到的等于将要执行的——在字符网格上是可以用一串字节伪造的。</strong></p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch16-confirmation-hijack.svg" alt="确认框劫持的完整链条：用户看到的等于将要执行的，可以用一串字节伪造"><span class="img-wrapper"><img src="assets/ch16-confirmation-hijack.svg" alt="确认框劫持的完整链条：用户看到的等于将要执行的，可以用一串字节伪造"></span></label></p>
 <p>还有一层 TUI 特有的脆弱性。GUI 里内容原地消失是异常，会触发警觉；终端里滚动、清屏、重绘是每分钟都在发生的正常现象（第 2、11 篇拆过的那些机制）。用户对“字符消失“已经脱敏——这是这个介质给攻击者免租金提供的掩护。</p>
 <h2 id="三我把防线找了一遍三家引擎的排查记录"><a class="header" href="#三我把防线找了一遍三家引擎的排查记录">三、我把防线找了一遍：三家引擎的排查记录</a></h2>
 <p>为了不空谈，我做了个一手排查：在三家开源引擎和 ForgeLoopTUI 里找“不可信内容进入渲染前，是否被转义或中和“。方法很朴素——grep 清洗类标识符，再读命中处。</p>
@@ -2307,6 +2334,7 @@ if (firstChanged &lt; prevViewportTop) {
 <p><strong>转义层——终端版的 HTML escaping。</strong> 不可信文本（工具输出、文件内容、网页摘要）在进入行数组之前，中和全部 CSI/OSC 序列：剥除，或可见地转义成 <code>␛[A</code>。OSC 52、OSC 8、光标码、模式开关，零容忍。这件事的前提是内容与样式的结构化分离——恰好是第 5 篇说过的“渲染输入应该是结构化事件，投影发生在边界上“：转义就发生在投影边界，而不是在 ANSI 字符串里做外科手术。这个系列写到这里，安全问题和架构问题在第 5 篇的地基上会师了。</p>
 <p><strong>溯源层——让三种信任级别看得见。</strong> 工具输出在视觉上与用户内容、模型内容分区（折叠框、边框、颜色语义），确认框只渲染结构化字段——命令、参数、目标路径——不渲染自由文本。要害在于：权限确认框里显示的工具描述，是第三方 MCP 服务器写的一段话。<strong>不可信输入，渲染在 UI 里最可信的位置</strong>，这是当前所有权限界面的共用暗病。</p>
 <p><strong>变更层——描述漂移检测。</strong> Invariant Labs 2025 年披露的 tool poisoning 里有个“rug pull“变体：工具先以无害描述通过审批，之后偷换描述。界面侧的解法很朴素：记下用户批准时的描述 hash，变了就重新询问——“这个工具在你批准之后改了说明书”。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch16-trust-separation.svg" alt="三种信任级别：混在同一渲染面的现状，与结构化分离的三层防线"><span class="img-wrapper"><img src="assets/ch16-trust-separation.svg" alt="三种信任级别：混在同一渲染面的现状，与结构化分离的三层防线"></span></label></p>
 <p><strong>协议层已经在承认。</strong> MCP 后来加的 elicitation URL mode，让敏感交互绕开 MCP client、走用户的浏览器完成——协议设计者自己承认了 client 内的渲染信道不可信。这是对的方向：信道不可信，就把最敏感的问答挪到各自可信的介质上去。</p>
 <p>最后记一笔我的欠账：ForgeLoopTUI 的内容转义过滤器进待办。第 14 篇结尾那张欠了六件的清单，现在是七件。</p>
 <h2 id="五收束-2"><a class="header" href="#五收束-2">五、收束</a></h2>
@@ -2326,11 +2354,13 @@ if (firstChanged &lt; prevViewportTop) {
 <p>比遗忘本身更值得拆的是那个计量条。第 6 篇 3.3 节讲过它有三层麻烦（滞后值 vs 估算值、压缩后的非单调回落、预警的产品决策）；今年的公开材料把第四层也暴露了：Claude Code 为自动压缩保留了约 33K token 的缓冲区（从更早的 45K 降下来），触发点因此显著早于历史——有分析认为在 64–75% 而非早期的 90%+；GitHub 上有 2026 年 6 月的 issue 标题就叫 “Auto compact does not trigger at 100% context”。</p>
 <p>把这些摆在一起会看到一个结构性事实：<strong>仪表和熔断器各读各的表</strong>。计量条显示的是一个估算口径的用量，触发压缩的是另一个口径（窗口判定减缓冲区），两者从不承诺一致——“显示 3% 实际已压缩“这类报告不是 UI bug，是两本账各记各的必然症状。</p>
 <p>第 5 篇的投影理论在这里遇到它的反面案例：事件流的投影是完整的——tool.started、tool.finished、file.changed，条条在案，回放无损；但<strong>状态</strong>的投影被静默替换了。投影完整性不等于状态完整性。事件流记得 Agent 做过什么，窗口里装的已经是一份改写过的记忆。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch17-two-gauges.svg" alt="仪表和熔断器各读各的表：显示 3%，实际已压缩"><span class="img-wrapper"><img src="assets/ch17-two-gauges.svg" alt="仪表和熔断器各读各的表：显示 3%，实际已压缩"></span></label></p>
 <h2 id="二引擎账四级流水线与那行熔断注释"><a class="header" href="#二引擎账四级流水线与那行熔断注释">二、引擎账：四级流水线与那行熔断注释</a></h2>
 <p>把 Claude Code 的引擎侧摊开（泄露源码的多家交叉分析，出处见脚注），会发现它的压缩不是一刀切，是一条四级流水线：</p>
 <p><strong>Snip → MicroCompact → ContextCollapse → AutoCompact。</strong></p>
 <p>前三级是本地操作，不调模型：Snip 截断超长工具输出，MicroCompact 清理噪音 token，ContextCollapse 折叠旧上下文——便宜、快、基本无损。只有最后一级 AutoCompact 调 LLM 生成摘要，把历史整体替换成压缩叙事——贵的、慢的、有损的，放在最后。这个分级和渲染侧的 stable prefix / 沉降分级（第 3、14 篇）是同一个设计哲学：确定性便宜的先上，概率性昂贵的兜底。</p>
 <p>流水线自己也有防线：连续失败 3 次自动压缩就放弃（<code>MAX_CONSECUTIVE_AUTOCOMPACT_FAILURES = 3</code>）。为什么要防它？泄露源码里的注释给出了数字：加熔断之前，曾有 <strong>1,279 个会话出现 50 次以上连续失败，每天浪费约 25 万次 API 调用</strong>。失败循环的机理值得一提：压缩本身要调模型，模型失败触发重试，重试带着一个更大的上下文——垃圾回收器自己成了内存泄漏。这行注释是“压缩是分布式系统问题“的最好证词。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch17-compaction-pipeline.svg" alt="四级压缩流水线与熔断：确定性便宜的先上，概率性昂贵的兜底"><span class="img-wrapper"><img src="assets/ch17-compaction-pipeline.svg" alt="四级压缩流水线与熔断：确定性便宜的先上，概率性昂贵的兜底"></span></label></p>
 <h2 id="三别家在怎么做账"><a class="header" href="#三别家在怎么做账">三、别家在怎么做账</a></h2>
 <p>批评“静默丢失“很容易，但只盯着一家会错过全貌。我把本地能查的三家实现翻了一遍——结论是：<strong>引擎账家家都记，差别大得惊人的是账本给谁看</strong>。</p>
 <h3 id="31-kwwk压缩有自己的渲染器和预算表"><a class="header" href="#31-kwwk压缩有自己的渲染器和预算表">3.1 kwwk：压缩有自己的渲染器和预算表</a></h3>
@@ -2340,6 +2370,7 @@ if (firstChanged &lt; prevViewportTop) {
 <h3 id="32-grok-build丢弃的内容落盘成带索引的档案"><a class="header" href="#32-grok-build丢弃的内容落盘成带索引的档案">3.2 grok-build：丢弃的内容落盘成带索引的档案</a></h3>
 <p>grok 的 <code>xai-compaction-transcript</code> crate 把压缩做成了<strong>档案系统</strong>：每个会话一个 <code>compaction/</code> 目录，<code>INDEX.md</code> 索引加 <code>segment_</code> 前缀的分段文件；分段上限 512KB，超限就地在文内写明 “[… TRUNCATED at {limit} bytes, {omitted} turns omitted …]”；逐 turn 有细节档位（verbose/balanced，后者每轮文本 2000 字符、回复 500 字符）。与 Python 实现的列头、段落、索引格式对齐。</p>
 <p>换句话说：<strong>被压缩掉的原文没有蒸发，它变成了磁盘上一份可浏览、带索引的 Markdown 档案</strong>。窗口里装摘要，档案里存全文——“丢弃“其实是“归档”。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch17-discard-as-archive.svg" alt="丢弃即归档：窗口里装摘要，磁盘上存全文"><span class="img-wrapper"><img src="assets/ch17-discard-as-archive.svg" alt="丢弃即归档：窗口里装摘要，磁盘上存全文"></span></label></p>
 <h3 id="33-flowdown用户主使的-fork-式压缩"><a class="header" href="#33-flowdown用户主使的-fork-式压缩">3.3 FlowDown：用户主使的 fork 式压缩</a></h3>
 <p>FlowDown（GUI 端）的 <code>compressConversation</code> 是另一种所有权答案：用户手动触发 → 导出整段会话为 Markdown → 调模型生成摘要 → <strong>创建一个新会话</strong>承载摘要。原始会话一个字节都不动。压缩在这里不是对历史的改写，是一次用户签字画押的衍生交易——原账本不可变，摘要是新资产。</p>
 <h2 id="四真正的分界账本的可见性"><a class="header" href="#四真正的分界账本的可见性">四、真正的分界：账本的可见性</a></h2>
@@ -2380,6 +2411,7 @@ if (firstChanged &lt; prevViewportTop) {
 <p>AGENTS.md 官网的自我介绍很克制：“a simple, open format for guiding coding agents, used by over 60k open-source projects”——给编码 agent 的指引格式，六万多个开源项目在用，“把它想成给 agent 看的 README”。FAQ 更克制，直说这不是正式标准，没有治理机构，各家工具自行解释。一个不设门槛的约定，被 OpenAI Codex、Gemini CLI、Cursor、GitHub Copilot、Jules、Amp、Zed、Devin、Roo Code 先后采纳，成了事实标准。著名的例外是 Claude Code，主力用自家的 <code>CLAUDE.md</code>（部分配置下也读 AGENTS.md）。</p>
 <p>它的吸引力不难理解：规则就是文本文件——可 diff、可 review、有 blame、随仓库走。改规则和改代码走同一个 PR 流程，历史清清楚楚。已经有评论主张：CLAUDE.md 的变更本质是软件变更，该用对待代码的严格程度对待它。这个主张成立的前提，正是文件派把规则变成了 git 里的资产。</p>
 <p>文件派的工程化上限长什么样，kimi-code 给了目前我见过最完整的一手样本：<strong>12 份嵌套的 AGENTS.md</strong>，从仓库根一路铺到 <code>packages/agent-core/src/services/</code> 这种深度。配套三条治理规则写在根文件里——根文件只放“热路径“规则；深层文档下沉到各自目录的 AGENTS.md；改代码前“follow the nearest <code>AGENTS.md</code> in the directory tree“（就近生效）。这就是 CSS 级联的文件版： specificity 靠目录深度实现。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch18-agents-cascade.svg" alt="12 份嵌套 AGENTS.md：CSS 级联的文件版，specificity 靠目录深度"><span class="img-wrapper"><img src="assets/ch18-agents-cascade.svg" alt="12 份嵌套 AGENTS.md：CSS 级联的文件版，specificity 靠目录深度"></span></label></p>
 <p>还有两个细节值得一提。其一，仓库根上 <code>CLAUDE.md</code> 和 <code>AGENTS.md</code> <strong>内容完全相同，双写两份</strong>——为了迁就两个 agent 各自的默认文件名，同一份规则存了两拷贝。标准割据的代价，具象成了一行 <code>cp</code>。其二，规则本身的内容已经治理到很细的地方：要求 agent 提交时不署名、不暴露自己是个 agent；公共文本里真实内部标识符要换成占位符；“人类作者必须理解这个变更，才允许提交 PR”。用文件驯服 agent，已经驯到了“不许承认自己是 agent“的粒度。</p>
 <p>生态的另一头是另一个一手事实：我把本地另外三个 agent 仓库扫了一遍——kwwk、grok-build、mcode——<strong>一份规则文件都没有</strong>。同一批做 agent 的工程团队，有的把规则文件铺成十二层的级联，有的一个字没写。文件派远不是行业共识，它是行业的一个阵营。</p>
 <p>文件派的软肋也随之清楚：加载语义是方言市场（叠加还是覆盖、就近还是显式优先级，各家各说各话）；对普通用户它是 cargo-cult 风险——到处复制粘贴的魔法文本，没有人知道哪句在生效。</p>
@@ -2415,6 +2447,7 @@ if (firstChanged &lt; prevViewportTop) {
 <li><strong>记忆注入了什么？</strong> 条目加出处（哪次对话、何时写入）——provenance 补上，设置页从仓库升级成账本。</li>
 <li><strong>冲突时谁赢了？</strong> 就近覆盖了全局？记忆改写了规则？一条标注就够了。</li>
 </ol>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch18-computed-config.svg" alt="生效配置预览：agent 需要 Computed Styles 面板的对应物"><span class="img-wrapper"><img src="assets/ch18-computed-config.svg" alt="生效配置预览：agent 需要 Computed Styles 面板的对应物"></span></label></p>
 <p>价值清单随手可列：排错时它是第一站（“它为什么坚持用这个过时约定“十有八九是规则层的事故）；信任上它是 16 篇的感知前提（看不到携带的规则，“遵循你的约定“就是一句不可验证的话）；工程上它是文件派治理的最后一环——有 diff、有 review、有就近级联，独独没有“实际生效值”，整套 git 流程差最后一厘米。</p>
 <p>它为什么还没长出来？因为合成规则的每一层归属不同的实现：文件是用户写的，加载是客户端定的，记忆是服务端存的——<strong>恰好因为没有人拥有全部三层，才没有人有立场给出合成视图</strong>。标准割据的代价，从第二节那行 <code>cp</code> 升级成了整块缺失的界面。</p>
 <h2 id="六收束-1"><a class="header" href="#六收束-1">六、收束</a></h2>
@@ -2432,6 +2465,7 @@ if (firstChanged &lt; prevViewportTop) {
 <h2 id="一你批准过最贵的一次同意"><a class="header" href="#一你批准过最贵的一次同意">一、你批准过最贵的一次“同意“</a></h2>
 <p>先复述一个每个人经历过的时刻：第 14 次 <code>[y/n]</code> 弹出来，你的手指比眼睛先动——按了 y。第 8 篇把这叫授权疲劳，并记录了行业的第一反应：auto mode 让分类器替你按 y（8 月起成了默认），机器抓住八九成的危险命令，比疲劳的人类可靠得多。</p>
 <p>但这条路付的代价第 8 篇也写了：分类器是新的黑箱，而程序员要的第一件事是可观察。于是还有第二条路没被走满：<strong>把审批的单位从“一次操作“升格为“一份计划“</strong>。不问“这个命令能不能跑“，先问“你打算做什么“——批准一次，管一整段。这不是新发明，是给审批换了一个更省力的粒度。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch19-approval-granularity.svg" alt="把审批的单位从一次操作升格为一份计划"><span class="img-wrapper"><img src="assets/ch19-approval-granularity.svg" alt="把审批的单位从一次操作升格为一份计划"></span></label></p>
 <h2 id="二计划在产品里的三个真实形态"><a class="header" href="#二计划在产品里的三个真实形态">二、计划在产品里的三个真实形态</a></h2>
 <p><strong>Claude Code 的 plan mode：把审批做成一种模式。</strong> 官方文档的口径：会话里按 Shift+Tab 在权限模式间轮换（default → acceptEdits → plan……），进入 plan 模式后 agent 被禁止编辑文件和执行有状态变更的命令，只能读和探索，产出一份计划；你审完批准，写权限才解锁。注意这个设计的重心：它没有发明新弹窗，它把“只读探索“和“开始动手“之间的那条线，从一条条审批上移成了一道模式边界——<strong>批准计划 = 批准跨界</strong>。</p>
 <p><strong>Kiro 的 spec 三件套：把瀑布搬回来产品化。</strong> <code>.kiro/specs/</code> 目录下按序生成 <code>requirements.md</code>（用 EARS 语法写，“WHEN… THE SYSTEM SHALL…”）、<code>design.md</code>、<code>tasks.md</code>，另有 <code>.kiro/steering/</code> 存放长期的产品与项目语境。AWS 这套被人叫 spec-driven development，形态上是需求-设计-任务的老瀑布，但角色变了：文档不是给人执行的开发计划，是给 agent 的执行输入——写文档的痛苦被 agent 分摊了大半之后，瀑布的结构价值才回来。</p>
@@ -2441,6 +2475,7 @@ if (firstChanged &lt; prevViewportTop) {
 <p>计划文档本身也被记账：每次 ExitPlanMode 的评审提交，计划正文被卸载成带版本号的文件（<code>v&lt;N&gt;.md</code>，附 sha256 和字节数），事件流里只存引用记录，冷重建时照样投影出“计划修订“标记和 plan 模式徽章，服务端还有专门的 <code>/transcript/plan</code> 查询端。第 17、18 篇的账本思想，在计划上完整落地了一回。</p>
 <h2 id="三checklist-是人机共享的状态机"><a class="header" href="#三checklist-是人机共享的状态机">三、checklist 是人机共享的状态机</a></h2>
 <p>把三个样本放在一起，能看出 checklist 这个界面的真实身份：它同时是两个东西——<strong>给用户看的进度 UI，和给模型看的自持上下文</strong>。kimi 的设计点破了这层双重性：清单活在事件流里，人读它的投影（勾选框），模型读它的注入（“你还剩三项，保持一个 in_progress”）。一个状态，两侧消费——这正是第 9 篇多端投影在“计划“上的最小实例。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch19-checklist-duality.svg" alt="checklist 是人机共享的状态机：一个状态，两侧消费"><span class="img-wrapper"><img src="assets/ch19-checklist-duality.svg" alt="checklist 是人机共享的状态机：一个状态，两侧消费"></span></label></p>
 <p>由此带出三个没被普遍想清楚的设计问题：</p>
 <p><strong>谁能勾？</strong> 人勾是进度确认（我看到了），模型勾是完成声明（我做完了）。前者是读操作，后者是对用户的承诺——语义完全不同，但多数产品的勾选框长得一模一样。混用的话，清单会在不知不觉中从“共享状态“退化成“模型的自说自话“。</p>
 <p><strong>勾了算什么？</strong> 模型勾掉一项，等于宣称完成——但这是声明，还没有证据（测试呢？验证呢？）。声明与证据的落差是“完成“这个概念最深的一道裂缝，本系列后面讲验收时会回到这里，先立桩。</p>
@@ -2465,9 +2500,11 @@ if (firstChanged &lt; prevViewportTop) {
 <h2 id="二agent-的副作用早就溢出仓库了"><a class="header" href="#二agent-的副作用早就溢出仓库了">二、agent 的副作用早就溢出仓库了</a></h2>
 <p>第 8 篇的四层风险模型里有一列叫“可回滚性“——只读、可回滚写入、难回滚写入、外部副作用。这个维度早就预见到了今天的问题，但产品界面没有跟上：<strong>审批弹窗不区分“这个操作可以被 checkpoint 兜住“和“这个操作出了门就回不来“</strong>，回滚按钮也不标注自己的覆盖边界。</p>
 <p>把 checkpoint 罩不住的清单摆出来，问题的形状就清楚了：已经发出的邮件和消息、已经合并的 PR、云上已经创建或删除的资源、已经扣费的 API 调用、MCP 工具对第三方系统的每一次写入、bash 里 <code>rm</code> 掉的文件。这些操作和文件编辑共享同一颗“允许“按钮、共享同一种被保护的错觉——而它们恰恰是四层模型里最底下两层的东西。<strong>安全网盖住了轻的，漏下来的全是重的。</strong></p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch20-safety-net.svg" alt="安全网盖住了轻的，漏下来的全是重的"><span class="img-wrapper"><img src="assets/ch20-safety-net.svg" alt="安全网盖住了轻的，漏下来的全是重的"></span></label></p>
 <h2 id="三两种-rewind回滚的根本不是同一个世界"><a class="header" href="#三两种-rewind回滚的根本不是同一个世界">三、两种 rewind，回滚的根本不是同一个世界</a></h2>
 <p>一个对照来自本地源码。kwwk 的 rewind 是<strong>会话级</strong>的：<code>SessionStore</code> 里有专门的 <code>.rewind</code> 持久化操作类型，运行时还有 <code>.streamRewind</code> 事件——回滚的是对话本身（分支退回某个节点，transcript 整体重建，14 篇拆过的 <code>replaceCommitted</code> 负责把屏幕上的历史换掉）。Claude Code 的 rewind 主打<strong>文件级</strong>：对话可以继续走，代码回到过去。</p>
 <p>两家都叫 rewind，所指不可通约。理想里的“重来“应该是时间旅行：会话分支和文件快照一起回到同一个时间点——对话状态、代码状态、工具执行到一半的外部状态，三者对齐。现实是各家回一半，而第三样（外部世界的状态）没有任何人碰得到，因为它根本没有快照可回。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch20-two-rewinds.svg" alt="两种 rewind：会话级与文件级，回滚的根本不是同一个世界"><span class="img-wrapper"><img src="assets/ch20-two-rewinds.svg" alt="两种 rewind：会话级与文件级，回滚的根本不是同一个世界"></span></label></p>
 <p>这里能接上第 14 篇的一条纪律：“appendFrame 是永久历史的唯一通道”。渲染层靠单一事实通道保住历史的完整性，文件层靠 checkpoint 快照保住代码的可回退性——<strong>同一个原则（为可逆性显式建一份账）在两层各自落地，唯独外部副作用那层还没有人建账</strong>。也许根本建不了：邮件发出去就是发出去了，那层的“账“只能事先记（审批时告知），不能事后回。</p>
 <h2 id="四虚假的可撤销感和它的风险补偿"><a class="header" href="#四虚假的可撤销感和它的风险补偿">四、虚假的可撤销感，和它的风险补偿</a></h2>
 <p>人机交互里有一条老常识：有 undo 的系统里，用户胆子更大——风险补偿。把它放到 2026 年的组合里看：auto mode 让审批变快（第 8 篇补记），checkpoint 让失败显得可救，两者叠加，用户对“允许“的心理门槛被系统性压低。</p>
@@ -2518,6 +2555,7 @@ data: [DONE]
 </code></pre>
 <p>正文一个 chunk 一个 chunk 来，每个 chunk 自己不带结束信息。现在假设流在第二个 chunk 之后因为网络问题<strong>断了</strong>。你拼出来的文本是 <code>## 结论\n\n好的</code>. 看起来渲染出来是一段完全正常的 Markdown，没有任何报错,也符合我们阅读的习惯,我们无法感觉到这里出现了问题.</p>
 <p>所以“看起来对不对“不能作为判据。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/prologue-truncation-invisible.svg" alt="断掉的流，完美的渲染：截断的回答看起来是完整的"><span class="img-wrapper"><img src="assets/prologue-truncation-invisible.svg" alt="断掉的流，完美的渲染：截断的回答看起来是完整的"></span></label></p>
 <h2 id="三complete-不是默认给的"><a class="header" href="#三complete-不是默认给的">三、complete 不是默认给的</a></h2>
 <p>到了协议层，第一个要纠正的是默认值。</p>
 <p>绝大多数系统的默认值是反的：拿到流，就默认当完整。try 包住、异常没有抛出、循环正常结束就代表这次回答可用。这个默认值错在哪？<strong>“没证据说坏了“不等于“证据说没坏”。</strong> 结束不是一个自然发生的事实，是一个需要证明的事件。所以我的规矩是：complete 只能放在最后,因为它不是默认值，是前面的检查全都没命中才轮得到的兜底档。</p>
@@ -2531,6 +2569,7 @@ complete               以上全部排除，才轮到我
 </code></pre>
 <p>这五个状态是我多次尝试后得到的失败模式的穷举——从外往里数，网络连接、网络流、事件、信号，每一层各有一种坏法。 complete 排在最后，是因为它是排除下来的兜底产物。</p>
 <p>枚举的价值在于它和 “try/except” 的区别：<strong>异常只能抓到你预想过的失败，枚举强迫你把“一条流可能怎么坏“逐层看过一遍</strong>。看完你会发现，多数实现的防御只覆盖了第一层: <strong>网络连接错误依靠异常体系兜底，但是后面三层全是裸的</strong>。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/prologue-five-states.svg" alt="完整性判定的五状态链：complete 是排除出来的兜底，不是默认值"><span class="img-wrapper"><img src="assets/prologue-five-states.svg" alt="完整性判定的五状态链：complete 是排除出来的兜底，不是默认值"></span></label></p>
 <h3 id="32-结束需要双保险"><a class="header" href="#32-结束需要双保险">3.2 结束需要双保险</a></h3>
 <p>直接看第四层，这是最容易被省掉的一层。</p>
 <p>一条流正常收尾，应该有两个<strong>互相独立</strong>的信号：关闭标记（SSE 的 <code>data: [DONE]</code>）和结束原因（最后一个数据 chunk 里的 <code>finish_reason</code>：<code>stop</code> / <code>length</code> / <code>tool_calls</code>…）。结束原因可以理解为协议替 Markdown“补发的结尾信息“,我们在正文里看不出来的事，协议单独告诉你一次。</p>
@@ -2595,6 +2634,7 @@ complete               以上全部排除，才轮到我
 <h2 id="一停在半行字上的界面"><a class="header" href="#一停在半行字上的界面">一、停在半行字上的界面</a></h2>
 <p>流式输出的第 37 秒，界面停在一个写了一半的 Markdown 表格上。光标还在闪，加载动画还在转——而网络连接八秒前就断了。用户盯着屏幕分不清两种状态：“模型在想“和“管道死了”。残酷的是，<strong>界面同样分不清</strong>，因为它不知道。</p>
 <p>把用户在断线时刻的真实困惑列出来，一共三问：还连着吗？我漏了什么？从哪继续？这三问的答案没有一问在渲染层——全在连接的另一侧。这篇讲的就是让界面有能力诚实回答这三个问题的基建。反过来讲也成立：这三问答不了的界面，它显示的一切“实时状态“都是表演。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/infra01-three-questions.svg" alt="停在半行字上的界面：三问的答案全在连接的另一侧"><span class="img-wrapper"><img src="assets/infra01-three-questions.svg" alt="停在半行字上的界面：三问的答案全在连接的另一侧"></span></label></p>
 <h2 id="二sse-的出厂设置和它的三个坑"><a class="header" href="#二sse-的出厂设置和它的三个坑">二、SSE 的出厂设置，和它的三个坑</a></h2>
 <p>先还 SSE 一个公道：协议设计者想过断线。每个事件可以带 <code>id:</code> 字段，浏览器原生的 <code>EventSource</code> 断线后自动重连，并把最后收到的 id 放进 <code>Last-Event-ID</code> 请求头带回去——服务端若配合，就能从断点续发。恢复机制是出厂设置，不是发明。</p>
 <p>但 agent 客户端拿到手就碎了三个角。</p>
@@ -2626,6 +2666,7 @@ complete               以上全部排除，才轮到我
 </table>
 </div>
 <p>第 9 篇说“统一 Event Log“是四个统一之一，当时它是一句架构主张；这张表是它的工程含义全集。顺带补一句 actor 档的注脚：Cloudflare Agents 的官方仓库里挂着一个重连竞态的 issue（#1837，移动网络抖动或重新部署弹跳 Durable Object 时，客户端 hook 在重连与续传之间赛跑）——每往上一档，省下的是会话状态，欠下的是新的竞态。没有免费的档位。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/infra01-source-of-truth-ladder.svg" alt="重连语义由 source of truth 的位置决定：五档谱系"><span class="img-wrapper"><img src="assets/infra01-source-of-truth-ladder.svg" alt="重连语义由 source of truth 的位置决定：五档谱系"></span></label></p>
 <h2 id="五幂等与序号at-least-once-世界的生存守则"><a class="header" href="#五幂等与序号at-least-once-世界的生存守则">五、幂等与序号：at-least-once 世界的生存守则</a></h2>
 <p>只要服务端肯重放，重复推送就不可避免——传输的现实是 at-least-once，不是 exactly-once。消费侧按事件 id 去重是基本功；真正会咬人的是副作用：工具已经执行了，确认事件在断线中丢了，重试会不会再执行一遍？</p>
 <p>这里 05 篇的三层分类拿到了第二生命。当初它为解释“不同 UI 消费事件的策略差异“而设计——执行流、副作用流、交互流。放进分布式语义里，它严丝合缝地变成了重放安全性分类：<strong>执行流可重放（幂等投影）、副作用流不可重放（只能记账不能重做）、交互流要仲裁（下节）</strong>。一个为界面写的分类法，在网络层一个字不用改。</p>
@@ -2666,6 +2707,7 @@ complete               以上全部排除，才轮到我
 <h2 id="零先立一个不对称"><a class="header" href="#零先立一个不对称">零、先立一个不对称</a></h2>
 <p>移动端工程里所有关于“断“的决策，都由一个平台事实定价：<strong>iOS 给应用退后台后的宽限是几十秒量级，之后进程挂起</strong>——没有后台特权的应用，连接的死亡不是风险，是日程表上已排定的事件。Android 好不了多少，国产厂商的后台查杀比 AOSP 更积极。</p>
 <p>这个事实制造了一个贯穿六站的不对称：<strong>用户的输入是毫秒级的，网络的宽限是秒级的，而一场 agent 回复是分钟级的。</strong> 三件事的时间常数差着两个数量级——所以“会话不断“这个承诺，永远不能靠“连接不断“来兑现，只能靠“断了能接“来兑现。接的逻辑，就是六个站点各自的那道工序。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/infra02a-time-constants.svg" alt="三个时间常数：毫秒级的输入、秒级的宽限、分钟级的回复"><span class="img-wrapper"><img src="assets/infra02a-time-constants.svg" alt="三个时间常数：毫秒级的输入、秒级的宽限、分钟级的回复"></span></label></p>
 <h2 id="站点一输入中还没按发送就切走"><a class="header" href="#站点一输入中还没按发送就切走">站点一：输入中（还没按发送）就切走</a></h2>
 <p>用户打了 200 字，微信弹窗，切走，进程十秒后被挂起或杀死。回来时草稿还在不在？</p>
 <p>错误答案是“监听退后台事件，临走前保存“。错误在哪：挂起和杀死都可能<strong>不给回调</strong>——willResignActive 不是遗嘱，进程可能根本等不到执行它的机会。把持久化押在一个不保证送达的事件上，等于把草稿押在运气上。</p>
@@ -2698,6 +2740,7 @@ complete               以上全部排除，才轮到我
 <p>最好的一站——如果前三站都做对了，这一站几乎是免费的。回复完成后，内容由服务端结算落盘（15 篇拆过 FlowDown 的修补序列与 <code>save()</code>），客户端回看时读到的就是档案而不是直播。<strong>完整性在这一站不是客户端的功能，是前五站工程的总和。</strong></p>
 <h2 id="收束六个站点一个常数"><a class="header" href="#收束六个站点一个常数">收束：六个站点，一个常数</a></h2>
 <p>把六站排回去看，每站的答案其实都是同一句话的变体：<strong>把“必须记住的事“从连接和进程里搬出来，搬进比它们活得久的东西</strong>——草稿进 UserDefaults，输入进发件箱，消息进服务端 log，位置进游标，进度进锁屏投影，成品进档案。连接、进程、甚至前台界面，都只是这些事实的临时租客。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/infra02a-six-stations.svg" alt="六个站点，一个常数：用户在任一站断掉，会话都要能活下来"><span class="img-wrapper"><img src="assets/infra02a-six-stations.svg" alt="六个站点，一个常数：用户在任一站断掉，会话都要能活下来"></span></label></p>
 <p>流畅和完整这对冤家也是这么和解的：完整性靠事实外置（搬到磁盘和服务端），流畅性靠降级自由（画面可以随时扔，因为事实扔不掉）。下一篇（二·下）把这六个站点背后的架构账单一次摊开：被操作系统禁止的长连接、只肯当信号用的推送通道、替 agent 跑工具的服务端工作区——以及那句话作为第一原则的完整含义：agent loop 不能拥有 socket。</p>
 <hr>
 <p><em>一手取证：FlowDown <code>b2cecfd6</code>（<code>ConversationManager.swift</code> 的 <code>temporaryEditorObjects</code> 防抖持久化、<code>ConversationSessionManager.swift</code> 的 <code>countIncomingTokens</code>/Live Activity、<code>Pipeline/</code> 的流式与结算路径）；Claude Code 本机会话 JSONL（<code>type: "queue-operation"</code>/<code>"operation": "enqueue"</code>，2026-09-28 取证）。平台行为（iOS 后台宽限为数十秒量级、挂起与杀死可能无回调、网络切换导致 TCP 半开）为移动端工程常识，按量级表述未引具体数字。快照+尾部增量与游标机制的工程细节引自基01 的核查（kimi-code <code>1e553fc</code>）。</em></p>
@@ -2710,11 +2753,13 @@ complete               以上全部排除，才轮到我
 <h2 id="一第-4-秒的审批卡片"><a class="header" href="#一第-4-秒的审批卡片">一、第 4 秒的审批卡片</a></h2>
 <p>推送弹出来：“Agent 请求批准安装依赖”。用户点开——白屏，logo，转圈——四秒之后，审批卡片才出现。这四秒用户在替谁等待？</p>
 <p>把冷启动路径拆开看：点推送 → 进程冷启动 → 认证（token 过期就再等等）→ 建连 → 追平事件 → 渲染会话 → 审批卡片才终于有上下文可挂。链条上每一步都可能失败，而审批是<strong>硬实时</strong>的交互流——agent 停在那里等，token 在烧。四秒不是性能问题，是架构问题：推送承诺了一个交互，而兑现它要穿过整条冷启动链。深链直达会话、token 预刷新、追平优先渲染审批相关事件（先画卡片后补历史），都是对这四秒的专项工程——但这些优化成立的前提，是下面这些架构条款先被接受。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/infra02b-cold-start-chain.svg" alt="第 4 秒的审批卡片：兑现推送承诺要穿过整条冷启动链"><span class="img-wrapper"><img src="assets/infra02b-cold-start-chain.svg" alt="第 4 秒的审批卡片：兑现推送承诺要穿过整条冷启动链"></span></label></p>
 <h2 id="二第一性条款长连接是被禁止的"><a class="header" href="#二第一性条款长连接是被禁止的">二、第一性条款：长连接是被禁止的</a></h2>
 <p>上篇立过的不对称，这里升级成设计公理。桌面端的架构假设是“长连为主，断线是要恢复的异常“；移动端的现实是<strong>不连接才是常态，连接是打开应用那几十秒里才存在的临时窗口</strong>。iOS 没有后台特权的应用退后台数十秒即挂起，音频/定位/VoIP 那类长驻 entitlement 轮不到聊天应用；Android 阵营里国产厂商的电池优化比 AOSP 激进得多，长连接在后台存活的期望值按零设计不算悲观。</p>
 <p>这个公理反转一切：<strong>推送才是唯一常开的通道，连接只是加速器。</strong> 于是——</p>
 <h2 id="三推送是信号不是传输"><a class="header" href="#三推送是信号不是传输">三、推送是信号，不是传输</a></h2>
 <p>推送通道的物理限制决定了它只能当门铃用：payload 有几千字节的上限，不保证顺序、不保证送达。所以正确的分工是——<strong>推送只说“该同步了“，内容永远回连接里拿</strong>。把审批的完整上下文塞进推送 payload 的设计，是在不可靠信道上假装可靠，第一个被坑的场景就是用户在地铁里点开了一条早已过时的审批。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/infra02b-push-as-doorbell.svg" alt="推送是门铃，不是管道：内容永远回连接里拿"><span class="img-wrapper"><img src="assets/infra02b-push-as-doorbell.svg" alt="推送是门铃，不是管道：内容永远回连接里拿"></span></label></p>
 <p>门铃自己也一身坑。静默推送（不响铃、只唤同步的那种）被系统性限流：低优先级、会被合并延迟，低电量模式更狠，用户关掉后台 App 刷新则基本不达。所以推送不可达要有兜底——打开应用时的主动轮询。国内还要再加一层现实：FCM 不可用，接厂商推送联盟，每家的到达率和后台策略都不同，工程上等于维护一条多通道抽象层，而且永远测不全。</p>
 <p>然后是两条推送的产品学：</p>
 <p><strong>通知也要背压。</strong> Agent 跑完 30 个工具调用，不该产出 30 条推送。合并、摘要、按重要性分级——通知频率本身就是产品参数，和上篇“会话内更新降级“是同一个背压原则的两个方向：<strong>事件流可以很密，打扰必须很稀。</strong></p>
@@ -2729,6 +2774,7 @@ complete               以上全部排除，才轮到我
 <h2 id="六收束agent-loop-不能拥有-socket"><a class="header" href="#六收束agent-loop-不能拥有-socket">六、收束：agent loop 不能拥有 socket</a></h2>
 <p>把上下两篇收进一句话：<strong>agent loop 不能拥有 socket。</strong></p>
 <p>执行不拥有连接（挂起、杀进程、换服务器，会话继续）；连接不携带事实（断了，游标和 log 还在）；推送不携带内容（门铃只负责叫人）；客户端不携带状态（它的每样记忆都有磁盘或服务端的备份）。移动端不是这套原则的一个应用场景——<strong>它是最苛刻的那个证明环境</strong>：进程朝不保夕、网络七零八落、版本几周漂移，在这样的地基上还能兑现“流畅且完整“，靠的就是把每一样事实都安放在比进程、比连接、比画面活得久的地方。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/infra02b-first-principle.svg" alt="agent loop 不能拥有 socket：四条分离原则"><span class="img-wrapper"><img src="assets/infra02b-first-principle.svg" alt="agent loop 不能拥有 socket：四条分离原则"></span></label></p>
 <p>第 9 篇当年写过“Mobile 是 Companion，不是主战场“——从渲染负担看它依然成立；但从架构纪律看要补一句：<strong>移动端是这个行业里最诚实的甲方。</strong> 它不允许任何“先连着再说“的懒惰假设，每一条都在逼你把事实和传输分开。桌面端能蒙混过关的架构，在手机上四秒内露馅。</p>
 <p>下一篇回到地面：agent 与编辑器、前端、工具之间那三套正在三国杀的协议——MCP、ACP、AG-UI，三个边界各欠着谁的债。</p>
 <hr>
@@ -2759,6 +2805,7 @@ complete               以上全部排除，才轮到我
 <h2 id="四前端边界ag-ui把事件流写成协议"><a class="header" href="#四前端边界ag-ui把事件流写成协议">四、前端边界：AG-UI，把事件流写成协议</a></h2>
 <p>AG-UI（CopilotKit 出品）管 agent 和浏览器前端的对话：SSE 传输，十六七类事件（各家文档计数略有出入），按组覆盖生命周期、文本流、工具调用、状态同步。第 5 篇那句“agent 是一条事件流，UI 是投影“，在这里被直接产品化成了 wire format——前端组件消费的正是这套事件。</p>
 <p>它有一个和 MCP 方向完全相反的设计，值得单独看：<strong>工具定义放在前端</strong>，运行时递给 agent。MCP 的世界观是工具在服务端等着被 agent 发现；AG-UI 的世界观是前端把工具交给 agent 执行。同一种东西（工具），两条协议给出了相反的归属答案——因为它们站在不同的边界上，替不同的主语说话。前端拥有工具定义，本质是让界面的作者（而不是 agent 的作者）决定这个产品里 agent 能碰到什么——权限模型从 agent 侧移到了界面侧。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/infra03-tool-ownership-mirror.svg" alt="工具归属的镜像：MCP 在服务端等发现，AG-UI 由前端定义递给 agent"><span class="img-wrapper"><img src="assets/infra03-tool-ownership-mirror.svg" alt="工具归属的镜像：MCP 在服务端等发现，AG-UI 由前端定义递给 agent"></span></label></p>
 <h2 id="五对照表和一个规律"><a class="header" href="#五对照表和一个规律">五、对照表和一个规律</a></h2>
 <div class="table-wrapper">
 <table>
@@ -2775,6 +2822,7 @@ complete               以上全部排除，才轮到我
 </table>
 </div>
 <p>规律就藏在“会话性“那一行：<strong>协议的会话性由边界另一端是否有状态决定。</strong> 工具无视图，MCP 可以拍掉会话；编辑器有状态，ACP 必须扛住会话；前端要增量，AG-UI 干脆把整个协议做成事件流。选协议之前先看对面是谁，跟第 9 篇选端先看约束是同一个思考方式。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/infra03-three-borders.svg" alt="三条协议边界：会话性由边界另一端是否有状态决定"><span class="img-wrapper"><img src="assets/infra03-three-borders.svg" alt="三条协议边界：会话性由边界另一端是否有状态决定"></span></label></p>
 <p>两条债也记下。其一，<strong>协议会咬人</strong>：MCP 2026-07-28 删 GET stream 的破坏性修订就是现场案例——依赖协议承诺的字段（比如断线恢复）说没就没，基01 里 kimi 那份“seq 字段全可选“的契约，就是客户端对协议咬人的标准防御。其二，<strong>registry 也在割据</strong>：Zed 一个、JetBrains 一个，agent 要么入驻两次要么选边——第 18 篇里 CLAUDE.md 和 AGENTS.md 的双写，在协议层换了个名字重演。</p>
 <h2 id="六收束ui-承诺的协议层"><a class="header" href="#六收束ui-承诺的协议层">六、收束：UI 承诺的协议层</a></h2>
 <p>把三篇基建的账合到界面上：ACP 决定编辑器能不能内联渲染 agent 的 diff、能不能把权限请求嵌进侧栏；AG-UI 决定前端组件收到的是增量还是全量、状态会不会静默漂移；MCP 的无状态化决定断线那一刻，工具调用这条支路上的界面敢不敢承诺续传。<strong>界面的每一个承诺，往下挖两层都会碰到一条协议的条款。</strong></p>

@@ -216,6 +216,7 @@
 </table>
 </div>
 <p>这四层不是写在协议里的——它们来自操作本身的属性。一个好的权限 UX 在展示权限请求时，应该让用户一眼看到它在哪一层，而不是把“读取文件“和“git push –force“用同一个弹窗展示。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch08-risk-four-tiers.svg" alt="风险四层模型与授权粒度：别把读文件和 push –force 用同一个弹窗"><span class="img-wrapper"><img src="assets/ch08-risk-four-tiers.svg" alt="风险四层模型与授权粒度：别把读文件和 push –force 用同一个弹窗"></span></label></p>
 <h3 id="23-授权粒度一次性-vs-会话-vs-项目-vs-全局"><a class="header" href="#23-授权粒度一次性-vs-会话-vs-项目-vs-全局">2.3 授权粒度：一次性 vs 会话 vs 项目 vs 全局</a></h3>
 <ul>
 <li><strong>一次性</strong>：仅此一次。默认对高风险操作。</li>
@@ -253,6 +254,7 @@
 <p><strong>TUI 路径：</strong> 一行 <code>[y/n]</code> 提示 → 用户读文本判断风险 → 输入 <code>y</code> → 回车。3 步，信息密度低但是零 friction。适合：快速判断、低风险操作、用户在电脑前。</p>
 <p><strong>GUI 路径：</strong> 弹窗展示（工具名 + 文件路径 + 风险等级颜色 + 操作原因）→ 用户扫一眼颜色判断风险等级 → 点击“本次允许“。1 步操作，但前置了信息摄入时间。适合：高风险操作、用户需要完整上下文才能决策、用户可能不在电脑前（异步处理）。</p>
 <p>关键洞察：<strong>两种界面在权限 UX 上的差距不是“GUI 展示更多信息所以更好“，而是“GUI 可以把线性操作变成空间决策“。</strong> TUI 里你只能按顺序读——先读工具名、再读文件路径、再判断风险——因为终端只有一维空间。GUI 里颜色标记、图标、按钮位置同时进入视野，用户可以跳读。这是第 3–4 篇讲的“降级映射“在 UX 层的对应物：TUI 把空间信息压缩成线性文本，GUI 保留了空间维度。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch08-permission-paths.svg" alt="同一个权限请求：TUI 线性 3 步，GUI 空间 1 步"><span class="img-wrapper"><img src="assets/ch08-permission-paths.svg" alt="同一个权限请求：TUI 线性 3 步，GUI 空间 1 步"></span></label></p>
 <hr>
 <h2 id="三下半篇diff-ux"><a class="header" href="#三下半篇diff-ux">三、下半篇：Diff UX</a></h2>
 <h3 id="31-对-coding-agent-来说最终产物是-diff"><a class="header" href="#31-对-coding-agent-来说最终产物是-diff">3.1 对 coding agent 来说，最终产物是 diff</a></h3>
@@ -294,6 +296,7 @@
 <p>权限是“执行前“的信任建立。Diff 是“执行后“的信任验证。</p>
 <p>把 Agent UI 设计成一个大聊天框 + 小字状态栏，等于把信任建立和信任验证都塞进了一条线性对话流里。用户需要自己从聊天的 100 行文本里挖出“它刚才请求了什么权限“和“它到底改了什么“。</p>
 <p>更好的信息架构：聊天框是指令和解释的主通道。权限请求是侧栏的独立卡片。diff 是可展开的文件树面板。三者各有各的空间，不互相抢占。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch08-trust-architecture.svg" alt="信任界面的信息架构：聊天框、权限卡片、diff 面板各有空间"><span class="img-wrapper"><img src="assets/ch08-trust-architecture.svg" alt="信任界面的信息架构：聊天框、权限卡片、diff 面板各有空间"></span></label></p>
 <p>这不是 GUI 做得“更漂亮“。这是在回答第 1 篇提出的那个根本需求：<strong>程序员需要的不是更智能的黑箱，而是可观察、可复现、可回滚的自动化。</strong> 权限 UX 做“可观察“，Diff UX 做“可复现 + 可回滚“。聊天框做“交互“。三个界面，同一个信任模型的三根柱子。</p>
 <hr>
 <h2 id="五下一篇"><a class="header" href="#五下一篇">五、下一篇</a></h2>

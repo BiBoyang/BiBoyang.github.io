@@ -192,8 +192,10 @@
 <p><strong>终端：像素不朽，数据易逝。</strong> 一行内容发射进 scrollback，终端模拟器替你保管它的像素，直到用户清屏；而引擎内存里的数据模型，进程一退就蒸发。第 12 篇记过 ForgeLoopTUI 的窘境正是这个：历史活在屏幕上，内存模型随进程蒸发，退出后没有干净归档。</p>
 <p><strong>GUI：像素速朽，数据必须不朽。</strong> 屏幕外的 cell 被回收，视图层级随时重建，前后台切换、内存警告、任何一次转场都可能让像素归零；而数据没有任何介质替你保管——你必须自己建库，一条对话不落盘，就等于没发生过。</p>
 <p>于是第 11 篇的那个问题——“一个 block 完成之后，谁继续为它记账”——在 GUI 上被改写成另一个问题：<strong>已完成的内容存到哪、什么时候存</strong>。所有权从像素层下沉到了数据层。第 5 篇讲 Event Sourcing 时说事件流是“好架构“；在 GUI 端它升级了：不是好架构，是生存必需——没有那份数据，连“刚才聊了什么“都无处可查。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch15-two-mortalities.svg" alt="像素与数据：两种速朽，两种不朽"><span class="img-wrapper"><img src="assets/ch15-two-mortalities.svg" alt="像素与数据：两种速朽，两种不朽"></span></label></p>
 <h2 id="三flowdown-的账本"><a class="header" href="#三flowdown-的账本">三、FlowDown 的账本</a></h2>
 <p>空谈不如看账。FlowDown 的历史管理拆成三件：入库、窗口化、结算。三件都有源码。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch15-flowdown-ledger.svg" alt="FlowDown 的历史管理三件套：入库、窗口化、结算"><span class="img-wrapper"><img src="assets/ch15-flowdown-ledger.svg" alt="FlowDown 的历史管理三件套：入库、窗口化、结算"></span></label></p>
 <h3 id="31-入库连解析产物都要持久化"><a class="header" href="#31-入库连解析产物都要持久化">3.1 入库：连解析产物都要持久化</a></h3>
 <p>FlowDown 的存储在独立框架 <code>Frameworks/Storage</code>，底座是 WCDB（微信开源的 SQLite 封装，<code>wcdb-spm-prebuilt</code>）。三张核心表：<code>Conversation</code>、<code>Message</code>、<code>Attachment</code>。</p>
 <p><code>Message</code> 的字段设计值得逐条看（<code>Storage/Tables/Message.swift</code>）：</p>
@@ -236,6 +238,7 @@
 </tbody>
 </table>
 </div>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch15-ownership-finale.svg" alt="所有权四部曲合拢：四条路线的总账"><span class="img-wrapper"><img src="assets/ch15-ownership-finale.svg" alt="所有权四部曲合拢：四条路线的总账"></span></label></p>
 <p>四行连起来读：终端之争争的是“要不要替介质记账“，答案是开关和分期；GUI 没有这场争论，它的题目直接写在数据层——什么算定型、什么时候落盘、被杀时账本完不完整。渲染所有权的尽头是数据所有权，也就是第 5 篇那条事件流的必然形态。</p>
 <p>这也是本系列正文在这个系列里的终点站：界面的账本记完了，下一程换轨——事件流离开本地之后的命运：断线、重连、多服务器，以及一条 SSE 中断之后，谁还记得它讲到哪了。</p>
 <hr>

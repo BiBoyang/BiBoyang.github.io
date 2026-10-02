@@ -239,6 +239,7 @@
 └── packages/ai 模型目录 ──生成──→ kwwk（ModelsCatalog，900+ 模型）
         └─ 中间层：oh-my-pi（omp），kwwk 的策略注释穿它引用 pi-tui
 </code></pre>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch13-pi-mono-lineage.svg" alt="pi-mono 血缘金字塔：三家头部公司，同一个上游"><span class="img-wrapper"><img src="assets/ch13-pi-mono-lineage.svg" alt="pi-mono 血缘金字塔：三家头部公司，同一个上游"></span></label></p>
 <p>第 11 篇对照表里的五个样本，三个共享这个上游。</p>
 <h2 id="四回到第-11-篇收敛要拆成两半"><a class="header" href="#四回到第-11-篇收敛要拆成两半">四、回到第 11 篇：收敛要拆成两半</a></h2>
 <p>第 11 篇的自我修正记录在案：我初稿把四家写成“收敛到 inline“，后来改成 2:2 记分牌 + 全员双模。现在要再修一层，这次修在“收敛“这个词本身。</p>
@@ -247,6 +248,7 @@
 <li><strong>真收敛</strong>：Claude Code（Ink fork）、Codex（ratatui + <code>insert_history</code>）、Grok Build（<code>xai-ratatui-inline</code>）。三家代码毫无血缘，各自独立走到同一个答案附近。这是工程共识的证据。</li>
 <li><strong>同源收敛</strong>：kimi（vendored fork）、mcode（打包）、kwwk（移植）。相似是因为同一份代码。这是供应链的证据。</li>
 </ul>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch13-real-vs-lineage.svg" alt="真收敛 vs 同源收敛：三个亲戚点头不等于三次独立验证"><span class="img-wrapper"><img src="assets/ch13-real-vs-lineage.svg" alt="真收敛 vs 同源收敛：三个亲戚点头不等于三次独立验证"></span></label></p>
 <p>对“业界都这么做了“这类论断，两种成因的效力天差地别。三个亲戚点头，不等于三次独立验证——它们投的可能是同一张票。</p>
 <p>这同时是对本系列方法论的修正。第 11 篇拿五家样本做对照，默认样本相互独立；这一篇证明默认不成立：mcode 作为“第六个独立样本“是假的，kwwk 也得拆开看——TUI 引擎是独立数据点（Swift 自研，注释自证策略出处），agent 运行时不是。<strong>多样本对照之前，先验样本的独立性</strong>；而验独立性的办法只有一个，还是读源码。界面行为相似的两家，底下的血统可以差出一个人的一整个 monorepo——这是“看起来一样的界面，底下的成本结构可以完全不同“（第 11 篇结尾）在生态维度的重演。</p>
 <h2 id="五隐形中枢个人-monorepo-的产业位"><a class="header" href="#五隐形中枢个人-monorepo-的产业位">五、隐形中枢：个人 monorepo 的产业位</a></h2>

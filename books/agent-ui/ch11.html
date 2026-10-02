@@ -206,6 +206,7 @@
 </table>
 </div>
 <p>第 2 篇描述的引擎不是一条“少数派的错路“——它是四家全都内置着的一半。真正的新问题是这条分界线本身：<strong>一个 block 完成之后，谁继续为它记账？</strong> 以及，为什么每家都在同一产品里养着线的两边。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch11-scoreboard.svg" alt="2:2 的默认分岔 + 全员双模：四家都内置了两种所有权模型"><span class="img-wrapper"><img src="assets/ch11-scoreboard.svg" alt="2:2 的默认分岔 + 全员双模：四家都内置了两种所有权模型"></span></label></p>
 <hr>
 <h2 id="二分界线已完成的内容谁继续为它记账"><a class="header" href="#二分界线已完成的内容谁继续为它记账">二、分界线：已完成的内容，谁继续为它记账</a></h2>
 <p>先把两个学派定义清楚。</p>
@@ -221,6 +222,7 @@
 │ 输入框    ← 引擎管       │    │ 输入框（在 viewport 内）  │
 └──────────────────────────┘    └──────────────────────────┘
 </code></pre>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch11-ownership-two-schools.svg" alt="全屏自管派与 inline viewport 派：分歧只在 block 完成后谁继续记账"><span class="img-wrapper"><img src="assets/ch11-ownership-two-schools.svg" alt="全屏自管派与 inline viewport 派：分歧只在 block 完成后谁继续记账"></span></label></p>
 <p>这里要特别强调：<strong>两派的 live 区是同构的。</strong> ForgeLoopTUI 的增量 diff、Codex 的 ratatui 双缓冲、Ink 的行级 erase-rewrite，做的是同一件事——这正是我当初误判阵营的原因。表层行为一模一样。</p>
 <p>真正的分歧只有一个问题：<strong>一个 block 完成之后，谁还继续为它记账？</strong></p>
 <ul>
@@ -255,6 +257,7 @@
 }
 <span class="boring">}</span></code></pre>
 <p>不变式值得逐字读：<strong>viewport 是可擦除的墨水，scrollback 是泼出去的水。</strong> 每发射一批内容，就先擦掉自己画的输入框、把内容印在那个位置、再在下方顶出新的空白区。从终端的视角看，这个程序从头到尾只做两件事：往下打印、在底部反复涂改一小块。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch11-emit-scrollback.svg" alt="emit_to_scrollback 五步：viewport 是可擦除的墨水，scrollback 是泼出去的水"><span class="img-wrapper"><img src="assets/ch11-emit-scrollback.svg" alt="emit_to_scrollback 五步：viewport 是可擦除的墨水，scrollback 是泼出去的水"></span></label></p>
 <p>但要如实说一句：这个参考实现在 Grok 产品里目前没有生产调用方。真正在跑的生产路径用的是同一思想的更保守版本——Codex 的 <code>insert_history_lines()</code> 和 ratatui 自带的 <code>insert_before</code> 都走 DECSTBM 滚动区，把内容“插“到 viewport 上方而不是擦掉重印；Grok 的 minimal 模式直接复用后者。思想是同一条，工程上各家选了介质兼容性更好的变体。</p>
 <p>这套机制的纪律性质，在 Grok 仓库里有一个字面物证。<code>xai-grok-pager-minimal/src/guard.rs</code> 是一个守护测试：它用 <code>include_str!</code> 扫描 minimal 模式的每一个源码文件，断言其中<strong>不出现</strong> <code>emit_to_scrollback</code>、<code>resize_purge_rerender</code>、<code>resize_viewport_height</code> 这三个标识符——注释把理由写得很白：这些函数会重印已经归终端的历史，结果是 “double-printing (or, with ED3, wiping) committed scrollback”。这条路线赖以生存的纪律，在这里不是口头约定，是一个挂了就算构建失败的测试。</p>
 <p>对照第 2 篇的记账成本。全屏自管派维护 8 个帧状态字段，错一个全屏偏位；inline 派的全部渲染状态是一个 <code>Rect</code>（实质只有 <code>y</code> 在变）加一块可以随时作废的双缓冲。<strong>它不追求“记住屏幕“，它追求“随时能重建“。</strong></p>

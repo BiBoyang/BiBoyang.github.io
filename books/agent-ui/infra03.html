@@ -202,6 +202,7 @@
 <h2 id="四前端边界ag-ui把事件流写成协议"><a class="header" href="#四前端边界ag-ui把事件流写成协议">四、前端边界：AG-UI，把事件流写成协议</a></h2>
 <p>AG-UI（CopilotKit 出品）管 agent 和浏览器前端的对话：SSE 传输，十六七类事件（各家文档计数略有出入），按组覆盖生命周期、文本流、工具调用、状态同步。第 5 篇那句“agent 是一条事件流，UI 是投影“，在这里被直接产品化成了 wire format——前端组件消费的正是这套事件。</p>
 <p>它有一个和 MCP 方向完全相反的设计，值得单独看：<strong>工具定义放在前端</strong>，运行时递给 agent。MCP 的世界观是工具在服务端等着被 agent 发现；AG-UI 的世界观是前端把工具交给 agent 执行。同一种东西（工具），两条协议给出了相反的归属答案——因为它们站在不同的边界上，替不同的主语说话。前端拥有工具定义，本质是让界面的作者（而不是 agent 的作者）决定这个产品里 agent 能碰到什么——权限模型从 agent 侧移到了界面侧。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/infra03-tool-ownership-mirror.svg" alt="工具归属的镜像：MCP 在服务端等发现，AG-UI 由前端定义递给 agent"><span class="img-wrapper"><img src="assets/infra03-tool-ownership-mirror.svg" alt="工具归属的镜像：MCP 在服务端等发现，AG-UI 由前端定义递给 agent"></span></label></p>
 <h2 id="五对照表和一个规律"><a class="header" href="#五对照表和一个规律">五、对照表和一个规律</a></h2>
 <div class="table-wrapper">
 <table>
@@ -218,6 +219,7 @@
 </table>
 </div>
 <p>规律就藏在“会话性“那一行：<strong>协议的会话性由边界另一端是否有状态决定。</strong> 工具无视图，MCP 可以拍掉会话；编辑器有状态，ACP 必须扛住会话；前端要增量，AG-UI 干脆把整个协议做成事件流。选协议之前先看对面是谁，跟第 9 篇选端先看约束是同一个思考方式。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/infra03-three-borders.svg" alt="三条协议边界：会话性由边界另一端是否有状态决定"><span class="img-wrapper"><img src="assets/infra03-three-borders.svg" alt="三条协议边界：会话性由边界另一端是否有状态决定"></span></label></p>
 <p>两条债也记下。其一，<strong>协议会咬人</strong>：MCP 2026-07-28 删 GET stream 的破坏性修订就是现场案例——依赖协议承诺的字段（比如断线恢复）说没就没，基01 里 kimi 那份“seq 字段全可选“的契约，就是客户端对协议咬人的标准防御。其二，<strong>registry 也在割据</strong>：Zed 一个、JetBrains 一个，agent 要么入驻两次要么选边——第 18 篇里 CLAUDE.md 和 AGENTS.md 的双写，在协议层换了个名字重演。</p>
 <h2 id="六收束ui-承诺的协议层"><a class="header" href="#六收束ui-承诺的协议层">六、收束：UI 承诺的协议层</a></h2>
 <p>把三篇基建的账合到界面上：ACP 决定编辑器能不能内联渲染 agent 的 diff、能不能把权限请求嵌进侧栏；AG-UI 决定前端组件收到的是增量还是全量、状态会不会静默漂移；MCP 的无状态化决定断线那一刻，工具调用这条支路上的界面敢不敢承诺续传。<strong>界面的每一个承诺，往下挖两层都会碰到一条协议的条款。</strong></p>

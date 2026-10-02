@@ -185,6 +185,7 @@
 <h2 id="一停在半行字上的界面"><a class="header" href="#一停在半行字上的界面">一、停在半行字上的界面</a></h2>
 <p>流式输出的第 37 秒，界面停在一个写了一半的 Markdown 表格上。光标还在闪，加载动画还在转——而网络连接八秒前就断了。用户盯着屏幕分不清两种状态：“模型在想“和“管道死了”。残酷的是，<strong>界面同样分不清</strong>，因为它不知道。</p>
 <p>把用户在断线时刻的真实困惑列出来，一共三问：还连着吗？我漏了什么？从哪继续？这三问的答案没有一问在渲染层——全在连接的另一侧。这篇讲的就是让界面有能力诚实回答这三个问题的基建。反过来讲也成立：这三问答不了的界面，它显示的一切“实时状态“都是表演。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/infra01-three-questions.svg" alt="停在半行字上的界面：三问的答案全在连接的另一侧"><span class="img-wrapper"><img src="assets/infra01-three-questions.svg" alt="停在半行字上的界面：三问的答案全在连接的另一侧"></span></label></p>
 <h2 id="二sse-的出厂设置和它的三个坑"><a class="header" href="#二sse-的出厂设置和它的三个坑">二、SSE 的出厂设置，和它的三个坑</a></h2>
 <p>先还 SSE 一个公道：协议设计者想过断线。每个事件可以带 <code>id:</code> 字段，浏览器原生的 <code>EventSource</code> 断线后自动重连，并把最后收到的 id 放进 <code>Last-Event-ID</code> 请求头带回去——服务端若配合，就能从断点续发。恢复机制是出厂设置，不是发明。</p>
 <p>但 agent 客户端拿到手就碎了三个角。</p>
@@ -216,6 +217,7 @@
 </table>
 </div>
 <p>第 9 篇说“统一 Event Log“是四个统一之一，当时它是一句架构主张；这张表是它的工程含义全集。顺带补一句 actor 档的注脚：Cloudflare Agents 的官方仓库里挂着一个重连竞态的 issue（#1837，移动网络抖动或重新部署弹跳 Durable Object 时，客户端 hook 在重连与续传之间赛跑）——每往上一档，省下的是会话状态，欠下的是新的竞态。没有免费的档位。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/infra01-source-of-truth-ladder.svg" alt="重连语义由 source of truth 的位置决定：五档谱系"><span class="img-wrapper"><img src="assets/infra01-source-of-truth-ladder.svg" alt="重连语义由 source of truth 的位置决定：五档谱系"></span></label></p>
 <h2 id="五幂等与序号at-least-once-世界的生存守则"><a class="header" href="#五幂等与序号at-least-once-世界的生存守则">五、幂等与序号：at-least-once 世界的生存守则</a></h2>
 <p>只要服务端肯重放，重复推送就不可避免——传输的现实是 at-least-once，不是 exactly-once。消费侧按事件 id 去重是基本功；真正会咬人的是副作用：工具已经执行了，确认事件在断线中丢了，重试会不会再执行一遍？</p>
 <p>这里 05 篇的三层分类拿到了第二生命。当初它为解释“不同 UI 消费事件的策略差异“而设计——执行流、副作用流、交互流。放进分布式语义里，它严丝合缝地变成了重放安全性分类：<strong>执行流可重放（幂等投影）、副作用流不可重放（只能记账不能重做）、交互流要仲裁（下节）</strong>。一个为界面写的分类法，在网络层一个字不用改。</p>

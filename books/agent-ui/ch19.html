@@ -185,6 +185,7 @@
 <h2 id="一你批准过最贵的一次同意"><a class="header" href="#一你批准过最贵的一次同意">一、你批准过最贵的一次“同意“</a></h2>
 <p>先复述一个每个人经历过的时刻：第 14 次 <code>[y/n]</code> 弹出来，你的手指比眼睛先动——按了 y。第 8 篇把这叫授权疲劳，并记录了行业的第一反应：auto mode 让分类器替你按 y（8 月起成了默认），机器抓住八九成的危险命令，比疲劳的人类可靠得多。</p>
 <p>但这条路付的代价第 8 篇也写了：分类器是新的黑箱，而程序员要的第一件事是可观察。于是还有第二条路没被走满：<strong>把审批的单位从“一次操作“升格为“一份计划“</strong>。不问“这个命令能不能跑“，先问“你打算做什么“——批准一次，管一整段。这不是新发明，是给审批换了一个更省力的粒度。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch19-approval-granularity.svg" alt="把审批的单位从一次操作升格为一份计划"><span class="img-wrapper"><img src="assets/ch19-approval-granularity.svg" alt="把审批的单位从一次操作升格为一份计划"></span></label></p>
 <h2 id="二计划在产品里的三个真实形态"><a class="header" href="#二计划在产品里的三个真实形态">二、计划在产品里的三个真实形态</a></h2>
 <p><strong>Claude Code 的 plan mode：把审批做成一种模式。</strong> 官方文档的口径：会话里按 Shift+Tab 在权限模式间轮换（default → acceptEdits → plan……），进入 plan 模式后 agent 被禁止编辑文件和执行有状态变更的命令，只能读和探索，产出一份计划；你审完批准，写权限才解锁。注意这个设计的重心：它没有发明新弹窗，它把“只读探索“和“开始动手“之间的那条线，从一条条审批上移成了一道模式边界——<strong>批准计划 = 批准跨界</strong>。</p>
 <p><strong>Kiro 的 spec 三件套：把瀑布搬回来产品化。</strong> <code>.kiro/specs/</code> 目录下按序生成 <code>requirements.md</code>（用 EARS 语法写，“WHEN… THE SYSTEM SHALL…”）、<code>design.md</code>、<code>tasks.md</code>，另有 <code>.kiro/steering/</code> 存放长期的产品与项目语境。AWS 这套被人叫 spec-driven development，形态上是需求-设计-任务的老瀑布，但角色变了：文档不是给人执行的开发计划，是给 agent 的执行输入——写文档的痛苦被 agent 分摊了大半之后，瀑布的结构价值才回来。</p>
@@ -194,6 +195,7 @@
 <p>计划文档本身也被记账：每次 ExitPlanMode 的评审提交，计划正文被卸载成带版本号的文件（<code>v&lt;N&gt;.md</code>，附 sha256 和字节数），事件流里只存引用记录，冷重建时照样投影出“计划修订“标记和 plan 模式徽章，服务端还有专门的 <code>/transcript/plan</code> 查询端。第 17、18 篇的账本思想，在计划上完整落地了一回。</p>
 <h2 id="三checklist-是人机共享的状态机"><a class="header" href="#三checklist-是人机共享的状态机">三、checklist 是人机共享的状态机</a></h2>
 <p>把三个样本放在一起，能看出 checklist 这个界面的真实身份：它同时是两个东西——<strong>给用户看的进度 UI，和给模型看的自持上下文</strong>。kimi 的设计点破了这层双重性：清单活在事件流里，人读它的投影（勾选框），模型读它的注入（“你还剩三项，保持一个 in_progress”）。一个状态，两侧消费——这正是第 9 篇多端投影在“计划“上的最小实例。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch19-checklist-duality.svg" alt="checklist 是人机共享的状态机：一个状态，两侧消费"><span class="img-wrapper"><img src="assets/ch19-checklist-duality.svg" alt="checklist 是人机共享的状态机：一个状态，两侧消费"></span></label></p>
 <p>由此带出三个没被普遍想清楚的设计问题：</p>
 <p><strong>谁能勾？</strong> 人勾是进度确认（我看到了），模型勾是完成声明（我做完了）。前者是读操作，后者是对用户的承诺——语义完全不同，但多数产品的勾选框长得一模一样。混用的话，清单会在不知不觉中从“共享状态“退化成“模型的自说自话“。</p>
 <p><strong>勾了算什么？</strong> 模型勾掉一项，等于宣称完成——但这是声明，还没有证据（测试呢？验证呢？）。声明与证据的落差是“完成“这个概念最深的一道裂缝，本系列后面讲验收时会回到这里，先立桩。</p>

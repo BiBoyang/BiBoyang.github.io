@@ -212,6 +212,7 @@
 3. 重绘剩余预览 + live 区        tui.render(committed: 剩余预览, live: …)
 </code></pre>
 <p>并且立了铁律：<strong>永远不要在完整帧之后直接 <code>appendFrame</code></strong>。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch14-three-step-settle.svg" alt="三步结算序列与铁律：appendFrame 是永久历史的唯一通道"><span class="img-wrapper"><img src="assets/ch14-three-step-settle.svg" alt="三步结算序列与铁律：appendFrame 是永久历史的唯一通道"></span></label></p>
 <p>这条铁律有出处。TASK-27 是测试先行的——只写测试不改库。<code>CommittedPreviewAnchorTests</code> 造了一个预言机：<code>ScrollbackTerminal</code>，实现了真实终端语义（deferred wrap、宽字符、底部滚动入 scrollback，覆盖 TUI 输出的全部 ANSI 子集），每个 API 调用后断言屏幕与 scrollback 和“期望内容物理换行后的尾部“逐行一致。S1–S5 场景验证 erase→append→redraw 在各种组合下锚定正确；S6 是一个专门的探针，<strong>故意钉住直连序列的缺陷形状</strong>——满帧后直接 appendFrame，结果是永久性的窗口偏移加陈旧绘制补位。把“为什么要先擦“从一条经验升级成了一道回归约束。</p>
 <p>还有一个归属细节值得记：<code>StreamingTranscriptAppendState</code>（维护“哪些行已落卷轴、哪些未结算“的增量状态机）放在 <code>Sources/ForgeLoopTUI/Transcript/</code>，在引擎里，不在示例 app 里。合流是引擎级的决定，app 只是消费者——现在有两个消费者：MinimalAIApp 和 dsh-tui，两者帧模式一致。</p>
 <h2 id="三这件事在所有权坐标系里意味着什么"><a class="header" href="#三这件事在所有权坐标系里意味着什么">三、这件事在所有权坐标系里意味着什么</a></h2>
@@ -231,6 +232,7 @@
 </table>
 </div>
 <p>比 Kimi 的“退出时归还“更早：不是终态一次性清算，是逐行按揭。第 12 篇的结论是“所有权可以按生命周期分期缴“——现在“会话期间“内部也可以分期了，<strong>稳定的程度就是所有权的边界</strong>：每行内容在它被认证稳定的那个瞬间，从引擎资产变成终端资产。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch14-per-line-mortgage.svg" alt="稳定一行，归还一行：每行内容在认证稳定的瞬间换手"><span class="img-wrapper"><img src="assets/ch14-per-line-mortgage.svg" alt="稳定一行，归还一行：每行内容在认证稳定的瞬间换手"></span></label></p>
 <p>但要说清楚：引擎没有换阵营。窗口化全帧 API 原样保留，AppKit 桥、全屏路径都在，另一个 app 仍然可以选“历史全归引擎“。引擎做的事是提供了两种语义（原地帧 + 发射通道）让 app 自选——这恰好是八月审计里“问题 2“（历史持久化路径待确认，实为 API 设计问题）的答案，也顺带回答了当时挂着的 Phase 0 决策 A：要不要提供 kwwk 式 <code>commit(_:)</code> 一等沉降语义？实践给出的答案是<strong>已经有了</strong>——<code>appendFrame</code> 就是 commit 通道，差的只是把它作为一等语义写进文档和 README 的选择指引。挂了两个月的问题，被一次修 bug 顺手回答了。</p>
 <h2 id="四新税种混合模式的账单"><a class="header" href="#四新税种混合模式的账单">四、新税种：混合模式的账单</a></h2>
 <p>第 11 篇推导过 inline 派的税单。混合模式不免税，而且发明了一个新税种。9 月 1 日的 TASK-37 是它的第一张账单。</p>

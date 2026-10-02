@@ -201,6 +201,7 @@
 <li>模式开关滥用：开关括号粘贴、键盘协议、同步输出，都可能让客户端行为错乱。</li>
 </ul>
 <p>确认框劫持的完整链条，Trail of Bits 已经演示过：恶意 MCP 服务器返回的文本里带光标码 → 权限确认时刻，屏幕上“工具将执行 X“的 X 已经被擦换成了良性描述，或恶意命令被移出了可视区 → 用户核对无误，按了回车。<strong>权限 UX 的全部隐含假设——用户看到的等于将要执行的——在字符网格上是可以用一串字节伪造的。</strong></p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch16-confirmation-hijack.svg" alt="确认框劫持的完整链条：用户看到的等于将要执行的，可以用一串字节伪造"><span class="img-wrapper"><img src="assets/ch16-confirmation-hijack.svg" alt="确认框劫持的完整链条：用户看到的等于将要执行的，可以用一串字节伪造"></span></label></p>
 <p>还有一层 TUI 特有的脆弱性。GUI 里内容原地消失是异常，会触发警觉；终端里滚动、清屏、重绘是每分钟都在发生的正常现象（第 2、11 篇拆过的那些机制）。用户对“字符消失“已经脱敏——这是这个介质给攻击者免租金提供的掩护。</p>
 <h2 id="三我把防线找了一遍三家引擎的排查记录"><a class="header" href="#三我把防线找了一遍三家引擎的排查记录">三、我把防线找了一遍：三家引擎的排查记录</a></h2>
 <p>为了不空谈，我做了个一手排查：在三家开源引擎和 ForgeLoopTUI 里找“不可信内容进入渲染前，是否被转义或中和“。方法很朴素——grep 清洗类标识符，再读命中处。</p>
@@ -224,6 +225,7 @@
 <p><strong>转义层——终端版的 HTML escaping。</strong> 不可信文本（工具输出、文件内容、网页摘要）在进入行数组之前，中和全部 CSI/OSC 序列：剥除，或可见地转义成 <code>␛[A</code>。OSC 52、OSC 8、光标码、模式开关，零容忍。这件事的前提是内容与样式的结构化分离——恰好是第 5 篇说过的“渲染输入应该是结构化事件，投影发生在边界上“：转义就发生在投影边界，而不是在 ANSI 字符串里做外科手术。这个系列写到这里，安全问题和架构问题在第 5 篇的地基上会师了。</p>
 <p><strong>溯源层——让三种信任级别看得见。</strong> 工具输出在视觉上与用户内容、模型内容分区（折叠框、边框、颜色语义），确认框只渲染结构化字段——命令、参数、目标路径——不渲染自由文本。要害在于：权限确认框里显示的工具描述，是第三方 MCP 服务器写的一段话。<strong>不可信输入，渲染在 UI 里最可信的位置</strong>，这是当前所有权限界面的共用暗病。</p>
 <p><strong>变更层——描述漂移检测。</strong> Invariant Labs 2025 年披露的 tool poisoning 里有个“rug pull“变体：工具先以无害描述通过审批，之后偷换描述。界面侧的解法很朴素：记下用户批准时的描述 hash，变了就重新询问——“这个工具在你批准之后改了说明书”。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch16-trust-separation.svg" alt="三种信任级别：混在同一渲染面的现状，与结构化分离的三层防线"><span class="img-wrapper"><img src="assets/ch16-trust-separation.svg" alt="三种信任级别：混在同一渲染面的现状，与结构化分离的三层防线"></span></label></p>
 <p><strong>协议层已经在承认。</strong> MCP 后来加的 elicitation URL mode，让敏感交互绕开 MCP client、走用户的浏览器完成——协议设计者自己承认了 client 内的渲染信道不可信。这是对的方向：信道不可信，就把最敏感的问答挪到各自可信的介质上去。</p>
 <p>最后记一笔我的欠账：ForgeLoopTUI 的内容转义过滤器进待办。第 14 篇结尾那张欠了六件的清单，现在是七件。</p>
 <h2 id="五收束"><a class="header" href="#五收束">五、收束</a></h2>

@@ -219,6 +219,7 @@
   → ⑥ 布局：NSAttributedString → 像素
 </code></pre>
 <p>④⑤⑥ 深度耦合。问题不能靠单独替换某一层解决。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch07-full-rebuild-pipeline.svg" alt="从 token 到像素的六阶段管线：④⑤⑥ 每步都是全量"><span class="img-wrapper"><img src="assets/ch07-full-rebuild-pipeline.svg" alt="从 token 到像素的六阶段管线：④⑤⑥ 每步都是全量"></span></label></p>
 <h3 id="解析层最根本的限制"><a class="header" href="#解析层最根本的限制">解析层——最根本的限制</a></h3>
 <p>以 cmark 为例（Swift 侧最主流的 Markdown 解析库，被 FlowDown/MarkdownView、Down 等使用）：</p>
 <pre><code>cmark_parser_new()    → 创建 parser
@@ -295,6 +296,7 @@ tick  2: parse(100字) + build(100字) + layout(100字)
 tick 90: parse(3000字)+ build(3000字)+ layout(3000字)
 </code></pre>
 <p>总工作量 ≈ N²。降频让 t 不再严格正比于 N——但砍的是常数因子，复杂度阶没变。降频的收益集中在中等长度（1000-5000 字）——文本继续变长、频率触底（3Hz）之后，tick 数重新正比于 N，总工作量回归 N²。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch07-on-squared.svg" alt="O(n) 被执行了 O(n) 次：总工作量 ≈ N²"><span class="img-wrapper"><img src="assets/ch07-on-squared.svg" alt="O(n) 被执行了 O(n) 次：总工作量 ≈ N²"></span></label></p>
 <hr>
 <h2 id="四路线-b输出完毕再渲染"><a class="header" href="#四路线-b输出完毕再渲染">四、路线 B：输出完毕再渲染</a></h2>
 <p>流式期间不做任何渲染，只把 chunk 拼进 buffer。流式结束后一次性做完整 Markdown 渲染。</p>
@@ -328,6 +330,7 @@ tick 90: parse(3000字)+ build(3000字)+ layout(3000字)
 </tbody>
 </table>
 </div>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch07-stack-matrix.svg" alt="五个技术栈各自解决了哪一层：解析层全是全量，差距在 ⑤⑥"><span class="img-wrapper"><img src="assets/ch07-stack-matrix.svg" alt="五个技术栈各自解决了哪一层：解析层全是全量，差距在 ⑤⑥"></span></label></p>
 <p>下面展开 WebView、RN 和 Lynx 三条路——它们各自的优势、代价和适用边界。</p>
 <h3 id="61-webview增量-reflow-是出厂能力"><a class="header" href="#61-webview增量-reflow-是出厂能力">6.1 WebView：增量 reflow 是出厂能力</a></h3>
 <p>浏览器渲染引擎（Blink / WebKit）从 90 年代 Netscape 时代就在解决“网页被 JavaScript 不断修改“的问题，增量 reflow 是它的第一性能力，不是后加的特性。</p>

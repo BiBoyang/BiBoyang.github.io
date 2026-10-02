@@ -197,6 +197,7 @@
 <li><code>TuiAltScreen</code>（1302 行）：alt screen 全屏，应用自管视口。<strong>全屏自管派，工业级形态。</strong></li>
 </ul>
 <p>也就是说，第 11 篇那条我以为只存在于不同公司之间的分界线，在这个仓库里是同一个 <code>if</code> 的两个分支。这给了我一个前所未有的对照机会：<strong>同一棵组件树、同一份组件代码，喂给两种所有权模型，各自的账单会开在哪里。</strong></p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch12-one-interface-two-engines.svg" alt="一个 vendored fork，两个渲染器：同一接口，两种所有权"><span class="img-wrapper"><img src="assets/ch12-one-interface-two-engines.svg" alt="一个 vendored fork，两个渲染器：同一接口，两种所有权"></span></label></p>
 <hr>
 <h2 id="二主屏渲染器inline-派的差分变种"><a class="header" href="#二主屏渲染器inline-派的差分变种">二、主屏渲染器：inline 派的差分变种</a></h2>
 <h3 id="21-模型全量渲染增量落地"><a class="header" href="#21-模型全量渲染增量落地">2.1 模型：全量渲染，增量落地</a></h3>
@@ -225,6 +226,7 @@ if (firstChanged &lt; prevViewportTop) {
 <li>纯追加（流式输出的常态）走 append 快速路径：光标滚到底直接写。</li>
 </ol>
 <p>外加两个通用工程点：所有写包在 <code>\x1b[?2026h/l</code> 同步输出里（原子帧，防撕裂）；kitty 图片协议有一整套影子账本（图片行占位行数、changed-range 膨胀、按 id 删除），因为图片在终端里是字节流之外的第二套状态。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch12-dorender-decision-tree.svg" alt="doRender 的决策树：一串快速失败路径，每条都对应一类真实事故"><span class="img-wrapper"><img src="assets/ch12-dorender-decision-tree.svg" alt="doRender 的决策树：一串快速失败路径，每条都对应一类真实事故"></span></label></p>
 <h3 id="24-和-grok-的哲学分野预防-vs-检测"><a class="header" href="#24-和-grok-的哲学分野预防-vs-检测">2.4 和 Grok 的哲学分野：预防 vs 检测</a></h3>
 <p>把两家并排，inline 派内部其实有两个档位：</p>
 <ul>
@@ -273,6 +275,7 @@ if (firstChanged &lt; prevViewportTop) {
 </table>
 </div>
 <p><strong>生前归自己，死后归终端。</strong> 运行期享受全屏自管的全部自由，退出时把资产清算回介质本身。两派的优点被串行地各取了一段。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch12-return-scrollback.svg" alt="生前归自己，死后归终端：退出时把历史归还给终端"><span class="img-wrapper"><img src="assets/ch12-return-scrollback.svg" alt="生前归自己，死后归终端：退出时把历史归还给终端"></span></label></p>
 <hr>
 <h2 id="四这个案例对本系列意味着什么"><a class="header" href="#四这个案例对本系列意味着什么">四、这个案例对本系列意味着什么</a></h2>
 <p><strong>1. 第 11 篇的分界线被复用了，但没有被推翻。</strong> 那条分界是真实的结构——真实到四家的开关都压在同一条线上，而 Kimi Code 是在同一个接口后面把两边都实现得最完整的一个。默认主屏（inline 派）说明：对一个要集成进用户日常终端的 CLI，“历史归终端“仍是默认正确答案；实验性全屏说明：会话内体验（滚动、搜索、选择、resize）的诉求强到值得再养一套引擎。</p>
