@@ -321,9 +321,9 @@ body .greedy-nav .visible-links a {
 
 /* ---- 面包屑 ---- */
 .breadcrumbs {
-  padding: 1em 1.5em 0 !important;
-  margin: 0 auto !important;
-  max-width: 1280px;
+  padding: 1em 1em 0 !important;
+  margin: 0 !important;
+  max-width: none;
   text-align: left !important;
   font-size: 0.85em;
   color: var(--text-muted);
