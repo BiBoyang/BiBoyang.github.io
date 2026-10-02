@@ -201,6 +201,7 @@ cargo test 2&gt;&amp;1 | head -40                # 跑测试，看失败输出
 </code></pre>
 <p>等你确认要不要提交。</p>
 <p>这个过程从头到尾、每一步都在终端里发生。与其说终端被选成了 agent 的界面，不如说 agent 的工作方式本来就是一个终端会话。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch01-agent-loop.svg" alt="Agent 的工作循环：读、改、验、审，每一步都在终端里发生"><span class="img-wrapper"><img src="assets/ch01-agent-loop.svg" alt="Agent 的工作循环：读、改、验、审，每一步都在终端里发生"></span></label></p>
 <p>这不是巧合。2025-2026 年，Anthropic 的 Claude Code、OpenAI 的 Codex CLI、Google 的 Gemini CLI、Block 的 Goose、Aider（2023 年先行者）、Devin CLI（Cognition）、Qwen Code 等等，头部 coding agent 里，CLI/TUI-first 是压倒性多数的选择。这些团队并非请不起 GUI 设计师，而且实际上也在朝着 GUI 的方向前进。他们做了同一个选择，因为有一些结构性的原因。</p>
 <blockquote>
 <p>补记（2026.09，发布前）：这段判断和“压倒性多数“的说法形成于几个月前。到文章发布时，GUI 这侧的进展已经不止是“方向“：Anthropic 在 4 月给 Claude Code 的桌面端做了完整改版（为并行 agent 工作流设计）；OpenAI 在 7 月把 Codex 应用并入了新版 ChatGPT 桌面应用；Google 的 Antigravity 从 IDE 长成了 agent-first 平台，9 月起托管 agent 直接跑在 Gemini API 上，还出了自己的 CLI。CLI/TUI 仍然是这些产品的地基——这篇讲的正是地基为什么先是终端——但“多数派“的叙事正在快速过期。这个趋势不推翻本文的论证，后面的“多端投影“框架就是为它准备的。</p>
@@ -240,6 +241,7 @@ cargo test 2&gt;&amp;1 | head -40                # 跑测试，看失败输出
   └── 最终回复（流式输出）
 </code></pre>
 <p>这是一棵树。而且节点到达的顺序不满足这棵树的拓扑序（父节点、靠前的子树并不保证先到）。工具调用 2 可能比工具调用 1 先返回，thinking 块可能在流式输出的中途插入，用户随时可能按取消键。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch01-1d-vs-tree.svg" alt="“1D → 1D”的直觉，与 Agent 真实的乱序事件树"><span class="img-wrapper"><img src="assets/ch01-1d-vs-tree.svg" alt="“1D → 1D”的直觉，与 Agent 真实的乱序事件树"></span></label></p>
 <p>CLI 之所以“看起来适配“，不是因为 Agent 的输出真的是 1D 的,而是 TUI 渲染引擎在背后做了大量工作，把一棵乱序到达的树强行展平成了线性输出。</p>
 <p>这套展平机制（稳定槽位队列、shiftIndices 偏移追踪、thinking 原地替换、有上限的 FIFO 通知队列）的核心只有几百行 Swift 代码。本系列第 4 篇会详细拆解。这里我们先接受一个结论：“1D → 1D“是用户看到的最终效果，不是 Agent 的真实结构,而且这个效果的实现成本不低。</p>
 <hr>
@@ -449,6 +451,7 @@ plain (无颜色)       ← 管道输出 (&gt; file.txt), dumb terminal
 <p><strong>你的程序操作的是逻辑行（<code>\n</code> 分隔），但 ANSI 光标移动需要物理行（wrap 后的显示器行数）。</strong></p>
 </blockquote>
 <p>GUI 里“一行太长自动换行“是文本引擎在布局阶段处理的，渲染层看到的就是已换行的结果。TUI 里换行是终端模拟器做的——你写一行 120 字符到 80 列宽终端，终端自己折成两行，程序不知道。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch02-logical-vs-physical.svg" alt="逻辑行与物理行的错位，以及增量 diff 的光标回退链"><span class="img-wrapper"><img src="assets/ch02-logical-vs-physical.svg" alt="逻辑行与物理行的错位，以及增量 diff 的光标回退链"></span></label></p>
 <h3 id="51-为什么物理行让增量-diff-翻倍复杂"><a class="header" href="#51-为什么物理行让增量-diff-翻倍复杂">5.1 为什么物理行让增量 diff 翻倍复杂</a></h3>
 <p>增量 diff 的每一步都依赖物理行：</p>
 <ol>
@@ -545,6 +548,7 @@ normal submit  → 覆盖 pendingFrame
                   ↓ 队列空
                 停止定时器（零 CPU 空转）
 </code></pre>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch02-renderloop-merge.svg" alt="RenderLoop 的 16ms 合帧窗口：中间帧被合并，只渲染最新一帧"><span class="img-wrapper"><img src="assets/ch02-renderloop-merge.svg" alt="RenderLoop 的 16ms 合帧窗口：中间帧被合并，只渲染最新一帧"></span></label></p>
 <p>设计要点：</p>
 <ul>
 <li><strong>合并，不丢状态</strong>：保留最新帧，不渲染中间帧。最终状态正确</li>
@@ -567,6 +571,7 @@ normal submit  → 覆盖 pendingFrame
 │  &gt; 用户输入 _            │  ← cursorPlacement 锚点
 └──────────────────────────┘
 </code></pre>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch02-commit-live-settle.svg" alt="commit / live 分区，与 Live Budget Planner 的沉降过程"><span class="img-wrapper"><img src="assets/ch02-commit-live-settle.svg" alt="commit / live 分区，与 Live Budget Planner 的沉降过程"></span></label></p>
 <p>收益三重：</p>
 <ol>
 <li><strong>committed 跳过 diff</strong>：只做 count 比较，确认纯追加即可</li>
@@ -656,6 +661,7 @@ let y = 2        ← 它是新段落，还是代码？
 <hr>
 <h2 id="二降级映射把视觉语义翻译成字符"><a class="header" href="#二降级映射把视觉语义翻译成字符">二、降级映射：把视觉语义翻译成字符</a></h2>
 <p>第 2 篇讲过，TUI 只有字符。Heading 用不了 24pt 字号，ForgeLoopTUI 的选择是符号前缀。这就是“降级映射“——把 Markdown 的视觉语义翻译成终端字符网格能表达的形式。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch03-markdown-degrade.svg" alt="降级映射一览：Markdown 语法到终端字符的翻译"><span class="img-wrapper"><img src="assets/ch03-markdown-degrade.svg" alt="降级映射一览：Markdown 语法到终端字符的翻译"></span></label></p>
 <h3 id="21-heading"><a class="header" href="#21-heading">2.1 Heading</a></h3>
 <pre><code class="language-swift">switch markerCount {
 case 1: prefix = "█ "    // &lt;h1&gt;
@@ -764,6 +770,7 @@ default: prefix = "· "   // &lt;h6&gt;
 | Mem  | 正在输出...        ← 没有换行，不稳定
 </code></pre>
 <p>如果第三行被标记为稳定（因为它以换行符结尾），渲染后的 box-drawing 表格会包含底部边框 <code>└─┴─┘</code>。下一帧第四行到了，需要加一行——但第三行已经“稳定“了，底部边框被锁死在缓存里。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch03-stable-prefix-retreat.svg" alt="Stable Prefix Cache 的换行符切分，与流式表格的 retreat 防御"><span class="img-wrapper"><img src="assets/ch03-stable-prefix-retreat.svg" alt="Stable Prefix Cache 的换行符切分，与流式表格的 retreat 防御"></span></label></p>
 <p><code>retreatToAvoidSplittingTrailingStreamingTable</code> 就是这个防御（节选自源码，部分局部变量定义省略）：</p>
 <pre><code class="language-swift">private func retreatToAvoidSplittingTrailingStreamingTable(
     lines: [String], remainder: String
@@ -879,6 +886,7 @@ if stableSource.count &gt; maxStableSourceChars { reset() }
 </code></pre>
 <p>这不是一条线，是一棵树。而且节点到达顺序不是拓扑序。工具调用 2 可能比工具调用 1 先返回，thinking 块可能在流式输出的中途插入，用户随时按取消键。</p>
 <p>CLI 看起来“适配“，不是因为 Agent 的输出真的是 1D 的——而是 <strong>TUI 渲染引擎在背后做了一套复杂的展平机制，把一棵乱序到达的树强行投影成线性输出。</strong> 这套机制就是本文要拆解的东西。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch04-tree-flatten.svg" alt="事件树经渲染引擎展平为线性输出"><span class="img-wrapper"><img src="assets/ch04-tree-flatten.svg" alt="事件树经渲染引擎展平为线性输出"></span></label></p>
 <hr>
 <h2 id="二corerenderevent去掉会话角色语义的事件系统"><a class="header" href="#二corerenderevent去掉会话角色语义的事件系统">二、CoreRenderEvent：去掉会话角色语义的事件系统</a></h2>
 <p>ForgeLoopTUI 设计了一套不绑定业务模型的事件词汇：</p>
@@ -916,6 +924,7 @@ if stableSource.count &gt; maxStableSourceChars { reset() }
 ⎿ done: fn main()... ← A 的结果同样追加在最后
 </code></pre>
 <p>B 的 <code>done</code> 行本应替换掉 B 自己的 <code>⎿ running...</code>，但按到达顺序渲染只会把结果追加到帧尾——B 的 running 行残留成僵尸状态，结果行却落到了离自己 header 两行开外的位置。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch04-out-of-order-slots.svg" alt="按到达顺序渲染的事故现场，对比稳定槽位队列的原地替换"><span class="img-wrapper"><img src="assets/ch04-out-of-order-slots.svg" alt="按到达顺序渲染的事故现场，对比稳定槽位队列的原地替换"></span></label></p>
 <h3 id="32-稳定槽位队列"><a class="header" href="#32-稳定槽位队列">3.2 稳定槽位队列</a></h3>
 <p>ForgeLoopTUI 的解法是 <code>pendingTools</code> 数组——按 operationStart 到达顺序维护槽位：</p>
 <pre><code class="language-swift">case .operationStart(let id, let header, let status):
@@ -1097,6 +1106,7 @@ private func appendNotification(_ line: String) {
 <p>这是一条 append-only 的事件流。Agent 的每一次推理、每一个工具调用、每一次权限请求、每一个文件变更，都只是这条流上的一个新事件。</p>
 <p>关键洞察：<strong>这条事件流独立于任何 UI 而存在。</strong> 无论你用 CLI、TUI、GUI、IDE 还是 Web，底层都是同一件事——Agent 在做它的工作，产生事件。UI 的职责只是把这些事件投影到用户的感知空间。</p>
 <p>这就是 Event Sourcing 在 Agent 领域的应用：<strong>Agent Runtime 是事件生产者，各种 UI 是事件消费者。不同 UI 是同一事件流的不同投影（projection）。</strong></p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch05-event-projections.svg" alt="Event Sourcing：Agent Runtime 产生一条 append-only 事件流，各端 UI 是不同投影"><span class="img-wrapper"><img src="assets/ch05-event-projections.svg" alt="Event Sourcing：Agent Runtime 产生一条 append-only 事件流，各端 UI 是不同投影"></span></label></p>
 <hr>
 <h2 id="三事件的三层分类"><a class="header" href="#三事件的三层分类">三、事件的三层分类</a></h2>
 <p>上面列的那些事件类型可以自然地分成三层：</p>
@@ -1114,6 +1124,7 @@ private func appendNotification(_ line: String) {
 </div>
 <p>这三层只覆盖“执行相关“的事件。<code>message</code>、<code>thinking</code>、<code>notification</code> 不在其中——它们是内容流（对话内容、推理过程、系统提示），同样以事件形式被各端投影，但不参与执行流/副作用流/交互流的划分。</p>
 <p>这个分类的价值不在于学术上是否严谨，而在于它解释了为什么不同 UI 对“同一套事件“的消费策略如此不同。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch05-event-lanes.svg" alt="事件三层分类：执行流、副作用流、交互流在 CLI 与 GUI 上的不同投影"><span class="img-wrapper"><img src="assets/ch05-event-lanes.svg" alt="事件三层分类：执行流、副作用流、交互流在 CLI 与 GUI 上的不同投影"></span></label></p>
 <p><strong>执行流</strong>是所有 UI 都要处理的基线。CLI 把它展平成线性文本，GUI 把它映射成卡片和状态动画。</p>
 <p><strong>副作用流</strong>在不同 UI 上的处理成本差异最大。TUI 里 <code>file.changed</code> 就是一行路径字符串；GUI 里它需要一个 diff 审查面板——并排对比、行级高亮、部分采纳/拒绝。同一个事件，投影成本差一个数量级。</p>
 <p><strong>交互流</strong>是最有意思的。CLI 里 <code>permission.requested</code> 是阻塞式 <code>[y/n]</code>——输入循环停下来，进程阻塞在 stdin 上等用户输入。GUI 里同一个事件可以是非阻塞 toast + badge counter——用户喝咖啡回来再处理。<strong>事件类型相同，但 UI 和事件之间的响应契约完全不同。</strong> 这就是为什么“先稳定事件协议，再谈 GUI 复杂交互“不是一句空话——如果你在事件协议里没有区分“需要即时响应“和“可以延迟处理“，GUI 的优势就无从发挥。</p>

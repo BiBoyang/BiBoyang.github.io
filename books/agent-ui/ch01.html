@@ -193,6 +193,7 @@ cargo test 2&gt;&amp;1 | head -40                # 跑测试，看失败输出
 </code></pre>
 <p>等你确认要不要提交。</p>
 <p>这个过程从头到尾、每一步都在终端里发生。与其说终端被选成了 agent 的界面，不如说 agent 的工作方式本来就是一个终端会话。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch01-agent-loop.svg" alt="Agent 的工作循环：读、改、验、审，每一步都在终端里发生"><span class="img-wrapper"><img src="assets/ch01-agent-loop.svg" alt="Agent 的工作循环：读、改、验、审，每一步都在终端里发生"></span></label></p>
 <p>这不是巧合。2025-2026 年，Anthropic 的 Claude Code、OpenAI 的 Codex CLI、Google 的 Gemini CLI、Block 的 Goose、Aider（2023 年先行者）、Devin CLI（Cognition）、Qwen Code 等等，头部 coding agent 里，CLI/TUI-first 是压倒性多数的选择。这些团队并非请不起 GUI 设计师，而且实际上也在朝着 GUI 的方向前进。他们做了同一个选择，因为有一些结构性的原因。</p>
 <blockquote>
 <p>补记（2026.09，发布前）：这段判断和“压倒性多数“的说法形成于几个月前。到文章发布时，GUI 这侧的进展已经不止是“方向“：Anthropic 在 4 月给 Claude Code 的桌面端做了完整改版（为并行 agent 工作流设计）；OpenAI 在 7 月把 Codex 应用并入了新版 ChatGPT 桌面应用；Google 的 Antigravity 从 IDE 长成了 agent-first 平台，9 月起托管 agent 直接跑在 Gemini API 上，还出了自己的 CLI。CLI/TUI 仍然是这些产品的地基——这篇讲的正是地基为什么先是终端——但“多数派“的叙事正在快速过期。这个趋势不推翻本文的论证，后面的“多端投影“框架就是为它准备的。</p>
@@ -232,6 +233,7 @@ cargo test 2&gt;&amp;1 | head -40                # 跑测试，看失败输出
   └── 最终回复（流式输出）
 </code></pre>
 <p>这是一棵树。而且节点到达的顺序不满足这棵树的拓扑序（父节点、靠前的子树并不保证先到）。工具调用 2 可能比工具调用 1 先返回，thinking 块可能在流式输出的中途插入，用户随时可能按取消键。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch01-1d-vs-tree.svg" alt="“1D → 1D”的直觉，与 Agent 真实的乱序事件树"><span class="img-wrapper"><img src="assets/ch01-1d-vs-tree.svg" alt="“1D → 1D”的直觉，与 Agent 真实的乱序事件树"></span></label></p>
 <p>CLI 之所以“看起来适配“，不是因为 Agent 的输出真的是 1D 的,而是 TUI 渲染引擎在背后做了大量工作，把一棵乱序到达的树强行展平成了线性输出。</p>
 <p>这套展平机制（稳定槽位队列、shiftIndices 偏移追踪、thinking 原地替换、有上限的 FIFO 通知队列）的核心只有几百行 Swift 代码。本系列第 4 篇会详细拆解。这里我们先接受一个结论：“1D → 1D“是用户看到的最终效果，不是 Agent 的真实结构,而且这个效果的实现成本不低。</p>
 <hr>

@@ -254,6 +254,7 @@ plain (无颜色)       ← 管道输出 (&gt; file.txt), dumb terminal
 <p><strong>你的程序操作的是逻辑行（<code>\n</code> 分隔），但 ANSI 光标移动需要物理行（wrap 后的显示器行数）。</strong></p>
 </blockquote>
 <p>GUI 里“一行太长自动换行“是文本引擎在布局阶段处理的，渲染层看到的就是已换行的结果。TUI 里换行是终端模拟器做的——你写一行 120 字符到 80 列宽终端，终端自己折成两行，程序不知道。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch02-logical-vs-physical.svg" alt="逻辑行与物理行的错位，以及增量 diff 的光标回退链"><span class="img-wrapper"><img src="assets/ch02-logical-vs-physical.svg" alt="逻辑行与物理行的错位，以及增量 diff 的光标回退链"></span></label></p>
 <h3 id="51-为什么物理行让增量-diff-翻倍复杂"><a class="header" href="#51-为什么物理行让增量-diff-翻倍复杂">5.1 为什么物理行让增量 diff 翻倍复杂</a></h3>
 <p>增量 diff 的每一步都依赖物理行：</p>
 <ol>
@@ -350,6 +351,7 @@ normal submit  → 覆盖 pendingFrame
                   ↓ 队列空
                 停止定时器（零 CPU 空转）
 </code></pre>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch02-renderloop-merge.svg" alt="RenderLoop 的 16ms 合帧窗口：中间帧被合并，只渲染最新一帧"><span class="img-wrapper"><img src="assets/ch02-renderloop-merge.svg" alt="RenderLoop 的 16ms 合帧窗口：中间帧被合并，只渲染最新一帧"></span></label></p>
 <p>设计要点：</p>
 <ul>
 <li><strong>合并，不丢状态</strong>：保留最新帧，不渲染中间帧。最终状态正确</li>
@@ -372,6 +374,7 @@ normal submit  → 覆盖 pendingFrame
 │  &gt; 用户输入 _            │  ← cursorPlacement 锚点
 └──────────────────────────┘
 </code></pre>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch02-commit-live-settle.svg" alt="commit / live 分区，与 Live Budget Planner 的沉降过程"><span class="img-wrapper"><img src="assets/ch02-commit-live-settle.svg" alt="commit / live 分区，与 Live Budget Planner 的沉降过程"></span></label></p>
 <p>收益三重：</p>
 <ol>
 <li><strong>committed 跳过 diff</strong>：只做 count 比较，确认纯追加即可</li>

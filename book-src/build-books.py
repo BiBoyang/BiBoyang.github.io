@@ -142,6 +142,10 @@ def build(book: str) -> None:
             summary.append("")
     (src_dir / "SUMMARY.md").write_text("\n".join(summary) + "\n", encoding="utf-8")
 
+    assets_src = book_dir / "chapters" / "assets"
+    if assets_src.is_dir():
+        shutil.copytree(assets_src, src_dir / "assets")
+
     subprocess.run(["mdbook", "build"], cwd=book_dir, check=True)
     print(f"[ok] {book}: {n} 章 → books/{book}/")
 

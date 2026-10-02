@@ -196,6 +196,7 @@
 </code></pre>
 <p>这不是一条线，是一棵树。而且节点到达顺序不是拓扑序。工具调用 2 可能比工具调用 1 先返回，thinking 块可能在流式输出的中途插入，用户随时按取消键。</p>
 <p>CLI 看起来“适配“，不是因为 Agent 的输出真的是 1D 的——而是 <strong>TUI 渲染引擎在背后做了一套复杂的展平机制，把一棵乱序到达的树强行投影成线性输出。</strong> 这套机制就是本文要拆解的东西。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch04-tree-flatten.svg" alt="事件树经渲染引擎展平为线性输出"><span class="img-wrapper"><img src="assets/ch04-tree-flatten.svg" alt="事件树经渲染引擎展平为线性输出"></span></label></p>
 <hr>
 <h2 id="二corerenderevent去掉会话角色语义的事件系统"><a class="header" href="#二corerenderevent去掉会话角色语义的事件系统">二、CoreRenderEvent：去掉会话角色语义的事件系统</a></h2>
 <p>ForgeLoopTUI 设计了一套不绑定业务模型的事件词汇：</p>
@@ -233,6 +234,7 @@
 ⎿ done: fn main()... ← A 的结果同样追加在最后
 </code></pre>
 <p>B 的 <code>done</code> 行本应替换掉 B 自己的 <code>⎿ running...</code>，但按到达顺序渲染只会把结果追加到帧尾——B 的 running 行残留成僵尸状态，结果行却落到了离自己 header 两行开外的位置。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch04-out-of-order-slots.svg" alt="按到达顺序渲染的事故现场，对比稳定槽位队列的原地替换"><span class="img-wrapper"><img src="assets/ch04-out-of-order-slots.svg" alt="按到达顺序渲染的事故现场，对比稳定槽位队列的原地替换"></span></label></p>
 <h3 id="32-稳定槽位队列"><a class="header" href="#32-稳定槽位队列">3.2 稳定槽位队列</a></h3>
 <p>ForgeLoopTUI 的解法是 <code>pendingTools</code> 数组——按 operationStart 到达顺序维护槽位：</p>
 <pre><code class="language-swift">case .operationStart(let id, let header, let status):

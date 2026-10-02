@@ -214,6 +214,7 @@
 <p>这是一条 append-only 的事件流。Agent 的每一次推理、每一个工具调用、每一次权限请求、每一个文件变更，都只是这条流上的一个新事件。</p>
 <p>关键洞察：<strong>这条事件流独立于任何 UI 而存在。</strong> 无论你用 CLI、TUI、GUI、IDE 还是 Web，底层都是同一件事——Agent 在做它的工作，产生事件。UI 的职责只是把这些事件投影到用户的感知空间。</p>
 <p>这就是 Event Sourcing 在 Agent 领域的应用：<strong>Agent Runtime 是事件生产者，各种 UI 是事件消费者。不同 UI 是同一事件流的不同投影（projection）。</strong></p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch05-event-projections.svg" alt="Event Sourcing：Agent Runtime 产生一条 append-only 事件流，各端 UI 是不同投影"><span class="img-wrapper"><img src="assets/ch05-event-projections.svg" alt="Event Sourcing：Agent Runtime 产生一条 append-only 事件流，各端 UI 是不同投影"></span></label></p>
 <hr>
 <h2 id="三事件的三层分类"><a class="header" href="#三事件的三层分类">三、事件的三层分类</a></h2>
 <p>上面列的那些事件类型可以自然地分成三层：</p>
@@ -231,6 +232,7 @@
 </div>
 <p>这三层只覆盖“执行相关“的事件。<code>message</code>、<code>thinking</code>、<code>notification</code> 不在其中——它们是内容流（对话内容、推理过程、系统提示），同样以事件形式被各端投影，但不参与执行流/副作用流/交互流的划分。</p>
 <p>这个分类的价值不在于学术上是否严谨，而在于它解释了为什么不同 UI 对“同一套事件“的消费策略如此不同。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch05-event-lanes.svg" alt="事件三层分类：执行流、副作用流、交互流在 CLI 与 GUI 上的不同投影"><span class="img-wrapper"><img src="assets/ch05-event-lanes.svg" alt="事件三层分类：执行流、副作用流、交互流在 CLI 与 GUI 上的不同投影"></span></label></p>
 <p><strong>执行流</strong>是所有 UI 都要处理的基线。CLI 把它展平成线性文本，GUI 把它映射成卡片和状态动画。</p>
 <p><strong>副作用流</strong>在不同 UI 上的处理成本差异最大。TUI 里 <code>file.changed</code> 就是一行路径字符串；GUI 里它需要一个 diff 审查面板——并排对比、行级高亮、部分采纳/拒绝。同一个事件，投影成本差一个数量级。</p>
 <p><strong>交互流</strong>是最有意思的。CLI 里 <code>permission.requested</code> 是阻塞式 <code>[y/n]</code>——输入循环停下来，进程阻塞在 stdin 上等用户输入。GUI 里同一个事件可以是非阻塞 toast + badge counter——用户喝咖啡回来再处理。<strong>事件类型相同，但 UI 和事件之间的响应契约完全不同。</strong> 这就是为什么“先稳定事件协议，再谈 GUI 复杂交互“不是一句空话——如果你在事件协议里没有区分“需要即时响应“和“可以延迟处理“，GUI 的优势就无从发挥。</p>
