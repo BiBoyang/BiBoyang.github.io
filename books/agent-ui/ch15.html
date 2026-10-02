@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-b7071bee.js";
+            window.path_to_searchindex_js = "searchindex-d2701c98.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-5870c396.js"></script>
@@ -240,6 +240,25 @@
 </div>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch15-ownership-finale.svg" alt="所有权四部曲合拢：四条路线的总账"><span class="img-wrapper"><img src="assets/ch15-ownership-finale.svg" alt="所有权四部曲合拢：四条路线的总账"></span></label></p>
 <p>四行连起来读：终端之争争的是“要不要替介质记账“，答案是开关和分期；GUI 没有这场争论，它的题目直接写在数据层——什么算定型、什么时候落盘、被杀时账本完不完整。渲染所有权的尽头是数据所有权，也就是第 5 篇那条事件流的必然形态。</p>
+<h3 id="再往高一层两种介质各白送什么"><a class="header" href="#再往高一层两种介质各白送什么">再往高一层：两种介质各白送什么</a></h3>
+<p>四部曲记的是“历史“这一笔账。把镜头拉远，两种介质的差别其实是同一个结构的重复：<strong>每种介质都白送一些东西，同时对另一些东西收重税；没有一方全面优越，只是白送的东西互补。</strong></p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>维度</th><th>终端：白送 / 征税</th><th>GUI：白送 / 征税</th></tr>
+</thead>
+<tbody>
+<tr><td>已发射的历史</td><td>白送：进 scrollback 即归档，进程死了也在</td><td>征税：像素随进程死，落盘是生存必需（本篇）</td></tr>
+<tr><td>遮挡与切走再回来</td><td>征税：重连即失忆，全屏应用要整页重绘</td><td>白送：合成器持有像素，不用应用重画</td></tr>
+<tr><td>分发与可达</td><td>白送：SSH、tmux、CI、管道，任何机器</td><td>征税：安装包、跨端、版本兼容</td></tr>
+<tr><td>输入带宽</td><td>征税：只有字节流，行级采纳、并排 diff 全要手搓</td><td>白送：命中测试、多点触控、拖拽</td></tr>
+<tr><td>表达力</td><td>征税：等宽格子，图片、表格、文件预览几乎不可能</td><td>白送：任意像素、排版、动画、多模态</td></tr>
+<tr><td>信任</td><td>白送：文本即真相，命令可复现、可管道审计</td><td>征税：界面可藏可换，信任要靠沙箱与同源策略（第 16 篇）</td></tr>
+</tbody>
+</table>
+</div>
+<p>这张表是对称的：终端白送“过去“（已发射的历史）和“信任“（文本透明），GUI 白送“现在“（合成器持有的结构）和“带宽“（输入与表达）。它也是第 1 篇“不是低配版、而是不同介质投影“那句话的完整清单——差异不在架构：事件树、投影、diff、审批、压缩、回放，两种界面是同一套内核的两个后端（Ink 在终端上长出声明式，UIKit 手写 frame 在 GUI 上停在命令式，楼层可以互换）；差异在各端要补缴的介质税。</p>
+<p>这也补上了第 1 篇补记那个判断的机制。agent 早期的需求结构——一维 token 流、文本工具链、处处可审计——恰好压在终端白送的格子上；而长会话、并行多 agent、行级审批、checkpoint 回放、手机伴随端（第 10、17–20 篇与基建系列），每一项都在消费 GUI 白送的东西。<strong>不是 GUI 更好所以赢，是需求结构越过了两边税收结构的交叉点。</strong> 选界面从来不是选范式，是在 agent 生命周期的不同阶段，选哪边的税你更愿意缴。</p>
 <p>这也是本系列正文在这个系列里的终点站：界面的账本记完了，下一程换轨——事件流离开本地之后的命运：断线、重连、多服务器，以及一条 SSE 中断之后，谁还记得它讲到哪了。</p>
 <hr>
 <p><em>本文基于 <a href="https://github.com/Lakr233/FlowDown">FlowDown</a> 本地源码副本的实际阅读（commit <code>b2cecfd6</code>，2026-05-15）：<code>Frameworks/Storage/Package.swift</code>（WCDB 与 MarkdownParser 依赖）、<code>FlowDown/Backend/Conversation/Pipeline/ConversationSession.swift</code>（save/update/discard）、<code>Pipeline/Execute/ConversationSession+ExecuteOnce.swift</code>（流式修补序列）、<code>Pipeline/ConversationSessionManager.swift</code>（countIncomingTokens 与 Live Activity）、<code>FlowDown/Interface/MessageListView/MessageListView.swift</code>（ListViewKit 接线）。数据模型部分参照作者本人的既有分析笔记《FlowDown 对话上下文保存机制分析》并与源码核对。流式热路径“每 chunk 不写库“的表述基于调用链阅读，未做逐帧取证，以此口径为准。</em></p>
