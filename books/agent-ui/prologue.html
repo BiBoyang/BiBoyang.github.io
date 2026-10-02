@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>引子：没报错，就代表输出没问题吗 - Agent 时代的开发者界面</title>
+        <title>没报错，就代表输出没问题吗 - Agent 时代的开发者界面</title>
 
 
         <!-- Custom HTML head -->
@@ -35,10 +35,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-4e79a330.js";
+            window.path_to_searchindex_js = "searchindex-b7071bee.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-d34f4aad.js"></script>
+        <script src="toc-5870c396.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -177,9 +177,9 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="agent-时代的开发者界面--引子没报错就代表输出没问题吗"><a class="header" href="#agent-时代的开发者界面--引子没报错就代表输出没问题吗">Agent 时代的开发者界面 · 引子：没报错，就代表输出没问题吗？</a></h1>
+                        <h1 id="没报错就代表输出没问题吗"><a class="header" href="#没报错就代表输出没问题吗">没报错，就代表输出没问题吗？</a></h1>
 <blockquote>
-<p>本部引子。前面的篇章讲的是“看得见的另一半“——渲染引擎、字符网格、权限 UX；从这里开始进入看不见的另一半，先从一类反复出现的故障说起——它是我做 Agent 界面这几年见过的最典型的坑。</p>
+<p>前面的篇章讲的是“看得见的另一半“——渲染引擎、字符网格、权限 UX；从这里开始进入看不见的另一半，先从一类反复出现的故障说起——它是我做 Agent 界面这几年见过的最典型的坑。</p>
 </blockquote>
 <hr>
 <h2 id="一最坑的坏法不是报错而是不报错"><a class="header" href="#一最坑的坏法不是报错而是不报错">一、最坑的坏法不是报错而是不报错</a></h2>
@@ -256,7 +256,7 @@ complete               以上全部排除，才轮到我
 <p>我最开始的想法,是因为我做了 agent 的 TUI 和 GUI,尤其是对于 Markdown 的流式输出那部分踩了很多坑,有了很多的经验和教训,准备分享出来,但是随着其他的工作也在深入,想法和思考深入一天一个样,所以整个系列的文章放了很久的鸽子.</p>
 <p>现在是时候慢慢的放出这一系列文章了.</p>
 <p>这个系列前面的部分，很多篇讲的是可见的那一半：从 ANSI 转义序列、字符网格、Markdown 流式渲染，到权限 UX 和多端架构。</p>
-<p>而这一篇，连同接下来的基建四篇，讲的是看不见的另一半：<strong>渲染引擎再聪明，也只能渲染“已经到达的字节“；字节到没到、到全没有，是协议层的事，渲染层永远无权裁决。</strong> 两个世界的接缝处，就是这个引子里的全部事故。</p>
+<p>而这一篇，连同接下来的基建四篇，讲的是看不见的另一半：<strong>渲染引擎再聪明，也只能渲染“已经到达的字节“；字节到没到、到全没有，是协议层的事，渲染层永远无权裁决。</strong> 两个世界的接缝处，就是这一篇里的全部事故。</p>
 <p>后话：这个 bug 还有个更尴尬的处境。现在评测 Agent 的流行框架喜欢把指标分成结果、过程、效率、风险四层——而它哪一层都放不进去：它不改变 agent 的行为，只改变“你看到的是不是真的“。四层评的是能力，它考问的是评测的地基。这个话题值得单独写一篇，这里先立个旗子。</p>
 <hr>
 <h3 id="附我自己设计的流式完整性检查清单"><a class="header" href="#附我自己设计的流式完整性检查清单">附：我自己设计的流式完整性检查清单</a></h3>
