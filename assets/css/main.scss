@@ -360,19 +360,9 @@ body .greedy-nav .visible-links a {
 }
 
 /* ---- 右侧 TOC ---- */
-/* 宽屏下加宽右侧目录列（主题默认中屏 200 / 宽屏 300，中文长标题会被挤成竖条） */
-@media (min-width: 64em) {
-  .sidebar__right {
-    width: 260px;
-    margin-inline-end: -260px;
-  }
-}
-@media (min-width: 80em) {
-  .sidebar__right {
-    width: 320px;
-    margin-inline-end: -320px;
-  }
-}
+/* 注意：右侧目录宽度由主题布局网格预留（中屏 200px / 宽屏 300px），
+   不要单独加宽 .sidebar__right，否则会捅出视口导致整页横向滚动。
+   中文可读性通过放大字号、放松行高、去分割线来改善，而非改列宽。 */
 .toc {
   background-color: transparent;
   border: none;
