@@ -1,4 +1,4 @@
-! Agent 时代的开发者界面 · 小册目录（唯一顺序权威）
+! 自顶向下拆 Agent：从界面到地基 · 小册目录（唯一顺序权威）
 ! 调顺序 / 微调侧栏标题 = 改这份文件；改正文 = 改同目录 chapters/<slug>.md（正典，随便手改）
 ! 改完重跑: python3 book-src/build-books.py agent-ui
 ! 行格式（以「 | 」分隔）:

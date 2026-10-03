@@ -1,5 +1,5 @@
 [book]
-title = "Agent 时代的开发者界面"
+title = "自顶向下拆 Agent：从界面到地基"
 authors = ["BiBoyang"]
 language = "zh-CN"
 src = "src"

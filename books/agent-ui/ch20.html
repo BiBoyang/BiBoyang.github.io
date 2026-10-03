@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>20 · Checkpoint 的谎言 - Agent 时代的开发者界面</title>
+        <title>20 · Checkpoint 的谎言 - 自顶向下拆 Agent：从界面到地基</title>
 
 
         <!-- Custom HTML head -->
@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-8e84c794.js";
+            window.path_to_searchindex_js = "searchindex-4d46e47c.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-5870c396.js"></script>
@@ -137,7 +137,7 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Agent 时代的开发者界面</h1>
+                    <h1 class="menu-title">自顶向下拆 Agent：从界面到地基</h1>
 
                     <div class="right-buttons">
                         <a href="print.html" title="Print this book" aria-label="Print this book">
@@ -177,35 +177,35 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="agent-时代的开发者界面二十checkpoint-的谎言回滚按钮能兑现多少"><a class="header" href="#agent-时代的开发者界面二十checkpoint-的谎言回滚按钮能兑现多少">Agent 时代的开发者界面（二十）：Checkpoint 的谎言——回滚按钮能兑现多少</a></h1>
+                        <h1 id="checkpoint-的谎言回滚按钮能兑现多少"><a class="header" href="#checkpoint-的谎言回滚按钮能兑现多少">Checkpoint 的谎言——回滚按钮能兑现多少</a></h1>
 <blockquote>
 <p>系列第二十篇，界面本体轨，控制三部曲终章。事前的计划（19）、事中的审批（08）、事后的回滚（本篇），是同一根信任链条的三节。这一节的病情最隐蔽：回滚按钮长得像“世界可以重来“，实际的语义是“文件可以重来，就这些“。这篇拆它到底能兑现什么、假装能兑现什么，以及虚假的可撤销感如何让真正不可逆的操作变得更危险。</p>
 </blockquote>
 <hr>
 <h2 id="一按下-rewind-的那一秒"><a class="header" href="#一按下-rewind-的那一秒">一、按下 rewind 的那一秒</a></h2>
 <p>界面现象：<code>/rewind</code> 按下（或空输入行双击 Esc），菜单弹出，选中一个时间点，屏幕一闪——diff 消失，文件回到三分钟前。用户的体感是完整的：世界回去了。</p>
-<p>实际发生的事，按 Claude Code 官方文档的口径：会话里<strong>每个 prompt 对应一个 checkpoint</strong>，快照追踪的是 Write、Edit、NotebookEdit 这三个文件编辑工具造成的修改；回滚菜单给三个方向——代码和对话一起回、只回对话、只回代码。保留策略：最近 100 个快照（第三方实测补充：超过 30 天的跳过，子 agent 的编辑和软链文件不在追踪范围内）。</p>
-<p>把追踪范围读三遍：<strong>Write、Edit、NotebookEdit</strong>。也就是说，agent 通过 Bash 删掉的文件、<code>git push</code> 出去的历史、子 agent 的改动——都不在这个保护网里。有第三方教程干脆把 <code>/rewind</code> 定性为“surgical recovery tool“（外科手术式的恢复工具），提醒你别拿它当通用 undo。</p>
+<p>实际发生的事，按 Claude Code 官方文档的口径：会话里<strong>每个 prompt 对应一个 checkpoint</strong>，快照追踪的是 Write、Edit、NotebookEdit 这三个文件编辑工具造成的修改；回滚菜单给三个方向：代码和对话一起回、只回对话、只回代码。保留策略：最近 100 个快照（第三方实测补充：超过 30 天的跳过，子 agent 的编辑和软链文件不在追踪范围内）。</p>
+<p>把追踪范围读三遍：<strong>Write、Edit、NotebookEdit</strong>。也就是说，agent 通过 Bash 删掉的文件、<code>git push</code> 出去的历史、子 agent 的改动，都不在这个保护网里。有第三方教程干脆把 <code>/rewind</code> 定性为“surgical recovery tool“（外科手术式的恢复工具），提醒你别拿它当通用 undo。</p>
 <h2 id="二agent-的副作用早就溢出仓库了"><a class="header" href="#二agent-的副作用早就溢出仓库了">二、agent 的副作用早就溢出仓库了</a></h2>
-<p>第 8 篇的四层风险模型里有一列叫“可回滚性“——只读、可回滚写入、难回滚写入、外部副作用。这个维度早就预见到了今天的问题，但产品界面没有跟上：<strong>审批弹窗不区分“这个操作可以被 checkpoint 兜住“和“这个操作出了门就回不来“</strong>，回滚按钮也不标注自己的覆盖边界。</p>
-<p>把 checkpoint 罩不住的清单摆出来，问题的形状就清楚了：已经发出的邮件和消息、已经合并的 PR、云上已经创建或删除的资源、已经扣费的 API 调用、MCP 工具对第三方系统的每一次写入、bash 里 <code>rm</code> 掉的文件。这些操作和文件编辑共享同一颗“允许“按钮、共享同一种被保护的错觉——而它们恰恰是四层模型里最底下两层的东西。<strong>安全网盖住了轻的，漏下来的全是重的。</strong></p>
+<p>第 8 篇的四层风险模型里有一列叫“可回滚性“：只读、可回滚写入、难回滚写入、外部副作用。这个维度早就预见到了今天的问题，但产品界面没有跟上：<strong>审批弹窗不区分“这个操作可以被 checkpoint 兜住“和“这个操作出了门就回不来“</strong>，回滚按钮也不标注自己的覆盖边界。</p>
+<p>把 checkpoint 罩不住的清单摆出来，问题的形状就清楚了：已经发出的邮件和消息、已经合并的 PR、云上已经创建或删除的资源、已经扣费的 API 调用、MCP 工具对第三方系统的每一次写入、bash 里 <code>rm</code> 掉的文件。这些操作和文件编辑共享同一颗“允许“按钮、共享同一种被保护的错觉，而它们恰恰是四层模型里最底下两层的东西。<strong>安全网盖住了轻的，漏下来的全是重的。</strong></p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch20-safety-net.svg" alt="安全网盖住了轻的，漏下来的全是重的"><span class="img-wrapper"><img src="assets/ch20-safety-net.svg" alt="安全网盖住了轻的，漏下来的全是重的"></span></label></p>
 <h2 id="三两种-rewind回滚的根本不是同一个世界"><a class="header" href="#三两种-rewind回滚的根本不是同一个世界">三、两种 rewind，回滚的根本不是同一个世界</a></h2>
-<p>一个对照来自本地源码。kwwk 的 rewind 是<strong>会话级</strong>的：<code>SessionStore</code> 里有专门的 <code>.rewind</code> 持久化操作类型，运行时还有 <code>.streamRewind</code> 事件——回滚的是对话本身（分支退回某个节点，transcript 整体重建，14 篇拆过的 <code>replaceCommitted</code> 负责把屏幕上的历史换掉）。Claude Code 的 rewind 主打<strong>文件级</strong>：对话可以继续走，代码回到过去。</p>
-<p>两家都叫 rewind，所指不可通约。理想里的“重来“应该是时间旅行：会话分支和文件快照一起回到同一个时间点——对话状态、代码状态、工具执行到一半的外部状态，三者对齐。现实是各家回一半，而第三样（外部世界的状态）没有任何人碰得到，因为它根本没有快照可回。</p>
+<p>一个对照来自本地源码。kwwk 的 rewind 是<strong>会话级</strong>的：<code>SessionStore</code> 里有专门的 <code>.rewind</code> 持久化操作类型，运行时还有 <code>.streamRewind</code> 事件，回滚的是对话本身（分支退回某个节点，transcript 整体重建，14 篇拆过的 <code>replaceCommitted</code> 负责把屏幕上的历史换掉）。Claude Code 的 rewind 主打<strong>文件级</strong>：对话可以继续走，代码回到过去。</p>
+<p>两家都叫 rewind，所指不可通约。理想里的“重来“应该是时间旅行：会话分支和文件快照一起回到同一个时间点，对话状态、代码状态、工具执行到一半的外部状态，三者对齐。现实是各家回一半，而第三样（外部世界的状态）没有任何人碰得到，因为它根本没有快照可回。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch20-two-rewinds.svg" alt="两种 rewind：会话级与文件级，回滚的根本不是同一个世界"><span class="img-wrapper"><img src="assets/ch20-two-rewinds.svg" alt="两种 rewind：会话级与文件级，回滚的根本不是同一个世界"></span></label></p>
-<p>这里能接上第 14 篇的一条纪律：“appendFrame 是永久历史的唯一通道”。渲染层靠单一事实通道保住历史的完整性，文件层靠 checkpoint 快照保住代码的可回退性——<strong>同一个原则（为可逆性显式建一份账）在两层各自落地，唯独外部副作用那层还没有人建账</strong>。也许根本建不了：邮件发出去就是发出去了，那层的“账“只能事先记（审批时告知），不能事后回。</p>
+<p>这里能接上第 14 篇的一条纪律：“appendFrame 是永久历史的唯一通道”。渲染层靠单一事实通道保住历史的完整性，文件层靠 checkpoint 快照保住代码的可回退性，<strong>同一个原则（为可逆性显式建一份账）在两层各自落地，唯独外部副作用那层还没有人建账</strong>。也许根本建不了：邮件发出去就是发出去了，那层的“账“只能事先记（审批时告知），不能事后回。</p>
 <h2 id="四虚假的可撤销感和它的风险补偿"><a class="header" href="#四虚假的可撤销感和它的风险补偿">四、虚假的可撤销感，和它的风险补偿</a></h2>
-<p>人机交互里有一条老常识：有 undo 的系统里，用户胆子更大——风险补偿。把它放到 2026 年的组合里看：auto mode 让审批变快（第 8 篇补记），checkpoint 让失败显得可救，两者叠加，用户对“允许“的心理门槛被系统性压低。</p>
-<p>问题在于兜底的网只盖住文件系统。用户以为的保障是“错了能回来“，实际的保障是“文件错了能回来“——那 20% 溢出仓库的操作（push、付费、外发、删资源）在网眼之外，而审批越轻快，它们发生的频率越高。<strong>checkpoint 的最大风险不是失效，是它让别的保护显得不需要。</strong></p>
+<p>人机交互里有一条老常识：有 undo 的系统里，用户胆子更大，这叫风险补偿。把它放到 2026 年的组合里看：auto mode 让审批变快（第 8 篇补记），checkpoint 让失败显得可救，两者叠加，用户对“允许“的心理门槛被系统性压低。</p>
+<p>问题在于兜底的网只盖住文件系统。用户以为的保障是“错了能回来“，实际的保障是“文件错了能回来“。那 20% 溢出仓库的操作（push、付费、外发、删资源）在网眼之外，而审批越轻快，它们发生的频率越高。<strong>checkpoint 的最大风险不是失效，是它让别的保护显得不需要。</strong></p>
 <p>三条设计主张，按成本排序：</p>
 <ol>
 <li><strong>能力边界如实标注。</strong> 回滚按钮旁边一句话：“本回滚不覆盖 bash 修改、子 agent 编辑与一切仓库外操作。”（CC 文档其实写了范围，UI 上没说。）第 8 篇四层模型的“难回滚“和“外部副作用“两层，界面上应该显式标注“此操作不受 rewind 保护“。</li>
-<li><strong>不可逆清单成为一等数据。</strong> 哪些工具的副作用出了仓库，应该是产品的显式清单而不是用户的知识——它同时是审批界面的输入（标红）和回滚界面的边界说明。</li>
-<li><strong>回滚覆盖度接进审批。</strong> 同一颗允许按钮，对“checkpoint 罩得住“的操作和罩不住的操作，视觉与文案应该不同——这不必新发明，第 8 篇的模型就差这最后一公里。</li>
+<li><strong>不可逆清单成为一等数据。</strong> 哪些工具的副作用出了仓库，应该是产品的显式清单而不是用户的知识，它同时是审批界面的输入（标红）和回滚界面的边界说明。</li>
+<li><strong>回滚覆盖度接进审批。</strong> 同一颗允许按钮，对“checkpoint 罩得住“的操作和罩不住的操作，视觉与文案应该不同，这不必新发明，第 8 篇的模型就差这最后一公里。</li>
 </ol>
 <h2 id="五收束三部曲合拢"><a class="header" href="#五收束三部曲合拢">五、收束：三部曲合拢</a></h2>
-<p>事前的计划、事中的审批、事后的回滚，三节链条的公共原理只有一句话：<strong>让用户在对的时间看到对的边界。</strong> 计划展示意图的边界（打算做什么），审批展示操作的边界（正要碰什么），回滚本应展示可逆性的边界（哪些错能改）——第三节现在是三者中最虚的，虚到用户普遍不知道它有边界。</p>
+<p>事前的计划、事中的审批、事后的回滚，三节链条的公共原理只有一句话：<strong>让用户在对的时间看到对的边界。</strong> 计划展示意图的边界（打算做什么），审批展示操作的边界（正要碰什么），回滚本应展示可逆性的边界（哪些错能改）。第三节现在是三者中最虚的，虚到用户普遍不知道它有边界。</p>
 <p>而比边界更深的那个问题，三部曲也只能触到边：模型说“做完了“，勾选框打了勾，回滚也用不上——<strong>声明不等于证据</strong>。计划可以被批准，操作可以被允许，错误可以被回滚，唯独“完成“本身还没有被验证。这是系列后面“回放与验收“要拆的最后一道缝：让“做完了“三个字带上证据。</p>
 <hr>
 <p><em>核查分层（截至 2026-09-28）：Claude Code checkpointing 基于官方文档（追踪 Write/Edit/NotebookEdit、三向回滚菜单、每 prompt 一快照、最近 100 个）与第三方实测（30 天上限、跳过子 agent 编辑与软链、bash 删除不可恢复、“surgical recovery tool“的定位建议）交叉；kwwk 为本地一手（<code>ae0771d</code>：<code>SessionStore.swift</code> 的 <code>.rewind</code> 操作类型、<code>AgentLoop.swift</code> 的 <code>.streamRewind</code> 事件）；风险补偿为 HCI 常识性论述。“三向回滚菜单“的第三项（code-only）以官方文档为准。Cursor 的 checkpoint 机制未核实，不引用。</em></p>

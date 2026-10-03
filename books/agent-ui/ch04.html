@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>04 · Agent TUI：当事件树撞上线性终端 - Agent 时代的开发者界面</title>
+        <title>04 · Agent TUI：当事件树撞上线性终端 - 自顶向下拆 Agent：从界面到地基</title>
 
 
         <!-- Custom HTML head -->
@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-8e84c794.js";
+            window.path_to_searchindex_js = "searchindex-4d46e47c.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-5870c396.js"></script>
@@ -137,7 +137,7 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Agent 时代的开发者界面</h1>
+                    <h1 class="menu-title">自顶向下拆 Agent：从界面到地基</h1>
 
                     <div class="right-buttons">
                         <a href="print.html" title="Print this book" aria-label="Print this book">
@@ -177,9 +177,9 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="agent-时代的开发者界面四agent-tui当事件树撞上线性终端"><a class="header" href="#agent-时代的开发者界面四agent-tui当事件树撞上线性终端">Agent 时代的开发者界面（四）：Agent TUI——当事件树撞上线性终端</a></h1>
+                        <h1 id="agent-tui当事件树撞上线性终端"><a class="header" href="#agent-tui当事件树撞上线性终端">Agent TUI——当事件树撞上线性终端</a></h1>
 <blockquote>
-<p>系列第四篇，TUI 三部曲的最后一篇。第 2 篇建立了渲染引擎的基础，第 3 篇拆解了 Markdown 在终端里的流式难题。这一篇聚焦 Agent 场景独有的一组问题——当流式输出、工具调用、thinking 展开、用户输入四件事同时在终端里发生时，渲染系统面对的不再是“画得好看“，而是“能不能不崩“。</p>
+<p>系列第四篇，TUI 三部曲的最后一篇。第 2 篇建立了渲染引擎的基础，第 3 篇拆解了 Markdown 在终端里的流式难题。这一篇聚焦 Agent 场景独有的一组问题：流式输出、工具调用、thinking 展开、用户输入四件事同时在终端里发生，渲染系统面对的问题从“画得好看“变成了“能不能不崩“。</p>
 </blockquote>
 <hr>
 <h2 id="一回到那个直觉1d--1d"><a class="header" href="#一回到那个直觉1d--1d">一、回到那个直觉：“1D → 1D”</a></h2>
@@ -195,7 +195,7 @@
   └── 最终回复（流式输出）
 </code></pre>
 <p>这不是一条线，是一棵树。而且节点到达顺序不是拓扑序。工具调用 2 可能比工具调用 1 先返回，thinking 块可能在流式输出的中途插入，用户随时按取消键。</p>
-<p>CLI 看起来“适配“，不是因为 Agent 的输出真的是 1D 的——而是 <strong>TUI 渲染引擎在背后做了一套复杂的展平机制，把一棵乱序到达的树强行投影成线性输出。</strong> 这套机制就是本文要拆解的东西。</p>
+<p>CLI 看起来“适配“，靠的是 <strong>TUI 渲染引擎在背后做了一套复杂的展平机制：把一棵乱序到达的树强行投影成线性输出。</strong> Agent 的输出本身并不是 1D 的。这套机制就是本文要拆解的东西。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch04-tree-flatten.svg" alt="事件树经渲染引擎展平为线性输出"><span class="img-wrapper"><img src="assets/ch04-tree-flatten.svg" alt="事件树经渲染引擎展平为线性输出"></span></label></p>
 <hr>
 <h2 id="二corerenderevent去掉会话角色语义的事件系统"><a class="header" href="#二corerenderevent去掉会话角色语义的事件系统">二、CoreRenderEvent：去掉会话角色语义的事件系统</a></h2>
@@ -212,7 +212,7 @@
     case notification(text: String)                           // 通知
 }
 </code></pre>
-<p>关键设计决策：<strong>不区分 user/assistant/tool 的会话角色语义，但保留执行结构语义。</strong> thinking、operationStart/End 这些事件类型本身就是 Agent 的执行语义——去掉的是“这句话是谁说的“，留下的是“执行进行到哪一步“。chat 语义由上层 Adapter 注入，Core 层只知道“有一段内容要插入““有一个块在流式更新”“有一个操作开始了”。这让渲染系统可以复用到任何场景——AI 聊天、构建日志、测试报告——不需要改动渲染逻辑。</p>
+<p>关键设计决策：<strong>不区分 user/assistant/tool 的会话角色语义，但保留执行结构语义。</strong> thinking、operationStart/End 这些事件类型本身就是 Agent 的执行语义，它们不回答“这句话是谁说的“，只标记“执行进行到哪一步“。chat 语义由上层 Adapter 注入，Core 层只知道“有一段内容要插入““有一个块在流式更新”“有一个操作开始了”。这让渲染系统可以复用到任何场景：AI 聊天、构建日志、测试报告，都不用改渲染逻辑。</p>
 <p>代价是渲染器不知道事件之间的业务关系。它不知道 <code>operationEnd("tool_1")</code> 对应哪个 <code>operationStart</code>，不知道 thinking 结束后会不会有流式输出。这些关系由 <code>TranscriptRenderer</code> 内部维护，通过一套索引追踪系统。</p>
 <hr>
 <h2 id="三工具调用的乱序渲染"><a class="header" href="#三工具调用的乱序渲染">三、工具调用的乱序渲染</a></h2>
@@ -236,7 +236,7 @@
 <p>B 的 <code>done</code> 行本应替换掉 B 自己的 <code>⎿ running...</code>，但按到达顺序渲染只会把结果追加到帧尾——B 的 running 行残留成僵尸状态，结果行却落到了离自己 header 两行开外的位置。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch04-out-of-order-slots.svg" alt="按到达顺序渲染的事故现场，对比稳定槽位队列的原地替换"><span class="img-wrapper"><img src="assets/ch04-out-of-order-slots.svg" alt="按到达顺序渲染的事故现场，对比稳定槽位队列的原地替换"></span></label></p>
 <h3 id="32-稳定槽位队列"><a class="header" href="#32-稳定槽位队列">3.2 稳定槽位队列</a></h3>
-<p>ForgeLoopTUI 的解法是 <code>pendingTools</code> 数组——按 operationStart 到达顺序维护槽位：</p>
+<p>ForgeLoopTUI 的解法是 <code>pendingTools</code> 数组：按 operationStart 到达顺序维护槽位。</p>
 <pre><code class="language-swift">case .operationStart(let id, let header, let status):
     append(header)       // ● read_file(main.rs)
     append(status)       // ⎿ running...
@@ -265,9 +265,9 @@
 </code></pre>
 <p>不做这个偏移，下一个 <code>operationEnd</code> 的 <code>lineIndex</code> 就指向了错误的行，结果写到别人的位置。</p>
 <blockquote>
-<p>补记（2026.08）：本节描述的是全屏自管派的乱序处理——在扁平行数组上做坐标手术。inline viewport 派把乱序配对提前到了数据层：工具调用按稳定 id 在内存模型里配对、完成后才“发射“进终端 scrollback，乱序问题从坐标手术退化为字典查找。详见第 11 篇。</p>
+<p>补记（2026.08）：本节描述的是全屏自管派的乱序处理：在扁平行数组上做坐标手术。inline viewport 派把乱序配对提前到了数据层：工具调用按稳定 id 在内存模型里配对、完成后才“发射“进终端 scrollback，乱序问题从坐标手术退化为字典查找。详见第 11 篇。</p>
 </blockquote>
-<p>这里要和第 2 篇的一个结论对齐：commit/live 分区模型里，committed 区“只追加，不改写“。那上面这些 <code>lines.replace</code> 原地替换——以及后面 thinking 的原地更新、通知的删除——不矛盾吗？不矛盾，关键在时序：这些操作针对的行都还处于 live 阶段，尚未被 Live Budget Planner 沉降到 committed 区。一行内容在 commit 之前是可变的——可以被替换、删除、连带偏移；一旦沉降完成，它进入只追加区域，后续任何事件都不会再改写它。“不可变“是 commit 之后的性质，不是写入即生效的性质。</p>
+<p>这里要和第 2 篇的一个结论对齐：commit/live 分区模型里，committed 区“只追加，不改写“。那上面这些 <code>lines.replace</code> 原地替换（以及后面 thinking 的原地更新、通知的删除）不矛盾吗？不矛盾，关键在时序：这些操作针对的行都还处于 live 阶段，尚未被 Live Budget Planner 沉降到 committed 区。一行内容在 commit 之前是可变的，可以被替换、删除、连带偏移；一旦沉降完成，它进入只追加区域，后续任何事件都不会再改写它。“不可变“是 commit 之后的性质，不是写入即生效的性质。</p>
 <hr>
 <h2 id="四thinking-块的渲染"><a class="header" href="#四thinking-块的渲染">四、thinking 块的渲染</a></h2>
 <p>thinking（推理过程）和普通流式输出的区别在于：它是模型在“想“，不是对用户的回复。视觉上需要区分。</p>
@@ -290,11 +290,11 @@
     thinkingRange = start..&lt;(start + thinkingLines.count)
 }
 </code></pre>
-<p>首次 <code>thinking</code> 事件创建新范围；后续事件在同一个范围原地替换——因为 thinking 内容是累积更新的，每次收到的都是完整文本。注意替换会改变行数：新旧行数差 <code>delta</code> 不为零时，必须像「三」「五」那样偏移后续索引，否则排在 thinking 之后的工具槽位和流式范围会全部错位。</p>
+<p>首次 <code>thinking</code> 事件创建新范围；后续事件在同一个范围原地替换，因为 thinking 内容是累积更新的，每次收到的都是完整文本。注意替换会改变行数：新旧行数差 <code>delta</code> 不为零时，必须像「三」「五」那样偏移后续索引，否则排在 thinking 之后的工具槽位和流式范围会全部错位。</p>
 <p><code>isFinal</code> 为 true 时清除 <code>thinkingRange</code>，后续的流式回复或工具调用正常追加在后面。</p>
 <hr>
 <h2 id="五通知的-fifo-队列有上限"><a class="header" href="#五通知的-fifo-队列有上限">五、通知的 FIFO 队列（有上限）</a></h2>
-<p>Agent 在运行过程中会产生系统通知——“工具调用超时”“网络重试第 3 次”“上下文窗口使用率 85%”。这些通知需要展示但不能淹没主要对话内容。</p>
+<p>Agent 在运行过程中会产生系统通知：“工具调用超时”“网络重试第 3 次”“上下文窗口使用率 85%”。这些通知需要展示但不能淹没主要对话内容。</p>
 <pre><code class="language-swift">case .notification(let text):
     appendNotification("▸ \(text)")
 </code></pre>
@@ -312,7 +312,7 @@ private func appendNotification(_ line: String) {
     }
 }
 </code></pre>
-<p>超过上限（默认 3 条）时，最旧的通知行从 Transcript 中删除，后续所有索引偏移 -1。不是折叠——是直接删除，因为通知是瞬态的，过时即无用。</p>
+<p>超过上限（默认 3 条）时，最旧的通知行从 Transcript 中删除，后续所有索引偏移 -1。这里没有折叠机制，直接删除：通知是瞬态的，过时即无用。</p>
 <hr>
 <h2 id="六blockcancel用户按下取消键"><a class="header" href="#六blockcancel用户按下取消键">六、blockCancel：用户按下取消键</a></h2>
 <p>Agent 正在流式输出一段很长的代码，用户按了 Esc 取消。这时不能只是停止发送新内容——已经显示在屏幕上的流式内容需要被清除，换成 <code>[cancelled]</code> 标记。</p>
@@ -330,10 +330,10 @@ private func appendNotification(_ line: String) {
     streamingRange = range.lowerBound..&lt;(range.lowerBound + newLines.count)
 }
 </code></pre>
-<p>如果 <code>streamingRange</code> 为 nil（没有活跃的流式块），退化为 append。取消后清空 <code>streamingRange</code> 和 <code>completedRange</code>，Markdown 引擎重置——Agent 可以立即开始下一个请求。</p>
+<p>如果 <code>streamingRange</code> 为 nil（没有活跃的流式块），退化为 append。取消后清空 <code>streamingRange</code> 和 <code>completedRange</code>，Markdown 引擎重置，Agent 可以立即开始下一个请求。</p>
 <hr>
 <h2 id="七工具结果的截断"><a class="header" href="#七工具结果的截断">七、工具结果的截断</a></h2>
-<p>工具返回值可能很长——<code>read_file</code> 可能返回几百行代码，<code>search_code</code> 可能返回几十条匹配。在终端里全量展示会淹没对话流。</p>
+<p>工具返回值可能很长：<code>read_file</code> 可能返回几百行代码，<code>search_code</code> 可能返回几十条匹配。在终端里全量展示会淹没对话流。</p>
 <pre><code class="language-swift">private func formatToolResult(_ text: String?) -&gt; [String] {
     guard let text, !text.isEmpty else { return [] }
 
@@ -352,7 +352,7 @@ private func appendNotification(_ line: String) {
     }
 }
 </code></pre>
-<p>每行限制 120 字符 + 总共最多 3 行。在当前 commit/live 分区模型下，折叠不是一个简单的 show/hide 开关——一旦要让历史区域可折叠，就必须重新定义已提交内容的可见性和重绘策略。当前选择了最直接的方案：截断，用 <code>...</code> 标记。</p>
+<p>每行限制 120 字符 + 总共最多 3 行。在当前 commit/live 分区模型下，折叠不是一个简单的 show/hide 开关：一旦要让历史区域可折叠，就得重新定义已提交内容的可见性和重绘策略。当前选择了最直接的方案：截断，用 <code>...</code> 标记。</p>
 <hr>
 <h2 id="八多行输入框与帧合成"><a class="header" href="#八多行输入框与帧合成">八、多行输入框与帧合成</a></h2>
 <p>第 2 篇详细讲了 commit/live 分区模型和 cursorPlacement 机制。Agent 场景下有一个特殊问题：<strong>多行输入</strong>。</p>
@@ -360,12 +360,12 @@ private func appendNotification(_ line: String) {
 <p>ForgeLoopTUI 的 <code>MultiLineInputState</code> 支持多行文本输入，光标锚定在输入框的当前编辑位置。这里有一个微妙的竞态：Agent 正在流式输出，用户同时在多行输入框里打字。两件事都在触发渲染。上游把不同来源的状态合成帧之后，第 2 篇讲的 RenderLoop 帧合并负责把这帧稳定刷出去，避免终端在“追加流式内容“和“更新输入框光标“之间出现 ANSI 序列交错。</p>
 <hr>
 <h2 id="九agent-的不确定性如何放大一切"><a class="header" href="#九agent-的不确定性如何放大一切">九、Agent 的不确定性如何放大一切</a></h2>
-<p>前两篇讲的 TUI 问题——物理行计算、增量 diff 的脆弱性、Markdown 的流式不确定性——在普通聊天场景下已经是难题。Agent 场景让每个问题都严重了一个量级。</p>
-<p><strong>内容长度不可预测。</strong> 普通聊天的回复可能有几十到几百个 token。Agent 的工具调用结果可能是一整个文件的数千行代码。第 2 篇讲的 Live Budget Planner 在 Agent 场景下不是“优化“而是“必需的防御“——没有 budget 限制，一次工具返回就能把帧推到几百物理行，全量重绘 + 终端滚动缓冲区溢出。</p>
-<p><strong>事件类型不可预测。</strong> 你无法预知下一个事件是 thinking、tool call、streaming text、还是 error。渲染器必须正确响应所有事件组合——包括之前没见过的组合。比如某些模型的 thinking 块可以在流式回复的中间穿插出现，这不是规范行为，但实际发生了。</p>
-<p><strong>中断时机不可预测。</strong> 用户可能在流式输出的任何时刻取消。取消时 Markdown 引擎可能处于任何状态——代码块中间、表格中间、列表中间。<code>blockCancel</code> 必须无条件 reset 引擎、清空 streaming 状态、写取消标记——不能假定 Markdown 结构是完整的。</p>
+<p>前两篇讲的 TUI 问题（物理行计算、增量 diff 的脆弱性、Markdown 的流式不确定性）在普通聊天场景下已经是难题。Agent 场景让每个问题都严重了一个量级。</p>
+<p><strong>内容长度不可预测。</strong> 普通聊天的回复可能有几十到几百个 token。Agent 的工具调用结果可能是一整个文件的数千行代码。第 2 篇讲的 Live Budget Planner 在 Agent 场景下从“优化“变成了“必需的防御“：没有 budget 限制，一次工具返回就能把帧推到几百物理行，全量重绘 + 终端滚动缓冲区溢出。</p>
+<p><strong>事件类型不可预测。</strong> 你无法预知下一个事件是 thinking、tool call、streaming text、还是 error。渲染器必须正确响应所有事件组合，包括之前没见过的组合。比如某些模型的 thinking 块可以在流式回复的中间穿插出现，这不是规范行为，但实际发生了。</p>
+<p><strong>中断时机不可预测。</strong> 用户可能在流式输出的任何时刻取消。取消时 Markdown 引擎可能处于任何状态——代码块中间、表格中间、列表中间。<code>blockCancel</code> 必须无条件 reset 引擎、清空 streaming 状态、写取消标记，不能假定 Markdown 结构完整。</p>
 <p>这三个“不可预测“叠加在一起，意味着 Agent TUI 的渲染系统不能对事件序列做任何结构性假设。每个事件到达时，只根据当前 Transcript 的索引状态做局部替换，不依赖“前一个事件是什么“，不假设“下一个事件什么时候到“。</p>
-<p>这不是“无状态“。恰恰相反，渲染器的全部正确性都系于一份共享的可变状态：<code>lines</code>（Transcript 的内容数组）和几个 Range（streaming/thinking/completed 的位置追踪）。准确的说法是<strong>事件处理无会话假设</strong>——这也是为什么 <code>applyCore</code> 方法是一个巨大的 switch 语句：每个 case 独立处理一个事件类型，不依赖前序事件的种类，只依赖那份共享索引状态。</p>
+<p>这不是“无状态“。恰恰相反，渲染器的全部正确性都系于一份共享的可变状态：<code>lines</code>（Transcript 的内容数组）和几个 Range（streaming/thinking/completed 的位置追踪）。准确的说法是<strong>事件处理无会话假设</strong>。这也是为什么 <code>applyCore</code> 是一个巨大的 switch 语句：每个 case 独立处理一个事件类型，不依赖前序事件的种类，只依赖那份共享索引状态。</p>
 <hr>
 <h2 id="十tui-三部曲的终点"><a class="header" href="#十tui-三部曲的终点">十、TUI 三部曲的终点</a></h2>
 <p>三篇文章覆盖了从底层渲染到上层 Agent 场景的完整技术栈：</p>
@@ -375,7 +375,7 @@ private func appendNotification(_ line: String) {
 </code></pre>
 <p>这三层之间有一个递进关系：每一层都建立在下一层之上，每一层的问题都因为底层的限制而更难解决。Agent 的树状事件在终端里变成线性输出——这个“树展平“的过程，就是 TUI 渲染引擎存在的全部意义。</p>
 <p>但展平只是手段。真正的问题是：凭什么树状事件一定要被展平成线性？如果终端不是唯一的投影介质呢？</p>
-<p>下一篇是系列的中场——<strong>Event Sourcing，Agent UI 的底层模型</strong>。它解释为什么 CLI/TUI 的挣扎不是终端的问题，而是“树状事件 → 线性输出“这个投影方式本身的结构性矛盾。一旦你把 Agent 的执行抽象为事件流，CLI/TUI/GUI/IDE/Web/Mobile 各自应该站在哪里，就不再是形态之争了。</p>
+<p>下一篇是系列的中场：<strong>Event Sourcing，Agent UI 的底层模型</strong>。它会解释 CLI/TUI 的挣扎为什么不是终端的锅：真正有结构性矛盾的是“树状事件 → 线性输出“这个投影方式本身。一旦把 Agent 的执行抽象为事件流，CLI/TUI/GUI/IDE/Web/Mobile 各自应该站在哪里，就不再是形态之争了。</p>
 <hr>
 <p><em>本文所有技术细节基于 <a href="https://github.com/BiBoyang/ForgeLoopTUI">ForgeLoopTUI</a> v1.2.0 的实际源码。其中 thinking 替换的 <code>shiftIndices</code> 调用为 v1.2.1 的索引偏移修复，v1.2.0 及更早版本中不存在。</em></p>
 

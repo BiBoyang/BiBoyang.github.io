@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>03 · 协议三边界 - Agent 时代的开发者界面</title>
+        <title>03 · 协议三边界 - 自顶向下拆 Agent：从界面到地基</title>
 
 
         <!-- Custom HTML head -->
@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-8e84c794.js";
+            window.path_to_searchindex_js = "searchindex-4d46e47c.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-5870c396.js"></script>
@@ -137,7 +137,7 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Agent 时代的开发者界面</h1>
+                    <h1 class="menu-title">自顶向下拆 Agent：从界面到地基</h1>
 
                     <div class="right-buttons">
                         <a href="print.html" title="Print this book" aria-label="Print this book">
@@ -177,13 +177,13 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="agent-ui-的另一半三协议三边界mcpacpag-ui各欠谁的债"><a class="header" href="#agent-ui-的另一半三协议三边界mcpacpag-ui各欠谁的债">Agent UI 的另一半（三）：协议三边界——MCP、ACP、AG-UI，各欠谁的债</a></h1>
+                        <h1 id="协议三边界mcpacpag-ui各欠谁的债"><a class="header" href="#协议三边界mcpacpag-ui各欠谁的债">协议三边界——MCP、ACP、AG-UI，各欠谁的债</a></h1>
 <blockquote>
-<p>基建系列第三篇。前两篇讲一根连接的两端（断线重连）和其中一端（手机）。这一篇讲“界面“这个词的复数化：同一个 agent，要同时面对三类对话者——工具、编辑器、浏览器前端——行业为这三条边界各造了一套协议，MCP、ACP、AG-UI。它们不是竞争关系，是同一张地图上的三条国境线。这篇讲每条线怎么划的、为什么必须这么划，以及一个有意思的规律：<strong>协议要不要有会话，取决于边界对面那位有没有状态。</strong></p>
+<p>基建系列第三篇。前两篇讲一根连接的两端（断线重连）和其中一端（手机）。这一篇讲“界面“这个词的复数化：同一个 agent，要同时面对三类对话者，工具、编辑器、浏览器前端，行业为这三条边界各造了一套协议，MCP、ACP、AG-UI。它们不是竞争关系，是同一张地图上的三条国境线。这篇讲每条线怎么划的、为什么必须这么划，以及一个有意思的规律：<strong>协议要不要有会话，取决于边界对面那位有没有状态。</strong></p>
 </blockquote>
 <hr>
 <h2 id="一一次换壳背后"><a class="header" href="#一一次换壳背后">一、一次“换壳“背后</a></h2>
-<p>先看一个每个人都在做的动作：给 agent 换个界面。今天它在你的终端里跑，明天你把它装进 Zed 的侧栏，后天它出现在某个 Web 面板上。感觉上你在换皮肤，实际上你每换一次，就穿过了一条协议边界——agent 跟终端说话、跟编辑器说话、跟浏览器前端说话，用的是三套完全不同的语言。</p>
+<p>先看一个每个人都在做的动作：给 agent 换个界面。今天它在你的终端里跑，明天你把它装进 Zed 的侧栏，后天它出现在某个 Web 面板上。感觉上你在换皮肤，实际上你每换一次，就穿过了一条协议边界：agent 跟终端说话、跟编辑器说话、跟浏览器前端说话，用的是三套完全不同的语言。</p>
 <p>把三条边界的方向性先摆正，它们不是同一种关系的三个名字：</p>
 <ul>
 <li><strong>agent ↔ 工具</strong>（MCP）：agent 是主语，它去征用外界的能力；</li>
@@ -192,16 +192,16 @@
 </ul>
 <p>主语不同，欠的债也不同。逐条看。</p>
 <h2 id="二工具边界mcp-和它的无状态豪赌"><a class="header" href="#二工具边界mcp-和它的无状态豪赌">二、工具边界：MCP 和它的无状态豪赌</a></h2>
-<p>MCP 管的是能力发现和结构化 IO——工具怎么声明自己的 schema、结果怎么以结构化形态返回（<code>structuredContent</code> 明说是给模型的，第 16、18 篇都引过它）。这条边界上，基01 已经核查过 2026-07-28 那次激进的无状态化重写：会话头删了，断线恢复删了，官方 changelog 的措辞是把这些“从传输里移除“——流断在半路，结果作废，客户端在应用层重试。</p>
+<p>MCP 管的是能力发现和结构化 IO：工具怎么声明自己的 schema、结果怎么以结构化形态返回（<code>structuredContent</code> 明说是给模型的，第 16、18 篇都引过它）。这条边界上，基01 已经核查过 2026-07-28 那次激进的无状态化重写：会话头删了，断线恢复删了，官方 changelog 的措辞是把这些“从传输里移除“，流断在半路，结果作废，客户端在应用层重试。</p>
 <p>当时把它当传输层新闻讲，这里补上边界层的解读：<strong>MCP 敢这么做，是因为工具这个对话者近似纯函数</strong>。调用、返回、结束——边界对面没有需要延续的视图状态，会话性对这条边界是奢侈品而非必需品。无状态化的代价是真实的（会话被推给两端自己解决），但这个代价恰好落在了一个扛得住的位置。</p>
 <h2 id="三编辑器边界acp-的lsp-时刻"><a class="header" href="#三编辑器边界acp-的lsp-时刻">三、编辑器边界：ACP 的“LSP 时刻“</a></h2>
-<p>ACP 面对的问题形状是编辑器圈的老朋友：编辑器不想为每个 agent 写一遍 UI，agent 不想为每个编辑器写一遍适配——这正是 LSP 解决过的问题，只是主角从语言换成了 agent。所以它的定位被叫做“AI coding agent 的 LSP 时刻“：开放标准，JSON-RPC over stdio/WebSocket，agent 作为子进程被编辑器拉起，编辑器从此是一个能装任何 agent 的通用投影面。</p>
+<p>ACP 面对的问题形状是编辑器圈的老朋友：编辑器不想为每个 agent 写一遍 UI，agent 不想为每个编辑器写一遍适配，这正是 LSP 解决过的问题，只是主角从语言换成了 agent。所以它的定位被叫做“AI coding agent 的 LSP 时刻“：开放标准，JSON-RPC over stdio/WebSocket，agent 作为子进程被编辑器拉起，编辑器从此是一个能装任何 agent 的通用投影面。</p>
 <p>生态现状（2026-09 核实）：Zed 的 ACP Registry 已上线，入驻名单包括 Claude Code、Codex CLI、GitHub Copilot CLI、OpenCode、Cursor、Pi；JetBrains 在 2026 年 1 月开了自家的 ACP Agent Registry，覆盖 Gemini CLI、Claude Code、Auggie、OpenCode、Copilot。接入深度不一：Copilot CLI 和 Gemini CLI 是原生支持，Claude Code 和 Codex 走适配器。</p>
-<p>一手注脚来自 kimi-code：仓库里有一个专门的 <code>packages/acp-adapter</code> 包，依赖 <code>@agentclientprotocol/sdk@0.23.0</code>——月之暗面给自家 agent 配的早期周边里，编辑器适配层占了一个正式包位。测试文件名把适配的难点泄露得很直白：<code>tool-call-stream</code>（流式工具调用怎么过桥）、<code>set-session-config-option</code>（会话配置怎么映射）。<strong>过协议边界的从来不只是事件，还有两侧各自的会话语义。</strong></p>
-<p>这条边界为什么必须有会话？因为对面的编辑器是一个深度有状态的投影面——打开的文件、光标位置、diff 面板的展开状态。边界对面有状态，协议就躲不开会话。第 5 篇说“编辑器是 agent 事件流的投影之一“，ACP 做的事就是给这句话定契约；系列早期引过的 zacp（ACP 协议驱动的多 Agent WebUI）是同一思想在 Web 端的自发实践——协议出现之前，论点已经先在野生实现里活着了。</p>
+<p>一手注脚来自 kimi-code：仓库里有一个专门的 <code>packages/acp-adapter</code> 包，依赖 <code>@agentclientprotocol/sdk@0.23.0</code>，月之暗面给自家 agent 配的早期周边里，编辑器适配层占了一个正式包位。测试文件名把适配的难点泄露得很直白：<code>tool-call-stream</code>（流式工具调用怎么过桥）、<code>set-session-config-option</code>（会话配置怎么映射）。<strong>过协议边界的从来不只是事件，还有两侧各自的会话语义。</strong></p>
+<p>这条边界为什么必须有会话？因为对面的编辑器是一个深度有状态的投影面：打开的文件、光标位置、diff 面板的展开状态。边界对面有状态，协议就躲不开会话。第 5 篇说“编辑器是 agent 事件流的投影之一“，ACP 做的事就是给这句话定契约；系列早期引过的 zacp（ACP 协议驱动的多 Agent WebUI）是同一思想在 Web 端的自发实践，协议出现之前，论点已经先在野生实现里活着了。</p>
 <h2 id="四前端边界ag-ui把事件流写成协议"><a class="header" href="#四前端边界ag-ui把事件流写成协议">四、前端边界：AG-UI，把事件流写成协议</a></h2>
-<p>AG-UI（CopilotKit 出品）管 agent 和浏览器前端的对话：SSE 传输，十六七类事件（各家文档计数略有出入），按组覆盖生命周期、文本流、工具调用、状态同步。第 5 篇那句“agent 是一条事件流，UI 是投影“，在这里被直接产品化成了 wire format——前端组件消费的正是这套事件。</p>
-<p>它有一个和 MCP 方向完全相反的设计，值得单独看：<strong>工具定义放在前端</strong>，运行时递给 agent。MCP 的世界观是工具在服务端等着被 agent 发现；AG-UI 的世界观是前端把工具交给 agent 执行。同一种东西（工具），两条协议给出了相反的归属答案——因为它们站在不同的边界上，替不同的主语说话。前端拥有工具定义，本质是让界面的作者（而不是 agent 的作者）决定这个产品里 agent 能碰到什么——权限模型从 agent 侧移到了界面侧。</p>
+<p>AG-UI（CopilotKit 出品）管 agent 和浏览器前端的对话：SSE 传输，十六七类事件（各家文档计数略有出入），按组覆盖生命周期、文本流、工具调用、状态同步。第 5 篇那句“agent 是一条事件流，UI 是投影“，在这里被直接产品化成了 wire format，前端组件消费的正是这套事件。</p>
+<p>它有一个和 MCP 方向完全相反的设计，值得单独看：<strong>工具定义放在前端</strong>，运行时递给 agent。MCP 的世界观是工具在服务端等着被 agent 发现；AG-UI 的世界观是前端把工具交给 agent 执行。同一种东西（工具），两条协议给出了相反的归属答案，因为它们站在不同的边界上，替不同的主语说话。前端拥有工具定义，本质是让界面的作者（而不是 agent 的作者）决定这个产品里 agent 能碰到什么，权限模型从 agent 侧移到了界面侧。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/infra03-tool-ownership-mirror.svg" alt="工具归属的镜像：MCP 在服务端等发现，AG-UI 由前端定义递给 agent"><span class="img-wrapper"><img src="assets/infra03-tool-ownership-mirror.svg" alt="工具归属的镜像：MCP 在服务端等发现，AG-UI 由前端定义递给 agent"></span></label></p>
 <h2 id="五对照表和一个规律"><a class="header" href="#五对照表和一个规律">五、对照表和一个规律</a></h2>
 <div class="table-wrapper">
@@ -220,10 +220,10 @@
 </div>
 <p>规律就藏在“会话性“那一行：<strong>协议的会话性由边界另一端是否有状态决定。</strong> 工具无视图，MCP 可以拍掉会话；编辑器有状态，ACP 必须扛住会话；前端要增量，AG-UI 干脆把整个协议做成事件流。选协议之前先看对面是谁，跟第 9 篇选端先看约束是同一个思考方式。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/infra03-three-borders.svg" alt="三条协议边界：会话性由边界另一端是否有状态决定"><span class="img-wrapper"><img src="assets/infra03-three-borders.svg" alt="三条协议边界：会话性由边界另一端是否有状态决定"></span></label></p>
-<p>两条债也记下。其一，<strong>协议会咬人</strong>：MCP 2026-07-28 删 GET stream 的破坏性修订就是现场案例——依赖协议承诺的字段（比如断线恢复）说没就没，基01 里 kimi 那份“seq 字段全可选“的契约，就是客户端对协议咬人的标准防御。其二，<strong>registry 也在割据</strong>：Zed 一个、JetBrains 一个，agent 要么入驻两次要么选边——第 18 篇里 CLAUDE.md 和 AGENTS.md 的双写，在协议层换了个名字重演。</p>
+<p>两条债也记下。其一，<strong>协议会咬人</strong>：MCP 2026-07-28 删 GET stream 的破坏性修订就是现场案例，依赖协议承诺的字段（比如断线恢复）说没就没，基01 里 kimi 那份“seq 字段全可选“的契约，就是客户端对协议咬人的标准防御。其二，<strong>registry 也在割据</strong>：Zed 一个、JetBrains 一个，agent 要么入驻两次要么选边，第 18 篇里 CLAUDE.md 和 AGENTS.md 的双写，在协议层换了个名字重演。</p>
 <h2 id="六收束ui-承诺的协议层"><a class="header" href="#六收束ui-承诺的协议层">六、收束：UI 承诺的协议层</a></h2>
 <p>把三篇基建的账合到界面上：ACP 决定编辑器能不能内联渲染 agent 的 diff、能不能把权限请求嵌进侧栏；AG-UI 决定前端组件收到的是增量还是全量、状态会不会静默漂移；MCP 的无状态化决定断线那一刻，工具调用这条支路上的界面敢不敢承诺续传。<strong>界面的每一个承诺，往下挖两层都会碰到一条协议的条款。</strong></p>
-<p>基建系列到此收口：连接（基01）、端（基02）、协议（基03）——事件流离开本机之后的全部旅程。下一篇回到界面本体轨，讲控制的三部曲之首：计划。逐条审批必然疲劳，可扩展的控制粒度是事前批准一份可编辑的计划——checklist 正在成为 agent 时代的 diff。</p>
+<p>基建系列到此收口：连接（基01）、端（基02）、协议（基03），事件流离开本机之后的全部旅程。下一篇回到界面本体轨，讲控制的三部曲之首：计划。逐条审批必然疲劳，可扩展的控制粒度是事前批准一份可编辑的计划——checklist 正在成为 agent 时代的 diff。</p>
 <hr>
 <p><em>核查分层（截至 2026-09-28）：ACP Registry 名单与接入方式基于 Zed 官方博客与文档、JetBrains 官方博客（2026-01）及 agentclientprotocol.com 目录，多源交叉；AG-UI 事件分组基于 CopilotKit 官方资料与第三方教程（事件计数 16–17 存在版本差异，按量级表述）；MCP 无状态化修订引自基01 轮核查的官方 changelog；kimi-code 一手（<code>1e553fc</code>：<code>packages/acp-adapter</code>、<code>@agentclientprotocol/sdk@0.23.0</code>、测试文件名）；zacp 为系列既有引用（helloxz/zacp）。</em></p>
 

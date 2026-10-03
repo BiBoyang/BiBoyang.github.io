@@ -13,8 +13,8 @@ classes: wide
 <div class="feature__wrapper">
   <div class="feature__item">
     <div class="archive__item">
-      <h2 class="archive__item-title no_toc"><a href="/books/agent-ui/">Agent 时代的开发者界面</a></h2>
-      <p class="page__meta">连载中 · 已收录 26 篇</p>
+      <h2 class="archive__item-title no_toc"><a href="/books/agent-ui/">自顶向下拆 Agent：从界面到地基</a></h2>
+      <p class="page__meta">连载中 · 已收录 26 篇 · 原名《Agent 时代的开发者界面》</p>
       <p class="archive__item-excerpt">一个人同时踩过 TUI 和 GUI 两条船之后，把踩过的坑和想清楚的事记下来：从 ANSI 转义序列到多端架构，从 Markdown 流式渲染的 O(n²) 陷阱到权限和 diff 的 UX 设计。</p>
       <p><a href="/books/agent-ui/" class="btn btn--primary">开始阅读</a></p>
     </div>

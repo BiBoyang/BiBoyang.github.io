@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>03 · Markdown 在 TUI 上的流式地狱 - Agent 时代的开发者界面</title>
+        <title>03 · Markdown 在 TUI 上的流式地狱 - 自顶向下拆 Agent：从界面到地基</title>
 
 
         <!-- Custom HTML head -->
@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-8e84c794.js";
+            window.path_to_searchindex_js = "searchindex-4d46e47c.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-5870c396.js"></script>
@@ -137,7 +137,7 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">Agent 时代的开发者界面</h1>
+                    <h1 class="menu-title">自顶向下拆 Agent：从界面到地基</h1>
 
                     <div class="right-buttons">
                         <a href="print.html" title="Print this book" aria-label="Print this book">
@@ -177,9 +177,9 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="agent-时代的开发者界面三markdown-在-tui-上的流式地狱"><a class="header" href="#agent-时代的开发者界面三markdown-在-tui-上的流式地狱">Agent 时代的开发者界面（三）：Markdown 在 TUI 上的流式地狱</a></h1>
+                        <h1 id="markdown-在-tui-上的流式地狱"><a class="header" href="#markdown-在-tui-上的流式地狱">Markdown 在 TUI 上的流式地狱</a></h1>
 <blockquote>
-<p>系列第三篇。上一篇拆解了 TUI 渲染引擎的底层——ANSI 序列、字符网格、物理行计算、增量 diff。这一篇聚焦 Agent 场景里最让人头疼的问题之一：在只有字符的终端里，把流式输出的 Markdown 渲染成可读的样子。</p>
+<p>系列第三篇。上一篇拆解了 TUI 渲染引擎的底层：ANSI 序列、字符网格、物理行、增量 diff。这一篇聚焦 Agent 场景里最让人头疼的问题之一：在只有字符的终端里，把流式输出的 Markdown 渲染成可读的样子。</p>
 </blockquote>
 <hr>
 <h2 id="一markdown-天生反感流式"><a class="header" href="#一markdown-天生反感流式">一、Markdown 天生反感流式</a></h2>
@@ -199,17 +199,17 @@
 <p>此时解析器会把这两行识别为有序列表的头部。但下一个 token 可能是：</p>
 <pre><code>不是唯一的选择
 </code></pre>
-<p>这行没有数字前缀——按 CommonMark 的 lazy continuation 规则，它会续接到最后一个打开的块上，也就是第二项的多行续文，不是新列表项也不是普通段落。但解析器在流式到达的那一刻根本不知道。</p>
+<p>这行没有数字前缀，按 CommonMark 的 lazy continuation 规则，它会续接到最后一个打开的块上，也就是第二项的多行续文，不是新列表项也不是普通段落。但解析器在流式到达的那一刻根本不知道。</p>
 <p>更致命的情况：</p>
 <pre><code>```swift        ← 代码块开始
 let x = 1
-```             ← 闭合了。但模型下一秒又吐出一行代码——
+```             ← 闭合了。但模型下一秒又吐出一行代码……
 let y = 2        ← 它是新段落，还是代码？
 </code></pre>
-<p>严格说这不是 Markdown 的词法歧义——CommonMark 的规则是确定的。歧义来自流式本身：解析器每一帧都要对“目前已到达的内容“给出确定结论，而这个结论随时可能被后续 token 推翻。更典型的例子是更长的开 fence：四个反引号打开的块里，三连反引号是合法内容，一行 ``` 到底是内容还是闭合，要看到更多上下文才能判定——而“更多上下文“还没生成出来。</p>
+<p>严格说这不算 Markdown 的词法歧义，CommonMark 的规则是确定的。歧义来自流式本身：解析器每一帧都要对“目前已到达的内容“给出确定结论，而这个结论随时可能被后续 token 推翻。更典型的例子是更长的开 fence：四个反引号打开的块里，三连反引号是合法内容，一行 ``` 到底是内容还是闭合，要看到更多上下文才能判定——而“更多上下文“还没生成出来。</p>
 <hr>
 <h2 id="二降级映射把视觉语义翻译成字符"><a class="header" href="#二降级映射把视觉语义翻译成字符">二、降级映射：把视觉语义翻译成字符</a></h2>
-<p>第 2 篇讲过，TUI 只有字符。Heading 用不了 24pt 字号，ForgeLoopTUI 的选择是符号前缀。这就是“降级映射“——把 Markdown 的视觉语义翻译成终端字符网格能表达的形式。</p>
+<p>第 2 篇讲过，TUI 只有字符。Heading 用不了 24pt 字号，ForgeLoopTUI 的选择是符号前缀。这就是“降级映射“：把 Markdown 的视觉语义翻译成终端字符网格能表达的形式。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch03-markdown-degrade.svg" alt="降级映射一览：Markdown 语法到终端字符的翻译"><span class="img-wrapper"><img src="assets/ch03-markdown-degrade.svg" alt="降级映射一览：Markdown 语法到终端字符的翻译"></span></label></p>
 <h3 id="21-heading"><a class="header" href="#21-heading">2.1 Heading</a></h3>
 <pre><code class="language-swift">switch markerCount {
@@ -221,7 +221,7 @@ case 5: prefix = "• "    // &lt;h5&gt;
 default: prefix = "· "   // &lt;h6&gt;
 }
 </code></pre>
-<p>六种前缀符号对应六级标题。“█“比”·“视觉重量大，读者自然把它解读为更高级别的标题。另一条路线是颜色和样式：glow 把所有标题统一加粗染蓝，层级仍靠 <code>#</code> 前缀数量区分（仅 H1 额外去掉 <code>#</code> 并加整行背景高亮）；Claude Code 更省——标题仅加粗（H1 加下划线），无颜色、无层级区分。ForgeLoopTUI 走的是纯符号路线。</p>
+<p>六种前缀符号对应六级标题。“█“比”·“视觉重量大，读者自然把它解读为更高级别的标题。另一条路线是颜色和样式：glow 把所有标题统一加粗染蓝，层级仍靠 <code>#</code> 前缀数量区分（仅 H1 额外去掉 <code>#</code> 并加整行背景高亮）；Claude Code 更省，标题仅加粗（H1 加下划线），无颜色、无层级区分。ForgeLoopTUI 走的是纯符号路线。</p>
 <h3 id="22-代码块"><a class="header" href="#22-代码块">2.2 代码块</a></h3>
 <pre><code>┌─ code swift
 │ func main() {
@@ -254,9 +254,9 @@ default: prefix = "· "   // &lt;h6&gt;
 </tbody>
 </table>
 </div>
-<p>斜体 <code>ESC[3m</code> 的兼容性不可靠——有的终端渲染成反色，有的直接忽略。</p>
-<p>这里有一个值得注意的细节：<code>applyInlineFormatting</code> 不依赖任何 Markdown 解析库。它是手写的逐字符扫描，自己找 <code>**</code>、<code>*</code>、<code>`</code>、<code>~~</code>、<code>[text](url)</code> 的边界。不引入 cmark 或任何第三方依赖。原因很简单：终端里不需要 HTML 语义树，只需要知道“这两个星号之间加粗体 ANSI 序列“。</p>
-<h3 id="26-表格最复杂的子系统"><a class="header" href="#26-表格最复杂的子系统">2.6 表格——最复杂的子系统</a></h3>
+<p>斜体 <code>ESC[3m</code> 的兼容性不可靠，有的终端渲染成反色，有的直接忽略。</p>
+<p>值得注意的是，<code>applyInlineFormatting</code> 不依赖任何 Markdown 解析库。它是手写的逐字符扫描，自己找 <code>**</code>、<code>*</code>、<code>`</code>、<code>~~</code>、<code>[text](url)</code> 的边界，不引入 cmark 或任何第三方依赖。原因很简单：终端里不需要 HTML 语义树，只需要知道“这两个星号之间加粗体 ANSI 序列“。</p>
+<h3 id="26-表格最复杂的子系统"><a class="header" href="#26-表格最复杂的子系统">2.6 表格：最复杂的子系统</a></h3>
 <p>表格是整个 Markdown 引擎里代码量最大的部分，连实现带配置接近 400 行。终端里的表格有三种失败模式：</p>
 <p><strong>模式一：列太宽，终端放不下。</strong> 解决策略由 <code>TableOverflowBehavior</code> 控制：</p>
 <pre><code>compactThenTruncateThenDegrade（默认）：
@@ -264,7 +264,7 @@ default: prefix = "· "   // &lt;h6&gt;
   2. 还不够 → 截断单元格内容（加截断符 "…"）
   3. 仍然不够 → 退化：放弃 box-drawing，回退到原始 Markdown 文本
 </code></pre>
-<p>退化是最后手段——box-drawing 表格变成原始 <code>| col1 | col2 |</code> 格式，可读性下降但至少不溢出。</p>
+<p>退化是最后手段：box-drawing 表格变回原始 <code>| col1 | col2 |</code> 格式，可读性下降，但至少不溢出。</p>
 <p><strong>模式二：列被截得太狠，内容看不清。</strong> <code>autoReadable</code> 策略在截断比例超过阈值时自动退化：</p>
 <pre><code class="language-swift">if truncatedCellRatio &gt; 0.4  // 超过 40% 的单元格被截断
    || trimmedWidthRatio &gt; 0.3  // 或总宽度被砍掉 30% 以上
@@ -277,13 +277,14 @@ default: prefix = "· "   // &lt;h6&gt;
 | CPU  | 85%   |
 | Mem  | ← 这里还在写
 </code></pre>
-<p><code>TableStreamingBehavior</code> 控制行为：<code>.monotonic</code> 立即渲染所有已完成的行，<code>.strict</code> 等到表格块完全结束才渲染。但默认的 <code>.monotonic</code> 还有一个隐藏的防御逻辑——<code>retreatToAvoidSplittingTrailingStreamingTable</code>，这是第三节要讲的核心机制。</p>
+<p><code>TableStreamingBehavior</code> 控制行为：<code>.monotonic</code> 立即渲染所有已完成的行，<code>.strict</code> 等到表格块完全结束才渲染。但默认的 <code>.monotonic</code> 还藏了一个防御逻辑：<code>retreatToAvoidSplittingTrailingStreamingTable</code>，第三节要讲的核心机制。</p>
 <h3 id="27-先决条件宽度得算对"><a class="header" href="#27-先决条件宽度得算对">2.7 先决条件：宽度得算对</a></h3>
-<p>以上三种失败模式都建立在一个前提上：宽度算得对。而终端里的宽度不等于字符数——CJK 字符占两列，多数 emoji 占两列，ANSI 序列占零列。ForgeLoopTUI 的 <code>DisplayWidth.visibleWidth</code> 先剥掉 CSI 序列，再按 Unicode 区间判定宽字符计 2、其余计 1，表格的列宽求解和截断全部走这个函数。</p>
-<p>它的局限也值得知道：判定是按单个 Unicode scalar 做的，不处理组合序列——ZWJ 序列（如 👨‍💻）和 VS16 变体选择符会被算错宽度，表格边框随之错位。这是所有按 scalar 判定宽度的实现的共同盲区，不独 ForgeLoopTUI；中文 Agent 场景里 CJK 是家常便饭，宽度问题比纯英文场景暴露得更频繁。</p>
+<p>以上三种失败模式都建立在一个前提上：宽度算得对。而终端里的宽度不等于字符数：CJK 字符占两列，多数 emoji 占两列，ANSI 序列占零列。</p>
+<p>ForgeLoopTUI 的 <code>DisplayWidth.visibleWidth</code> 先剥掉 CSI 序列，再按 Unicode 区间判定宽字符计 2、其余计 1，表格的列宽求解和截断全部走这个函数。</p>
+<p>它的局限也值得知道：判定按单个 Unicode scalar 做，不处理组合序列，ZWJ 序列（如 👨‍💻）和 VS16 变体选择符都会被算错宽度，表格边框随之错位。这是所有按 scalar 判定宽度的实现的共同盲区，不独 ForgeLoopTUI；中文 Agent 场景里 CJK 问题是家常便饭，宽度问题比纯英文场景暴露得更频繁。</p>
 <hr>
 <h2 id="三stable-prefix-cache在流式里偷懒"><a class="header" href="#三stable-prefix-cache在流式里偷懒">三、Stable Prefix Cache：在流式里偷懒</a></h2>
-<p>第 2 篇讲了 TUI 的增量 diff 机制——记住上一帧，只重绘变化部分。Markdown 渲染引擎也用了类似的思路，但不是 diff 行，而是缓存“稳定前缀“。</p>
+<p>第 2 篇讲了 TUI 的增量 diff 机制——<strong>记住上一帧，只重绘变化部分</strong>。Markdown 渲染引擎也用了类似的思路，只不过缓存对象从行 diff 换成了“稳定前缀“。</p>
 <h3 id="31-为什么只能在换行符处切分"><a class="header" href="#31-为什么只能在换行符处切分">3.1 为什么只能在换行符处切分</a></h3>
 <pre><code class="language-swift">public func render(text: String, isFinal: Bool) -&gt; [String] {
     // 1. 如果新文本不以缓存的 stableSource 开头 → 缓存失效
@@ -304,7 +305,7 @@ default: prefix = "· "   // &lt;h6&gt;
     return stableRendered + unstableRendered
 }
 </code></pre>
-<p><code>stableAdvance</code> 只在换行符处将文本标记为“稳定“。因为 Markdown 的块级结构——段落、标题、列表项、代码块边界——都以换行符分隔。一行没写完之前，你无法确定它是什么块级元素。</p>
+<p><code>stableAdvance</code> 只在换行符处将文本标记为“稳定“。因为 Markdown 的块级结构（段落、标题、列表项、代码块边界）都以换行符分隔。一行没写完之前，你无法确定它是什么块级元素。</p>
 <pre><code>稳定区（已渲染，缓存）         不稳定区（每次重渲）
 ─────                         ─────
 ## 标题\n                      代码块开始\n
@@ -312,7 +313,7 @@ default: prefix = "· "   // &lt;h6&gt;
 列表项2\n                      正在输出的这行...
 </code></pre>
 <h3 id="32-流式表格的稳定性陷阱"><a class="header" href="#32-流式表格的稳定性陷阱">3.2 流式表格的稳定性陷阱</a></h3>
-<p><code>stableAdvance</code> 有一个关键的防御机制。如果文本以换行符结尾，它会把到那个换行符为止的部分标记为稳定——但如果这个换行符恰好在一张未完成的流式表格中间呢？</p>
+<p><code>stableAdvance</code> 有一个关键的防御机制。如果文本以换行符结尾，它会把到那个换行符为止的部分标记为稳定。可万一这个换行符恰好在一张未完成的流式表格中间呢？</p>
 <pre><code>| Name | Value |
 |------|-------|
 | CPU  | 85%   |          ← 这行以换行结尾，会被标记为稳定
@@ -350,7 +351,7 @@ default: prefix = "· "   // &lt;h6&gt;
     return nil
 }
 </code></pre>
-<p>逻辑：如果下一个 token 以 <code>|</code> 开头，检测候选文本的末尾是否构成一张完整的表格（表头 + 分隔行 + 至少一行数据）。如果是，整个表格都不标记为稳定——等表格块彻底结束后才一次性缓存。</p>
+<p>逻辑：如果下一个 token 以 <code>|</code> 开头，检测候选文本的末尾是否构成一张完整的表格（表头 + 分隔行 + 至少一行数据）。如果是，整个表格都不标记为稳定，等表格块彻底结束后再一次性缓存。</p>
 <h3 id="33-盲区代码块没有同等的防御"><a class="header" href="#33-盲区代码块没有同等的防御">3.3 盲区：代码块没有同等的防御</a></h3>
 <p>表格有 retreat 机制，代码块没有。一个未闭合的代码块可能被切进稳定区，而 <code>renderFully</code> 每次调用都从 <code>inCodeFence = false</code> 重新开始，fence 状态不会被记录。后果是连锁的：</p>
 <pre><code>第一帧: "```swift\nlet x = 1\n"
@@ -366,7 +367,7 @@ default: prefix = "· "   // &lt;h6&gt;
   → 不稳定区把它误判为开 fence
   → 渲染成一个新的 "┌─ code"
 </code></pre>
-<p>这是 v1.2.0 及之前版本的一个真实盲区。修复思路和表格一致——retreat 时检测候选末尾是否处于未闭合的代码块内，是则回退到 fence 开始之前。该修复（<code>retreatToAvoidSplittingUnclosedCodeFence</code>）已在 v1.2.1 合入：fence retreat 先于表格 retreat 执行（未闭合 fence 之内的表格状行不是真表格），fence 判定复用 <code>isCodeFenceDelimiter</code>，与 <code>renderFully</code> 的状态切换语义保持一致。在 v1.2.0 上，规避方案见第四节的路线二。</p>
+<p>这是 v1.2.0 及之前版本的一个真实盲区。修复思路和表格一致：retreat 时检测候选末尾是否处于未闭合的代码块内，是则回退到 fence 开始之前。该修复（<code>retreatToAvoidSplittingUnclosedCodeFence</code>）已在 v1.2.1 合入：fence retreat 先于表格 retreat 执行（未闭合 fence 之内的表格状行不是真表格），fence 判定复用 <code>isCodeFenceDelimiter</code>，与 <code>renderFully</code> 的状态切换语义保持一致。在 v1.2.0 上，规避方案见第四节的路线二。</p>
 <h3 id="34-65k-字符上限"><a class="header" href="#34-65k-字符上限">3.4 65K 字符上限</a></h3>
 <pre><code class="language-swift">private let maxStableSourceChars = 65_536
 
@@ -378,12 +379,12 @@ if stableSource.count &gt; maxStableSourceChars { reset() }
 <p>第 2 篇和第 7 篇（GUI 部分）都会涉及这个问题，值得把账算清楚。</p>
 <p>Agent 流式输出时，每秒几十个 token 到达。即使有 Stable Prefix Cache，每次渲染仍然需要：</p>
 <ol>
-<li>跑 <code>stableAdvance</code>——扫描候选文本，检测是否是流式表格（可能 O(n) 回退扫描）</li>
-<li>渲染不稳定后缀——即使只有一行，也要跑完整的管线：代码块检测 → 表格检测 → structured line 检测 → inline formatting</li>
+<li>跑 <code>stableAdvance</code>：扫描候选文本，检测是否是流式表格（可能 O(n) 回退扫描）</li>
+<li>渲染不稳定后缀：哪怕只有一行，也要跑完整管线，代码块检测 → 表格检测 → structured line 检测 → inline formatting</li>
 </ol>
 <p>面对这笔成本，工程上有两条路线：</p>
-<p><strong>路线一：全程渲染 Markdown，用缓存摊薄成本。</strong> ForgeLoopTUI 的实际选择——<code>TranscriptRenderer</code> 持有一个 <code>StreamingMarkdownEngine</code>，流式和结束走同一个引擎，靠 Stable Prefix Cache 保证每帧只处理增量。代价是第三节的防御逻辑（以及 v1.2.0 之前存在的代码块盲区）。</p>
-<p><strong>路线二：流式期间纯文本，结束后一次性切换。</strong> Markdown 在流式期间提供的是“好看“而不是“必要“——代码、列表以纯文本展示，可读性损失很小。等流式结束，所有块级结构闭合，解析器不需要做任何防御性猜测，一次完整渲染搞定。这条路同时绕开了代码块盲区。</p>
+<p><strong>路线一：全程渲染 Markdown，用缓存摊薄成本。</strong> ForgeLoopTUI 选的是这条：<code>TranscriptRenderer</code> 持有一个 <code>StreamingMarkdownEngine</code>，流式和结束走同一个引擎，靠 Stable Prefix Cache 保证每帧只处理增量。代价是第三节的防御逻辑（以及 v1.2.0 之前存在的代码块盲区）。</p>
+<p><strong>路线二：流式期间纯文本，结束后一次性切换。</strong> Markdown 在流式期间只是“好看“，谈不上“必要“——代码、列表以纯文本展示，可读性损失很小。等流式结束，所有块级结构闭合，解析器不用做任何防御性猜测，一次完整渲染搞定，还顺带绕开了代码块盲区。</p>
 <p>ForgeLoopTUI 为路线二保留了 <code>PlainTextMarkdownEngine</code>：</p>
 <pre><code class="language-swift">public func render(text: String, isFinal: Bool) -&gt; [String] {
     guard !text.isEmpty else { return [] }
@@ -391,10 +392,10 @@ if stableSource.count &gt; maxStableSourceChars { reset() }
 }
 </code></pre>
 <p>它就是 <code>split("\n")</code>——零解析开销，零防御逻辑，零缓存状态。接入方完全可以在流式期间注入它，<code>isFinal</code> 时再切回 <code>StreamingMarkdownEngine</code>。</p>
-<p>两条路线没有对错，是纯工程权衡。中间态也存在——做一个“轻量 Markdown 引擎“，只做 inline formatting 和代码块检测，跳过表格和 blockquote，在流式期间保留最基本的可读性。</p>
+<p>两条路线没有对错，是纯工程权衡。中间态也存在：做一个“轻量 Markdown 引擎“，只做 inline formatting 和代码块检测，跳过表格和 blockquote，在流式期间保留最基本的可读性。</p>
 <hr>
 <h2 id="五代码块检测的边界"><a class="header" href="#五代码块检测的边界">五、代码块检测的边界</a></h2>
-<p>ForgeLoopTUI 的代码块检测不依赖完整 Markdown 解析——先去掉行首尾空白，再检查是否以三个或以上的 <code>`</code> 或 <code>~</code> 开头：</p>
+<p>ForgeLoopTUI 的代码块检测不依赖完整 Markdown 解析，做法很直接：先去掉行首尾空白，再检查行首是否有三个或以上的 <code>`</code> 或 <code>~</code>：</p>
 <pre><code class="language-swift">private func isCodeFenceDelimiter(_ line: String) -&gt; Bool {
     let trimmed = line.trimmingCharacters(in: .whitespaces)
     guard let first = trimmed.first, first == "`" || first == "~" else { return false }
@@ -402,17 +403,17 @@ if stableSource.count &gt; maxStableSourceChars { reset() }
     return run.count &gt;= 3
 }
 </code></pre>
-<p>这和 CommonMark 规范有两个微妙区别。其一，CommonMark 要求闭合 fence 的长度不小于开 fence——三个反引号打开，三个或更多才能关闭；四个反引号打开的块里，三连反引号只是内容。ForgeLoopTUI 不检查长度匹配，只要看到三连反引号就切换 in-code-fence 状态。其二，先 trim 意味着 CommonMark“fence 最多允许 3 格缩进“的规则被丢弃——缩进 4 格以上的行若以三连反引号开头，会被误判为 fence。</p>
-<p>这是一个有意的简化。在 Agent 流式场景下，代码块的内容来自 LLM 输出，不太会出现“四个反引号打开、三个反引号在内容里“的边界情况。而且实现正确的分隔符匹配需要回溯——代码块可能在几十行之前打开——与 Stable Prefix Cache 的假设冲突。</p>
+<p>这和 CommonMark 规范有两个微妙区别。其一，CommonMark 要求闭合 fence 的长度不小于开 fence：三个反引号打开，就得三个或更多才能关闭；四个反引号打开的块里，三连反引号只是内容。ForgeLoopTUI 不检查长度匹配，只要看到三连反引号就切换 in-code-fence 状态。其二，先 trim 等于丢掉了 CommonMark“fence 最多允许 3 格缩进“的规则，缩进 4 格以上的行若以三连反引号开头，会被误判为 fence。</p>
+<p>这是一个有意的简化。在 Agent 流式场景下，代码块的内容来自 LLM 输出，不太会出现“四个反引号打开、三个反引号在内容里“的边界情况。而且实现正确的分隔符匹配需要回溯（代码块可能在几十行之前打开），与 Stable Prefix Cache 的假设冲突。</p>
 <hr>
 <h2 id="六从这里出发"><a class="header" href="#六从这里出发">六、从这里出发</a></h2>
 <p>TUI 上 Markdown 流式渲染的核心矛盾可以总结为三句话：</p>
 <ol>
 <li><strong>Markdown 是“写完再解析“的语言，Agent 是“边想边输出“的过程。</strong> 两者的设计哲学根本冲突。</li>
-<li><strong>终端只有字符，Markdown 的视觉语义必须降级映射。</strong> 降级不等于功能缺失——true color 语法高亮和 OSC 8 可点击超链接在终端里都可行，成本是手写 tokenizer 而非调库。</li>
+<li><strong>终端只有字符，Markdown 的视觉语义必须降级映射。</strong> 但降级不等于功能缺失，true color 语法高亮和 OSC 8 可点击超链接在终端里都可行，成本是手写 tokenizer，没法靠调库解决。</li>
 <li><strong>流式渲染 Markdown 的成本可以靠 Stable Prefix Cache 摊薄，但防御逻辑和盲区是必要之恶。</strong> 纯文本 fallback（流式期间跳过 Markdown、结束再切换）是更省的选择。</li>
 </ol>
-<p>下一篇讲 Agent TUI 最核心的难题——流式输出、工具调用、thinking 展开后，这些问题如何从“难“变成“几近失控“。第 1 篇提过一个判断：Agent 的真实输出不是 1D 的。下一篇会把这句话完整展开。</p>
+<p>下一篇讲 Agent TUI 最核心的难题——流式输出、工具调用、thinking 展开之后，这些问题如何从“难“变成“几近失控“。第 1 篇提过一个判断：Agent 的真实输出不是 1D 的，下一篇把这句话完整展开。</p>
 <hr>
 <p><em>本文所有技术细节基于 <a href="https://github.com/BiBoyang/ForgeLoopTUI">ForgeLoopTUI</a> v1.2.0 的实际源码。§3.3 的代码块盲区已在 v1.2.1 修复（<code>retreatToAvoidSplittingUnclosedCodeFence</code>），正文保留该盲区的完整分析作为案例。</em></p>
 
