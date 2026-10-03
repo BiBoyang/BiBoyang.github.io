@@ -36,7 +36,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-4d46e47c.js";
+            window.path_to_searchindex_js = "searchindex-3abcc440.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-5870c396.js"></script>
@@ -182,7 +182,7 @@
 <p>前阵子看到有人在讨论 Agent 的 TUI 和 GUI，两派吵得挺热闹。</p>
 <p>我刚好两边都做过算是比较深入的研究,用 swift 从零开始写过一个 TUI 渲染引擎,也写过 iOS 上的 Agent GUI 客户端.在创作和优化性能的过程中,记录下来不少的笔记和代码,以及各种踩坑和思考,我水平有限,最多只能算是抛砖引玉了.</p>
 <p>写这组文章之前，我翻了一遍自己攒下来的东西：项目源码、调试笔记、性能分析记录、读过的博客和开源库的源码、知乎上的相关讨论。散在好几个文件夹里，有些是完整的文档，有些只是当时随手记的片段。觉得这些东西放着也是放着，不如整理出来。</p>
-<p>于是重新梳理了一遍，缺的地方补研究，浅的地方往下挖。前前后后写了十几篇,未来可能还会更多，想到哪就写到哪,从 ANSI 转义序列到多端架构，从 Markdown 流式渲染的 O(n²) 陷阱到权限和 diff 的 UX 设计。</p>
+<p>于是重新梳理了一遍，缺的地方补研究，浅的地方往下挖。前前后后写了二十几篇，未来可能还会更多，想到哪就写到哪。从 ANSI 转义序列到多端架构，从 Markdown 流式渲染的 O(n²) 陷阱到权限和 diff 的 UX 设计，再往下到渲染的所有权、上下文账本、记忆与协议——从界面一路挖到地基。</p>
 <p>不是什么权威结论，就是一个人同时踩过 TUI 和 GUI 两条船之后，把踩过的坑和想清楚的事记下来。如果恰好对你有用，那就最好了。</p>
 <hr>
 <blockquote>
@@ -1767,7 +1767,7 @@ tick 90: parse(3000字)+ build(3000字)+ layout(3000字)
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="移动端的位置--从大前端到-agent-workflow-engineer"><a class="header" href="#移动端的位置--从大前端到-agent-workflow-engineer">移动端的位置 + 从大前端到 Agent Workflow Engineer</a></h1>
 <blockquote>
-<p>系列第十篇，最后一篇。前九篇从第 2 篇的 ANSI 序列一路讲到多端架构，完整的技术和设计全景。这一篇收束到个人：做移动端、桌面端、TUI、全栈这些经验，在 Agent 时代到底意味着什么。</p>
+<p>系列第十篇，写作时的第一次收束。前九篇从第 2 篇的 ANSI 序列一路讲到多端架构，完整的技术和设计全景。这一篇收束到个人：做移动端、桌面端、TUI、全栈这些经验，在 Agent 时代到底意味着什么。</p>
 </blockquote>
 <hr>
 <h2 id="一移动端在-agent-产品中的位置"><a class="header" href="#一移动端在-agent-产品中的位置">一、移动端在 Agent 产品中的位置</a></h2>
@@ -1816,7 +1816,7 @@ tick 90: parse(3000字)+ build(3000字)+ layout(3000字)
 <hr>
 <h2 id="五没有结语"><a class="header" href="#五没有结语">五、没有结语</a></h2>
 <p>这个系列写到这里，10 篇的结构性工作完成了。但内容本身还有很多可以深入的点：权限模型的信任规则 DSL、diff 审查面板的具体交互稿、多端 event log 的同步协议、Mobile Companion 的推送通道设计。这些是下一个阶段的事。</p>
-<p>（补记：本篇写完时是原定的收官。后来在正文之外又续写了两篇（第 11、12 篇，讲渲染的所有权模型），所以你手里的系列到这里还没有完。）</p>
+<p>（补记：本篇写完时是原定的收官。结果收没收住——后面又续了十篇，从渲染的所有权一路写到上下文账本、计划与回滚，外加整个下半部「另一半·基建」。所以在这本书里，这里只是上半程的中点。）</p>
 <p>如果这个系列对你正在做的事情有参考价值，<a href="https://github.com/BiBoyang/ForgeLoopTUI">ForgeLoopTUI</a> 和 <a href="https://github.com/Lakr233/FlowDown">FlowDown</a> 的源码是最好的延伸阅读。</p>
 <hr>
 <p><em>全系列基于 ForgeLoopTUI v1.2.0 和 FlowDown 的实际源码分析。知乎讨论参考：<a href="https://www.zhihu.com/question/2026125412049101416">为什么现在大多 Code Agent 的主形态是 CLI/TUI？</a>。</em></p>
@@ -2684,7 +2684,7 @@ complete               以上全部排除，才轮到我
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="连接与会话断线之后谁还记得它讲到哪了"><a class="header" href="#连接与会话断线之后谁还记得它讲到哪了">连接与会话——断线之后，谁还记得它讲到哪了</a></h1>
 <blockquote>
-<p>基建系列第一篇。上半部「界面本体」拆的是像素层：界面怎么画、账怎么记、信什么。这个系列拆另一半，<strong>信用层：那些画面凭什么信、承诺凭什么兑现</strong>。两块地基是共享的：00b 教会我们怀疑“没报错就等于没问题“，这次怀疑的对象从模型输出换到整条管道；05 确立了“Agent 是一条事件流，UI 是投影“，这次讲投影怎么穿过一根会断的线。本系列的准入线也只有一条：只写决定某个界面承诺真假的基建。第一篇的题目，来自我在写作期间被自己问住的第一个问题：SSE 流断了怎么办？换一台服务器重连呢？</p>
+<p>基建系列第一篇。上半部「界面本体」拆的是像素层：界面怎么画、账怎么记、信什么。这个系列拆另一半，<strong>信用层：那些画面凭什么信、承诺凭什么兑现</strong>。两块地基是共享的：《没报错，就代表输出没问题吗》教会我们怀疑“没报错就等于没问题“，这次怀疑的对象从模型输出换到整条管道；05 确立了“Agent 是一条事件流，UI 是投影“，这次讲投影怎么穿过一根会断的线。本系列的准入线也只有一条：只写决定某个界面承诺真假的基建。第一篇的题目，来自我在写作期间被自己问住的第一个问题：SSE 流断了怎么办？换一台服务器重连呢？</p>
 </blockquote>
 <hr>
 <h2 id="一停在半行字上的界面"><a class="header" href="#一停在半行字上的界面">一、停在半行字上的界面</a></h2>
