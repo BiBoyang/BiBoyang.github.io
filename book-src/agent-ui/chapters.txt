@@ -20,6 +20,8 @@
 - ch02 | 02 · TUI 不是低配 GUI
 - ch03 | 03 · Markdown 在 TUI 上的流式地狱
 - ch04 | 04 · Agent TUI：当事件树撞上线性终端
+- ch21 | 21 · 输入框：agent TUI 最被低估的组件
+- ch22 | 22 · 输入的地狱：终端能力探测与降级
 - ch05 | 05 · 中场：Event Sourcing，Agent UI 的底层模型
 - ch06 | 06 · 为什么 Agent GUI 这么难
 - ch07 | 07 · GUI 上的 Markdown 流式渲染
@@ -28,6 +30,8 @@
 - ch10 | 10 · 移动端的位置
 - ch11 | 11 · 渲染的所有权模型
 - ch12 | 12 · 双模渲染
+- ch23 | 23 · 一行状态文字的状态机
+- ch24 | 24 · 把 ANSI 变成可断言的：TUI 回归测试
 - ch13 | 13 · 收敛的另一面：pi-mono 暗线
 - ch14 | 14 · 回到自己的引擎：ForgeLoopTUI 改造实录
 - ch15 | 15 · 终端之外：GUI 与移动端的映射

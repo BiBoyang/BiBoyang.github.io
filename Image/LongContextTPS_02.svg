@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 460" font-family="-apple-system, PingFang SC, Hiragino Sans GB, Microsoft YaHei, sans-serif">
+  <rect width="880" height="460" fill="#FFFFFF"/>
+
+  <!-- 标题 -->
+  <text x="440" y="34" text-anchor="middle" font-size="19" font-weight="700" fill="#1B2B28">每 token KV Cache 相对体积（示意）</text>
+  <text x="440" y="56" text-anchor="middle" font-size="12.5" fill="#64748B">统一以标准 MHA（完整 KV Cache）为 100% 基准</text>
+
+  <!-- 传统 MHA -->
+  <text x="235" y="117" text-anchor="end" font-size="14" fill="#3A504C">标准 MHA</text>
+  <rect x="250" y="96" width="520" height="34" rx="6" fill="#CBD5E1"/>
+  <text x="762" y="118" text-anchor="end" font-size="14" font-weight="600" fill="#1B2B28">100%</text>
+
+  <!-- 常见 GQA -->
+  <text x="235" y="187" text-anchor="end" font-size="14" fill="#3A504C">常见 GQA（8/64 示例）</text>
+  <rect x="250" y="166" width="65" height="34" rx="6" fill="#228BE6"/>
+  <text x="327" y="188" font-size="14" font-weight="600" fill="#228BE6">≈12.5%</text>
+
+  <!-- DeepSeek MLA -->
+  <text x="235" y="257" text-anchor="end" font-size="14" fill="#3A504C">DeepSeek MLA（V2 论文）</text>
+  <rect x="250" y="236" width="35" height="34" rx="4" fill="#12B886"/>
+  <text x="297" y="258" font-size="14" font-weight="600" fill="#0B8662">≈6.7%</text>
+
+  <!-- 脚注 -->
+  <g font-size="11.5" fill="#64748B">
+    <text x="250" y="312">· 图中比例均以标准 MHA 为基准（= 100%），三者可比。</text>
+    <text x="250" y="332">· GQA 为 8/64 配置示例（8 个 KV 头 / 64 个 Q 头），实际比例因模型而异。</text>
+    <text x="250" y="352">· MLA 数据来自 DeepSeek-V2 论文官方口径：KV Cache 压缩 93.3%（arXiv:2405.04434）。</text>
+    <text x="250" y="372">· MLA 对 GQA 的直接比值取决于 GQA 配置与 MLA 存储精度，大致在 3.6~7× 范围内；</text>
+    <text x="262" y="390">因本图基准为 MHA，柱长不直接反映 MLA vs GQA 的比例。</text>
+    <text x="250" y="412">· V4.1 Flash 的 KV Cache 为另一统计口径（每 token 不到 1 KB 量级），未按比例绘制。</text>
+    <text x="250" y="432">· 本图为数量级示意，不同模型层数、头维、存储精度均有差异。</text>
+  </g>
+</svg>

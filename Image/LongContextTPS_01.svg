@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 520" font-family="-apple-system, PingFang SC, Hiragino Sans GB, Microsoft YaHei, sans-serif">
+  <rect width="880" height="520" fill="#FFFFFF"/>
+
+  <!-- 标题 -->
+  <text x="440" y="34" text-anchor="middle" font-size="19" font-weight="700" fill="#1B2B28">生成速度随上下文长度的衰减</text>
+  <text x="440" y="56" text-anchor="middle" font-size="12.5" fill="#64748B">实测推断点 + 1/(a+b·n) 模型拟合 · 场景：GPT coding plan 接入 dsh 的单一真实负载</text>
+
+  <!-- 网格线 -->
+  <g stroke="#E2E8F0" stroke-width="1">
+    <line x1="80" y1="103.6" x2="848" y2="103.6"/>
+    <line x1="80" y1="187.7" x2="848" y2="187.7"/>
+    <line x1="80" y1="271.8" x2="848" y2="271.8"/>
+    <line x1="80" y1="355.9" x2="848" y2="355.9"/>
+  </g>
+
+  <!-- 坐标轴 -->
+  <g stroke="#94A3B8" stroke-width="1.5">
+    <line x1="80" y1="70" x2="80" y2="440"/>
+    <line x1="80" y1="440" x2="848" y2="440"/>
+  </g>
+
+  <!-- x 轴刻度 -->
+  <g stroke="#94A3B8" stroke-width="1.5">
+    <line x1="80" y1="440" x2="80" y2="446"/>
+    <line x1="320" y1="440" x2="320" y2="446"/>
+    <line x1="560" y1="440" x2="560" y2="446"/>
+    <line x1="800" y1="440" x2="800" y2="446"/>
+  </g>
+  <g font-size="13" fill="#64748B" text-anchor="middle">
+    <text x="80" y="464">0</text>
+    <text x="320" y="464">100k</text>
+    <text x="560" y="464">200k</text>
+    <text x="800" y="464">300k</text>
+  </g>
+  <text x="464" y="492" text-anchor="middle" font-size="13.5" fill="#3A504C">上下文长度（k tokens）</text>
+
+  <!-- y 轴刻度 -->
+  <g font-size="13" fill="#64748B" text-anchor="end">
+    <text x="70" y="444.5">0</text>
+    <text x="70" y="360.4">50</text>
+    <text x="70" y="276.3">100</text>
+    <text x="70" y="192.2">150</text>
+    <text x="70" y="108.1">200</text>
+  </g>
+  <text x="26" y="255" transform="rotate(-90 26 255)" text-anchor="middle" font-size="13.5" fill="#3A504C">生成速度（tok/s）</text>
+
+  <!-- 1/(a+b·n) 模型拟合曲线（灰色虚线，参考线） -->
+  <path d="M 80 103.6 L 104 147.5 L 128 181.2 L 152 208.0 L 176 229.8 L 200 247.8 L 224 262.9 L 248 275.9 L 272 287.1 L 296 296.9 L 320 305.4 L 368 319.9 L 416 331.5 L 464 341.1 L 512 349.1 L 560 355.9 L 608 361.8 L 656 366.9 L 704 371.3 L 752 375.3 L 800 378.8"
+        fill="none" stroke="#94A3B8" stroke-width="2" stroke-dasharray="5 4" opacity="0.8"/>
+  <text x="470" y="395" font-size="11.5" fill="#64748B" font-style="italic">1/(a+b·n) 模型（量级示意）</text>
+
+  <!-- 均速（dsh 显示口径）：蓝 虚线 平滑 -->
+  <path d="M 80 103.6 C 200 200 260 258 320 271.8 S 600 310 800 324.0"
+        fill="none" stroke="#228BE6" stroke-width="2.5" stroke-dasharray="7 5"/>
+  <g fill="#228BE6">
+    <rect x="316.5" y="268.3" width="7" height="7"/>
+    <rect x="796.5" y="320.5" width="7" height="7"/>
+  </g>
+  <text x="320" y="258" text-anchor="middle" font-size="13" font-weight="600" fill="#228BE6">~100</text>
+  <text x="788" y="316" text-anchor="end" font-size="13" font-weight="600" fill="#228BE6">~69</text>
+
+  <!-- 瞬时速度（推断）：青绿 实线 平滑 -->
+  <path d="M 80 103.6 C 180 160 260 260 320 305.5 S 550 345 800 355.9"
+        fill="none" stroke="#12B886" stroke-width="3"/>
+  <g fill="#12B886" stroke="#FFFFFF" stroke-width="1.5">
+    <circle cx="80" cy="103.6" r="5"/>
+    <circle cx="320" cy="305.5" r="5"/>
+    <circle cx="800" cy="355.9" r="5"/>
+  </g>
+  <text x="94" y="99" font-size="13" font-weight="600" fill="#0B8662">~200</text>
+  <text x="320" y="330" text-anchor="middle" font-size="13" font-weight="600" fill="#0B8662">~80</text>
+  <text x="788" y="352" text-anchor="end" font-size="13" font-weight="600" fill="#0B8662">~50</text>
+  <text x="800" y="402" text-anchor="end" font-size="12" fill="#64748B">300k 时只剩基准的 1/4</text>
+
+  <!-- 图例 -->
+  <g font-size="13" fill="#3A504C">
+    <line x1="110" y1="394" x2="150" y2="394" stroke="#12B886" stroke-width="3"/>
+    <circle cx="130" cy="394" r="4.5" fill="#12B886" stroke="#FFFFFF" stroke-width="1.5"/>
+    <text x="158" y="398.5">瞬时速度（推断）</text>
+    <line x1="110" y1="418" x2="150" y2="418" stroke="#228BE6" stroke-width="2.5" stroke-dasharray="7 5"/>
+    <rect x="126.5" y="414.5" width="7" height="7" fill="#228BE6"/>
+    <text x="158" y="422.5">均速（dsh 显示口径）</text>
+  </g>
+</svg>
