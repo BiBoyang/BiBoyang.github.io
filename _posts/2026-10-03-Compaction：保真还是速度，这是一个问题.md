@@ -128,11 +128,11 @@ V4.1 Flash 的官方 config 里，除 MLA 之外还摆着几类东西（下表�
 
 | 机制 | config 里的字段 | 对 decode 每步搬运的作用 |
 |---|---|---|
-| MLA 本体 | `num_key_value_heads=1`、`head_dim=512`、`qk_rope_head_dim=64` | 每层每 token 只留 576 个值，把常量压小 |
+| MLA 本体 | `num_key_value_heads=1`<br>`head_dim=512`<br>`qk_rope_head_dim=64` | 每层每 token 只留 576 个值，把常量压小 |
 | 分层压缩 | `compress_ratios`（按层给 2 / 1 / 0 的压缩档位） | 部分层的 K/V 再按 2 倍压缩 |
 | 滑窗 | `sliding_window=128` | 滑窗层只读最近一小段，读数与 n 无关 |
-| 稀疏索引注意力 | `index_topk=512`、`index_source_layer_ids`、`index_n_heads=32`、`index_head_dim=128`、`candidate_topk_blocks=2048`、`candidate_block_size=8` | 完整注意力只在选出来的一小撮 token 上做，主项不再随 n 增长 |
-| 跨层 KV 复用 | `kv_source_layer_ids=[2, 8, 14, 20]`（`num_hidden_layers=40`） | 字面看像只有 4 层存 K/V、其余层复用，常量再小一截 |
+| 稀疏索引注意力 | `index_topk=512`<br>`index_source_layer_ids`<br>`index_n_heads=32`<br>`index_head_dim=128`<br>`candidate_topk_blocks=2048`<br>`candidate_block_size=8` | 完整注意力只在选出来的一小撮 token 上做，主项不再随 n 增长 |
+| 跨层 KV 复用 | `kv_source_layer_ids=[2, 8, 14, 20]`<br>（`num_hidden_layers=40`） | 字面看像只有 4 层存 K/V、其余层复用，常量再小一截 |
 
 把这些字段拼起来，一条说得通的路线是：大部分层用滑窗或压缩处理，只在少数层做全局注意力；做全局注意力的那几层，先用一个轻量 indexer 从历史里选出 top-k 个 token，完整注意力只在这些 token 上算。这样每步真正要读的完整 K/V 是一个近似恒定的量，随 n 增长的只剩那次轻量索引扫描——按 `index_n_heads=32` × `index_head_dim=128` 算，每个源层每 token 是 4096 个索引键，`index_source_layer_ids` 列了 8 层；同规格 GQA 叠满 40 层的完整 K/V 是每 token 8 万个值量级，索引项只有它的四成上下。这个线性项还在，只是斜率低得多，要到很长的上下文才开始主导。
 
