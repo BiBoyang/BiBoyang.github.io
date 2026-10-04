@@ -35,10 +35,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-3abcc440.js";
+            window.path_to_searchindex_js = "searchindex-02596293.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-5870c396.js"></script>
+        <script src="toc-b8944928.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -367,6 +367,12 @@ private func appendNotification(_ line: String) {
 <p>这三个“不可预测“叠加在一起，意味着 Agent TUI 的渲染系统不能对事件序列做任何结构性假设。每个事件到达时，只根据当前 Transcript 的索引状态做局部替换，不依赖“前一个事件是什么“，不假设“下一个事件什么时候到“。</p>
 <p>这不是“无状态“。恰恰相反，渲染器的全部正确性都系于一份共享的可变状态：<code>lines</code>（Transcript 的内容数组）和几个 Range（streaming/thinking/completed 的位置追踪）。准确的说法是<strong>事件处理无会话假设</strong>。这也是为什么 <code>applyCore</code> 是一个巨大的 switch 语句：每个 case 独立处理一个事件类型，不依赖前序事件的种类，只依赖那份共享索引状态。</p>
 <hr>
+<blockquote>
+<p>补记（2026.10）：本篇的槽位队列是扁平行数组上的坐标手术；第三节末尾的补记提过，inline 派把乱序配对提前到数据层，坐标手术退化为字典查找。最近读 Codex 的 TUI 源码（<code>codex-rs/tui/src/chatwidget/streaming.rs</code> 一带），见到了这个论断的一种完整实现形态，补在这里作为证据。</p>
+<p>Codex 的 transcript 不是行数组，是<strong>定稿 cell 序列 + 唯一一个 active 槽位</strong>。cell 是类型化的：<code>AgentMessageCell</code> 承载流式放行的行、<code>StreamingAgentTailCell</code> 是活动尾部、<code>ExecCell</code> 是工具调用、回答定稿后整段换成由原始源支撑的 <code>AgentMarkdownCell</code>（resize 时可从源重渲染）。流式期间尾部 cell 反复重建进 active 槽位，但内容没变就不触动版本号——<code>sync_active_stream_tail</code> 先比较、相等就直接返回，避免无效重绘；commit tick 放行的行则固化为新 cell，追加进定稿序列。</p>
+<p>对照本篇，三个观察。其一，乱序与偏移问题在结构上消失：cell 有类型和身份，定位是查表而非坐标运算，<code>shiftIndices</code> 那样的连带偏移没有存在必要。其二，“原地可改写“的范围被压缩到一个槽位：本篇里流式块、thinking、工具槽位、通知都在同一份 <code>lines</code> 上做手术，正确性系于全局索引的同步偏移；Codex 把所有可变性收进唯一一个 active cell，定稿区连索引都不必维护。其三，权威来源的取舍：流式 delta 可能因传输饱和丢失，Codex 在 item 完成事件到达时用完成文本与流式累积源对账，注释写得很白——“item completion is authoritative”，传输丢 delta 不能让 transcript 截断。这个设计前提本篇没有对应物：ForgeLoopTUI 假定事件流本身可靠。</p>
+</blockquote>
+<hr>
 <h2 id="十tui-三部曲的终点"><a class="header" href="#十tui-三部曲的终点">十、TUI 三部曲的终点</a></h2>
 <p>三篇文章覆盖了从底层渲染到上层 Agent 场景的完整技术栈：</p>
 <pre><code>第2篇: ANSI 序列 + 字符网格 + 增量 diff  → 渲染引擎层
@@ -375,9 +381,9 @@ private func appendNotification(_ line: String) {
 </code></pre>
 <p>这三层之间有一个递进关系：每一层都建立在下一层之上，每一层的问题都因为底层的限制而更难解决。Agent 的树状事件在终端里变成线性输出——这个“树展平“的过程，就是 TUI 渲染引擎存在的全部意义。</p>
 <p>但展平只是手段。真正的问题是：凭什么树状事件一定要被展平成线性？如果终端不是唯一的投影介质呢？</p>
-<p>下一篇是系列的中场：<strong>Event Sourcing，Agent UI 的底层模型</strong>。它会解释 CLI/TUI 的挣扎为什么不是终端的锅：真正有结构性矛盾的是“树状事件 → 线性输出“这个投影方式本身。一旦把 Agent 的执行抽象为事件流，CLI/TUI/GUI/IDE/Web/Mobile 各自应该站在哪里，就不再是形态之争了。</p>
+<p>不过在去中场之前，还差最后一块。第 2 到第 4 篇讲的全是输出侧——怎么把内容画对、画快、画不崩；输入侧——键盘事件怎么进来、弹窗怎么不打架、终端能力怎么探测——还一页未写。接下来两篇（第 21、22 篇）补上这一半，然后才是系列的中场：<strong>Event Sourcing，Agent UI 的底层模型</strong>。中场会解释 CLI/TUI 的挣扎为什么不是终端的锅：真正有结构性矛盾的是“树状事件 → 线性输出“这个投影方式本身。一旦把 Agent 的执行抽象为事件流，CLI/TUI/GUI/IDE/Web/Mobile 各自应该站在哪里，就不再是形态之争了。</p>
 <hr>
-<p><em>本文所有技术细节基于 <a href="https://github.com/BiBoyang/ForgeLoopTUI">ForgeLoopTUI</a> v1.2.0 的实际源码。其中 thinking 替换的 <code>shiftIndices</code> 调用为 v1.2.1 的索引偏移修复，v1.2.0 及更早版本中不存在。</em></p>
+<p><em>本文所有技术细节基于 <a href="https://github.com/BiBoyang/ForgeLoopTUI">ForgeLoopTUI</a> v1.2.0 的实际源码。其中 thinking 替换的 <code>shiftIndices</code> 调用为 v1.2.1 的索引偏移修复，v1.2.0 及更早版本中不存在。补记部分基于 <a href="https://github.com/openai/codex">Codex</a> 本地源码 2026-10-04 的阅读：<code>codex-rs/tui/src/chatwidget/streaming.rs</code>、<code>history_cell.rs</code>，快照 main <code>6b9826e3</code>（2026-09-09）。</em></p>
 
                     </main>
 
@@ -387,7 +393,7 @@ private func appendNotification(_ line: String) {
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="ch05.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="ch21.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -401,7 +407,7 @@ private func appendNotification(_ line: String) {
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="ch05.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="ch21.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>

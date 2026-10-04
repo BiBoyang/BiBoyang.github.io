@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>20 · Checkpoint 的谎言 - 自顶向下拆 Agent：从界面到地基</title>
+        <title>21 · 输入框：agent TUI 最被低估的组件 - 自顶向下拆 Agent：从界面到地基</title>
 
 
         <!-- Custom HTML head -->
@@ -177,48 +177,57 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="checkpoint-的谎言回滚按钮能兑现多少"><a class="header" href="#checkpoint-的谎言回滚按钮能兑现多少">Checkpoint 的谎言——回滚按钮能兑现多少</a></h1>
+                        <h1 id="输入框agent-tui-最被低估的组件"><a class="header" href="#输入框agent-tui-最被低估的组件">输入框——agent TUI 最被低估的组件</a></h1>
 <blockquote>
-<p>系列第二十篇，界面本体轨，控制三部曲终章。事前的计划（19）、事中的审批（08）、事后的回滚（本篇），是同一根信任链条的三节。这一节的病情最隐蔽：回滚按钮长得像“世界可以重来“，实际的语义是“文件可以重来，就这些“。这篇拆它到底能兑现什么、假装能兑现什么，以及虚假的可撤销感如何让真正不可逆的操作变得更危险。</p>
+<p>系列第二十一篇。按编号它排在小册后部，按阅读顺序它插在第 4 篇之后：第 2 到第 4 篇把输出侧讲完了——怎么把内容画对、画快、画不崩。这两篇（21、22）翻过来讲输入侧。输出侧的难点是“画得对“，输入侧的难点是另一句话：<strong>多层交互状态，要在同一条键盘事件流上不打架。</strong></p>
 </blockquote>
 <hr>
-<h2 id="一按下-rewind-的那一秒"><a class="header" href="#一按下-rewind-的那一秒">一、按下 rewind 的那一秒</a></h2>
-<p>界面现象：<code>/rewind</code> 按下（或空输入行双击 Esc），菜单弹出，选中一个时间点，屏幕一闪——diff 消失，文件回到三分钟前。用户的体感是完整的：世界回去了。</p>
-<p>实际发生的事，按 Claude Code 官方文档的口径：会话里<strong>每个 prompt 对应一个 checkpoint</strong>，快照追踪的是 Write、Edit、NotebookEdit 这三个文件编辑工具造成的修改；回滚菜单给三个方向：代码和对话一起回、只回对话、只回代码。保留策略：最近 100 个快照（第三方实测补充：超过 30 天的跳过，子 agent 的编辑和软链文件不在追踪范围内）。</p>
-<p>把追踪范围读三遍：<strong>Write、Edit、NotebookEdit</strong>。也就是说，agent 通过 Bash 删掉的文件、<code>git push</code> 出去的历史、子 agent 的改动，都不在这个保护网里。有第三方教程干脆把 <code>/rewind</code> 定性为“surgical recovery tool“（外科手术式的恢复工具），提醒你别拿它当通用 undo。</p>
-<h2 id="二agent-的副作用早就溢出仓库了"><a class="header" href="#二agent-的副作用早就溢出仓库了">二、agent 的副作用早就溢出仓库了</a></h2>
-<p>第 8 篇的四层风险模型里有一列叫“可回滚性“：只读、可回滚写入、难回滚写入、外部副作用。这个维度早就预见到了今天的问题，但产品界面没有跟上：<strong>审批弹窗不区分“这个操作可以被 checkpoint 兜住“和“这个操作出了门就回不来“</strong>，回滚按钮也不标注自己的覆盖边界。</p>
-<p>把 checkpoint 罩不住的清单摆出来，问题的形状就清楚了：已经发出的邮件和消息、已经合并的 PR、云上已经创建或删除的资源、已经扣费的 API 调用、MCP 工具对第三方系统的每一次写入、bash 里 <code>rm</code> 掉的文件。这些操作和文件编辑共享同一颗“允许“按钮、共享同一种被保护的错觉，而它们恰恰是四层模型里最底下两层的东西。<strong>安全网盖住了轻的，漏下来的全是重的。</strong></p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch20-safety-net.svg" alt="安全网盖住了轻的，漏下来的全是重的"><span class="img-wrapper"><img src="assets/ch20-safety-net.svg" alt="安全网盖住了轻的，漏下来的全是重的"></span></label></p>
-<h2 id="三两种-rewind回滚的根本不是同一个世界"><a class="header" href="#三两种-rewind回滚的根本不是同一个世界">三、两种 rewind，回滚的根本不是同一个世界</a></h2>
-<p>一个对照来自本地源码。kwwk 的 rewind 是<strong>会话级</strong>的：<code>SessionStore</code> 里有专门的 <code>.rewind</code> 持久化操作类型，运行时还有 <code>.streamRewind</code> 事件，回滚的是对话本身（分支退回某个节点，transcript 整体重建，14 篇拆过的 <code>replaceCommitted</code> 负责把屏幕上的历史换掉）。Claude Code 的 rewind 主打<strong>文件级</strong>：对话可以继续走，代码回到过去。</p>
-<p>两家都叫 rewind，所指不可通约。理想里的“重来“应该是时间旅行：会话分支和文件快照一起回到同一个时间点，对话状态、代码状态、工具执行到一半的外部状态，三者对齐。现实是各家回一半，而第三样（外部世界的状态）没有任何人碰得到，因为它根本没有快照可回。</p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch20-two-rewinds.svg" alt="两种 rewind：会话级与文件级，回滚的根本不是同一个世界"><span class="img-wrapper"><img src="assets/ch20-two-rewinds.svg" alt="两种 rewind：会话级与文件级，回滚的根本不是同一个世界"></span></label></p>
-<p>这里能接上第 14 篇的一条纪律：“appendFrame 是永久历史的唯一通道”。渲染层靠单一事实通道保住历史的完整性，文件层靠 checkpoint 快照保住代码的可回退性，<strong>同一个原则（为可逆性显式建一份账）在两层各自落地，唯独外部副作用那层还没有人建账</strong>。也许根本建不了：邮件发出去就是发出去了，那层的“账“只能事先记（审批时告知），不能事后回。</p>
-<h2 id="四虚假的可撤销感和它的风险补偿"><a class="header" href="#四虚假的可撤销感和它的风险补偿">四、虚假的可撤销感，和它的风险补偿</a></h2>
-<p>人机交互里有一条老常识：有 undo 的系统里，用户胆子更大，这叫风险补偿。把它放到 2026 年的组合里看：auto mode 让审批变快（第 8 篇补记），checkpoint 让失败显得可救，两者叠加，用户对“允许“的心理门槛被系统性压低。</p>
-<p>问题在于兜底的网只盖住文件系统。用户以为的保障是“错了能回来“，实际的保障是“文件错了能回来“。那 20% 溢出仓库的操作（push、付费、外发、删资源）在网眼之外，而审批越轻快，它们发生的频率越高。<strong>checkpoint 的最大风险不是失效，是它让别的保护显得不需要。</strong></p>
-<p>三条设计主张，按成本排序：</p>
-<ol>
-<li><strong>能力边界如实标注。</strong> 回滚按钮旁边一句话：“本回滚不覆盖 bash 修改、子 agent 编辑与一切仓库外操作。”（CC 文档其实写了范围，UI 上没说。）第 8 篇四层模型的“难回滚“和“外部副作用“两层，界面上应该显式标注“此操作不受 rewind 保护“。</li>
-<li><strong>不可逆清单成为一等数据。</strong> 哪些工具的副作用出了仓库，应该是产品的显式清单而不是用户的知识，它同时是审批界面的输入（标红）和回滚界面的边界说明。</li>
-<li><strong>回滚覆盖度接进审批。</strong> 同一颗允许按钮，对“checkpoint 罩得住“的操作和罩不住的操作，视觉与文案应该不同，这不必新发明，第 8 篇的模型就差这最后一公里。</li>
-</ol>
-<h2 id="五收束三部曲合拢"><a class="header" href="#五收束三部曲合拢">五、收束：三部曲合拢</a></h2>
-<p>事前的计划、事中的审批、事后的回滚，三节链条的公共原理只有一句话：<strong>让用户在对的时间看到对的边界。</strong> 计划展示意图的边界（打算做什么），审批展示操作的边界（正要碰什么），回滚本应展示可逆性的边界（哪些错能改）。第三节现在是三者中最虚的，虚到用户普遍不知道它有边界。</p>
-<p>而比边界更深的那个问题，三部曲也只能触到边：模型说“做完了“，勾选框打了勾，回滚也用不上——<strong>声明不等于证据</strong>。计划可以被批准，操作可以被允许，错误可以被回滚，唯独“完成“本身还没有被验证。这是系列后面“回放与验收“要拆的最后一道缝：让“做完了“三个字带上证据。</p>
+<h2 id="一最大的单文件"><a class="header" href="#一最大的单文件">一、最大的单文件</a></h2>
+<p>先看一个经验事实：在 Codex 的 TUI 里，代码量最大的单文件不是渲染控制器，不是事件总线，是输入框。<code>bottom_pane/chat_composer.rs</code> 一个文件 1.3 万行——实现约五千行，测试约八千行——测试比实现还多出六成，这个比例第 24 篇还会回来讲。</p>
+<p>一个“打字的地方“为什么值五千行实现？因为键盘事件流只有一条，而想消费它的东西越来越多：普通文本、光标编辑、历史回溯、slash 命令候选、文件引用弹窗、skill 弹窗、@提及弹窗、粘贴、外部编辑器、组合键。这些消费者不是并存，是<strong>互斥又嵌套</strong>——弹窗开着的时候，上下方向键归弹窗，不归文本；但 Enter 归谁，要看弹窗里有没有选中项。第 2 篇 §7 讲的光标定位和 IME 是这个组件的底层，第 4 篇 §8 讲的多行输入竞态是它的边界，本篇不再重复；本篇讲的是它的中层：那个决定“这个按键归谁“的仲裁结构。</p>
 <hr>
-<p><em>核查分层（截至 2026-09-28）：Claude Code checkpointing 基于官方文档（追踪 Write/Edit/NotebookEdit、三向回滚菜单、每 prompt 一快照、最近 100 个）与第三方实测（30 天上限、跳过子 agent 编辑与软链、bash 删除不可恢复、“surgical recovery tool“的定位建议）交叉；kwwk 为本地一手（<code>ae0771d</code>：<code>SessionStore.swift</code> 的 <code>.rewind</code> 操作类型、<code>AgentLoop.swift</code> 的 <code>.streamRewind</code> 事件）；风险补偿为 HCI 常识性论述。“三向回滚菜单“的第三项（code-only）以官方文档为准。Cursor 的 checkpoint 机制未核实，不引用。</em></p>
+<h2 id="二弹窗优先级链"><a class="header" href="#二弹窗优先级链">二、弹窗优先级链</a></h2>
+<p>Codex 的仲裁结构是一条显式的优先级链。按键到达 composer 后，处理函数按固定顺序逐级问询：文件弹窗在不在？在就归它，它选择吞掉还是放行；放行则问 skill 弹窗；再放行问 @提及弹窗；都没有，才走裸文本路径。每一级的返回是 <code>(InputResult, bool)</code>——结果加“是否已消费“。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch21-popup-priority.svg" alt="按键的旅程：弹窗优先级链"><span class="img-wrapper"><img src="assets/ch21-popup-priority.svg" alt="按键的旅程：弹窗优先级链"></span></label></p>
+<p>这个设计的要点不在链本身（任何 GUI 的响应链都长这样），在于它把“哪个弹窗优先“从运行时状态变成了<strong>代码顺序</strong>。弹窗之间的优先级不靠注册表、不靠 z-index，靠 if-else 的书写顺序——最显式、最不可能被配置改坏的形式。考虑到这些弹窗涉及文件引用和 skill 调用这种直接影响上下文组装的功能，“优先级不可配置“是刻意的保守。</p>
+<p>Kimi Code 走了另一条路，而且走得更远：它的 <code>editor-component.ts</code> 把整个编辑器定义成一个可替换接口（<code>EditorComponent</code>），注释明说动机——让扩展可以提供自己的编辑器实现，比如 vim 模式、emacs 模式、自定义键位。Codex 把优先级固化在代码顺序里，Kimi 把整个输入行为做成扩展点。一个防的是“被改坏“，一个赌的是“被扩展“。</p>
+<hr>
+<h2 id="三这段输入是什么在-composer-内部裁决"><a class="header" href="#三这段输入是什么在-composer-内部裁决">三、“这段输入是什么“在 composer 内部裁决</a></h2>
+<p>回车之后发生什么，答案不是一个字符串，是一个枚举。Codex 的 <code>InputResult</code> 把提交裁决为几类：<code>Submitted{text, text_elements}</code>（普通消息，附带已解析的元素区间）、<code>Command</code>（slash 命令）、<code>CommandWithArgs</code> 等。“这是消息还是命令“的判断在 composer 内部完成，上游拿到的已经是结构化的裁决结果。</p>
+<p>slash 命令因此分两层：composer 层负责解析候选、驱动补全弹窗；执行分派在 ChatWidget 侧，<code>slash_dispatch.rs</code> 一个文件 1288 行。另有一个 <code>!</code> 前缀的 shell 逃生口，提交时剥掉前缀直接进 shell。这个职责切分值得记住：composer 管“这是什么“，分派层管“拿去怎么做“——前者是交互状态机，后者是业务路由。</p>
+<hr>
+<h2 id="四粘贴不是一种操作是四种"><a class="header" href="#四粘贴不是一种操作是四种">四、粘贴不是一种操作，是四种</a></h2>
+<p>“用户粘贴了一段东西“在实现层至少是四种不同的东西：</p>
+<p><strong>其一，bracketed paste 事件。</strong> 终端用 <code>ESC[200~</code>/<code>ESC[201~</code> 包裹粘贴内容，TUI 收到一个完整的 Paste 事件，做 CRLF 归一化后进 composer。这是最干净的路径，前提是终端支持并开启了括号粘贴模式——第 22 篇会讲这个前提有多不牢靠。</p>
+<p><strong>其二，系统剪贴板直读。</strong> 图片粘贴走的是另一条路：直接读系统剪贴板，探测图片数据、编码、存临时文件、在文本里留占位。Codex 有专门的 <code>clipboard_paste.rs</code> 和一整组 <code>PasteImageError</code> 类型；Claude Code 的发布产物里也有独立的图片粘贴快捷键处理。</p>
+<p><strong>其三，大粘贴占位符。</strong> 粘贴几万字符的日志，不该把输入框撑爆。Claude Code 的做法：超过一万字符，显示时只留头 500 字符和尾 500 字符，中间折叠成一个占位引用（<code>inputPaste.ts</code>）。Codex 同构：大粘贴替换为占位符，提交时才还原展开（composer 头注释里的 “expands pending paste placeholders”）。两家独立收敛到同一个形态：<strong>显示层是占位符，数据层是全文，提交时对账。</strong></p>
+<p><strong>其四，paste-burst——没有括号粘贴时的湍流识别。</strong> 这是我最喜欢的一个。有些终端（特别是 Windows 上）不发 bracketed paste 标记，粘贴到达时就是一串<strong>极快的普通按键</strong>：人打字到不了那个速度，机器可以。于是识别粘贴变成了湍流识别：Codex 的 <code>paste_burst.rs</code> 和 Kimi 的 <code>paste-burst.ts</code> 是同一个启发式状态机的两次独立实现——字符间隔在毫秒级（Kimi 的参数：连续 ≥8 个字符、间隔 ≤8ms）就怀疑是粘贴；粘贴流里的 Enter 必须当换行而不是提交（Kimi 的 Enter 抑制窗口是 120ms）。两家的文件头注释写着同一个动机：防止粘贴里的回车把半截内容提交出去。</p>
+<p>第四种的启示超出粘贴本身：<strong>当协议信号缺失时，行为信号（速度分布）可以顶替。</strong> 这在终端输入里是通用技法。</p>
+<hr>
+<h2 id="五把键盘交出去外部编辑器接力"><a class="header" href="#五把键盘交出去外部编辑器接力">五、把键盘交出去：外部编辑器接力</a></h2>
+<p>composer 还有一个出栈方向：把整段输入交给 <code>$EDITOR</code>。Codex 的流程是：composer 内触发 → 发 <code>LaunchExternalEditor</code> 事件 → 读 <code>$VISUAL</code>/<code>$EDITOR</code> 起子进程——<strong>起进程之前先退出 raw mode</strong>，把终端归还给编辑器；编辑器退出后恢复 raw mode、读回文件、灌进 composer。期间事件总线可以暂停和恢复（<code>EventBroker::pause_events/resume_events</code>）。</p>
+<p>这是一次跨进程的状态交接：终端模式、按键流、绘制权，全部先交出去再拿回来。任何一个环节没对齐——raw mode 没退干净、事件流没暂停、恢复时状态对不上——用户看到的就是花屏或按键丢失。输入框因此不只是“消费键盘“的组件，还是键盘这个资源的<strong>进出关口</strong>。</p>
+<hr>
+<h2 id="六keymap-只做解析"><a class="header" href="#六keymap-只做解析">六、keymap 只做解析</a></h2>
+<p>最后一个职责切分：keymap 不管行为。Codex 的 <code>keymap.rs</code> 只做“配置 → 运行时键位“的解析（<code>from_config</code>），产出键位表；按键命中表之后做什么，是各组件自己的事。组合键（chord）有等待窗口——按下前缀键后等 <code>KEY_CHORD_TIMEOUT</code>，超时按单键处理，这个等待是用全局帧调度器的 <code>schedule_frame_in</code> 实现的，和状态行动画（第 23 篇）共用同一套定时基建。</p>
+<p>Kimi 的对应物是声明式的：<code>keybindings.ts</code> 是一张全局键位注册表，下游包靠声明合并往里加键位；编辑动作枚举得极细，连 kill-ring（yank/yankPop，emacs 的剪切环）都有。读这些枚举就像读一份“用户手指习惯“的清单——肌肉记忆是存量资产，输入组件是这笔资产的托管所。</p>
+<hr>
+<h2 id="七我的引擎在坐标系哪里"><a class="header" href="#七我的引擎在坐标系哪里">七、我的引擎在坐标系哪里</a></h2>
+<p>诚实交代 ForgeLoopTUI 的位置。它是渲染引擎不是产品，输入侧停在引擎层：<code>InputPipeline</code> 做 bracketed paste 聚合（<code>ESC[200~</code> 进、聚合成纯文本、<code>ESC[201~</code> 出为一个 <code>.paste</code> 事件），<code>KeyParser</code> 把 CSI/CSI-u/SS3/Alt/控制字符归一成 <code>KeyEvent</code>，未知序列静默丢弃。没有弹窗层、没有 slash 命令、没有外部编辑器——这些在它的定位里属于接入方。</p>
+<p>读完 Codex 的 composer，我的修正不是“ForgeLoopTUI 缺功能“，而是一个判断尺度的更新：<strong>composer 的状态机复杂度是 harness 成熟度的镜子。</strong> 一个 agent 产品支持多少种“输入不只是文本“的情形——文件、skill、图片、命令、长粘贴、外部编辑器——它的输入框就必须长出一副对应的状态机。输出侧的复杂度藏在渲染管线里，用户看不见；输入侧的复杂度直接顶在用户手指下面，每一个弹窗优先级、每一毫秒 Enter 抑制窗，用户都能感觉到。</p>
+<p>下一篇继续往下挖一层：这一篇的所有机制都假设键盘事件流是可靠的——按键是什么、粘贴有没有标记、模式开没开。这个假设在真实终端世界里有多脆弱，是输入侧真正的地狱。</p>
+<hr>
+<p><em>本文基于 2026-10-04 对以下源码的实际阅读：<a href="https://github.com/openai/codex">Codex</a> 本地快照 main <code>6b9826e3</code>（2026-09-09）：<code>codex-rs/tui/src/bottom_pane/chat_composer.rs</code>（弹窗优先级链、<code>InputResult</code>）、<code>bottom_pane/paste_burst.rs</code>、<code>clipboard_paste.rs</code>、<code>external_editor.rs</code>、<code>keymap.rs</code>、<code>chatwidget/slash_dispatch.rs</code>；<a href="https://github.com/MoonshotAI/kimi-code">kimi-code</a> 本地源码 <code>54117a6b</code>（2026-09-24）：<code>packages/pi-tui/src/editor-component.ts</code>、<code>keybindings.ts</code>、<code>paste-burst.ts</code>；Claude Code 发布产物中的源码（2026-03-31 经 npm source map 外泄的公开快照）：<code>src/components/PromptInput/inputPaste.ts</code>、<code>src/hooks/useTextInput.ts</code>。对照部分基于 <a href="https://github.com/BiBoyang/ForgeLoopTUI">ForgeLoopTUI</a> v1.2.1 源码（<code>Input/InputPipeline.swift</code>、<code>Input/KeyParser.swift</code>）。</em></p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="ch19.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="ch04.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="prologue.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="ch22.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -228,11 +237,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="ch19.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="ch04.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="prologue.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="ch22.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>

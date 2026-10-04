@@ -35,10 +35,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-3abcc440.js";
+            window.path_to_searchindex_js = "searchindex-02596293.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-5870c396.js"></script>
+        <script src="toc-b8944928.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -203,6 +203,7 @@
 <p><strong>工作区是有生命周期的。</strong> 工具调用要碰文件系统和 git，服务端就得给每个会话配一个工作区（容器或等价物）：创建、挂起、快照、迁移、回收，每一步都有成本。移动端用户拍完审批就走了，工作区还热着，TTL 定多长，挂起要不要快照，都是钱。</p>
 <p><strong>审批挂起与会话休眠。</strong> 用户三小时不回，agent 停在等审批的状态上，会话资源怎么办？Cloudflare 的 Durable Object 休眠给了一个参考形态：对象睡了，WebSocket 状态还保着，消息到达即唤醒，休眠期不收活跃算力的钱。<strong>“等待“在服务端是被明码计价的资源</strong>，谁的账单、按什么计，是移动端产品没法回避的伦理题，因为等待的发起者（用户离开）和付费者未必是同一个预期。</p>
 <p><strong>云和本地抢同一个仓库。</strong> 云端 agent 在自己的工作区里跑，用户的桌面可能正开着同一个 repo，两边的改动如何合流，是 09 篇“统一 Workspace Model“在云时代的完整形态。这个问题目前没有谁真正答好，记为开放题。</p>
+<p><strong>工作区还是一个网络主体。</strong> 容器或 microVM 划定了文件系统边界，却没有自动划定网络边界：agent 在工作区里可以发任意出站连接，而它恰是一个会被自己处理的输入策反的执行者——一条恶意工具输出就能借 <code>curl</code> 或 npm 的 postinstall 把环境变量送出去。这类流量走 shell、不走 MCP，下一篇的工具边界管不到它。执行环境因此迟早要补上第三道边界：按 agent 实例签发的短命身份、默认拒绝的出站白名单，且强制执行点必须在 agent 进程之外（胶水层声明“需要连谁“，沙箱网关负责“别的什么都不通“）。还有一条传统网络里不存在的通道要单独盯：到模型 API 的那条 TLS 既是指令输入通道，又是带宽最高的数据外泄出口——两类历来分开管控的流量，在 agent 这里合成了一条加密流。这层目前没有公认形态，与云端工作区并记为开放题。</p>
 <h2 id="六收束agent-loop-不能拥有-socket"><a class="header" href="#六收束agent-loop-不能拥有-socket">六、收束：agent loop 不能拥有 socket</a></h2>
 <p>把上下两篇收进一句话：<strong>agent loop 不能拥有 socket。</strong></p>
 <p>执行不拥有连接（挂起、杀进程、换服务器，会话继续）；连接不携带事实（断了，游标和 log 还在）；推送不携带内容（门铃只负责叫人）；客户端不携带状态（它的每样记忆都有磁盘或服务端的备份）。移动端不是这套原则的一个应用场景，<strong>它是最苛刻的那个证明环境</strong>：进程朝不保夕、网络七零八落、版本几周漂移，在这样的地基上还能兑现“流畅且完整“，靠的就是把每一样事实都安放在比进程、比连接、比画面活得久的地方。</p>
@@ -210,7 +211,7 @@
 <p>第 9 篇当年写过“Mobile 是 Companion，不是主战场“，从渲染负担看它依然成立；但从架构纪律看要补一句：<strong>移动端是这个行业里最诚实的甲方。</strong> 它不允许任何“先连着再说“的懒惰假设，每一条都在逼你把事实和传输分开。桌面端能蒙混过关的架构，在手机上四秒内露馅。</p>
 <p>下一篇回到地面：agent 与编辑器、前端、工具之间那三套正在三国杀的协议，MCP、ACP、AG-UI，三个边界各欠着谁的债。</p>
 <hr>
-<p><em>核查分层：Durable Object 休眠与单写者语义基于 Cloudflare Agents 官方文档（同基01 核查）；APNs payload 上限与静默推送限流按平台公开行为的量级表述（数千字节；低优先级、合并、受低电量与后台刷新设置影响），未引具体政策编号；厂商推送联盟为国内公开现状。kimi 契约的可选字段姿态引自基01 的本地一手核查（<code>1e553fc</code>）。冷启动路径、通知直批安全边界为设计层论述。</em></p>
+<p><em>核查分层：Durable Object 休眠与单写者语义基于 Cloudflare Agents 官方文档（同基01 核查）；APNs payload 上限与静默推送限流按平台公开行为的量级表述（数千字节；低优先级、合并、受低电量与后台刷新设置影响），未引具体政策编号；厂商推送联盟为国内公开现状。kimi 契约的可选字段姿态引自基01 的本地一手核查（<code>1e553fc</code>）。冷启动路径、通知直批安全边界、出站身份与网络管控为设计层论述（后者为开放题，未引具体产品）。</em></p>
 
                     </main>
 

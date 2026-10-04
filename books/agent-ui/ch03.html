@@ -35,10 +35,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-3abcc440.js";
+            window.path_to_searchindex_js = "searchindex-02596293.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-5870c396.js"></script>
+        <script src="toc-b8944928.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -415,7 +415,14 @@ if stableSource.count &gt; maxStableSourceChars { reset() }
 </ol>
 <p>下一篇讲 Agent TUI 最核心的难题——流式输出、工具调用、thinking 展开之后，这些问题如何从“难“变成“几近失控“。第 1 篇提过一个判断：Agent 的真实输出不是 1D 的，下一篇把这句话完整展开。</p>
 <hr>
-<p><em>本文所有技术细节基于 <a href="https://github.com/BiBoyang/ForgeLoopTUI">ForgeLoopTUI</a> v1.2.0 的实际源码。§3.3 的代码块盲区已在 v1.2.1 修复（<code>retreatToAvoidSplittingUnclosedCodeFence</code>），正文保留该盲区的完整分析作为案例。</em></p>
+<blockquote>
+<p>补记（2026.10）：本篇定稿两个月后，我逐行读了 Codex 的流式渲染模块（<code>codex-rs/tui/src/streaming/</code>）。两个发现值得记在这里：§3.2 的表格陷阱，Codex 用另一种机制独立解了一遍；§3.3 的代码块盲区，Codex 里有一个现成的完整答案。</p>
+<p>Codex 的对应物叫 table holdback，是一个三态状态机：没有表格迹象时放行一切；末行看着像表头、分隔行还没到，就进入“待确认“，乐观地把这一行拦在稳定区之外；表头与分隔行一旦配对确认，从表头起的内容全部保持可变，直到表格结束。它解的问题和 retreat 是同一个——给表格加一行会改变所有列宽、重塑之前所有行，所以表格在闭合前不能定型——但机制相反。ForgeLoopTUI 是<strong>事后回退</strong>：先按换行符乐观切分，发现劈开风险再回头扫描，最坏 O(n)，平时零常驻状态。Codex 是<strong>事前状态机</strong>：扫描器随每个 delta 增量推进，只记住上一行的事实，常数成本，提前拦住。第六节说防御逻辑是必要之恶，这两家只是选择了不同的纳税时点——一个按需补缴，一个分期预缴。</p>
+<p>两个细节值得点名。其一，Codex 的源累积器只在换行符处交付：没写完的半行根本不进入渲染管线，注释里写明了动机——防止用户先瞥见结构未定的畸形块、下一帧又看它消失。§3.2 里那类闪烁，在这个设计里从源头不存在。其二，§3.3 盲区的他山答案：Codex 全程维护 fence 状态，开着的代码块走一条快路径——直接追加渲染行、不重新解析，fence 状态跨帧连续，盲区在结构上不存在。</p>
+<p>时间线如实写：ForgeLoopTUI v1.2.1 的 fence retreat 修复在前，我读 Codex 在后。两家独立收敛到了同一个判断——fence 状态必须跨帧保持——区别只在用回退还是用状态机来实现。另外，Codex 给这套机制配的测试不是逐帧断言，而是断言一个不变量：任意 delta 切分下，“已上屏 + 待放行“恒等于一次性全量渲染。这个思路本身值得展开，见第 24 篇。</p>
+</blockquote>
+<hr>
+<p><em>本文所有技术细节基于 <a href="https://github.com/BiBoyang/ForgeLoopTUI">ForgeLoopTUI</a> v1.2.0 的实际源码。§3.3 的代码块盲区已在 v1.2.1 修复（<code>retreatToAvoidSplittingUnclosedCodeFence</code>），正文保留该盲区的完整分析作为案例。补记部分基于 <a href="https://github.com/openai/codex">Codex</a> 本地源码 2026-10-04 的阅读：<code>codex-rs/tui/src/streaming/table_holdback.rs</code>（holdback 状态机）、<code>markdown_stream.rs</code>（换行门控）、<code>streaming/render.rs</code> 与 <code>streaming/code_fence.rs</code>（fence 快路径），快照 main <code>6b9826e3</code>（2026-09-09）。</em></p>
 
                     </main>
 

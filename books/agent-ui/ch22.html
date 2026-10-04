@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>20 · Checkpoint 的谎言 - 自顶向下拆 Agent：从界面到地基</title>
+        <title>22 · 输入的地狱：终端能力探测与降级 - 自顶向下拆 Agent：从界面到地基</title>
 
 
         <!-- Custom HTML head -->
@@ -177,48 +177,67 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="checkpoint-的谎言回滚按钮能兑现多少"><a class="header" href="#checkpoint-的谎言回滚按钮能兑现多少">Checkpoint 的谎言——回滚按钮能兑现多少</a></h1>
+                        <h1 id="输入的地狱终端能力探测与降级"><a class="header" href="#输入的地狱终端能力探测与降级">输入的地狱——终端能力探测与降级</a></h1>
 <blockquote>
-<p>系列第二十篇，界面本体轨，控制三部曲终章。事前的计划（19）、事中的审批（08）、事后的回滚（本篇），是同一根信任链条的三节。这一节的病情最隐蔽：回滚按钮长得像“世界可以重来“，实际的语义是“文件可以重来，就这些“。这篇拆它到底能兑现什么、假装能兑现什么，以及虚假的可撤销感如何让真正不可逆的操作变得更危险。</p>
+<p>系列第二十二篇，第 21 篇的下半部。第 2 篇 §4.3 讲过输出侧的能力降级链——颜色从 true color 一路退到 16 色，是“能力有没有“的问题。输入侧是另一半，行业讨论比输出侧少一个数量级，难度却更高：<strong>输出降级是“能力有没有“，输入地狱是“行为一不一致“</strong>——同一个按键，在不同终端模拟器里是不同含义；同一条查询序列，有的终端回答、有的沉默、有的回一半。上一篇讲的 composer 状态机，全部建立在这条事件流可靠的假设上。这一篇讲这个假设本身。</p>
 </blockquote>
 <hr>
-<h2 id="一按下-rewind-的那一秒"><a class="header" href="#一按下-rewind-的那一秒">一、按下 rewind 的那一秒</a></h2>
-<p>界面现象：<code>/rewind</code> 按下（或空输入行双击 Esc），菜单弹出，选中一个时间点，屏幕一闪——diff 消失，文件回到三分钟前。用户的体感是完整的：世界回去了。</p>
-<p>实际发生的事，按 Claude Code 官方文档的口径：会话里<strong>每个 prompt 对应一个 checkpoint</strong>，快照追踪的是 Write、Edit、NotebookEdit 这三个文件编辑工具造成的修改；回滚菜单给三个方向：代码和对话一起回、只回对话、只回代码。保留策略：最近 100 个快照（第三方实测补充：超过 30 天的跳过，子 agent 的编辑和软链文件不在追踪范围内）。</p>
-<p>把追踪范围读三遍：<strong>Write、Edit、NotebookEdit</strong>。也就是说，agent 通过 Bash 删掉的文件、<code>git push</code> 出去的历史、子 agent 的改动，都不在这个保护网里。有第三方教程干脆把 <code>/rewind</code> 定性为“surgical recovery tool“（外科手术式的恢复工具），提醒你别拿它当通用 undo。</p>
-<h2 id="二agent-的副作用早就溢出仓库了"><a class="header" href="#二agent-的副作用早就溢出仓库了">二、agent 的副作用早就溢出仓库了</a></h2>
-<p>第 8 篇的四层风险模型里有一列叫“可回滚性“：只读、可回滚写入、难回滚写入、外部副作用。这个维度早就预见到了今天的问题，但产品界面没有跟上：<strong>审批弹窗不区分“这个操作可以被 checkpoint 兜住“和“这个操作出了门就回不来“</strong>，回滚按钮也不标注自己的覆盖边界。</p>
-<p>把 checkpoint 罩不住的清单摆出来，问题的形状就清楚了：已经发出的邮件和消息、已经合并的 PR、云上已经创建或删除的资源、已经扣费的 API 调用、MCP 工具对第三方系统的每一次写入、bash 里 <code>rm</code> 掉的文件。这些操作和文件编辑共享同一颗“允许“按钮、共享同一种被保护的错觉，而它们恰恰是四层模型里最底下两层的东西。<strong>安全网盖住了轻的，漏下来的全是重的。</strong></p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch20-safety-net.svg" alt="安全网盖住了轻的，漏下来的全是重的"><span class="img-wrapper"><img src="assets/ch20-safety-net.svg" alt="安全网盖住了轻的，漏下来的全是重的"></span></label></p>
-<h2 id="三两种-rewind回滚的根本不是同一个世界"><a class="header" href="#三两种-rewind回滚的根本不是同一个世界">三、两种 rewind，回滚的根本不是同一个世界</a></h2>
-<p>一个对照来自本地源码。kwwk 的 rewind 是<strong>会话级</strong>的：<code>SessionStore</code> 里有专门的 <code>.rewind</code> 持久化操作类型，运行时还有 <code>.streamRewind</code> 事件，回滚的是对话本身（分支退回某个节点，transcript 整体重建，14 篇拆过的 <code>replaceCommitted</code> 负责把屏幕上的历史换掉）。Claude Code 的 rewind 主打<strong>文件级</strong>：对话可以继续走，代码回到过去。</p>
-<p>两家都叫 rewind，所指不可通约。理想里的“重来“应该是时间旅行：会话分支和文件快照一起回到同一个时间点，对话状态、代码状态、工具执行到一半的外部状态，三者对齐。现实是各家回一半，而第三样（外部世界的状态）没有任何人碰得到，因为它根本没有快照可回。</p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch20-two-rewinds.svg" alt="两种 rewind：会话级与文件级，回滚的根本不是同一个世界"><span class="img-wrapper"><img src="assets/ch20-two-rewinds.svg" alt="两种 rewind：会话级与文件级，回滚的根本不是同一个世界"></span></label></p>
-<p>这里能接上第 14 篇的一条纪律：“appendFrame 是永久历史的唯一通道”。渲染层靠单一事实通道保住历史的完整性，文件层靠 checkpoint 快照保住代码的可回退性，<strong>同一个原则（为可逆性显式建一份账）在两层各自落地，唯独外部副作用那层还没有人建账</strong>。也许根本建不了：邮件发出去就是发出去了，那层的“账“只能事先记（审批时告知），不能事后回。</p>
-<h2 id="四虚假的可撤销感和它的风险补偿"><a class="header" href="#四虚假的可撤销感和它的风险补偿">四、虚假的可撤销感，和它的风险补偿</a></h2>
-<p>人机交互里有一条老常识：有 undo 的系统里，用户胆子更大，这叫风险补偿。把它放到 2026 年的组合里看：auto mode 让审批变快（第 8 篇补记），checkpoint 让失败显得可救，两者叠加，用户对“允许“的心理门槛被系统性压低。</p>
-<p>问题在于兜底的网只盖住文件系统。用户以为的保障是“错了能回来“，实际的保障是“文件错了能回来“。那 20% 溢出仓库的操作（push、付费、外发、删资源）在网眼之外，而审批越轻快，它们发生的频率越高。<strong>checkpoint 的最大风险不是失效，是它让别的保护显得不需要。</strong></p>
-<p>三条设计主张，按成本排序：</p>
-<ol>
-<li><strong>能力边界如实标注。</strong> 回滚按钮旁边一句话：“本回滚不覆盖 bash 修改、子 agent 编辑与一切仓库外操作。”（CC 文档其实写了范围，UI 上没说。）第 8 篇四层模型的“难回滚“和“外部副作用“两层，界面上应该显式标注“此操作不受 rewind 保护“。</li>
-<li><strong>不可逆清单成为一等数据。</strong> 哪些工具的副作用出了仓库，应该是产品的显式清单而不是用户的知识，它同时是审批界面的输入（标红）和回滚界面的边界说明。</li>
-<li><strong>回滚覆盖度接进审批。</strong> 同一颗允许按钮，对“checkpoint 罩得住“的操作和罩不住的操作，视觉与文案应该不同，这不必新发明，第 8 篇的模型就差这最后一公里。</li>
-</ol>
-<h2 id="五收束三部曲合拢"><a class="header" href="#五收束三部曲合拢">五、收束：三部曲合拢</a></h2>
-<p>事前的计划、事中的审批、事后的回滚，三节链条的公共原理只有一句话：<strong>让用户在对的时间看到对的边界。</strong> 计划展示意图的边界（打算做什么），审批展示操作的边界（正要碰什么），回滚本应展示可逆性的边界（哪些错能改）。第三节现在是三者中最虚的，虚到用户普遍不知道它有边界。</p>
-<p>而比边界更深的那个问题，三部曲也只能触到边：模型说“做完了“，勾选框打了勾，回滚也用不上——<strong>声明不等于证据</strong>。计划可以被批准，操作可以被允许，错误可以被回滚，唯独“完成“本身还没有被验证。这是系列后面“回放与验收“要拆的最后一道缝：让“做完了“三个字带上证据。</p>
+<h2 id="一探测启动时的第一次对账"><a class="header" href="#一探测启动时的第一次对账">一、探测：启动时的第一次对账</a></h2>
+<p>终端能力没法靠 <code>$TERM</code> 问出来——环境变量会撒谎（SSH 之后它是远端机器的猜测），所以严肃的 TUI 都在启动时做一次实况探测：向终端发查询序列，等回应，按回应决定启用哪些增强。</p>
+<p>但“等回应“本身就是设计难题：等多久？等来的字节和用户的按键混在同一条 stdin 里，怎么分？三家的答案几乎是一个光谱。</p>
+<p><strong>Codex：有预算的轮询，加一条哨兵捷径。</strong> <code>terminal_probe</code> 模块存在的原因是注释里的一句话：crossterm 的公共查询 API 最长会等两秒——“对启动和恢复来说太久，不支持的终端应该干脆退回保守默认”。所以 Codex 自己写探测：每组查询 100ms 墙钟预算，探光标位置、OSC 10/11 默认前景背景色、kitty 键盘增强支持；探测消耗掉的字节会回放进 crossterm 的解析器，保证探测期间用户的真实按键不丢。kitty 探测里还藏着一条捷径：查询后面跟着一个主设备属性（DA）请求，终端按序应答，DA 到了而键盘标志没到，就<strong>立即</strong>判定不支持，不必等满 100ms。整个过程带耗时埋点（“terminal startup probes completed”），探测是启动链路里被当成功耗来管理的正式公民。</p>
+<p><strong>Claude Code：用顺序代替超时。</strong> 同一条哨兵，Claude Code 押得更彻底——<code>terminal-querier</code> <strong>不设超时</strong>。技巧叫 DA1 哨兵：每批查询末尾追加一个 DA1 查询（主设备属性），而 VT100 以来的每个终端都会回答 DA1，且终端按顺序应答。于是判定变成纯顺序问题：你的响应先于 DA1 到，说明支持；DA1 先到了，说明不支持。超时这个维度被从设计里删掉了，换成对一个老旧但普适的协议不变量的信任。探测目录里的清单也值得看：DECRQM 问同步输出（2026）与 grapheme 聚簇（2027）模式、OSC 11 问背景色、kitty 键盘查询、XTVERSION 问终端名——XTVERSION 的注释点破了为什么环境变量不可靠：查询走 pty 不走环境，<strong>能穿透 SSH</strong>，而 <code>TERM_PROGRAM</code> 不能。</p>
+<p><strong>Kimi：协商式握手。</strong> kitty 键盘协议的完整三件套一次发出：推入目标标志位、查询当前标志、追加设备属性查询（<code>ESC[&gt;7u</code> <code>ESC[?u</code> <code>ESC[c</code>），然后按 150ms 分片超时收集回应。另有一个容易漏的收尾细节：退出前先排空 stdin——否则 kitty 协议下按过的键会留下“释放事件“，终端在你退出后还在吐字节。</p>
+<p>还有第四种哲学，是我自己的：ForgeLoopTUI <strong>不探测</strong>。<code>RawTTY.enter()</code> 无条件推入 kitty 消歧标志和 bracketed paste 开关，注释写明理由——“不支持的终端会静默吸收这些序列”。这是拿终端生态的一个经验事实当赌注：未知序列无害。赌注大体成立，但它是赌，不是证。</p>
 <hr>
-<p><em>核查分层（截至 2026-09-28）：Claude Code checkpointing 基于官方文档（追踪 Write/Edit/NotebookEdit、三向回滚菜单、每 prompt 一快照、最近 100 个）与第三方实测（30 天上限、跳过子 agent 编辑与软链、bash 删除不可恢复、“surgical recovery tool“的定位建议）交叉；kwwk 为本地一手（<code>ae0771d</code>：<code>SessionStore.swift</code> 的 <code>.rewind</code> 操作类型、<code>AgentLoop.swift</code> 的 <code>.streamRewind</code> 事件）；风险补偿为 HCI 常识性论述。“三向回滚菜单“的第三项（code-only）以官方文档为准。Cursor 的 checkpoint 机制未核实，不引用。</em></p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch22-terminal-probe.svg" alt="启动探测的四种姿态"><span class="img-wrapper"><img src="assets/ch22-terminal-probe.svg" alt="启动探测的四种姿态"></span></label></p>
+<h2 id="二一个键为什么不是一个键"><a class="header" href="#二一个键为什么不是一个键">二、一个键为什么不是一个键</a></h2>
+<p>探测的主要对象之一是键盘协议，因为传统终端键盘编码是歧义丛生的：Esc 键和 Alt 前缀共用 <code>0x1b</code>，Ctrl+I 和 Tab 是同一个字节，Ctrl+M 和回车是同一个字节。kitty 键盘协议（CSI-u）的存在意义就是消歧：给每个按键事件完整的键码与修饰符。</p>
+<p>启用它是改善，也是新负债。Codex 留了显式逃生门（<code>CODEX_TUI_DISABLE_KEYBOARD_ENHANCEMENT</code> 环境变量）；Kimi 除协议外还备了一条原生侧通路——通过原生 helper 直接轮询真实修饰键状态（<code>native-modifiers.ts</code>），协议报不上来的时候问操作系统；Claude Code 则同时解析两套编码——CSI-u 和 xterm 的 modifyOtherKeys——并注释了两者的参数顺序相反（<code>ESC[13;2u</code> vs <code>ESC[27;2;13~</code>），后者主要在 SSH 场景出现，因为“TERM 嗅探认不出 Ghostty，而我们从不主动推 kitty 模式“。</p>
+<p>同一条消歧目标，四家四种姿态：Codex 探测后启用、留开关；Kimi 协商加原生兜底；Claude 只解析不推送，把两种编码都当既成事实接受；ForgeLoopTUI 乐观推送、解析器只映射 Enter 一个键（其余 CSI-u 键码静默丢弃——够用主义：我要的只是 Shift+Enter 和回车的区分）。这没有对错，是各自对“多少终端会把我送进歧义“的不同估计。</p>
+<hr>
+<h2 id="三模式开关开了要对关了要对被劫持了也要对"><a class="header" href="#三模式开关开了要对关了要对被劫持了也要对">三、模式开关：开了要对，关了要对，被劫持了也要对</a></h2>
+<p>bracketed paste、focus 事件、同步输出、kitty 键盘——输入侧的能力几乎全是<strong>模式</strong>：进入时打开，退出时关闭。第 16 篇把模式开关列为攻击面（它讲“为什么危险“），这一篇补工程侧：为什么难对。</p>
+<p>难在状态的所有权不排他。终端模式是全 fd 共享的全局状态，而进程会挂起：Codex 里 Ctrl+Z 是特殊键位（<code>SUSPEND_KEY</code>），进程切后台再回来，raw mode 可能已经被 shell 或别的程序动过——所以有 <code>reapply_raw_mode_after_resume</code>，resume 时重新对账。外部编辑器（第 21 篇）是同一类问题的放大版：起 <code>$EDITOR</code> 前退 raw mode、暂停事件总线，回来后全部恢复。模式开关的正确性不是一个布尔值，是“开、关、被别人动过之后恢复“的三态对账。</p>
+<p>这也解释了一个看似多余的字段为什么存在：Codex 的输入事件栈从 crossterm 的 EventStream 收敛成七种 <code>TuiEvent</code>——Key、Paste、Resize、Draw、Resume、FocusGained、FocusLost。Resume 和两种 Focus 能进这个清单，本身就是对账需求的化石：挂起恢复要重同步，焦点得失要影响光标样式与轮询节奏。事件枚举的形状，记录的是终端现实的形状。</p>
+<hr>
+<h2 id="四复用器与-alt-screen中间还有一层翻译"><a class="header" href="#四复用器与-alt-screen中间还有一层翻译">四、复用器与 alt screen：中间还有一层翻译</a></h2>
+<p>以上所有假设之上还有一层：用户可能隔着 tmux 或 Zellij。复用器是一个中间人终端——它代理你的查询、转译你的模式开关、按自己的窗口管理切割你的输出。第 11 篇 §七-7 讲过 Codex 在这上面的演进：从 Zellij 特判，到特判删除、换成 ScrollbackStrategy 三档策略（并用一个测试把“特判不存在“钉死，第 24 篇讲这类守护测试）。这里只补一句输入侧的对称事实：复用器对输出做的是转译，对输入做的是<strong>过滤与改造</strong>——bracketed paste 标记、kitty 序列、focus 事件过一道复用器之后可能变形、延迟或消失，上一篇的 paste-burst 启发式，有一部分用户就是复用器制造出来的。</p>
+<p>alt screen 的启用判定（Codex 的 <code>determine_alt_screen_mode</code>）因此也不是配置读取，是一次综合判决：用户配置、终端能力、复用器在场与否，三方会审。</p>
+<hr>
+<h2 id="五雷区表与它的空缺"><a class="header" href="#五雷区表与它的空缺">五、雷区表与它的空缺</a></h2>
+<p>把这一篇的对照收成一张表（能力 × 各家策略）：</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>输入侧能力</th><th>Codex</th><th>Claude Code</th><th>Kimi Code</th><th>ForgeLoopTUI</th></tr>
+</thead>
+<tbody>
+<tr><td>能力探测</td><td>100ms 预算 + DA 哨兵提前判定，字节回放</td><td>DA1 哨兵为唯一机制，无超时</td><td>协商序列 + 150ms 分片超时</td><td>不探测，乐观推送</td></tr>
+<tr><td>kitty 键盘</td><td>探测启用 + 环境变量逃生门</td><td>只解析不推送，兼收 modifyOtherKeys</td><td>推 flags 7 + 原生修饰键兜底</td><td>无条件推 <code>ESC[&gt;1u</code>，只映射 Enter</td></tr>
+<tr><td>bracketed paste</td><td>支持，缺标记时走 paste-burst</td><td>支持，缺标记时 \r 启发式归一</td><td>支持，缺标记时走 paste-burst</td><td>支持（<code>ESC[?2004h</code>）</td></tr>
+<tr><td>挂起恢复</td><td>resume 重上 raw mode</td><td>—（未见对应机制）</td><td>退出前排空 stdin</td><td>—（引擎层不持有进程模型）</td></tr>
+<tr><td>终端身份</td><td>OSC 10/11 默认颜色、光标位置</td><td>XTVERSION（穿透 SSH）</td><td>OSC 颜色判明暗主题</td><td>不探测</td></tr>
+</tbody>
+</table>
+</div>
+<p>表的最后我想诚实标注一个空缺：这张表的列是“家“，不是“终端模拟器“。我原本想按第 11 篇四家记分牌的思路，收一张“输入侧能力 × 终端模拟器“的雷区矩阵——哪个终端在哪个序列上行为异常。结果是收不齐：这类数据不存在于任何公开处，它分散在各家的 issue tracker 和运维记忆里，每个 TUI 团队都在私下重攒一份。输入侧讨论比输出侧少一个数量级，这张填不出来的表就是证据本身。</p>
+<hr>
+<h2 id="六收束"><a class="header" href="#六收束">六、收束</a></h2>
+<p>输出侧的降级链有一个舒服的终点：颜色退到 16 色，内容还在。输入侧没有这个终点——按键的含义错了，不是降级，是<strong>错误</strong>。所以输入侧的工程主题不是“降级“，是“对账“：启动时探测对账、模式开关三态对账、挂起恢复对账、复用器在场对账。终端是上世纪七十年代的协议，每一家 agent 都在为它重新谈判一次。</p>
+<p>输出侧讲完了，输入侧也讲完了。现在可以去中场了：第 5 篇的 Event Sourcing 会回答一个这两篇不断逼近的问题——为什么输入输出两侧的挣扎，最后都收敛到“事件“这个抽象上。</p>
+<hr>
+<p><em>本文基于 2026-10-04 对以下源码的实际阅读：<a href="https://github.com/openai/codex">Codex</a> 本地快照 main <code>6b9826e3</code>（2026-09-09）：<code>codex-rs/tui/src/terminal_probe.rs</code> 与 <code>terminal_probe/</code>（启动探测与字节回放）、<code>tui.rs</code>（<code>init()</code>、七种 <code>TuiEvent</code>、<code>reapply_raw_mode_after_resume</code>）、<code>tui/keyboard_modes.rs</code>、<code>tui/job_control.rs</code>（<code>SUSPEND_KEY</code>）、<code>lib.rs</code>（<code>determine_alt_screen_mode</code>）；<a href="https://github.com/MoonshotAI/kimi-code">kimi-code</a> 本地源码 <code>54117a6b</code>（2026-09-24）：<code>packages/pi-tui/src/terminal.ts</code>、<code>keys.ts</code>、<code>native-modifiers.ts</code>；Claude Code 发布产物中的源码（2026-03-31 经 npm source map 外泄的公开快照）：<code>src/ink/terminal-querier.ts</code>、<code>src/ink/parse-keypress.ts</code>。ForgeLoopTUI 部分基于 v1.2.1 源码（<code>Input/RawTTY.swift</code>、<code>Input/KeyParser.swift</code>）。Claude Code 的挂起恢复行为未做全量排查，表中“未见“以本次阅读范围为准。</em></p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="ch19.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="ch21.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="prologue.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="ch05.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -228,11 +247,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="ch19.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="ch21.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="prologue.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="ch05.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>

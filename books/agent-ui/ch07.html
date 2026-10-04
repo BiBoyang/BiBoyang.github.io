@@ -35,10 +35,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-3abcc440.js";
+            window.path_to_searchindex_js = "searchindex-02596293.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-5870c396.js"></script>
+        <script src="toc-b8944928.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -297,6 +297,17 @@ tick 90: parse(3000字)+ build(3000字)+ layout(3000字)
 </code></pre>
 <p>总工作量 ≈ N²。降频让 t 不再严格正比于 N，但砍的是常数因子，复杂度阶没变。降频的收益集中在中等长度（1000-5000 字），文本继续变长、频率触底（3Hz）之后，tick 数重新正比于 N，总工作量回归 N²。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch07-on-squared.svg" alt="O(n) 被执行了 O(n) 次：总工作量 ≈ N²"><span class="img-wrapper"><img src="assets/ch07-on-squared.svg" alt="O(n) 被执行了 O(n) 次：总工作量 ≈ N²"></span></label></p>
+<h3 id="补记202610另一个流派队列压力自适应"><a class="header" href="#补记202610另一个流派队列压力自适应">补记（2026.10）：另一个流派——队列压力自适应</a></h3>
+<p>本篇定稿后我读了 Codex 的 TUI 流式渲染源码，发现“chunk 到达频率 ≠ 渲染频率“这道题还有第二种解法，与 BalancedEmitter 正好构成两个流派，补在这里。</p>
+<p>BalancedEmitter（以及第 2 篇的 16ms 合帧窗口）是<strong>时间窗</strong>流派：以固定节奏发射，窗口内到达的内容合并成一批。它均匀化的是到达侧——实现简单、几乎无状态，代价是突发流量下延迟随积压线性增长。</p>
+<p>Codex 是<strong>队列压力</strong>流派：节奏不变（commit tick 跑在约 8.33ms 的帧间隔上，即 120fps 上限），变的是每 tick 放行多少行。一共两档：Smooth 档每 tick 放行一行，保住打字机节奏；CatchUp 档一次清空队列。换挡依据只有两个标量——队列深度、最老一行的年龄（入队时打时间戳）：</p>
+<ul>
+<li>进入 CatchUp，满足其一即可：深度 ≥ 8 行，或最老行龄 ≥ 120ms；</li>
+<li>退出须同时满足：深度 ≤ 2 行且行龄 ≤ 40ms，并持续 250ms；</li>
+<li>退出后 250ms 冷却期内禁止再入；但严重积压（64 行或 300ms）豁免冷却。</li>
+</ul>
+<p>不对称是刻意的：进入用“或“、退出用“且“加持续窗口，全部动机是防换挡抖动。源码文件头自带一份症状导向的调参指南（“延迟出现得太晚就调低进入阈值；两档频繁互切就加大持续窗口”），把运维经验直接写进了注释。</p>
+<p>两个流派对同一笔账的付法不同。时间窗在到达侧做均匀化：窗口内的中间帧被丢弃，突发时延迟线性累积。队列压力在消费侧做自适应：低流量下每帧一行、节奏不断，突发下瞬时追平，延迟有上界；代价是要维护队列、时间戳和迟滞状态机。这个设计里我最喜欢的有两点：策略只吃两个标量，与内容、来源完全解耦——它不知道自己在给 Markdown 放行，更不知道什么是表格；动画队列排空即停表，空闲零 CPU 空转——和第 2 篇 RenderLoop 的“空闲即停“是同一个决定。顺带记下坐标：ForgeLoopTUI 的 16ms 合帧与 BalancedEmitter 都押在时间窗一侧，这个补记的意义是标出解空间的另一个极点。</p>
 <hr>
 <h2 id="四路线-b输出完毕再渲染"><a class="header" href="#四路线-b输出完毕再渲染">四、路线 B：输出完毕再渲染</a></h2>
 <p>流式期间不做任何渲染，只把 chunk 拼进 buffer。流式结束后一次性做完整 Markdown 渲染。</p>
@@ -379,7 +390,7 @@ tick 90: parse(3000字)+ build(3000字)+ layout(3000字)
 <h2 id="十下一篇"><a class="header" href="#十下一篇">十、下一篇</a></h2>
 <p>第 8 篇：权限 UX 与 Diff UX，Agent 真正的“主界面“。前几篇（TUI 三部曲和 GUI 两篇）都在讲“怎么渲染“，下一篇开始讲“渲染什么“：在 Agent 的所有输出中，哪两样东西最值得精心设计界面。</p>
 <hr>
-<p><em>本文分析基于 FlowDown 源码（pin MarkdownView 3.9.1）和 ForgeLoopTUI 项目，性能数据来自 FlowDown 流式卡顿分析笔记。</em></p>
+<p><em>本文分析基于 FlowDown 源码（pin MarkdownView 3.9.1）和 ForgeLoopTUI 项目，性能数据来自 FlowDown 流式卡顿分析笔记。§三补记基于 <a href="https://github.com/openai/codex">Codex</a> 本地源码 2026-10-04 的阅读：<code>codex-rs/tui/src/streaming/chunking.rs</code>（两档与迟滞参数）、<code>streaming/commit_tick.rs</code>、<code>tui.rs</code>（<code>TARGET_FRAME_INTERVAL</code>），快照 main <code>6b9826e3</code>（2026-09-09）。</em></p>
 
                     </main>
 

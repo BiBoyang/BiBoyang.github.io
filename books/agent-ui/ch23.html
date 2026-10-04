@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>20 · Checkpoint 的谎言 - 自顶向下拆 Agent：从界面到地基</title>
+        <title>23 · 一行状态文字的状态机 - 自顶向下拆 Agent：从界面到地基</title>
 
 
         <!-- Custom HTML head -->
@@ -177,48 +177,54 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="checkpoint-的谎言回滚按钮能兑现多少"><a class="header" href="#checkpoint-的谎言回滚按钮能兑现多少">Checkpoint 的谎言——回滚按钮能兑现多少</a></h1>
+                        <h1 id="一行状态文字的状态机"><a class="header" href="#一行状态文字的状态机">一行状态文字的状态机</a></h1>
 <blockquote>
-<p>系列第二十篇，界面本体轨，控制三部曲终章。事前的计划（19）、事中的审批（08）、事后的回滚（本篇），是同一根信任链条的三节。这一节的病情最隐蔽：回滚按钮长得像“世界可以重来“，实际的语义是“文件可以重来，就这些“。这篇拆它到底能兑现什么、假装能兑现什么，以及虚假的可撤销感如何让真正不可逆的操作变得更危险。</p>
+<p>系列第二十三篇，按阅读顺序插在第 12 篇之后。前面各篇讲的都是“大“问题：渲染所有权、双模、事件树展平。这一篇讲一个“小“东西——状态行，就是那行“正在工作“的提示：一个 spinner、一行 shimmer 文字、一句“Working (0s · esc to interrupt)“。每个人都写过 spinner，没人写过“什么时候显示什么、什么时候必须消失”。2026 年 10 月我逐行读完 Codex 的状态指示代码，发现这行文字背后是我在这个系列里见过的最密集的微观决策集合——它的难点不在动画，在防闪烁。</p>
 </blockquote>
 <hr>
-<h2 id="一按下-rewind-的那一秒"><a class="header" href="#一按下-rewind-的那一秒">一、按下 rewind 的那一秒</a></h2>
-<p>界面现象：<code>/rewind</code> 按下（或空输入行双击 Esc），菜单弹出，选中一个时间点，屏幕一闪——diff 消失，文件回到三分钟前。用户的体感是完整的：世界回去了。</p>
-<p>实际发生的事，按 Claude Code 官方文档的口径：会话里<strong>每个 prompt 对应一个 checkpoint</strong>，快照追踪的是 Write、Edit、NotebookEdit 这三个文件编辑工具造成的修改；回滚菜单给三个方向：代码和对话一起回、只回对话、只回代码。保留策略：最近 100 个快照（第三方实测补充：超过 30 天的跳过，子 agent 的编辑和软链文件不在追踪范围内）。</p>
-<p>把追踪范围读三遍：<strong>Write、Edit、NotebookEdit</strong>。也就是说，agent 通过 Bash 删掉的文件、<code>git push</code> 出去的历史、子 agent 的改动，都不在这个保护网里。有第三方教程干脆把 <code>/rewind</code> 定性为“surgical recovery tool“（外科手术式的恢复工具），提醒你别拿它当通用 undo。</p>
-<h2 id="二agent-的副作用早就溢出仓库了"><a class="header" href="#二agent-的副作用早就溢出仓库了">二、agent 的副作用早就溢出仓库了</a></h2>
-<p>第 8 篇的四层风险模型里有一列叫“可回滚性“：只读、可回滚写入、难回滚写入、外部副作用。这个维度早就预见到了今天的问题，但产品界面没有跟上：<strong>审批弹窗不区分“这个操作可以被 checkpoint 兜住“和“这个操作出了门就回不来“</strong>，回滚按钮也不标注自己的覆盖边界。</p>
-<p>把 checkpoint 罩不住的清单摆出来，问题的形状就清楚了：已经发出的邮件和消息、已经合并的 PR、云上已经创建或删除的资源、已经扣费的 API 调用、MCP 工具对第三方系统的每一次写入、bash 里 <code>rm</code> 掉的文件。这些操作和文件编辑共享同一颗“允许“按钮、共享同一种被保护的错觉，而它们恰恰是四层模型里最底下两层的东西。<strong>安全网盖住了轻的，漏下来的全是重的。</strong></p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch20-safety-net.svg" alt="安全网盖住了轻的，漏下来的全是重的"><span class="img-wrapper"><img src="assets/ch20-safety-net.svg" alt="安全网盖住了轻的，漏下来的全是重的"></span></label></p>
-<h2 id="三两种-rewind回滚的根本不是同一个世界"><a class="header" href="#三两种-rewind回滚的根本不是同一个世界">三、两种 rewind，回滚的根本不是同一个世界</a></h2>
-<p>一个对照来自本地源码。kwwk 的 rewind 是<strong>会话级</strong>的：<code>SessionStore</code> 里有专门的 <code>.rewind</code> 持久化操作类型，运行时还有 <code>.streamRewind</code> 事件，回滚的是对话本身（分支退回某个节点，transcript 整体重建，14 篇拆过的 <code>replaceCommitted</code> 负责把屏幕上的历史换掉）。Claude Code 的 rewind 主打<strong>文件级</strong>：对话可以继续走，代码回到过去。</p>
-<p>两家都叫 rewind，所指不可通约。理想里的“重来“应该是时间旅行：会话分支和文件快照一起回到同一个时间点，对话状态、代码状态、工具执行到一半的外部状态，三者对齐。现实是各家回一半，而第三样（外部世界的状态）没有任何人碰得到，因为它根本没有快照可回。</p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch20-two-rewinds.svg" alt="两种 rewind：会话级与文件级，回滚的根本不是同一个世界"><span class="img-wrapper"><img src="assets/ch20-two-rewinds.svg" alt="两种 rewind：会话级与文件级，回滚的根本不是同一个世界"></span></label></p>
-<p>这里能接上第 14 篇的一条纪律：“appendFrame 是永久历史的唯一通道”。渲染层靠单一事实通道保住历史的完整性，文件层靠 checkpoint 快照保住代码的可回退性，<strong>同一个原则（为可逆性显式建一份账）在两层各自落地，唯独外部副作用那层还没有人建账</strong>。也许根本建不了：邮件发出去就是发出去了，那层的“账“只能事先记（审批时告知），不能事后回。</p>
-<h2 id="四虚假的可撤销感和它的风险补偿"><a class="header" href="#四虚假的可撤销感和它的风险补偿">四、虚假的可撤销感，和它的风险补偿</a></h2>
-<p>人机交互里有一条老常识：有 undo 的系统里，用户胆子更大，这叫风险补偿。把它放到 2026 年的组合里看：auto mode 让审批变快（第 8 篇补记），checkpoint 让失败显得可救，两者叠加，用户对“允许“的心理门槛被系统性压低。</p>
-<p>问题在于兜底的网只盖住文件系统。用户以为的保障是“错了能回来“，实际的保障是“文件错了能回来“。那 20% 溢出仓库的操作（push、付费、外发、删资源）在网眼之外，而审批越轻快，它们发生的频率越高。<strong>checkpoint 的最大风险不是失效，是它让别的保护显得不需要。</strong></p>
-<p>三条设计主张，按成本排序：</p>
-<ol>
-<li><strong>能力边界如实标注。</strong> 回滚按钮旁边一句话：“本回滚不覆盖 bash 修改、子 agent 编辑与一切仓库外操作。”（CC 文档其实写了范围，UI 上没说。）第 8 篇四层模型的“难回滚“和“外部副作用“两层，界面上应该显式标注“此操作不受 rewind 保护“。</li>
-<li><strong>不可逆清单成为一等数据。</strong> 哪些工具的副作用出了仓库，应该是产品的显式清单而不是用户的知识，它同时是审批界面的输入（标红）和回滚界面的边界说明。</li>
-<li><strong>回滚覆盖度接进审批。</strong> 同一颗允许按钮，对“checkpoint 罩得住“的操作和罩不住的操作，视觉与文案应该不同，这不必新发明，第 8 篇的模型就差这最后一公里。</li>
-</ol>
-<h2 id="五收束三部曲合拢"><a class="header" href="#五收束三部曲合拢">五、收束：三部曲合拢</a></h2>
-<p>事前的计划、事中的审批、事后的回滚，三节链条的公共原理只有一句话：<strong>让用户在对的时间看到对的边界。</strong> 计划展示意图的边界（打算做什么），审批展示操作的边界（正要碰什么），回滚本应展示可逆性的边界（哪些错能改）。第三节现在是三者中最虚的，虚到用户普遍不知道它有边界。</p>
-<p>而比边界更深的那个问题，三部曲也只能触到边：模型说“做完了“，勾选框打了勾，回滚也用不上——<strong>声明不等于证据</strong>。计划可以被批准，操作可以被允许，错误可以被回滚，唯独“完成“本身还没有被验证。这是系列后面“回放与验收“要拆的最后一道缝：让“做完了“三个字带上证据。</p>
+<h2 id="一状态行的两种所有权"><a class="header" href="#一状态行的两种所有权">一、状态行的两种所有权</a></h2>
+<p>先把我自己的坐标摆出来。第 4 篇讲过 ForgeLoopTUI 的 <code>operationStart/operationEnd</code>：工具开始时追加一行“⎿ running…“，工具结束时用结果行<strong>替换</strong>它。状态行的所有权属于那个工具——它因事件而生、因事件而灭，生命周期和一次工具调用对齐。</p>
+<p>Codex 的状态指示器是另一个物种。它的所有权属于<strong>整个 turn</strong>：从回车到 turn 收敛，不管中间经过几次工具调用、几段流式输出，底部都是同一个指示器实例，显示的内容在变（“Thinking”/“Working“加一行细节），实例不变。它从不被“结果“替换，只会被流式内容<strong>压制</strong>，然后再被<strong>恢复</strong>。</p>
+<p>这个区别决定了后面一切。被替换的状态行不需要状态机——它的生灭就是事件本身；被压制和恢复的指示器需要——压制和恢复的时机全是边界条件。</p>
 <hr>
-<p><em>核查分层（截至 2026-09-28）：Claude Code checkpointing 基于官方文档（追踪 Write/Edit/NotebookEdit、三向回滚菜单、每 prompt 一快照、最近 100 个）与第三方实测（30 天上限、跳过子 agent 编辑与软链、bash 删除不可恢复、“surgical recovery tool“的定位建议）交叉；kwwk 为本地一手（<code>ae0771d</code>：<code>SessionStore.swift</code> 的 <code>.rewind</code> 操作类型、<code>AgentLoop.swift</code> 的 <code>.streamRewind</code> 事件）；风险补偿为 HCI 常识性论述。“三向回滚菜单“的第三项（code-only）以官方文档为准。Cursor 的 checkpoint 机制未核实，不引用。</em></p>
+<h2 id="二reasoning-不进-transcript"><a class="header" href="#二reasoning-不进-transcript">二、reasoning 不进 transcript</a></h2>
+<p>第一个反直觉的设计：reasoning（模型的推理流）<strong>不进历史区</strong>。</p>
+<p>Codex 的 ChatWidget 收到 reasoning delta 时只往一个 buffer 里累积，然后从 buffer 里提取第一个 <code>**加粗**</code> 片段，作为状态行的标题显示。模型在推理块里写的“我先分析用户的需求“这类句子，只有被加粗的那一句能登上状态行；整个推理过程在 transcript 里不留痕迹（推理块结束时只落一条摘要记录）。</p>
+<p>配套的降级同样是静默的：如果 buffer 里还没有出现加粗片段，就保持现有标题不动——不显示“正在提取标题“之类的中间态。还有一条优先级细则：如果正在等一个 unified exec 的结果，执行等待的状态优先于推理标题，后者直接让位。</p>
+<p>这套“从内容里蒸馏状态“的做法，把状态行从“系统播报“变成了“内容摘要“。它还顺带决定了终端窗口标题：Thinking 和 Working 两种状态会映射到窗口标题上，用户在 Dock 或窗口列表里就能分辨 agent 是在想还是在动手。状态行的信息层次因此是：窗口标题 &lt; 状态行标题 &lt; 状态行细节，同一状态的三档投影。</p>
+<hr>
+<h2 id="三防闪烁三闸门"><a class="header" href="#三防闪烁三闸门">三、防闪烁三闸门</a></h2>
+<p>现在到了正题。状态行和流式内容共享同一块屏幕底部区域，两者共存会闪——一帧里既有新放行的内容又有“正在工作“，视觉上就是抽搐。Codex 的解法是三道理性得近乎偏执的闸门。</p>
+<p><strong>闸门一：放行即隐藏。</strong> commit tick（第 7 篇补记讲的两档变速箱）每放行一批行进历史区，第一件事就是隐藏状态指示器。流式内容与状态行互斥，没有例外路径。</p>
+<p><strong>闸门二：恢复看空闲。</strong> 一段 commentary（前言性输出）结束时，不立刻把状态行放回来。先置一个“待恢复“标记，然后等三个条件同时成立：turn 还在运行、两个流式队列（回答流与计划流）全部 idle、标记置位——才恢复。缺任何一个条件就继续压着。没有这个闸门，“前言结束→工具即将开始“的间隙里状态行会闪现一下又被压掉，形成“显示→隐藏→显示“的三连闪。</p>
+<p><strong>闸门三：收尾看队列。</strong> 最终回答完成时，状态行是否恢复，取决于输入队列里有没有用户插进来的 steer 消息。如果用户已经插了话，turn 马上又要忙起来，恢复那一帧就是多余的闪烁——不恢复了，直接保持隐藏等下一波。</p>
+<p>三道闸门串起来的判断标准是同一个：<strong>状态行的每一次显隐都必须对应用户心智模型里的一次真实状态切换</strong>，任何“技术上正确但感知上是噪声“的显隐都要被闸门吃掉。</p>
+<hr>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch23-status-gates.svg" alt="状态行的防闪烁三闸门"><span class="img-wrapper"><img src="assets/ch23-status-gates.svg" alt="状态行的防闪烁三闸门"></span></label></p>
+<h2 id="四中断偏序另一条隐藏的状态机"><a class="header" href="#四中断偏序另一条隐藏的状态机">四、中断偏序：另一条隐藏的状态机</a></h2>
+<p>还有一个相邻机制值得在这里记一笔。流式写入进行中，ExecBegin/ExecEnd 这类生命周期事件不允许立刻上屏——它们先进一个 FIFO 队列延后，等流式写入的空窗再处理（<code>defer_or_handle</code>）。</p>
+<p>理由和防闪烁同源：状态区与流内容如果交错落笔，两者的时间线都会乱。生命周期事件是<strong>状态</strong>，流式内容是<strong>正文</strong>，正文正在流动时，状态必须排队。这等于承认了一个调度原则：底部状态区是单写的，两个写者之间用偏序关系串行化，而不是靠运气。</p>
+<hr>
+<h2 id="五动画是自驱动的"><a class="header" href="#五动画是自驱动的">五、动画是自驱动的</a></h2>
+<p>最后一块拼图是帧从哪来。spinner 不需要等内容事件，它在自己的渲染里通过 <code>schedule_frame_in</code> 主动预约下一帧（有动画时约 32ms 后，只有计时器时 1 秒后）；shimmer 那道扫过文字的渐变高光同理，是按已流逝时间计算的纯函数。第 7 篇补记讲的全局帧调度只管内容放行，状态行动画自请帧，两条帧请求线在同一个渲染循环里合流。</p>
+<p>这也是状态行与第 12 篇提过的 spinner 细节的对照点：Kimi 的差分渲染器把“只有一行变化（例如 spinner 动画）“列为最小化重绘的显式动机。状态行是 TUI 里唯一<strong>合法</strong>的高频自更新区域，所有为它服务的机制——自请帧、单行重绘、闸门防闪——本质上都在回答同一个问题：怎样让唯一会动的东西安分地动。</p>
+<hr>
+<h2 id="六收束"><a class="header" href="#六收束">六、收束</a></h2>
+<p>写 spinner 只要半小时，写状态行的状态机要付出的代价全在边界上：放行与恢复的互斥、显隐的时机、多写者的偏序、动画的帧来源。这行文字的复杂度不在它显示什么，在于它什么时候<strong>不</strong>该显示。</p>
+<p>这也是我读完 Codex 这部分源码后修正的一个直觉。我原以为状态指示是“锦上添花“层，属于打磨；看完三闸门才意识到它是 turn 生命周期在用户侧的投影——turn 的每个相位迁移（推理、输出、工具、等待输入）都必须在这行文字上有唯一确定的显示状态，不多不少。<strong>一帧里出现两个状态，或一个状态出现两帧，都是 bug。</strong> 这个标准比一般 UI 组件苛刻得多，而它是 agent TUI 的日常。</p>
+<p>下一篇讲测试：这样的状态机、连同前几篇讲的所有渲染机制，怎么被钉在回归测试里——TUI 的输出是带状态的字节流，断言它需要的不是一两个技巧，是一整套基建。</p>
+<hr>
+<p><em>本文基于 <a href="https://github.com/openai/codex">Codex</a> 本地源码 2026-10-04 的逐行阅读：<code>codex-rs/tui/src/chatwidget/streaming.rs</code>（reasoning 标题提取、防闪烁三闸门、<code>defer_or_handle</code>）、<code>status_indicator_widget.rs</code>（<code>schedule_frame_in</code> 自请帧）、<code>shimmer.rs</code>（渐变高光）、<code>streaming/commit_tick.rs</code>。对照部分基于 <a href="https://github.com/BiBoyang/ForgeLoopTUI">ForgeLoopTUI</a> v1.2.0 的 <code>operationStart/End</code> 机制（见第 4 篇）。快照 main <code>6b9826e3</code>（2026-09-09）；行号可能随上游漂移，机制名稳定。</em></p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="ch19.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="ch12.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="prologue.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="ch24.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -228,11 +234,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="ch19.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="ch12.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="prologue.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="ch24.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>
