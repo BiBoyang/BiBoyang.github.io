@@ -6,10 +6,6 @@ categories: [AI]
 tags: [AI, Agent]
 ---
 
-> **系列 · 我的评测工具链**（持续更新）· 第 1 篇
->
-> 全部篇目、阅读路径与系列沉淀的纪律见 [系列导读](/eval-series/)；下一篇：[给 skill 建门禁](/posts/给-skill-建门禁-一天里的三种沉默失败-一次红线写法实证-和它抓到的上游-bug-又一只/)
-
 我开始做 AI 相关 App，从 chatbot 到 agent，一年多了，攒了些经验。这篇分享我在 trace 和 eval 上的做法与观点。
 
 # 开篇

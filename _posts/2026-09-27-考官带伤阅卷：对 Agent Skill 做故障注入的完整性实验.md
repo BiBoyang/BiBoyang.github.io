@@ -6,10 +6,6 @@ categories: [AI]
 tags: [AI, Agent]
 ---
 
-> **系列 · 我的评测工具链**（持续更新）· 第 7 篇
->
-> 全部篇目、阅读路径与系列沉淀的纪律见 [系列导读](/eval-series/)；上一篇：[给流式协议造故障](/posts/给流式协议造故障-三协议-mock-once-注入-字节级送达证明-和-strings-阴性不等于代码不存在/)
-
 > 给 Agent Skill 做故障注入：截断主文件、删附件、清空 frontmatter，看宿主 agent 能不能发现手里的技能包是残缺的。结论一句话——检出与否不取决于伤有多重，取决于伤是否挡在 agent 要走的路上。实验仓库开源在 [skill-quake](https://github.com/BiBoyang/skill-quake)。
 
 # 引子：从"流"到"文件"
