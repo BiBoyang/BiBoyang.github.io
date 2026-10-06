@@ -36,7 +36,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-02596293.js";
+            window.path_to_searchindex_js = "searchindex-2dc508d0.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-b8944928.js"></script>
@@ -840,7 +840,6 @@ if stableSource.count &gt; maxStableSourceChars { reset() }
 <p>稳定缓存不能无限增长。一次长对话的流式输出可能超过几万个字符。65K 是折中值：超出后 reset，下一帧把全部内容重新渲染一次，重新开始缓存。</p>
 <hr>
 <h2 id="四流式期间到底要不要渲染-markdown"><a class="header" href="#四流式期间到底要不要渲染-markdown">四、流式期间到底要不要渲染 Markdown</a></h2>
-<p>第 2 篇和第 7 篇（GUI 部分）都会涉及这个问题，值得把账算清楚。</p>
 <p>Agent 流式输出时，每秒几十个 token 到达。即使有 Stable Prefix Cache，每次渲染仍然需要：</p>
 <ol>
 <li>跑 <code>stableAdvance</code>：扫描候选文本，检测是否是流式表格（可能 O(n) 回退扫描）</li>
