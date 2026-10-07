@@ -36,10 +36,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-2dc508d0.js";
+            window.path_to_searchindex_js = "searchindex-d843412d.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-b8944928.js"></script>
+        <script src="toc-06183840.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -182,7 +182,7 @@
 <p>前阵子看到有人在讨论 Agent 的 TUI 和 GUI，两派吵得挺热闹。</p>
 <p>我刚好两边都做过算是比较深入的研究,用 swift 从零开始写过一个 TUI 渲染引擎,也写过 iOS 上的 Agent GUI 客户端.在创作和优化性能的过程中,记录下来不少的笔记和代码,以及各种踩坑和思考,我水平有限,最多只能算是抛砖引玉了.</p>
 <p>写这组文章之前，我翻了一遍自己攒下来的东西：项目源码、调试笔记、性能分析记录、读过的博客和开源库的源码、知乎上的相关讨论。散在好几个文件夹里，有些是完整的文档，有些只是当时随手记的片段。觉得这些东西放着也是放着，不如整理出来。</p>
-<p>于是重新梳理了一遍，缺的地方补研究，浅的地方往下挖。前前后后写了二十几篇，未来可能还会更多，想到哪就写到哪。从 ANSI 转义序列到多端架构，从 Markdown 流式渲染的 O(n²) 陷阱到权限和 diff 的 UX 设计，再往下到渲染的所有权、上下文账本、记忆与协议——从界面一路挖到地基。</p>
+<p>于是重新梳理了一遍，缺的地方补研究，浅的地方往下挖。前前后后写了二十几篇，未来可能还会更多，想到哪就写到哪。从 ANSI 转义序列到多端架构，从 Markdown 流式渲染的 O(n²) 陷阱到权限和 diff 的 UX 设计，再往下到渲染的所有权、上下文账本、记忆与协议——从界面一路挖到地基，再往下是检验：建起来之后，怎么证明它真的在工作。全书按方向分部分，方向挖到哪，部分就长到哪。</p>
 <p>不是什么权威结论，就是一个人同时踩过 TUI 和 GUI 两条船之后，把踩过的坑和想清楚的事记下来。如果恰好对你有用，那就最好了。</p>
 <hr>
 <blockquote>
@@ -2779,6 +2779,128 @@ if (firstChanged &lt; prevViewportTop) {
 <hr>
 <p><em>核查分层（截至 2026-09-28）：Claude Code checkpointing 基于官方文档（追踪 Write/Edit/NotebookEdit、三向回滚菜单、每 prompt 一快照、最近 100 个）与第三方实测（30 天上限、跳过子 agent 编辑与软链、bash 删除不可恢复、“surgical recovery tool“的定位建议）交叉；kwwk 为本地一手（<code>ae0771d</code>：<code>SessionStore.swift</code> 的 <code>.rewind</code> 操作类型、<code>AgentLoop.swift</code> 的 <code>.streamRewind</code> 事件）；风险补偿为 HCI 常识性论述。“三向回滚菜单“的第三项（code-only）以官方文档为准。Cursor 的 checkpoint 机制未核实，不引用。</em></p>
 <div style="break-before: page; page-break-before: always;"></div>
+<h1 id="第四条边界当主语是引擎"><a class="header" href="#第四条边界当主语是引擎">第四条边界——当主语是引擎</a></h1>
+<blockquote>
+<p>胶水层系列第一篇。前面二十四篇拆的是界面的本体：像素、投影与账本；从这里开始往下走一层，到界面与引擎之间的那条缝。这条缝上，行业已经给三类对话者各造了一套协议，主语各不相同；这一篇从内侧读 Codex，看一个自己养界面的引擎怎么回答同一个问题——它的答案方向性和那三套都不一样：<strong>主语是引擎</strong>。而方向性一旦反过来，界面承诺的兑现方式全部跟着改写：审批怎么问、历史归谁管、版本怎么握手、同进程走不走捷径、拓扑变了要不要告诉你。本卷的准入线：只写这条缝上决定某个界面承诺真假的机制。</p>
+</blockquote>
+<hr>
+<h2 id="一三条国境线都没有覆盖的那个对话者"><a class="header" href="#一三条国境线都没有覆盖的那个对话者">一、三条国境线都没有覆盖的那个对话者</a></h2>
+<p>先给一张十秒钟的地图。一个 agent 今天要和三类对话者说话，行业为每条边界造了一套协议：跟工具说话用 MCP，主语是 agent，它去征用外界的能力；跟编辑器说话用 ACP，主语是编辑器，它去征用一个 agent；跟浏览器前端说话用 AG-UI，前端是消费者，它订阅 agent 的事件流。这三条国境线各自怎么划、各欠谁的债，基建第 3 篇会逐条清算——这一篇只需要它们的朝向。因为 Codex 的 app-server 协议不在这张地图上。</p>
+<p>它当然不是 MCP——能力方向反了，是引擎被界面征用，不是引擎去征用工具。它有点像 ACP 的镜像：ACP 里编辑器把 agent 当子进程拉起，编辑器是主语；Codex 的 app-server 里<strong>引擎把界面当客户端服务</strong>，引擎是 server，TUI、桌面端、IDE、手机、连 UI 都没有的 <code>codex exec</code>，全是 client。三条边界里主语最强势的是“编辑器征用 agent“，这里是“agent 征用一切界面“。</p>
+<p>方向反过来，债务清单跟着换。编辑器当主语时，最难的问题是“agent 的权限请求怎么嵌进我的 UI“；引擎当主语时，最难的问题变成：<strong>一个 server，怎么向自己的 client 开口要东西</strong>。审批不是界面弹个窗那么简单——是 server 在 turn 跑到一半时，向 client 发一条反向 request，挂起执行，等一个 oneshot 回填决定。Codex 把这个“反向通道“做成了一个枚举：执行审批、文件变更审批、向用户提问、MCP elicitation、权限申请、甚至宿主代管 token 时的刷新请求，全部走同一类 server→client request。“宿主怎么反问用户“这个 ACP 边界上最难的设计点，在引擎当主语的世界里不是一个 UI 问题，是<strong>协议里的一类消息</strong>。</p>
+<p>server 身份带来的第二件事是<strong>历史的归属</strong>。编辑器当主语时，会话历史跟着编辑器的项目走；引擎当 server 之后，thread 的历史归引擎持久：append-only 的 rollout 文件是事实源，客户端看到的 turn/item 视图是投影器的产物——<code>thread_history.rs</code>，一个 5024 行的文件，把 rollout 逐行译成增量 ChangeSet。全量水合已经被协议注释判了死刑（“Full-history hydration is deprecated for paginated threads”），往回翻页走 opaque cursor。界面部分第 5 篇的 Event Sourcing、第 9 篇的统一 Event Log，在这里不是主张，是一个每天被好几种客户端消费的真实部件；“换一台设备接着聊“是出厂设置，因为历史从来不在任何一台设备上。记住这个承诺，§四会回来撕它。</p>
+<p>server 身份还带来一件 ACP/AG-UI 都没有的事：<strong>多 client 共存，且版本不一</strong>。daemon 让一个引擎进程同时伺候多个客户端——桌面端走 alpha 发布线落后五个 minor 这种事（本机实证：桌面 0.155.0-alpha、CLI 0.160.0），在“编辑器养 agent“的世界里几乎不存在，在“引擎养界面“的世界里是日常。于是每条连接建立时都要重新对账一次能力，这就是下一节的握手。</p>
+<h2 id="二协议里没有版本号"><a class="header" href="#二协议里没有版本号">二、协议里没有版本号</a></h2>
+<p>先给结论再给证据：Codex 的 initialize 握手有 clientInfo（名字、版本）和 capabilities（实验性 API opt-in、通知 opt-out、MCP 扩展声明），<strong>唯独没有 protocolVersion 字段</strong>。全文 grep 无结果，不是藏得深，是没有。</p>
+<p>它用什么替代数字协商？三件套：</p>
+<ol>
+<li><strong>加法演化</strong>：serde 忽略未知字段 + <code>#[serde(default)]</code>，新方法新字段旧客户端自然跳过；</li>
+<li><strong>opt-in 门</strong>：不稳定的表面必须客户端显式举手（capabilities 里的 experimental 标志）才启用，服务端逐请求用 trait 查表拦截——“实验性“不是文档约定，是类型系统属性；</li>
+<li><strong>目录冻结</strong>：工程纪律明文“v1 不再加新 API 面，新 API 全进 v2“。版本化不靠数字谈判，靠<strong>老目录封版、新目录演进</strong>。</li>
+</ol>
+<p>协议是会咬人的：依赖它承诺的字段，一次破坏性修订说没就没。对这种恐惧，基建第 1 篇里 kimi 的防御是“seq 字段全可选“，Codex 在这里的防御是加法 + 举手 + 封版——同一类恐惧，两种解。数字协商承诺的是“我支持 1.x 到 2.y 的全序“，加法演化承诺的是更弱但更诚实的两句话：旧消息永远可读，新能力你自己举手。</p>
+<p>对界面，这意味着承诺的形状：<strong>旧客户端的可见世界被握手时刻永久定格</strong>，它不会因为服务端升级而突然报错，也不会突然多出不认识的能力。反过来，服务端永远不能假定新客户端存在——能力永远以客户端声明为准。界面承诺的边界，在握手那几百毫秒里就签完了。</p>
+<h2 id="三同进程也过协议"><a class="header" href="#三同进程也过协议">三、同进程，也过协议</a></h2>
+<p>这一节是界面部分第 9 篇四个统一（Runtime、Event Log、Permission Engine、Workspace Model）在 Codex 里兑现得最狠的一条。TUI 和引擎跑在同一个进程里，它们之间仍然走 JSON-RPC——进程内 channel 传输的只是换了信封的同一套消息，注释明说不引入第二套响应契约。连“连 UI 都没有“的 exec 模式，也是这套协议的客户端。</p>
+<p>初看是洁癖，再想是纪律：<strong>协议一旦为“进程边界“破例，就会为“反正只是内部用“破第二次</strong>。协议一等公民的直接收益是我们验证过的实证：core 侧删掉了 <code>Op::UserTurn</code>、换成 <code>TurnInput</code>/<code>start_or_steer_turn</code> 的破坏性重构，TUI 一行没改——它对 core 内部类型的引用为零。四个统一里“统一 Runtime、统一 Event Log“是主张时人人点头；只有当 UI 连进程内的捷径都不走时，它才从主张变成事实。</p>
+<p>还有一句值得单独记住的评注方向：TUI 完全客户端化，保证了<strong>不会出现“内部 API 比公开协议强“的腐化</strong>——界面永远是能力的最小公分母，引擎想长新能力，先扩协议。这条纪律的代价是同进程还要序列化一次的样板税，收益是任何新端接入零特权；税和收益怎么配平，是整部基建卷还会反复拨动的算盘。</p>
+<h2 id="四进程形态学三种连接和一次静默的降级"><a class="header" href="#四进程形态学三种连接和一次静默的降级">四、进程形态学：三种连接，和一次静默的降级</a></h2>
+<p>引擎怎么被界面“到达“，Codex 给了三种形态：嵌入式（in-process，随客户端拉起）、本地 daemon（走 Unix socket 连常驻实例）、远端（WebSocket）。同一个引擎，三种拓扑，客户端代码几乎无感——这是协议选型的复利。</p>
+<p>但 2026-10 读源码时我停在一个降级分支上（<code>tui/src/lib.rs:518-521</code>，已逐行亲验）：TUI 优先连本地 daemon，<strong>连不上时静默降级为嵌入式</strong>——只留一行 debug 级日志，顺手还把 state_db 句柄重初始化了。远端连接失败则直接报错上抛，只有本地 daemon 这一档降级。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/glue01-topology.svg" alt="同一个引擎的三种到达方式，和 LocalDaemon 连不上时的静默退回"><span class="img-wrapper"><img src="assets/glue01-topology.svg" alt="同一个引擎的三种到达方式，和 LocalDaemon 连不上时的静默退回"></span></label></p>
+<p>这不是 bug，是刻意的优雅降级，而且设计得不算坏：daemon 没起来就自己跑一个，用户无感。但它撕毁了一个没被写进任何文档的界面承诺：<strong>“我看到的线程列表是完整的”</strong>。state_db 被重初始化意味着线程索引可能落在与 daemon 不同的存储上——§一那句“历史归引擎持久“在这里漏了气：用户启动 TUI，看到自己的历史少了一块，界面一切正常，动画照转。基建第 1 篇会给断线时刻的用户三问：还连着吗、我漏了什么、从哪继续；这一档降级把其中“我漏了什么“的答案悄悄换成了错误答案，而界面没有能力诚实。</p>
+<p>所以这篇要记的胶水层判断是：<strong>降级的代价不在降级本身，在降级是静默的</strong>。拓扑切换是界面契约的一部分——只要界面承诺的内容依赖“连的是谁“，连接形态的变化就必须至少有信息级的可见性（一行状态、一个脚注、一条警告），不能停在 debug 日志里。界面的每一个承诺，往下挖两层会碰到一条协议的条款——这句话会在基建篇反复出现；这里先补一条：往下挖三层，还会碰到一个 try/catch 分支。</p>
+<h2 id="五发布拓扑决定仪式在哪里"><a class="header" href="#五发布拓扑决定仪式在哪里">五、发布拓扑决定仪式在哪里</a></h2>
+<p>继续往内核看一层，有一个漂亮的对照实验。全代码库里唯一不用协议仪式、改用“同构建强校验“的 IPC，是 voice-host——那个替引擎拿麦克风的 helper 进程。它带一个 <code>--build-commit</code> 参数，父进程拉起时核对构建 commit，不匹配就拒绝；通信走的是私有帧协议，没有握手、没有 capabilities。</p>
+<p>为什么这里可以这么“粗暴“？因为它是全库唯一<strong>和引擎同生共死</strong>的进程：同一个二进制包发布、同一个版本号起落，两端永远不可能错位。而 app-server 那头，0.155 的桌面端撞上 0.160 的 CLI 是真实日常，所以握手、capabilities、加法演化一个都不能少。</p>
+<p>一句话：**协商仪式的多少，由两端发布关系的松紧决定，不由洁癖决定。**这反过来给界面一个判断工具：当某个能力承诺“永远随 app 一起更新“，它可以走 voice-host 式的紧耦合（更省、更快）；当它承诺“独立于 UI 演进“，它就必须付协议税。耦合不是罪，错配的耦合才是——用 release train 的关系去定接缝的强度；后面基建第 1 篇用事实源的位置去定重连语义，是同一把尺子的第二次使用。</p>
+<h2 id="六能力的方向手外挂缰绳内置"><a class="header" href="#六能力的方向手外挂缰绳内置">六、能力的方向：手外挂，缰绳内置</a></h2>
+<p>最后一个内侧观察，关于新能力怎么进引擎。以 computer use 为例：截屏、点击、拖拽的实现<strong>不在开源引擎里</strong>——它们经一个叫 <code>cua_repl</code> 的 MCP server 从宿主（桌面端 JS 侧）进入，引擎核心不认识鼠标。但围绕它的治理是全开源的：功能门由服务端 requirements 控制、每个模型声明自己对 computer_use/shell/file_changes 等动作的审批覆盖、操作规范是模型目录下发的 Markdown、回合中途换模型不允许降低审查水位。</p>
+<p>三个问题三个归属：**能做什么由宿主决定，允许做什么由引擎决定，怎么做由模型目录决定。**界面在这套结构里拿到的承诺也因此分层：权限弹窗里显示什么、要不要拦，是引擎和策略面定死的；而弹窗背后那个动作具体怎么执行，界面不需要知道，也不必信任——这正是“协议给说什么、不给怎么画“在能力层的版本。</p>
+<p>对想自建 glue 的人，这条比任何机制都可迁移：<strong>核心不长手，手永远可替换；但缰绳必须长在核心身上。</strong></p>
+<h2 id="七收束界面承诺的胶水层清单"><a class="header" href="#七收束界面承诺的胶水层清单">七、收束：界面承诺的胶水层清单</a></h2>
+<p>把本篇的账合到最后一张表里。基建篇会反复验证两句话：承诺的真假取决于事实源在哪一层，承诺往下挖两层碰到协议条款；本篇从引擎内侧补上第三步——<strong>承诺的兑现还要穿过一个方向选择、一次握手、一个降级分支</strong>：</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>界面承诺</th><th>胶水层里兑现它的机制</th></tr>
+</thead>
+<tbody>
+<tr><td>我能看到你的线程</td><td>引擎当 server，rollout 是事实源、客户端视图是投影（§一）；但拓扑静默降级会撕毁它（§四）</td></tr>
+<tr><td>审批弹窗问的都是该问的</td><td>审批是协议里的一类反向 request，弹窗内容来自模型策略面（§一、§六）</td></tr>
+<tr><td>旧版本客户端不会被升级弄坏</td><td>加法演化 + capabilities 握手 + v1 冻结（§二）</td></tr>
+<tr><td>UI 永远拿到完整能力</td><td>同进程也过协议，协议一等公民，没有“内部 API 更强“的腐化（§三）</td></tr>
+<tr><td>能力可以独立演进</td><td>手外挂、缰绳内置，cua_repl 式的能力通道（§六）</td></tr>
+</tbody>
+</table>
+</div>
+<p>而所有这些机制的成本，都由一个朴素的问题定价：这两端，是不是独立发布？是，就付协议税；不是，就允许紧耦合。胶水层的设计，说到底是发布关系的会计。</p>
+<p>这条缝先讲到这里。再往下走一层，承诺要穿过的东西从进程边界换成网络和操作系统：连接会断、端会被操作系统杀掉、协议对面坐着别家的主语——那是基建三篇的事，从《没报错，就代表输出没问题吗》那个问句开场。</p>
+<hr>
+<p><em>事实核查分层（截至 2026-10-07）：本文 Codex 事实基于 rust-v0.154.0（HEAD 6b9826e3a，2026-09-09 快照）亲读——initialize 握手结构（app-server-protocol/src/protocol/v1.rs）、experimental 门控（message_processor.rs:912-920）、v1 冻结纪律（仓库 AGENTS.md:269）、TUI 内嵌走 JSON-RPC envelope（app-server/src/in_process.rs:22）、历史投影与分页（app-server-protocol/src/protocol/thread_history.rs、thread_history_projection.rs:1-3、v2/thread.rs:400,450）、静默降级分支（tui/src/lib.rs:518-521，逐行亲验）、voice-host 同构建校验（voice-host/src/main.rs:48 的 –build-commit）、computer use 治理面（features/src/lib.rs:271、protocol/src/openai_models.rs:402、core/src/session/step_activation.rs:110）与 cua_repl 通道（protocol/src/mcp.rs:38）。桌面 0.155 vs CLI 0.160 的版本错位为本机实证（2026-10-03）。openai/codex 官方博文《Unlocking the Codex harness: how we built the App Server》（2026-02）为“协议起源“的一手旁证。</em></p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="把协议变成可断言的承诺需要证人"><a class="header" href="#把协议变成可断言的承诺需要证人">把协议变成可断言的——承诺需要证人</a></h1>
+<blockquote>
+<p>胶水层系列第二篇。上一篇拆开了界面与引擎之间那道缝：主语是引擎，审批是反向 request，历史归引擎持久，同进程也过协议。但上一篇的结尾留下了一处撕口——一个静默的降级分支，把“我看到的线程列表是完整的“这句没人写下来的承诺撕毁了，而界面一切正常。这一篇问的是后半句：<strong>这些承诺，怎么变成每天都要过的一道关</strong>。评测卷的四问地图上标着六层被测对象，“协议“那一层，在这里领走它的断言清单。</p>
+</blockquote>
+<hr>
+<h2 id="一承诺需要证人"><a class="header" href="#一承诺需要证人">一、承诺需要证人</a></h2>
+<p>先把上一篇的病例在桌上重新摆开，只摆三十秒。TUI 启动时优先连本地 daemon，连不上就退回进程内嵌——<code>tui/src/lib.rs:518-521</code>，一行 debug 级日志，顺手把 state_db 句柄重新初始化。用户看到的是什么？动画照转，界面如常，只是历史里少了一块，而没有任何东西告诉他少了一块。</p>
+<p>这个分支值得再停一次，不是因为它错——上一篇已经判过，这是刻意的优雅降级——而是因为它活得实在太安稳了。想一想它活到被发现的路径：不是某个测试红了，不是某个用户报到对的渠道，而是一个人读源码时在降级分支上停了下来。一个每天可能被成千上万人踩过去的分支，唯一的目击者是读者。它为什么能活这么久？</p>
+<p>答案简单得有点难堪：<strong>没有任何一条断言看着它。</strong></p>
+<p>工程师当然测过降级。但测的问题是“daemon 没起来，TUI 还能不能用“——能用，绿灯。没有人测“daemon 没起来，用户知不知道“，更没有测“切换之后，昨天的线程还在不在列表里“。后两个问题从来不是测试的对象，所以它们答错了也不算事故，只是某个下午某个读者的意外发现。</p>
+<p>这里要立本章的骨架。一个界面承诺的生命，其实经过三层：</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/glue02-promise-assertion.svg" alt="承诺—条款—断言：左列界面承诺，中列协议条款，右列每日断言；静默降级那条的断言格是空的，标注“承诺第一次被检验发生在生产“"><span class="img-wrapper"><img src="assets/glue02-promise-assertion.svg" alt="承诺—条款—断言：左列界面承诺，中列协议条款，右列每日断言；静默降级那条的断言格是空的，标注“承诺第一次被检验发生在生产“"></span></label></p>
+<p>第一层是<strong>承诺</strong>，用户信的那句话：“我看到的线程列表是完整的。“第二层是<strong>条款</strong>，协议里决定承诺真假的机制——state_db 归谁、降级走哪条分支，上一篇挖的就是这一层。第三层是<strong>断言</strong>，承诺的证人：一条每天运行、红了会被人看见的检查。上一篇走完了从承诺到条款的挖掘，这一篇走最后一步——<strong>每条条款必须对应一条每天出庭的断言，否则承诺只是愿望。</strong></p>
+<p>注意证人的定义。debug 日志不是证人：它只在有人翻卷宗时才开口，而翻卷宗永远发生在事故之后。文档也不是证人：它记录的是意图，不是现状。证人只有一个特征——<strong>每天出庭，且缺席会被发现</strong>。在工程世界里，满足这个定义的东西只有一种：跑在 CI 里、红了会拦下发布的测试。断言缺席的承诺不是被守住的，是没被检验的；它的第一次检验发生在生产，或者某个读源码的下午。</p>
+<p>这条路和全书走过的两段路是同一条。界面部分第 24 篇把渲染变成可断言的：ANSI 序列不再是“看起来对就行“，而是可以逐字节比对的快照。评测卷开篇把行为变成可断言的：没报错只是开始，绿灯会问两种谎。这一篇把那道缝变成可断言的——评测卷那条统一定律在这里有它最具体的形态：**daemon 世界和 embedded 世界产出同一个“一切正常“，你的观测对它们的差异就是盲的。**后面的每一节，都是给这类“两个世界、一个绿灯“的格子配一名证人。</p>
+<h2 id="二降级必须有人看见"><a class="header" href="#二降级必须有人看见">二、降级必须有人看见</a></h2>
+<p>把所有可以配的证人排一排，密度最高、造价最低的那一组，在降级路径上。所以本章不客气，主战场直接摆在这里。</p>
+<p>先把承诺的正面写出来：**拓扑变了，你会知道。**这句话有三层含义，对应三种切换。连接形态的切换——你连的是 daemon 还是内嵌引擎；存储归属的切换——你的历史落在哪个 state_db 里；安全等级的切换——审批通道、沙箱边界有没有随拓扑一起变。三种切换有一个共同义务：至少留下信息级的可见性，一行状态、一个脚注、一条警告，形式不拘，但不能停在 debug 日志里。</p>
+<p>先回答那个最自然的反问：静默降级为什么这么常见？因为它从来不是断言的对象。工程师测“降级后还能不能用“——这是功能测试，测的是世界 B 能不能运转；没有人测“从世界 A 切到世界 B 时，有没有人被告知“——这是承诺测试，测的是切换这个动作本身。前者每个项目都有，后者几乎没人写。**可见性不在任何 checklist 上，所以它在每个 try/catch 里都第一个被牺牲。**把它写进断言，它才从品味变成契约——这就是本节要做的事。</p>
+<p>方法是故障注入，三件套，按阴险程度排序。</p>
+<p>第一件，<strong>杀掉对端</strong>。最直白的注入：把 daemon 杀掉，启动 TUI，然后做两条断言。第一条：存在用户可见的信号——不是日志文件里的一行，是界面里的。第二条：线程列表与 daemon 存储对账一致——降级之后，昨天的线程今天还在。拿上一篇的病例当预期，今天的 Codex 会在第二条上红：state_db 被重初始化，对账直接对不上。这两条断言都不复杂，复杂的是意识到它们该存在——<strong>杀一个进程，就知道你的界面有没有能力诚实</strong>，这是全章性价比最高的实验。</p>
+<p>第二件，<strong>病态对端</strong>。“连不上“是善良的故障，它干脆利落；真正阴险的是“连得上，但不对劲”——握手卡住、连接永不关闭、只发 keepalive 不发数据。这三种对端在真实网络里比比皆是，而它们恰好是“静默“的天然培养基：连接活着，进展死了，界面该说什么？Codex 自己的测试基建里已经有全套凶器——<code>WebSocketTestServer</code> 能伪造握手卡住、永不关闭的对端，<code>StreamingSseServer</code> 能精确控制第几个 chunk 在某个事件之后才发。这些武器本来指着引擎与模型的边界，把它们转过来指向前端与引擎的边界，问题清单立刻变长：握手卡住时 UI 是转圈还是报错？转多久才承认？对端只发心跳不发进展时，界面显示的是“正在工作“还是“等待响应“？——<strong>keepalive 是传输层的心跳，不是进展层的心跳；把前者当后者展示，是另一种静默</strong>，而且比断连的静默更难被发现，因为它看起来那么像活着。</p>
+<p>第三件，<strong>状态可达性</strong>。降级的断言不能只测新世界的功能，必须测旧世界的遗产：切换发生之后，旧存储里的数据还读不读得到。注意断言的方向——不是“新的 state_db 能写“（这永远绿），而是“昨天建的线程今天在列表里“。状态归属的切换如果只是换了一个空房子，功能测试一条都不会红，只有对账能抓住它。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/glue02-fault-injection.svg" alt="故障注入三件套：杀掉对端 / 病态对端（握手卡住、永不关闭、只发 keepalive）/ 状态可达性对账，各配一个会漏检的静默故障形态"><span class="img-wrapper"><img src="assets/glue02-fault-injection.svg" alt="故障注入三件套：杀掉对端 / 病态对端（握手卡住、永不关闭、只发 keepalive）/ 状态可达性对账，各配一个会漏检的静默故障形态"></span></label></p>
+<p>三件套之外还有一条贯穿的要求：<strong>故障归类必须诚实</strong>。连接死了、对端静默、用户主动打断，是三个不同的世界，界面的文案必须让它们产出三个不同的句子，不能共享一句“出了点问题“。这正是评测卷说的分叉观测在协议层的形态——把“失败了“这一个布尔，拆成“怎么失败的“几次分别记录，分歧日不用再等有人翻日志。</p>
+<p>最后回答本节开头那个排序的理由。六个维度里把降级放在第一位，不是因为它最重要，是因为它的<strong>炸弹密度与注入成本之比</strong>最高：杀掉一个进程只要一条命令，而静默降级撕毁的是“历史完整“这种地基级承诺。评测卷里，静默降级只是六条绕行通道之一；在这一篇，它是整个维度——因为协议层的降级不只绕过检查，它绕过的是用户知情本身。</p>
+<h2 id="三三个可观察面证人从哪里取证"><a class="header" href="#三三个可观察面证人从哪里取证">三、三个可观察面：证人从哪里取证</a></h2>
+<p>降级那节已经把证人派上了庭，现在退回来回答一个更基础的问题：证人的证词从哪来？胶水层的断言，原料只有三样——<strong>出站请求日志、事件流、副作用</strong>。三样加起来，是 agent 行为的全部可观察面，也是证据采集的最小集：多一样不必，少一样不够。</p>
+<p>请求日志是最诚实的一样。引擎向模型、向 daemon、向任何对端发出的每个请求都是白纸黑字，而 Codex 测试基建最重要的一次转身，就是把捕获层变成断言层：自定义的 wiremock matcher 在匹配每个请求时，顺带做一次协议不变量检查——call 和 output 必须配对，孤儿 output 直接 panic。妙处在于<strong>寄生</strong>：不需要专门养一套协议测试，已有的每一次普通测试运行都自动变成一次协议 fuzz。证人不是雇来的，是埋伏在每天的例行公事里的。</p>
+<p>事件流是第二样。全量落盘成 JSONL，回放即断言。要干净的原料就用 <code>codex exec --jsonl</code>——没有 TUI 渲染掺入，逐行带时间戳；要连界面一起审，就开 <code>CODEX_TUI_RECORD_SESSION=1</code>，AppEvent 的进出和每一次 commit tick 都在案。同一条流，两个清晰度，各管一段。</p>
+<p>副作用是第三样：状态存储、文件系统、rollout 文件——世界被改成了什么样。三样的分工记一句话就够：**请求日志回答“引擎说了什么“，事件流回答“界面被告知了什么“，副作用回答“世界变成了什么样“。**一句承诺的真假，要三样都对得上才算数——降级那节的“线程列表对账“，就是事件流和副作用的交叉质证。</p>
+<p>后面四节，是四组承诺各自的证人。你会发现每组的取料都不出这三样，变的是问法。</p>
+<h2 id="四契约的配对与时序"><a class="header" href="#四契约的配对与时序">四、契约的配对与时序</a></h2>
+<p>第一组承诺：**事件流是完整的、有序的、闭合的。**它是所有其他承诺的地基——事件流本身不可信，建立在其上的一切断言都是沙上塔。</p>
+<p>三条不变量。<strong>配对</strong>：每个 begin 恰好一个 end，每个 request 恰好一个 response，每个 call 恰好一个 output——孤儿是协议违例，不是可以原谅的噪声。<strong>时序</strong>：生命周期事件严格有序，Codex 的核心序列是 <code>turn/started → item/started → item/agentMessage/delta → item/completed → turn/completed</code>，乱一个位置，前端的状态机就可能整页错乱。<strong>闭合</strong>：任何退出路径——正常完成、abort、错误、超时——都恰好收尾一次，不泄漏、不重复。闭合最容易被漏掉，因为正常路径人人测，异常路径的“最后一次收尾“常常没人等。</p>
+<p>断言的写法上一节已经给了：配对和计数挂在捕获层（<code>.expect(n)</code> 断言“恰好收到 N 次请求“），时序和闭合写成回放检查。这里真正值得记的是<strong>为什么这些断言在 Codex 里天然有地方挂</strong>——回到上一篇 §三：TUI 连进程内都走协议，没有任何前端拥有绕过协议的特权通道。**协议一等公民的收益，在测试侧兑现得最彻底：捕获点对所有端一视同仁地存在。**反过来想就明白这条纪律的分量——如果 TUI 有一条直连 core 的函数调用捷径，那么 TUI 路径上的所有承诺都脱离了捕获点的视野，断言体系立刻出现一个和最大客户端等大的盲区。捷径省下的序列化税，最后都在可观测性上连本带利地还。</p>
+<h2 id="五这段话算不算答案"><a class="header" href="#五这段话算不算答案">五、这段话算不算答案</a></h2>
+<p>第二组承诺短得多，也深得多：<strong>前端不需要自己猜“这段输出算什么“。</strong></p>
+<p>先看 Codex 给出的反面标本。它的协议不给定性：<code>turn/completed</code> 只说循环结束了，至于最后那段文本是最终答案、是过程性解说、还是被截断的半句话——协议不说，每个前端自己推。后果写在 TUI 的代码量里：一个 232 变体的 AppEvent 总线，加上流式累积源要靠 <code>item/completed</code> 的权威文本对账（传输饱和丢 delta 时，以 completion 为权威）。这不是前端写得笨，这是<strong>语义缺位的账单</strong>：协议不回答的问题，复杂度就漏进每个前端，一个端漏一次。</p>
+<p>所以本节的不变量是本书提出的正面设计，先把话放这：Codex 协议当前不含此面，以下是“应该有“的断言清单，不是“现有“的机制描述。</p>
+<p>**完成语义协议级可判定。**协议应当携带定性标记：这段输出是正常完成的最终答案、是跟随工具调用的过程性输出、是被 max_tokens 截断的续写段、是中断留下的残段、还是失败被回滚的废段。五种定性对应五种界面动作——展示、折叠、拼接、标记、丢弃——前端不该靠启发式分辨。<strong>丢弃语义可区分</strong>：“回滚过“不等于“没发生过”，被丢弃的输出必须有记录、占序号，否则前端无法区分“模型沉默了“和“模型说了又被撤回“，而后者的字节必须被明确抛弃，不能留在屏幕上冒充答案。<strong>增量与定稿可对账</strong>：流式累积源与完成事件的权威文本，在任何丢包、乱序、截断下都必须可调和——这一条写成 property-based 测试，随机掐断一千次，次次对得上账才算数。</p>
+<p>给协议补一个定性字段，比给每个前端补一台状态机便宜——这笔账不难算，难的是意识到该算。</p>
+<h2 id="六迟到的批准"><a class="header" href="#六迟到的批准">六、迟到的批准</a></h2>
+<p>第三组承诺关于时间：<strong>审批与中断的任何交错顺序下，结果确定且安全。</strong></p>
+<p>Codex 的 guardian 测试里有一条值得逐字抄进每个 agent 项目的断言：给审批响应 <code>.set_delay(200ms)</code> 拖住，其间注入中断，然后断言——<strong>迟到的批准不会让命令执行</strong>。决定到达时目标已经 abort，决定就必须被丢弃，而不是被补救性地执行。这条断言的形态是竞态测试的标准解法：延迟注入加时序编排，用 <code>StreamingSseServer</code> 那种逐 chunk 门控的能力，精确控制“第 N 个事件在某动作之后才发“，把调度器的不确定性挤出测试。</p>
+<p>同样值得抄的是断言的落点。guardian 的安全断言不停在“界面显示了拒绝“，而是直接落在请求日志上——<strong>guardian 永远读不到被 deny 的文件内容</strong>。安全属性要断言在数据流上，不是断言在文案上；文案会说谎，请求日志不会。</p>
+<p>时间维度上还有一条 Codex 没答、但任何想做异步前端的引擎都该答的题：当人是几小时后才回消息的——IM、邮件、工单——“等待“必须是一个显式语义。阻塞地等、挂起会话等、超时拒绝，是三种合法答案；<strong>隐式死等不是答案，是没有回答</strong>。挂起-恢复路径的断言形态 Codex 给了半个示范：resume 测试就是 <code>shutdown_and_wait</code> 加从 rollout 文件重启，不需要第二个进程；补全的另一半是恢复后的对账——会话状态逐字节一致，或者每一处差异都被显式声明。</p>
+<h2 id="七握手的兼容矩阵"><a class="header" href="#七握手的兼容矩阵">七、握手的兼容矩阵</a></h2>
+<p>第四组承诺关于演进：**升级不会背刺旧端。**机制上一篇已经讲完了——加法演化、opt-in 举手、目录封版三件套——这一节只回答一个问题：三件套的断言各长什么样。</p>
+<p>加法演化的断言是<strong>注入未知</strong>：往消息里塞旧客户端不认识的字段、发它不认识的方法，断言旧端存活且行为不变。opt-in 的断言是<strong>不举手就不存在</strong>：实验性表面对未声明的客户端不是“报错“，是“不存在“——不返回、不提示、不可发现。封版的断言最简单也最硬：冻结目录的契约测试钉死在 CI 里，任何试图往 v1 加面的提交直接红。</p>
+<p>然后把这些单点断言织成版本矩阵：旧客户端 × 新引擎、新客户端 × 旧引擎、能力子集 × 全量引擎。矩阵听起来像理论，在 Codex 的发布拓扑里是日常——本机实证，桌面端跑 0.155.0-alpha、CLI 跑 0.160.0，同一个引擎，两个相差五个 minor 的客户端共存。矩阵不是为假想敌准备的，是为每个发布日准备的。最后还有一条容易漏的：<strong>能力声明的真实性</strong>——客户端在 capabilities 里举手声明的能力，必须与它的实际行为一致；声明了 opt-in 却处理不了对应事件，和没声明一样坏，而且更隐蔽。</p>
+<h2 id="八历史的对账"><a class="header" href="#八历史的对账">八、历史的对账</a></h2>
+<p>最后一组承诺关于昨天：<strong>换台设备、重启进程之后，历史还在，且是真的。</strong></p>
+<p>先回忆承诺的机制面：rollout 是 append-only 的事实源，客户端看到的 turn/item 视图是 <code>thread_history.rs</code>——一个 5024 行投影器——的产物。**这个事实有一个经常被忽视的推论：客户端看到的从来不是真相，是真相的投影。**对界面这是渲染问题，对评测这是取数纪律：任何从 UI 侧采集的数据，都必须意识到投影层的存在——投影器的一个 bug，会让你的评测数据整齐地错，而且错得毫无破绽。</p>
+<p>恢复路径的断言要测两条，不是一条。正常退出重启，人人测；<strong>kill -9 之后重启，才是承诺被检验的时刻</strong>。Codex 的崩溃恢复靠一个写入顺序：发首个采样请求前，TurnContext、初始上下文消息、TurnStarted、用户消息依次写 rollout。这个顺序本身就该是断言对象——在顺序的不同点位杀掉进程，恢复后的状态必须一致；顺序错一位，崩溃就从一个可恢复事件变成一次历史撕裂。同样，不持久化的内存态——进程内的 registry、后台任务的活状态——恢复后的缺失必须<strong>可检测</strong>，而不是静默蒸发：界面可以合法地说“这部分状态随进程结束了“，不能合法地假装它从未存在。</p>
+<h2 id="九收口门禁而不是排行榜"><a class="header" href="#九收口门禁而不是排行榜">九、收口：门禁，而不是排行榜</a></h2>
+<p>五组证人派完，把它们放回全书的框架里归位。配对与时序、降级、竞态这三组是纯<strong>炸弹类</strong>：一票否决，百分之百通过才放行，九百九十九次绿的抵不掉一次红的。兼容矩阵与历史对账是<strong>一致性类</strong>：它们不拦单次发布，拦的是回归。胶水层也有可量的东西——TTFT、turn 收敛时长，Codex 的协议自带 <code>time_to_first_token_ms</code> 和 <code>duration_ms</code>，零插桩就能拿到——但这类分数只做同引擎的纵向回归，<strong>不做跨产品排名</strong>：不同产品的协议形状不同，分数不可通约，硬排就是拿尺子量体重。一句话收束全篇的产出方向：接 fail-closed 的发布管道，不接排行榜。</p>
+<p>在全书的地图上，这一篇认领的是评测卷四问地图上“协议“那层被测对象；四问之中，它主要回答“坏了会不会察觉“。评测卷讲统一定律——两个世界产出同一个绿灯，观测就是盲的；这一篇做的事，是在协议层把每个“两个世界“的格子找出來，一格配一名证人。</p>
+<p>上一篇结尾说：界面的每一个承诺，往下挖两层会碰到一条协议的条款，挖三层会碰到一个 try/catch 分支。这一篇把这句话补完——<strong>挖到第几层不重要，重要的是每一层都该有一条断言住在那里。承诺不是被信守的，是被看守的。</strong></p>
+<hr>
+<p><em>（全章初稿，2026-10-07。Codex 行号基准 rust-v0.154.0，HEAD <code>6b9826e3a</code>；降级分支病例、guardian 延迟测试、版本并存事实整理自 2026-10-03/05 本机实证与源码亲验。§五的语义定性不变量与§六的异步等待显式语义为本书提出的设计，Codex 协议当前不含此面；文中已就地注明。）</em></p>
+<div style="break-before: page; page-break-before: always;"></div>
 <h1 id="没报错就代表输出没问题吗"><a class="header" href="#没报错就代表输出没问题吗">没报错，就代表输出没问题吗？</a></h1>
 <blockquote>
 <p>前面的篇章讲的是“看得见的另一半“——渲染引擎、字符网格、权限 UX；从这里开始进入看不见的另一半，先从一类反复出现的故障说起——它是我做 Agent 界面这几年见过的最典型的坑。</p>
@@ -3088,6 +3210,123 @@ complete               以上全部排除，才轮到我
 <p>基建系列到此收口：连接（基01）、端（基02）、协议（基03），事件流离开本机之后的全部旅程。旅程之外还站着一个这三篇没请进来的角色——网络本身：当 principal 是一个会被输入策反、还会瞬时繁殖子代的 agent，“谁能连谁、能碰什么“该按什么身份强制执行，今天还散落在工具授权和沙箱配置里，没有长成自己的一层（基02 末尾把它和云端工作区并记为开放题）。下一篇回到界面本体轨，讲控制的三部曲之首：计划。逐条审批必然疲劳，可扩展的控制粒度是事前批准一份可编辑的计划——checklist 正在成为 agent 时代的 diff。</p>
 <hr>
 <p><em>核查分层（截至 2026-09-28）：ACP Registry 名单与接入方式基于 Zed 官方博客与文档、JetBrains 官方博客（2026-01）及 agentclientprotocol.com 目录，多源交叉；AG-UI 事件分组基于 CopilotKit 官方资料与第三方教程（事件计数 16–17 存在版本差异，按量级表述）；MCP 无状态化修订引自基01 轮核查的官方 changelog；kimi-code 一手（<code>1e553fc</code>：<code>packages/acp-adapter</code>、<code>@agentclientprotocol/sdk@0.23.0</code>、测试文件名）；zacp 为系列既有引用（helloxz/zacp）。</em></p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="没报错只是开始行为的可断言性"><a class="header" href="#没报错只是开始行为的可断言性">没报错只是开始——行为的可断言性</a></h1>
+<blockquote>
+<p>全书开篇问过一个问题：没报错，就代表输出没问题吗？界面部分第 24 篇把 ANSI 变成可断言的，回答了这个问题的一半——渲染层。但 agent 不只是会说话，它会做事：行为层的可断言性是另一个量级的难题。这一篇是本卷的地图：把“agent 评测“这团乱麻收拢成四个问题，后面每章认领一问。</p>
+</blockquote>
+<blockquote>
+<p><strong>待办（2026-10-07）· 执笔中</strong>：本章为全卷框架章，无对应博客篇，正文新写中；骨架与配图已定，先立章节地图于此。</p>
+</blockquote>
+<h2 id="本章将讲"><a class="header" href="#本章将讲">本章将讲</a></h2>
+<ul>
+<li>agent 断言难在三件事：<strong>非确定性</strong>——同一输入不同输出，断言目标从结果移到路径覆盖与终态；<strong>成本是一等约束</strong>——每个样本都是真金白银；<strong>被测对象是复合体</strong>——模型 × 脚手架 × 工具 × 内容，归因必须靠对照。</li>
+<li>四问框架：能不能做对、坏了会不会察觉、是不是它的功劳、什么代价——也是本卷后六章的目录。</li>
+<li>“什么代价“一问为什么暂不展开（线头留给 eval08）。</li>
+</ul>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/eval01-four-questions-map.svg" alt="Agent 评测收拢为四个问题：六层被测对象 × 四问，能力评测、故障注入、对照实验三个姿势各连一问"><span class="img-wrapper"><img src="assets/eval01-four-questions-map.svg" alt="Agent 评测收拢为四个问题：六层被测对象 × 四问，能力评测、故障注入、对照实验三个姿势各连一问"></span></label></p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="考题从哪来为真实失败而建"><a class="header" href="#考题从哪来为真实失败而建">考题从哪来——为真实失败而建</a></h1>
+<blockquote>
+<p>评估器该为已发现的错误而建，不为想象中的错误而建——想象中的错误测出来，全是噪声。这一篇讲用例的来源哲学：一条评测用例凭什么存在。</p>
+</blockquote>
+<blockquote>
+<p><strong>待办（2026-10-07）· 收编中</strong>：本章正文将由博客《给 skill 建门禁》（2026-09-17）收编改写（原则：论点先行、事件压缩），并补触发评测的双向口径；骨架与配图已定。</p>
+</blockquote>
+<h2 id="本章将讲-1"><a class="header" href="#本章将讲-1">本章将讲</a></h2>
+<ul>
+<li>红绿对照：用例的合法出生证明——每个修过的 bug 配一条 FAIL→PASS 用例，与 SWE-bench 的 fail-to-pass 同构。</li>
+<li>触发层必须测双向：该触发时触发、不该触发时不触发；TP/FP/FN/TN 的口径，以及为什么影子信号不进混淆矩阵。</li>
+<li>一次红线写法实证：同一条用例，description 写“不管“声明 vs 正文写行为指令，66.7% FAIL → 100% PASS。</li>
+</ul>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/eval02-failure-to-testcase.svg" alt="评估器为已发现的错误而建：从真实失败到指名红测试再到回归套件的流水线"><span class="img-wrapper"><img src="assets/eval02-failure-to-testcase.svg" alt="评估器为已发现的错误而建：从真实失败到指名红测试再到回归套件的流水线"></span></label></p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/eval02-trigger-confusion.svg" alt="触发层双向口径：TP / FP / FN / TN 混淆矩阵与影子信号侧袋"><span class="img-wrapper"><img src="assets/eval02-trigger-confusion.svg" alt="触发层双向口径：TP / FP / FN / TN 混淆矩阵与影子信号侧袋"></span></label></p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="绿灯的两种谎言实验真的发生过吗"><a class="header" href="#绿灯的两种谎言实验真的发生过吗">绿灯的两种谎言——实验真的发生过吗</a></h1>
+<blockquote>
+<p>全书开篇问过一个问题：没报错，就代表输出没问题吗？界面部分第 24 篇把渲染变成了可断言的，这一部分把同样的怀疑推向行为层。而这一篇先讲失败里最便宜也最致命的一类：不是检查问错了，就是检查看着的那件事根本没发生——两种情况里，绿灯都是全绿的。</p>
+</blockquote>
+<blockquote>
+<p><strong>待办（2026-10-07）· 底稿已定、扩写中</strong>：本章主体为定稿底稿；成章时将按简报收编博客《从 trace 到 eval》（2026-08-23）、《给流式协议造故障》（2026-09-25）作病例段，六条绕行通道逐条展开，章首病例优先换成作者自己的病例。</p>
+</blockquote>
+<hr>
+<p>绿灯会说谎，而且有两种说法。</p>
+<p>第一种：检查问错了问题。比如密钥目录的信任检查，问的是“那个文件在不在“，而该问的是“这个目录能不能信“。文件存在的时候，两个问题的答案一模一样，所以它天天绿。它不是坏了——它只在文件不在的那一天才和真问题分道扬镳，而那一天恰恰只有日志在场，等你跟着翻日志才撞见。这种检查最难发现，因为它平时是对的，一个红灯都不亮。</p>
+<p>第二种：检查本身没毛病，但它看的东西根本没发生。你以为是完整流程，其实关键部件被绕过去了：插件没挂上，harness 记个警告继续跑；mock 只实现了 happy path；agent 直接写出 grader 想看的结果文件；前置条件不满足，skip 静默生效；主路径失败被兜底接住，走了 plan B 还报成功；grader 只看终态，中间步骤无约束。这时每条检查都是好的，红的绿的都对——只是那件事压根没发生。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/eval03-bypass-channels.svg" alt="六条绕行通道：静默降级、happy-path mock、直写结果文件、skip 静默生效、兜底吞主路、grader 只看终态，全都绕到同一个绿灯"><span class="img-wrapper"><img src="assets/eval03-bypass-channels.svg" alt="六条绕行通道：静默降级、happy-path mock、直写结果文件、skip 静默生效、兜底吞主路、grader 只看终态，全都绕到同一个绿灯"></span></label></p>
+<p>两种谎言背后是同一条定律：<strong>当两个不同的世界产出同一个绿灯，你的观测对它们的差异就是盲的。</strong>“文件在“和“目录可信“是两个世界，“真实跑通“和“绕行达成“也是两个世界。而系统——尤其是里面装着优化器的系统，比如 agent——会自己漂向那个能过关的世界。模型越强，找到绿灯最短路径的本事越大，这个漂移越快。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/eval03-green-light-lies.svg" alt="两种谎言踩进同一个危险格子：状态坏 × 检查绿——要么检查问错了问题，要么被测的事根本没发生"><span class="img-wrapper"><img src="assets/eval03-green-light-lies.svg" alt="两种谎言踩进同一个危险格子：状态坏 × 检查绿——要么检查问错了问题，要么被测的事根本没发生"></span></label></p>
+<p>“被绕过的部分最容易出事“不是巧合，是因果。会被绕过的部分和容易出事的部分本来就是同一批：网络、重试、超时、清理、兜底——都是环境不对劲时才需要工作的部件。它们因为“麻烦“在测试里被绕过，又因为“少见但致命“在生产里出事。更糟的是，测试本是它们唯一的上场机会，绕过等于零锻炼，第一次真实执行发生在生产。而 grader 若可被绕过，你就不只是没测它——你在主动筛选“不经过它“的解法。</p>
+<p>对策是两个方向。</p>
+<p>一是分叉观测：让两个世界产出不同的记录。最简单的做法是把一个布尔拆成两次判断、分别记结果——“文件在“和“目录可信“分开记，“结果通过“和“关键部件真的跑了“分开记。分歧日不用再等有人翻日志，它自己就是一条可断言的记录。推广开就是：终态之外记路径凭据——工具真的调了、插件真的挂了、网络真的打了，和结果分开记、分开断言。</p>
+<p>二是故障注入：主动把坏世界造出来，看有没有人叫。对检查，喂坏样本——把目录改名、把配置删一行再跑一遍。红了，这个检查才算存在；不红，它只是装饰。对流程，做消融——把你以为是主干的部件拆掉再跑一遍：分数掉了，说明它真的在被测；分数没动，说明你测的从来就不是你以为的东西。</p>
+<p>最后：每次靠偶然发现或翻日志才看见问题，本身就是症状——当时没有任何检查在场。而每次惊讶都标出一块该写断言的空地。把惊讶的具体原因写成一条指名道姓的测试，起名这一步不能省：一条没有名字的边界，对下一个改代码的人不存在。起完名，“只在某一天才分开“就从侥幸变成了每天都要过的一道关。</p>
+<hr>
+<p><em>本章为底稿（2026-10-05 定稿，2026-10-06 入册），成章时按 <code>新增分卷写作简报-eval-2026-10</code> 扩写病例段（收编博客《从 trace 到 eval》《给流式协议造故障》，六条绕行通道展开）。密钥目录病例整理自作者 2026-10-05 与 @echo_vic 在 X 上关于 agent harness eval 的公开讨论，他的原表述是「密钥目录的信任检查问的是“这个文件在不在“，而它该问的是“这个目录能不能信“」；两种谎言的归纳、因果机制与对策展开是作者的。</em></p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="炸弹故障注入下沉到内容完整性"><a class="header" href="#炸弹故障注入下沉到内容完整性">炸弹——故障注入下沉到内容完整性</a></h1>
+<blockquote>
+<p>协议层的 mock 解的是“环境不可控“；但还有一类更原始的故障——脚手架物理残缺：文件被截断、被删除、frontmatter 被清掉，宿主会怎样？这类“内容完整性“故障在正统 robustness eval（prompt 扰动）里是空白。这一篇是造弹与引爆的记录。</p>
+</blockquote>
+<blockquote>
+<p><strong>待办（2026-10-07）· 收编中</strong>：本章正文将由博客《回答被截断，你的 CLI 知道吗》（2026-09-25）与《考官带伤阅卷》（2026-09-27）合并收编，按“造弹 → 矩阵 → 翻车与翻案“重组；骨架与配图已定。</p>
+</blockquote>
+<h2 id="本章将讲-2"><a class="header" href="#本章将讲-2">本章将讲</a></h2>
+<ul>
+<li>108 格注入矩阵：检出（L2 及以上）只有 6/30，L0 无察觉占六成——<strong>检出不难，告知才是缺口</strong>。</li>
+<li>挡路的伤 8/8 检出，不挡路的伤 2/8——差异在位置，不在剂量。</li>
+<li>方法学红线：只动副本、C0 阴性对照全程压阵，以及一个差点发布的错误结论如何被翻案。</li>
+</ul>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/eval04-108-grid.svg" alt="108 次故障注入矩阵：L0 无察觉占约六成；挡路的伤 8/8 检出，不挡路的伤 2/8"><span class="img-wrapper"><img src="assets/eval04-108-grid.svg" alt="108 次故障注入矩阵：L0 无察觉占约六成；挡路的伤 8/8 检出，不挡路的伤 2/8"></span></label></p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/eval04-injection-pipeline.svg" alt="故障注入管线里的方法学红线：只动副本、哈希匿名暂存、零上下文宿主、分层记录、C0 阴性对照全程压阵"><span class="img-wrapper"><img src="assets/eval04-injection-pipeline.svg" alt="故障注入管线里的方法学红线：只动副本、哈希匿名暂存、零上下文宿主、分层记录、C0 阴性对照全程压阵"></span></label></p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="检出率是个乘法"><a class="header" href="#检出率是个乘法">检出率是个乘法</a></h1>
+<blockquote>
+<p>检出率 = 读到 × 愿报 × 挡路。三个乘数缺了任何一个，“未检出“就不可以归因——这是本卷的方法论核心，从战例里抽出来的模型。</p>
+</blockquote>
+<blockquote>
+<p><strong>待办（2026-10-07）· 收编中</strong>：本章正文由同名草稿《检出率是个乘法：把故障注入从 skill 推到仓库，三个乘数，和一个被我亲手推翻的假说》收编改写，成书首发（草稿不再单独发博客）；骨架与配图已定。</p>
+</blockquote>
+<h2 id="本章将讲-3"><a class="header" href="#本章将讲-3">本章将讲</a></h2>
+<ul>
+<li>三个乘数逐一定义；为什么“察觉了但没报“是最危险的未检出形态；检出 ≠ 止损。</li>
+<li>剂量-位置效应：同一强度的伤，位置决定检出。</li>
+<li>防线该建在哪：CI / loader / 安装器（零 token 的确定性），而不是 skill 正文；以及一个被我亲手推翻的假说。</li>
+</ul>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/eval05-three-factors.svg" alt="检出率 = 读到 × 愿报 × 挡路：三道串联闸门，未检出沿闸门折返归因"><span class="img-wrapper"><img src="assets/eval05-three-factors.svg" alt="检出率 = 读到 × 愿报 × 挡路：三道串联闸门，未检出沿闸门折返归因"></span></label></p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/eval05-dose-position.svg" alt="剂量-位置效应：挡路的伤 8/8 检出，不挡路的伤 2/8；差异在位置不在剂量"><span class="img-wrapper"><img src="assets/eval05-dose-position.svg" alt="剂量-位置效应：挡路的伤 8/8 检出，不挡路的伤 2/8；差异在位置不在剂量"></span></label></p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="对照组的陷阱归因靠对照不靠证据强度"><a class="header" href="#对照组的陷阱归因靠对照不靠证据强度">对照组的陷阱——归因靠对照不靠证据强度</a></h1>
+<blockquote>
+<p>证据再硬，也同时兼容两个相反的故事。对照组选错比没有对照组更危险——它给错误结论配上证据。这一篇讲归因的最低配置。</p>
+</blockquote>
+<blockquote>
+<p><strong>待办（2026-10-07）· 收编中</strong>：本章正文将由草稿《测别人的生态：四层漏斗、三种 oracle、一次推翻自己的归因，和它抓到的三只 bug》收编改写，成书首发；Anthropic 官方 plugin evals 的双臂设计作收编注脚；骨架与配图已定。</p>
+</blockquote>
+<h2 id="本章将讲-4"><a class="header" href="#本章将讲-4">本章将讲</a></h2>
+<ul>
+<li>双臂对照（with / without）为什么是归因的最低配置；裸基线缺位时，“全绿“和“没测到“同貌。</li>
+<li>对照组被污染的三种形态。</li>
+<li>pass@k 与 pass^k：同一个 0.75，两个数讲出相反的故事——单次跑分为什么不作数。</li>
+</ul>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/eval06-two-arms.svg" alt="归因靠对照：with / without 双臂相减得 Δ；对照组被污染的三种形态"><span class="img-wrapper"><img src="assets/eval06-two-arms.svg" alt="归因靠对照：with / without 双臂相减得 Δ；对照组被污染的三种形态"></span></label></p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/eval06-passk.svg" alt="pass@k 爬向 1.0 与 pass^k 跌向 0.056：同一用例 0.75 的两种叙事"><span class="img-wrapper"><img src="assets/eval06-passk.svg" alt="pass@k 爬向 1.0 与 pass^k 跌向 0.056：同一用例 0.75 的两种叙事"></span></label></p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="裁判也要被校准meta-eval"><a class="header" href="#裁判也要被校准meta-eval">裁判也要被校准——meta-eval</a></h1>
+<blockquote>
+<p>这个系列翻过的每一次案，最后都指向同一件事：裁判本身也要被校准。评测系统的 bug，比被测对象的更隐蔽——这是本卷收口，也是全书收口。</p>
+</blockquote>
+<blockquote>
+<p><strong>待办（2026-10-07）· 收编中</strong>：本章正文将由博客《我给 skill-up 报了一个不存在的 bug》（2026-09-20）、《CI 红、本地绿》（2026-09-22）收编改写，末节回到全书开篇之问作全书答毕；骨架与配图已定（收口配图将随全书结构定稿）。</p>
+</blockquote>
+<h2 id="本章将讲-5"><a class="header" href="#本章将讲-5">本章将讲</a></h2>
+<ul>
+<li>观测会骗人、考题会骗人、对照组会骗人、绿灯会骗人——全书病例的回环。</li>
+<li>误报公开更正的成本是一次尴尬，收益是一条可信的轨迹。</li>
+<li>“错误 → 机制化“清单：每次翻车长出的机制（排除计数、判活器回归、绝对路径纪律、flaky 分账），作全书方法论清单。</li>
+</ul>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/eval07-meta-loop.svg" alt="裁判校准的元闭环：误报 → 假结论 → 公开翻案 → 长出新机制"><span class="img-wrapper"><img src="assets/eval07-meta-loop.svg" alt="裁判校准的元闭环：误报 → 假结论 → 公开翻案 → 长出新机制"></span></label></p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/eval07-book-closing.svg" alt="全书收口：界面 → 基建 → 评测三环递进，把裁判也变成可断言的"><span class="img-wrapper"><img src="assets/eval07-book-closing.svg" alt="全书收口：界面 → 基建 → 评测三环递进，把裁判也变成可断言的"></span></label></p>
 
                     </main>
 

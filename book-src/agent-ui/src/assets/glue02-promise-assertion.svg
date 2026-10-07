@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="940" height="560" viewBox="0 0 940 560">
+  <defs>
+    <marker id="mk-blue" markerWidth="9" markerHeight="9" refX="7.4" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L9,4.5 L0,9 z" fill="#58a6ff"/></marker>
+    <marker id="mk-purple" markerWidth="9" markerHeight="9" refX="7.4" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L9,4.5 L0,9 z" fill="#bc8cff"/></marker>
+  </defs>
+  <rect x="0" y="0" width="940" height="560" rx="12" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
+  <text x="28" y="38" font-size="15.5" fill="#e6edf3" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="700">承诺—条款—断言：每个承诺都需要一名每天出庭的证人</text>
+  <line x1="28" y1="52" x2="912" y2="52" stroke="#30363d" stroke-width="1"/>
+
+  <rect x="28" y="68" width="260" height="34" rx="8" fill="#58a6ff" opacity="0.12"/>
+  <rect x="28" y="68" width="260" height="34" rx="8" fill="none" stroke="#58a6ff" stroke-width="1.4"/>
+  <text x="158" y="90" font-size="12" fill="#58a6ff" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="700">界面承诺（用户信的）</text>
+
+  <rect x="340" y="68" width="260" height="34" rx="8" fill="#bc8cff" opacity="0.12"/>
+  <rect x="340" y="68" width="260" height="34" rx="8" fill="none" stroke="#bc8cff" stroke-width="1.4"/>
+  <text x="470" y="90" font-size="12" fill="#bc8cff" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="700">协议条款（决定真假的）</text>
+
+  <rect x="652" y="68" width="260" height="34" rx="8" fill="#3fb950" opacity="0.12"/>
+  <rect x="652" y="68" width="260" height="34" rx="8" fill="none" stroke="#3fb950" stroke-width="1.4"/>
+  <text x="782" y="90" font-size="12" fill="#3fb950" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="700">每日断言（承诺的证人）</text>
+
+  <!-- Row 1 -->
+  <rect x="28" y="118" width="260" height="82" rx="8" fill="#161b22" stroke="#58a6ff" stroke-width="1.2"/>
+  <text x="44" y="142" font-size="10" fill="#e6edf3" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start">“我看到的线程列表是完整的”</text>
+  <text x="44" y="164" font-size="8.5" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start">没人写下来，但人人默认它成立</text>
+  <rect x="340" y="118" width="260" height="82" rx="8" fill="#161b22" stroke="#30363d" stroke-width="1"/>
+  <text x="356" y="140" font-size="9" fill="#e6edf3" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" text-anchor="start">state_db 归属；降级分支</text>
+  <text x="356" y="158" font-size="9" fill="#e6edf3" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" text-anchor="start">tui/src/lib.rs:518-521</text>
+  <text x="356" y="180" font-size="8.5" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start">静默切 Embedded + 重初始化存储</text>
+  <rect x="652" y="118" width="260" height="82" rx="8" fill="#d29922" opacity="0.08"/>
+  <rect x="652" y="118" width="260" height="82" rx="8" fill="none" stroke="#d29922" stroke-width="1.4" stroke-dasharray="5 4"/>
+  <text x="668" y="140" font-size="10" fill="#d29922" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="700">（空缺——没有断言看着它）</text>
+  <text x="668" y="162" font-size="9" fill="#d29922" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start">第一次被检验：一个读源码的下午</text>
+  <text x="668" y="182" font-size="8.5" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start">证人缺席 ≠ 承诺被守住</text>
+  <line x1="288" y1="159" x2="332" y2="159" stroke="#58a6ff" stroke-width="1.6" marker-end="url(#mk-blue)"/>
+  <line x1="600" y1="159" x2="644" y2="159" stroke="#bc8cff" stroke-width="1.6" marker-end="url(#mk-purple)"/>
+
+  <!-- Row 2 -->
+  <rect x="28" y="216" width="260" height="82" rx="8" fill="#161b22" stroke="#58a6ff" stroke-width="1.2"/>
+  <text x="44" y="240" font-size="10" fill="#e6edf3" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start">“升级不会背刺旧端”</text>
+  <text x="44" y="262" font-size="8.5" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start">桌面 0.155-alpha 与 CLI 0.160 并存</text>
+  <rect x="340" y="216" width="260" height="82" rx="8" fill="#161b22" stroke="#30363d" stroke-width="1"/>
+  <text x="356" y="240" font-size="9" fill="#e6edf3" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" text-anchor="start">加法演化 + opt-in 举手</text>
+  <text x="356" y="258" font-size="9" fill="#e6edf3" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" text-anchor="start">v1 目录封版</text>
+  <text x="356" y="280" font-size="8.5" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start">握手时刻定格旧端可见世界</text>
+  <rect x="652" y="216" width="260" height="82" rx="8" fill="#161b22" stroke="#3fb950" stroke-width="1.2"/>
+  <text x="668" y="240" font-size="9.5" fill="#3fb950" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start">版本矩阵 × 未知字段注入</text>
+  <text x="668" y="260" font-size="8.5" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start">旧端×新引擎 / 新端×旧引擎</text>
+  <text x="668" y="278" font-size="8.5" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start">不举手 = 实验面不存在</text>
+  <line x1="288" y1="257" x2="332" y2="257" stroke="#58a6ff" stroke-width="1.6" marker-end="url(#mk-blue)"/>
+  <line x1="600" y1="257" x2="644" y2="257" stroke="#bc8cff" stroke-width="1.6" marker-end="url(#mk-purple)"/>
+
+  <!-- Row 3 -->
+  <rect x="28" y="314" width="260" height="82" rx="8" fill="#161b22" stroke="#58a6ff" stroke-width="1.2"/>
+  <text x="44" y="338" font-size="10" fill="#e6edf3" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start">“换台设备，昨天还在”</text>
+  <text x="44" y="360" font-size="8.5" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start">历史归引擎持久，不归任何设备</text>
+  <rect x="340" y="314" width="260" height="82" rx="8" fill="#161b22" stroke="#30363d" stroke-width="1"/>
+  <text x="356" y="338" font-size="9" fill="#e6edf3" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" text-anchor="start">rollout append-only（事实源）</text>
+  <text x="356" y="356" font-size="9" fill="#e6edf3" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" text-anchor="start">thread_history 投影器</text>
+  <text x="356" y="378" font-size="8.5" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start">客户端看到的是投影，不是真相</text>
+  <rect x="652" y="314" width="260" height="82" rx="8" fill="#161b22" stroke="#3fb950" stroke-width="1.2"/>
+  <text x="668" y="338" font-size="9.5" fill="#3fb950" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start">kill -9 恢复对账</text>
+  <text x="668" y="358" font-size="8.5" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start">正常退出与崩溃两条路径分别验</text>
+  <text x="668" y="376" font-size="8.5" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start">多客户端并发视图一致</text>
+  <line x1="288" y1="355" x2="332" y2="355" stroke="#58a6ff" stroke-width="1.6" marker-end="url(#mk-blue)"/>
+  <line x1="600" y1="355" x2="644" y2="355" stroke="#bc8cff" stroke-width="1.6" marker-end="url(#mk-purple)"/>
+
+  <!-- Row 4 -->
+  <rect x="28" y="412" width="260" height="82" rx="8" fill="#161b22" stroke="#58a6ff" stroke-width="1.2"/>
+  <text x="44" y="436" font-size="10" fill="#e6edf3" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start">“事件流完整、有序、闭合”</text>
+  <text x="44" y="458" font-size="8.5" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start">一切其他承诺的地基</text>
+  <rect x="340" y="412" width="260" height="82" rx="8" fill="#161b22" stroke="#30363d" stroke-width="1"/>
+  <text x="356" y="436" font-size="9" fill="#e6edf3" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" text-anchor="start">turn/started → item/*</text>
+  <text x="356" y="454" font-size="9" fill="#e6edf3" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" text-anchor="start">→ turn/completed</text>
+  <text x="356" y="476" font-size="8.5" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start">同进程也过协议 ⇒ 捕获点天然存在</text>
+  <rect x="652" y="412" width="260" height="82" rx="8" fill="#161b22" stroke="#3fb950" stroke-width="1.2"/>
+  <text x="668" y="436" font-size="9.5" fill="#3fb950" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start">捕获层配对/时序/闭合检查</text>
+  <text x="668" y="456" font-size="8.5" fill="#8b949e" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" text-anchor="start">孤儿 output 直接 panic · .expect(n)</text>
+  <text x="668" y="474" font-size="8.5" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start">每次测试运行都是免费 fuzz</text>
+  <line x1="288" y1="453" x2="332" y2="453" stroke="#58a6ff" stroke-width="1.6" marker-end="url(#mk-blue)"/>
+  <line x1="600" y1="453" x2="644" y2="453" stroke="#bc8cff" stroke-width="1.6" marker-end="url(#mk-purple)"/>
+
+  <rect x="28" y="512" width="884" height="34" rx="8" fill="#d29922" opacity="0.12"/>
+  <rect x="28" y="512" width="884" height="34" rx="8" fill="none" stroke="#d29922" stroke-width="1.4"/>
+  <text x="470" y="534" font-size="12" fill="#d29922" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="700">断言缺席的承诺不是被守住的，是没被检验的——它的第一次检验发生在生产。</text>
+</svg>
