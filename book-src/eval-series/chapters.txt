@@ -13,4 +13,3 @@
 - ch05 | 五 · 回答被截断，你的 CLI 知道吗 | /Users/boyang/Documents/UGit/BiBoyang.github.io/_posts/2026-09-25-回答被截断，你的 CLI 知道吗：四个工具、六种故障、108 格矩阵，和一个差点发布的错误结论.md
 - ch06 | 六 · 给流式协议造故障 | /Users/boyang/Documents/UGit/BiBoyang.github.io/_posts/2026-09-25-给流式协议造故障：三协议 mock、once 注入、字节级送达证明，和 strings 阴性不等于代码不存在.md
 - ch07 | 七 · 考官带伤阅卷 | /Users/boyang/Documents/UGit/BiBoyang.github.io/_posts/2026-09-27-考官带伤阅卷：对 Agent Skill 做故障注入的完整性实验.md
-- ch08 | 八 · 这次 bug 在设计稿里 | /Users/boyang/Documents/UGit/BiBoyang.github.io/_posts/2026-10-08-这次 bug 在设计稿里：第一次给大项目设计扩展机制.md
