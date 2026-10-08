@@ -46,7 +46,7 @@ server 身份还带来一件 ACP/AG-UI 都没有的事：**多 client 共存，�
 
 ![同一个引擎的三种到达方式，和 LocalDaemon 连不上时的静默退回](assets/glue01-topology.svg)
 
-这不是 bug，是刻意的优雅降级，而且设计得不算坏：daemon 没起来就自己跑一个，用户无感。但它撕毁了一个没被写进任何文档的界面承诺：**"我看到的线程列表是完整的"**。state_db 被重初始化意味着线程索引可能落在与 daemon 不同的存储上——§一那句"历史归引擎持久"在这里漏了气：用户启动 TUI，看到自己的历史少了一块，界面一切正常，动画照转。基建第 1 篇会给断线时刻的用户三问：还连着吗、我漏了什么、从哪继续；这一档降级把其中"我漏了什么"的答案悄悄换成了错误答案，而界面没有能力诚实。
+这不是 bug，是刻意的优雅降级，而且设计得不算坏：daemon 没起来就自己跑一个，用户无感。但它撕毁了一个没被写进任何文档的界面承诺：**"你连的是谁，你会知道"**。我最初怀疑的是更重的那一条——state_db 被重初始化，线程索引会不会落在与 daemon 不同的存储上，让用户启动 TUI 后看到自己的历史少了一块。2026-10-07 晚的源码复核把这条排除了：嵌入式与 daemon 指向同一个 codex_home 下的同一批 SQLite 和 rollout 文件，`thread/list` 与 `thread/resume` 都正常——数据没有断裂。缺口因此显得更纯粹：数据完好，功能如常，动画照转，唯一被撕掉的承诺是"拓扑变了你会知道"——`/status` 里 Remote Connection 一行不是改成"已降级"，而是整体消失；降级日志是 debug 级，被默认过滤挡在所有用户可达的地方之外。界面不是说了假话，是根本没被给过说话的机会。基建第 1 篇会给断线时刻的用户三问：还连着吗、我漏了什么、从哪继续；这一档降级对"我漏了什么"的回答是沉默——不是给了错误答案，是根本没给答案，而界面没有能力诚实。
 
 所以这篇要记的胶水层判断是：**降级的代价不在降级本身，在降级是静默的**。拓扑切换是界面契约的一部分——只要界面承诺的内容依赖"连的是谁"，连接形态的变化就必须至少有信息级的可见性（一行状态、一个脚注、一条警告），不能停在 debug 日志里。界面的每一个承诺，往下挖两层会碰到一条协议的条款——这句话会在基建篇反复出现；这里先补一条：往下挖三层，还会碰到一个 try/catch 分支。
 
@@ -84,4 +84,4 @@ server 身份还带来一件 ACP/AG-UI 都没有的事：**多 client 共存，�
 
 ---
 
-*事实核查分层（截至 2026-10-07）：本文 Codex 事实基于 rust-v0.154.0（HEAD 6b9826e3a，2026-09-09 快照）亲读——initialize 握手结构（app-server-protocol/src/protocol/v1.rs）、experimental 门控（message_processor.rs:912-920）、v1 冻结纪律（仓库 AGENTS.md:269）、TUI 内嵌走 JSON-RPC envelope（app-server/src/in_process.rs:22）、历史投影与分页（app-server-protocol/src/protocol/thread_history.rs、thread_history_projection.rs:1-3、v2/thread.rs:400,450）、静默降级分支（tui/src/lib.rs:518-521，逐行亲验）、voice-host 同构建校验（voice-host/src/main.rs:48 的 --build-commit）、computer use 治理面（features/src/lib.rs:271、protocol/src/openai_models.rs:402、core/src/session/step_activation.rs:110）与 cua_repl 通道（protocol/src/mcp.rs:38）。桌面 0.155 vs CLI 0.160 的版本错位为本机实证（2026-10-03）。openai/codex 官方博文《Unlocking the Codex harness: how we built the App Server》（2026-02）为"协议起源"的一手旁证。*
+*事实核查分层（截至 2026-10-07）：本文 Codex 事实基于 rust-v0.154.0（HEAD 6b9826e3a，2026-09-09 快照）亲读——initialize 握手结构（app-server-protocol/src/protocol/v1.rs）、experimental 门控（message_processor.rs:912-920）、v1 冻结纪律（仓库 AGENTS.md:269）、TUI 内嵌走 JSON-RPC envelope（app-server/src/in_process.rs:22）、历史投影与分页（app-server-protocol/src/protocol/thread_history.rs、thread_history_projection.rs:1-3、v2/thread.rs:400,450）、静默降级分支（tui/src/lib.rs:518-521，逐行亲验）、voice-host 同构建校验（voice-host/src/main.rs:48 的 --build-commit）、computer use 治理面（features/src/lib.rs:271、protocol/src/openai_models.rs:402、core/src/session/step_activation.rs:110）与 cua_repl 通道（protocol/src/mcp.rs:38）。降级分支的数据影响（同一 codex_home、数据不断裂、`/status` Remote Connection 行整体消失）为 2026-10-07 晚接力复核增补（tui/src/lib.rs:518-521、thread-store/src/local/read_thread.rs:30）。桌面 0.155 vs CLI 0.160 的版本错位为本机实证（2026-10-03）。openai/codex 官方博文《Unlocking the Codex harness: how we built the App Server》（2026-02）为"协议起源"的一手旁证。*

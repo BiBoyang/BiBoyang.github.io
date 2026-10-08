@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>22 · 输入的地狱：终端能力探测与降级 - 自顶向下拆 Agent：从界面到地基</title>
+        <title>八 · 这次 bug 在设计稿里 - 我的评测工具链</title>
 
 
         <!-- Custom HTML head -->
@@ -35,10 +35,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-b11dc2bd.js";
+            window.path_to_searchindex_js = "searchindex-fae90dad.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-06183840.js"></script>
+        <script src="toc-51781d8f.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -137,7 +137,7 @@
                         </button>
                     </div>
 
-                    <h1 class="menu-title">自顶向下拆 Agent：从界面到地基</h1>
+                    <h1 class="menu-title">我的评测工具链</h1>
 
                     <div class="right-buttons">
                         <a href="print.html" title="Print this book" aria-label="Print this book">
@@ -177,69 +177,74 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="输入的地狱终端能力探测与降级"><a class="header" href="#输入的地狱终端能力探测与降级">输入的地狱——终端能力探测与降级</a></h1>
+                        <h1 id="这次-bug-在设计稿里第一次给大项目设计扩展机制"><a class="header" href="#这次-bug-在设计稿里第一次给大项目设计扩展机制">这次 bug 在设计稿里：第一次给大项目设计扩展机制</a></h1>
 <blockquote>
-<p>系列第二十二篇，第 21 篇的下半部。第 2 篇 §4.3 讲过输出侧的能力降级链——颜色从 true color 一路退到 16 色，是“能力有没有“的问题。输入侧是另一半，行业讨论比输出侧少一个数量级，难度却更高：<strong>输出降级是“能力有没有“，输入地狱是“行为一不一致“</strong>——同一个按键，在不同终端模拟器里是不同含义；同一条查询序列，有的终端回答、有的沉默、有的回一半。上一篇讲的 composer 状态机，全部建立在这条事件流可靠的假设上。这一篇讲这个假设本身。</p>
+<p>第一次给大型开源项目设计扩展机制：五个问题、三份材料、一次立场反转、两面镜子。和系列前几篇不同，这篇没有闭环——设计稿此刻还躺在我的硬盘上等终审，维护者还没看到它。但 review 回路已经先跑了一遍，被抓到 bug 的是设计稿自己。</p>
 </blockquote>
+<h2 id="引子从修-bug-到被邀请谈设计"><a class="header" href="#引子从修-bug-到被邀请谈设计">引子：从修 bug 到被邀请谈设计</a></h2>
+<p>2026 年 10 月 8 日，我给 <a href="https://github.com/alibaba/skill-up">skill-up</a> 提的两个 PR 在同一天合并：#265（超时强杀后由框架合成最小 session-result，下游至少有据可查）和 #295（validate 拒绝没有任何可识别 matcher 的 rule_based 断言）。都是这个系列的老熟人——#265 的诞生过程就是<a href="/posts/我给-skill-up-报了一个不存在的-bug/">第三篇</a>那场误报的反向产物。</p>
+<p>同一天我在 skill-up 的 issue <a href="https://github.com/alibaba/skill-up/issues/296">#296</a> 里提了一个更大的东西：长上下文 decode TPS 衰减评测。论点是瞬时 TPS 随上下文增长而下降（每个 token 都要重读整个 KV cache），实测某部署从 200 tok/s 掉到 100k 时的 80、300k 时的 50；所以 compaction 阈值应该锚定在模型的<strong>半速点</strong>——TPS 降到基线一半的上下文长度，实测 GPT 类部署约 67k，远早于民间流传的 200k。我手里有能跑出这条曲线的 <a href="https://github.com/BiBoyang/dsh-eval-harness">harness</a>，想给 skill-up 加这条评测轴。</p>
+<p>维护者的回复很值得逐句读：框架 scope 保持“任务断言 + 执行时长“的行为评测，<strong>不内置专用测量 loop</strong>；但可以给一条集成路径——custom engine adapter 加自定义指标扩展，测量和 compaction 逻辑归外部；最后一句是：“We’d be interested in exploring that general metric extension”，并指了 Harbor 的 ATIF 做参考。</p>
+<p>翻译一下：场景被拒了，但<strong>机制被邀请了</strong>。我回了一条 ack：接受边界，承诺研究完 ATIF 带设计稿回来——一个设计细节都没承诺。这篇文章记录接下来发生的事。系列惯例是闭环叙事（事故 → 结论），这篇破例：写到这里的此刻，设计稿还没发出去，结局未定。但等待期间学到的东西已经值回票价。</p>
+<h2 id="1-拿到设计题先把嘴闭上"><a class="header" href="#1-拿到设计题先把嘴闭上">1. 拿到设计题，先把嘴闭上</a></h2>
+<p>我给自己立的议程是五个问题：指标数据从哪来（供给）、从序列拟合出标量这种事归谁干（计算）、标量/序列/曲线分别怎么进报告（展示）、schema 长什么样（参考 ATIF）、框架不做什么（边界）。</p>
+<p>然后是这条系列反复出现的纪律的又一次应验：<strong>先读一手材料，再开口谈设计</strong>。三份：</p>
+<ul>
+<li><strong>skill-up 自己的数据流实现</strong>。<code>SessionResult</code> 是个封闭 schema，没有任何 extra/telemetry 字段，今天唯一塞自由数据的通道是 artifacts。但数据流是一条直路：<code>SessionResult</code> → evaluator 内嵌 → <code>evalResultToCaseResult</code> 硬投影进报告 → 各 reporter 渲染。加字段有现成路径，<code>ObservedModel</code> 当年就是这么进去的。</li>
+<li><strong>参照物 Harbor ATIF 的源码</strong>。两个文件加起来 84 行。读完才发现一个文档里不会写的事实：<strong>ATIF 的聚合值是“写出来“的，不是“算出来“的</strong>——schema 里没有任何 reducer，谁产 trajectory 谁负责填汇总数。这个事实直接撑起了我后面最重要的一条设计立场。</li>
+<li><strong>我自己 harness 的遥测形状</strong>。748 行的 <code>tps.ts</code> 里数据天然分三层：样本级（每次请求的 chunk 流、原始 usage）、台阶聚合（每个上下文台阶的中位数）、拟合标量（baseline、半速点、R²）。<strong>数据分层决定通道分层</strong>——chunk 流和原始 JSON 是证据，走 artifacts；拟合标量和台阶序列是展示数据，走 metrics。</li>
+</ul>
+<h2 id="2-先例考古这个代码库里类似问题怎么解决的"><a class="header" href="#2-先例考古这个代码库里类似问题怎么解决的">2. 先例考古：这个代码库里类似问题怎么解决的</a></h2>
+<p>设计提案里最容易被维护者打回的是发明新词汇，最吃香的是“遵循你自己代码库的既有模式“。所以我给 skill-up 做了一次“数据选择机制“的普查，找到三层先例：报告投影是编译期钉死的硬投影（用户不可配）；judge context 是 profile 预设 + 逐字段覆盖 + 大小限额（SUP-0004，连“include 超体积自动降级为文件引用“这种细节都有）；跨迭代聚合有 <code>StatValue</code>（mean/stddev）和 <code>unanimous()</code>（全票一致才显示，分歧置空）两种现成脾气。</p>
+<p>但最重要的一条先例不是这一遍找到的，是下一轮被逼着重读才看到的——<strong>先例不是一次找全的。第一遍读代码建的是地图，第二遍带着具体的决策问题去读，才能看到机制。</strong></p>
+<h2 id="3-立场反转一句这两个有什么区别"><a class="header" href="#3-立场反转一句这两个有什么区别">3. 立场反转：一句“这两个有什么区别“</a></h2>
+<p>设计稿初版里，“指标怎么显式影响 pass/fail“这一题我推荐挂在 <code>rule_based</code> 的 Rule 枚举里，理由是“不发明第二条判决通道”。自己听着都挺扎实。</p>
+<p>讨论时 Owner 回了一句：“这两个我还是没明白抉择的原因，这两个有什么区别？”</p>
+<p>我回去把代码又读了一遍，发现初版立场建立在不完整信息上。两个候选的真实区别根本不在“放哪好看“：其一，<code>judge.type</code> 是单选——挂成 rule_based 规则意味着用 agent_judge 评行为的 case 永远用不了指标阈值，而“行为评分 + 性能阈值“恰恰是 TPS 场景的组合需求，“通用“二字当场不成立；其二，<code>expect</code> 层<strong>本来就是</strong>与 judge 类型无关的第二条断言通道——它先于 judge 跑，结果汇入同一条 <code>Grading.AssertionResults</code>，失败则短路 judge。我“不发明第二条通道“的理由多虑了，通道早就有，<code>metric_threshold</code> 插进去就行，还白赚一个适合性能闸门的 fail-fast 语义。</p>
+<p>推荐当场反转。这轮给我最大的教训不是哪个选项对，而是：<strong>当评审方说“看不懂区别“时，正确的反应不是换个说法再解释一遍，是回去再读一遍代码</strong>——看不懂往往意味着选项描述漏了决定性问题。</p>
+<h2 id="4-两面镜子发布前的最后一轮自测"><a class="header" href="#4-两面镜子发布前的最后一轮自测">4. 两面镜子：发布前的最后一轮自测</a></h2>
+<p>设计稿改到自认能见人之后，发布前我派了两个零上下文的 subagent 做最后一轮，故意给它们正交的任务：<strong>事实核查员</strong>逐条核验稿子里每个 file:line 论断（“SessionResult 是封闭 schema”、“expect 失败会短路 judge”、artifact 上限、连维护者原话都重新从 GitHub API 拉了逐字比对）；<strong>红队</strong>扮演那位维护者，任务是攻击设计本身。都不带我的推理过程，避免被我的结论锚定。</p>
+<p>核查员的判决：12 组论断全部属实，外加一处 WRONG——我稿子里写“rule_based 不短路“，是假的，<code>rule_based.go</code> 对 failure 规则命中即短路；我想说的区别其实是“它是终端 judge，没有下游可跳“。措辞修正。</p>
+<p>红队的判决是 revise-and-resubmit，两个 blocker 都很疼：</p>
+<ul>
+<li><strong>B1 多轮洞</strong>。stateful 模式下每个 turn 各产出一个 <code>SessionResult</code>，而 case 级聚合是<strong>结构体拷贝最后一轮</strong>的结果再覆盖固定字段清单（<code>buildAggregateResult</code>，multiturn.go）。我的“per-turn 指标延到 v2“根本挡不住 v1 出事：metrics 字段会搭车成“意外的末轮赢家“，前 n−1 轮静默丢弃，阈值也只绑末轮。“延到 v2“回答不了“v1 发生了怎么办”。</li>
+<li><strong>B2 脱敏假设</strong>。我稿子里写“metrics 继承 SessionResult 既有的敏感值脱敏“——也是假的。脱敏是逐字段白名单（<code>maskAPIKey</code> 一个一个字段地调），新的 metrics map 会不打码直出。照字面实现就是泄密。</li>
+</ul>
+<p>两个 blocker 我都亲自回去复核了代码才敢动笔改稿。改法：多轮行为写成显式契约（非末轮丢弃并告警、adapter 在末轮报累计值、阈值绑聚合结果），脱敏改写成显式遍历契约（键、字符串值、描述、单位都打码，限额在脱敏后执行）。</p>
+<p>点题一下：这个系列的主线是“裁判本身也要被校准“，每篇的 bug 最后都抓在测量系统自己身上。这一篇的同构之处在于——<strong>这次被抓到的 bug 在设计稿里，而且在维护者看到之前</strong>。核查员抓的是“我断言错的“，红队抓的是“我压根没断言的“。错误好抓，缺席难抓，这就是为什么需要两面镜子而不是一面。</p>
+<h2 id="5-沉淀第一次给大项目做设计的清单"><a class="header" href="#5-沉淀第一次给大项目做设计的清单">5. 沉淀：第一次给大项目做设计的清单</a></h2>
+<p><strong>设计原则</strong>（这次提炼的，下次直接查）：</p>
+<ul>
+<li>框架聚合统计量，adapter 派生语义量。框架懂 mean/stddev，它不懂半速点是什么。</li>
+<li>指标是数据，不是判决。报什么展示什么，断言只点名。</li>
+<li>数据分层决定通道分层：展示就绪的值进 schema 字段，证据性原始数据进 artifacts。</li>
+<li>审查力度来自机制，不来自纪律——自动校验、自动断言、固定表位、可 diff，不靠审查者更认真。</li>
+<li>代理决策只替对方做可逆的决定：schema 不可逆，留给人拍板；渲染可逆，可以代定。</li>
+</ul>
+<p><strong>过程方法论</strong>（按杀伤力排序）：</p>
+<ol>
+<li>先读后写，三份一手材料读完再开口；参照物读源码不读文档。</li>
+<li>锚定维护者原话的精确射程，引用原文逐条对应；ack 接受方向但不承诺任何细节。</li>
+<li>先例优先于发明；找不到先例才发明，并说明为什么。</li>
+<li>给决策点不给开放式问题——维护者只需要确认或推翻，不需要从零想。</li>
+<li>立场可以被新证据推翻，推翻过程本身就是文章素材。修订记录比永远正确更有说服力。</li>
+<li>发布前用两面镜子自查：核查验证已断言的，红队发现缺席的。</li>
+<li>边界写两遍：Non-goals 一遍，结尾重申一遍，防 RFC 阶段被加需求。</li>
+</ol>
+<h2 id="6-未完的结尾"><a class="header" href="#6-未完的结尾">6. 未完的结尾</a></h2>
+<p>按系列惯例，到这里该写“尘埃落定“。这篇写不了。设计稿中英文双语 v3 躺在硬盘里，评论稿压在终审队列里等我自己点头，维护者尚未看到任何一个字。</p>
+<p>如果被说服，这里有续集；如果被推翻，续集更好看。系列第一篇说“trace 第一天就做“，这一篇的对应物大概是：<strong>review 回路在发布前一天就跑</strong>——设计稿还没出门，两面镜子已经替维护者先骂了一遍。</p>
 <hr>
-<h2 id="一探测启动时的第一次对账"><a class="header" href="#一探测启动时的第一次对账">一、探测：启动时的第一次对账</a></h2>
-<p>终端能力没法靠 <code>$TERM</code> 问出来——环境变量会撒谎（SSH 之后它是远端机器的猜测），所以严肃的 TUI 都在启动时做一次实况探测：向终端发查询序列，等回应，按回应决定启用哪些增强。</p>
-<p>但“等回应“本身就是设计难题：等多久？等来的字节和用户的按键混在同一条 stdin 里，怎么分？三家的答案几乎是一个光谱。</p>
-<p><strong>Codex：有预算的轮询，加一条哨兵捷径。</strong> <code>terminal_probe</code> 模块存在的原因是注释里的一句话：crossterm 的公共查询 API 最长会等两秒——“对启动和恢复来说太久，不支持的终端应该干脆退回保守默认”。所以 Codex 自己写探测：每组查询 100ms 墙钟预算，探光标位置、OSC 10/11 默认前景背景色、kitty 键盘增强支持；探测消耗掉的字节会回放进 crossterm 的解析器，保证探测期间用户的真实按键不丢。kitty 探测里还藏着一条捷径：查询后面跟着一个主设备属性（DA）请求，终端按序应答，DA 到了而键盘标志没到，就<strong>立即</strong>判定不支持，不必等满 100ms。整个过程带耗时埋点（“terminal startup probes completed”），探测是启动链路里被当成功耗来管理的正式公民。</p>
-<p><strong>Claude Code：用顺序代替超时。</strong> 同一条哨兵，Claude Code 押得更彻底——<code>terminal-querier</code> <strong>不设超时</strong>。技巧叫 DA1 哨兵：每批查询末尾追加一个 DA1 查询（主设备属性），而 VT100 以来的每个终端都会回答 DA1，且终端按顺序应答。于是判定变成纯顺序问题：你的响应先于 DA1 到，说明支持；DA1 先到了，说明不支持。超时这个维度被从设计里删掉了，换成对一个老旧但普适的协议不变量的信任。探测目录里的清单也值得看：DECRQM 问同步输出（2026）与 grapheme 聚簇（2027）模式、OSC 11 问背景色、kitty 键盘查询、XTVERSION 问终端名——XTVERSION 的注释点破了为什么环境变量不可靠：查询走 pty 不走环境，<strong>能穿透 SSH</strong>，而 <code>TERM_PROGRAM</code> 不能。</p>
-<p><strong>Kimi：协商式握手。</strong> kitty 键盘协议的完整三件套一次发出：推入目标标志位、查询当前标志、追加设备属性查询（<code>ESC[&gt;7u</code> <code>ESC[?u</code> <code>ESC[c</code>），然后按 150ms 分片超时收集回应。另有一个容易漏的收尾细节：退出前先排空 stdin——否则 kitty 协议下按过的键会留下“释放事件“，终端在你退出后还在吐字节。</p>
-<p>还有第四种哲学，是我自己的：ForgeLoopTUI <strong>不探测</strong>。<code>RawTTY.enter()</code> 无条件推入 kitty 消歧标志和 bracketed paste 开关，注释写明理由——“不支持的终端会静默吸收这些序列”。这是拿终端生态的一个经验事实当赌注：未知序列无害。赌注大体成立，但它是赌，不是证。</p>
-<hr>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch22-terminal-probe.svg" alt="启动探测的四种姿态"><span class="img-wrapper"><img src="assets/ch22-terminal-probe.svg" alt="启动探测的四种姿态"></span></label></p>
-<h2 id="二一个键为什么不是一个键"><a class="header" href="#二一个键为什么不是一个键">二、一个键为什么不是一个键</a></h2>
-<p>探测的主要对象之一是键盘协议，因为传统终端键盘编码是歧义丛生的：Esc 键和 Alt 前缀共用 <code>0x1b</code>，Ctrl+I 和 Tab 是同一个字节，Ctrl+M 和回车是同一个字节。kitty 键盘协议（CSI-u）的存在意义就是消歧：给每个按键事件完整的键码与修饰符。</p>
-<p>启用它是改善，也是新负债。Codex 留了显式逃生门（<code>CODEX_TUI_DISABLE_KEYBOARD_ENHANCEMENT</code> 环境变量）；Kimi 除协议外还备了一条原生侧通路——通过原生 helper 直接轮询真实修饰键状态（<code>native-modifiers.ts</code>），协议报不上来的时候问操作系统；Claude Code 则同时解析两套编码——CSI-u 和 xterm 的 modifyOtherKeys——并注释了两者的参数顺序相反（<code>ESC[13;2u</code> vs <code>ESC[27;2;13~</code>），后者主要在 SSH 场景出现，因为“TERM 嗅探认不出 Ghostty，而我们从不主动推 kitty 模式“。</p>
-<p>同一条消歧目标，四家四种姿态：Codex 探测后启用、留开关；Kimi 协商加原生兜底；Claude 只解析不推送，把两种编码都当既成事实接受；ForgeLoopTUI 乐观推送、解析器只映射 Enter 一个键（其余 CSI-u 键码静默丢弃——够用主义：我要的只是 Shift+Enter 和回车的区分）。这没有对错，是各自对“多少终端会把我送进歧义“的不同估计。</p>
-<hr>
-<h2 id="三模式开关开了要对关了要对被劫持了也要对"><a class="header" href="#三模式开关开了要对关了要对被劫持了也要对">三、模式开关：开了要对，关了要对，被劫持了也要对</a></h2>
-<p>bracketed paste、focus 事件、同步输出、kitty 键盘——输入侧的能力几乎全是<strong>模式</strong>：进入时打开，退出时关闭。第 16 篇把模式开关列为攻击面（它讲“为什么危险“），这一篇补工程侧：为什么难对。</p>
-<p>难在状态的所有权不排他。终端模式是全 fd 共享的全局状态，而进程会挂起：Codex 里 Ctrl+Z 是特殊键位（<code>SUSPEND_KEY</code>），进程切后台再回来，raw mode 可能已经被 shell 或别的程序动过——所以有 <code>reapply_raw_mode_after_resume</code>，resume 时重新对账。外部编辑器（第 21 篇）是同一类问题的放大版：起 <code>$EDITOR</code> 前退 raw mode、暂停事件总线，回来后全部恢复。模式开关的正确性不是一个布尔值，是“开、关、被别人动过之后恢复“的三态对账。</p>
-<p>这也解释了一个看似多余的字段为什么存在：Codex 的输入事件栈从 crossterm 的 EventStream 收敛成七种 <code>TuiEvent</code>——Key、Paste、Resize、Draw、Resume、FocusGained、FocusLost。Resume 和两种 Focus 能进这个清单，本身就是对账需求的化石：挂起恢复要重同步，焦点得失要影响光标样式与轮询节奏。事件枚举的形状，记录的是终端现实的形状。</p>
-<hr>
-<h2 id="四复用器与-alt-screen中间还有一层翻译"><a class="header" href="#四复用器与-alt-screen中间还有一层翻译">四、复用器与 alt screen：中间还有一层翻译</a></h2>
-<p>以上所有假设之上还有一层：用户可能隔着 tmux 或 Zellij。复用器是一个中间人终端——它代理你的查询、转译你的模式开关、按自己的窗口管理切割你的输出。第 11 篇 §七-7 讲过 Codex 在这上面的演进：从 Zellij 特判，到特判删除、换成 ScrollbackStrategy 三档策略（并用一个测试把“特判不存在“钉死，第 24 篇讲这类守护测试）。这里只补一句输入侧的对称事实：复用器对输出做的是转译，对输入做的是<strong>过滤与改造</strong>——bracketed paste 标记、kitty 序列、focus 事件过一道复用器之后可能变形、延迟或消失，上一篇的 paste-burst 启发式，有一部分用户就是复用器制造出来的。</p>
-<p>alt screen 的启用判定（Codex 的 <code>determine_alt_screen_mode</code>）因此也不是配置读取，是一次综合判决：用户配置、终端能力、复用器在场与否，三方会审。</p>
-<hr>
-<h2 id="五雷区表与它的空缺"><a class="header" href="#五雷区表与它的空缺">五、雷区表与它的空缺</a></h2>
-<p>把这一篇的对照收成一张表（能力 × 各家策略）：</p>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>输入侧能力</th><th>Codex</th><th>Claude Code</th><th>Kimi Code</th><th>ForgeLoopTUI</th></tr>
-</thead>
-<tbody>
-<tr><td>能力探测</td><td>100ms 预算 + DA 哨兵提前判定，字节回放</td><td>DA1 哨兵为唯一机制，无超时</td><td>协商序列 + 150ms 分片超时</td><td>不探测，乐观推送</td></tr>
-<tr><td>kitty 键盘</td><td>探测启用 + 环境变量逃生门</td><td>只解析不推送，兼收 modifyOtherKeys</td><td>推 flags 7 + 原生修饰键兜底</td><td>无条件推 <code>ESC[&gt;1u</code>，只映射 Enter</td></tr>
-<tr><td>bracketed paste</td><td>支持，缺标记时走 paste-burst</td><td>支持，缺标记时 \r 启发式归一</td><td>支持，缺标记时走 paste-burst</td><td>支持（<code>ESC[?2004h</code>）</td></tr>
-<tr><td>挂起恢复</td><td>resume 重上 raw mode</td><td>—（未见对应机制）</td><td>退出前排空 stdin</td><td>—（引擎层不持有进程模型）</td></tr>
-<tr><td>终端身份</td><td>OSC 10/11 默认颜色、光标位置</td><td>XTVERSION（穿透 SSH）</td><td>OSC 颜色判明暗主题</td><td>不探测</td></tr>
-</tbody>
-</table>
-</div>
-<p>表的最后我想诚实标注一个空缺：这张表的列是“家“，不是“终端模拟器“。我原本想按第 11 篇四家记分牌的思路，收一张“输入侧能力 × 终端模拟器“的雷区矩阵——哪个终端在哪个序列上行为异常。结果是收不齐：这类数据不存在于任何公开处，它分散在各家的 issue tracker 和运维记忆里，每个 TUI 团队都在私下重攒一份。输入侧讨论比输出侧少一个数量级，这张填不出来的表就是证据本身。</p>
-<hr>
-<h2 id="六收束"><a class="header" href="#六收束">六、收束</a></h2>
-<p>输出侧的降级链有一个舒服的终点：颜色退到 16 色，内容还在。输入侧没有这个终点——按键的含义错了，不是降级，是<strong>错误</strong>。所以输入侧的工程主题不是“降级“，是“对账“：启动时探测对账、模式开关三态对账、挂起恢复对账、复用器在场对账。终端是上世纪七十年代的协议，每一家 agent 都在为它重新谈判一次。</p>
-<p>输出侧讲完了，输入侧也讲完了。现在可以去中场了：第 5 篇的 Event Sourcing 会回答一个这两篇不断逼近的问题——为什么输入输出两侧的挣扎，最后都收敛到“事件“这个抽象上。</p>
-<hr>
-<p><em>本文基于 2026-10-04 对以下源码的实际阅读：<a href="https://github.com/openai/codex">Codex</a> 本地快照 main <code>6b9826e3</code>（2026-09-09）：<code>codex-rs/tui/src/terminal_probe.rs</code> 与 <code>terminal_probe/</code>（启动探测与字节回放）、<code>tui.rs</code>（<code>init()</code>、七种 <code>TuiEvent</code>、<code>reapply_raw_mode_after_resume</code>）、<code>tui/keyboard_modes.rs</code>、<code>tui/job_control.rs</code>（<code>SUSPEND_KEY</code>）、<code>lib.rs</code>（<code>determine_alt_screen_mode</code>）；<a href="https://github.com/MoonshotAI/kimi-code">kimi-code</a> 本地源码 <code>54117a6b</code>（2026-09-24）：<code>packages/pi-tui/src/terminal.ts</code>、<code>keys.ts</code>、<code>native-modifiers.ts</code>；Claude Code 发布产物中的源码（2026-03-31 经 npm source map 外泄的公开快照）：<code>src/ink/terminal-querier.ts</code>、<code>src/ink/parse-keypress.ts</code>。ForgeLoopTUI 部分基于 v1.2.1 源码（<code>Input/RawTTY.swift</code>、<code>Input/KeyParser.swift</code>）。Claude Code 的挂起恢复行为未做全量排查，表中“未见“以本次阅读范围为准。</em></p>
+<p><em>本文涉及的仓库：<a href="https://github.com/alibaba/skill-up">skill-up</a>（设计对象）、<a href="https://github.com/BiBoyang/dsh-eval-harness">dsh-eval-harness</a>（TPS 测量 harness）。相关上游记录：issue <a href="https://github.com/alibaba/skill-up/issues/296">#296</a>、PR <a href="https://github.com/alibaba/skill-up/pull/265">#265</a>、PR <a href="https://github.com/alibaba/skill-up/pull/295">#295</a>。同系列前文：<a href="/posts/给-skill-建门禁-一天里的三种沉默失败-一次红线写法实证-和它抓到的上游-bug-又一只/">第二篇 · 给 skill 建门禁</a>、<a href="/posts/我给-skill-up-报了一个不存在的-bug/">第三篇 · 我给 skill-up 报了一个不存在的 bug</a>。</em></p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="ch21.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="ch07.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="ch05.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
-                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -247,13 +252,10 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="ch21.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="ch07.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="ch05.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
-                    </a>
             </nav>
 
         </div>
