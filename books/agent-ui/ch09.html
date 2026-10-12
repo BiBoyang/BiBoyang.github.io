@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-478b9049.js";
+            window.path_to_searchindex_js = "searchindex-0458ccd9.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-da67e966.js"></script>
@@ -231,7 +231,7 @@
 <p>适合承载：多任务队列、团队审批流、会话回放和分析、成本统计。Zacp 项目是这条路线的一个实际案例：WebUI + ACP 协议 + 多 CLI Agent，CLI Agent 不知道 WebUI 的存在，WebUI 只消费 ACP 事件，加一个 Web 端不需要改任何 agent 核心。它还顺便回应了一个争论：第 7 篇引过的两种极端观点，“GUI 必然到来“和“GUI Agent 方向根本上错了”（CLI-Anything 的立场），Zacp 恰好是两者的折中实例：agent 核心保持 CLI 原生、走结构化协议，用户界面侧用 Web 做投影。</p>
 <p>不适合承载：实时执行（延迟和网络依赖）、本地文件系统操作。</p>
 <h3 id="mobilecompanion不是主战场"><a class="header" href="#mobilecompanion不是主战场">Mobile：Companion，不是主战场</a></h3>
-<p>Mobile 不适合做 Agent 的主执行入口：屏幕小、输入慢、后台限制、散热墙、文件系统权限受限。但 Mobile 有一个不可替代的价值：<strong>用户离开电脑后，Mobile 是唯一能触达用户的端。</strong> 它作为审批触达点的具体场景，第 12 篇展开。</p>
+<p>Mobile 不适合做 Agent 的主执行入口：屏幕小、输入慢、后台限制、散热墙、文件系统权限受限。但 Mobile 有一个不可替代的价值：<strong>用户离开电脑后，Mobile 是唯一能触达用户的端。</strong></p>
 <p>适合承载：任务状态查看、高风险操作审批、执行总结阅读、简单回复。类似“远程任务控制器“，不是“缩小版 IDE“。</p>
 <h3 id="api自动化与集成入口"><a class="header" href="#api自动化与集成入口">API：自动化与集成入口</a></h3>
 <p>六个端之外还有第七个入口：API。它没有任何界面：CI/CD 流水线里触发 Agent（<code>./agent fix --auto</code> 背后就是一个 API 调用）、GitHub webhook 回调（PR 打开时自动发起 review）、脚本化工作流（定时任务、批量仓库维护），事件流以 JSON 形式被程序直接消费。</p>
@@ -288,11 +288,11 @@
 <p>满足这四个统一之后，每个端只是一个轻量的投影层：消费事件、渲染 UI、发送用户输入回 Runtime。你加一个 Mobile 端不需要改 Agent 逻辑，加一个 Web 端不需要改权限模型。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch09-four-unified.svg" alt="四个统一：Runtime、Event Log、Permission Engine、Workspace Model，各端只是薄投影层"><span class="img-wrapper"><img src="assets/ch09-four-unified.svg" alt="四个统一：Runtime、Event Log、Permission Engine、Workspace Model，各端只是薄投影层"></span></label></p>
 <hr>
-<h2 id="六不是所有产品都需要所有端"><a class="header" href="#六不是所有产品都需要所有端">六、不是所有产品都需要所有端</a></h2>
+<h2 id="六总结"><a class="header" href="#六总结">六、总结</a></h2>
 <p>六端 + API 是分析框架，不是 checklist。一个独立开发者的 Agent 工具可能只需要 CLI + TUI。一个团队协作的 Agent 平台可能需要 Web + IDE + Mobile。选哪些端，取决于用户在哪里、用户在那个场景下需要消费哪些事件。</p>
 <p>端多不多不是关键，关键是每加一个端，是不是只需要写投影层，不用重写 Agent 核心。如果每次加端都要重构事件模型和权限引擎，说明架构还没到位。</p>
 <hr>
-<h2 id="七总结"><a class="header" href="#七总结">七、总结</a></h2>
+<h2 id="七后续"><a class="header" href="#七后续">七、后续</a></h2>
 <p>最后一篇。从具体的技术和架构回到人：一个大前端开发者，在 Agent 时代的能力地图是什么？移动端、桌面端、TUI、全栈，这些经验怎么迁移到 Agent Workflow Engineer 这个新方向上。</p>
 <hr>
 <h2 id="参考与延伸"><a class="header" href="#参考与延伸">参考与延伸</a></h2>

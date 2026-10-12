@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-478b9049.js";
+            window.path_to_searchindex_js = "searchindex-0458ccd9.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-da67e966.js"></script>
@@ -183,7 +183,7 @@
 </blockquote>
 <hr>
 <h2 id="一打字机效果--增量渲染"><a class="header" href="#一打字机效果--增量渲染">一、打字机效果 ≠ 增量渲染</a></h2>
-<p>用过 ChatGPT、Claude、FlowDown 的人一定熟悉打字机效果——AI 回复逐字出现。但这是视觉错觉。</p>
+<p>用过 ChatGPT、Claude的人一定熟悉流式输出的打字机效果——AI 回复逐字出现。但这是视觉错觉。</p>
 <p>真实情况：<strong>数据层是增量的，渲染层不是。</strong></p>
 <pre><code>网络 SSE chunk → BalancedEmitter（增量吐出字符）
   → message.document += newText               // 全文拼接
@@ -221,7 +221,7 @@
 <p>④⑤⑥ 深度耦合。问题不能靠单独替换某一层解决。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch07-full-rebuild-pipeline.svg" alt="从 token 到像素的六阶段管线：④⑤⑥ 每步都是全量"><span class="img-wrapper"><img src="assets/ch07-full-rebuild-pipeline.svg" alt="从 token 到像素的六阶段管线：④⑤⑥ 每步都是全量"></span></label></p>
 <h3 id="解析层最根本的限制"><a class="header" href="#解析层最根本的限制">解析层：最根本的限制</a></h3>
-<p>以 cmark 为例（Swift 侧最主流的 Markdown 解析库，被 FlowDown/MarkdownView、Down 等使用）：</p>
+<p>以 cmark 为例：</p>
 <pre><code>cmark_parser_new()    → 创建 parser
 cmark_parser_feed()   → 喂入整个字符串
 cmark_parser_finish() → 结束解析，产出 AST
@@ -235,11 +235,13 @@ cmark_parser_free()   → 销毁 parser
 <p>整个 builder 假设输入是一份完整的解析结果。一次性产出完整的 <code>NSMutableAttributedString</code>，遍历所有 block node 做属性拼接。<code>NSMutableAttributedString</code> 本身有 <code>append(_:)</code>，但这条 builder 管线的设计假设不支持增量。</p>
 <h3 id="布局层"><a class="header" href="#布局层">布局层</a></h3>
 <p><code>textView.attributedText = doc</code> 之后，整段富文本重新进入文本系统计算。富文本布局比纯文本贵 50-100 倍：同样的 3000 字，纯文本布局 &lt;1ms，富文本 20-60ms。差距来自字形查找（6+ 种字体 face）、CJK 字体回退链、换行断点评估、内存分配风暴。</p>
-<h3 id="21-on-为什么这么重常数因子拆解"><a class="header" href="#21-on-为什么这么重常数因子拆解">2.1 O(n) 为什么这么重：常数因子拆解</a></h3>
+<h3 id="21-on-这么重常数因子拆解"><a class="header" href="#21-on-这么重常数因子拆解">2.1 O(n) 这么重：常数因子拆解</a></h3>
 <p>O(n) 的大 O 记法掩盖了常数因子。以 iPhone 上 3000 字富文本 NSAttributedString（包含代码块、标题、加粗、链接、表格等多种样式组合）为例，一次 CoreText 布局的实际开销拆开看：</p>
-<p><strong>字形生成。</strong> 纯文本布局是 trivial 的，一个字体 face，逐字符排版。但 Markdown 渲染产出的是高度异构的 NSAttributedString：正文用 <code>.systemFont</code>，加粗/斜体用不同 weight，代码块用等宽字体（<code>Menlo</code> 或 <code>SF Mono</code>），标题用不同 size（H1-H6 至少 2-3 种），链接可能换 foregroundColor，emoji 触发 Apple Color Emoji 字体回退路径。每个字符的属性变更都可能触发一次新的字体 face 查找。3000 字符 × 5-6 种字体 face，加上 CJK 字符的字体回退链（CJK 字形在 systemFont 中不完整时需回退到专用中文字体），字形查找本身就是显著的 CPU 开销。</p>
-<p><strong>换行计算。</strong> CoreText 的 line breaker 对每一行都要做宽度测量（候选断点位置的累积字符宽度）、断点选择（在允许的断点中选最优，考虑连字符、标点禁则）、中文特殊规则（行首禁则：。，、不能出现在行首；行末溢出：标点可以略微突出边界）。一个 3000 字的段落，假定平均每行 30 个字符、总共 100 行，断点评估的量级远比“扫描一遍字符串“大得多。</p>
-<p><strong>内存分配与 ARC 开销。</strong> 这是最容易被忽略的一项。每个 tick 的完整路径：<code>cmark_parser_new</code> + <code>cmark_node_new</code> × N + <code>cmark_parser_free</code>（malloc/free AST 节点树）→ <code>NSMutableAttributedString.append()</code> × M 个 block（每个 append 可能触发属性字典 NSDictionary 分配）→ <code>CTFramesetterCreateWithAttributedString</code>（内部分配 CTTypesetter + CTLine × 100 行 + 字形缓存）。9 次/秒 × 3000 字：大量短暂存活的对象在单次 runloop iteration 中创建和丢弃，ARC 的 retain/release 在这些对象间高频触发，autorelease pool 在 runloop 末尾 drain 时集中释放，产生额外 CPU spike。</p>
+<p><strong>字形生成。</strong>
+纯文本布局是 trivial 的，一个字体 face，逐字符排版。但 Markdown 渲染产出的是高度异构的 NSAttributedString：正文用 <code>.systemFont</code>，加粗/斜体用不同 weight，代码块用等宽字体（ <code>Menlo</code> 或 <code>SF Mono</code>），标题用不同 size（H1-H6 至少 2-3 种），链接可能换 foregroundColor，emoji 触发 Apple Color Emoji 字体回退路径。每个字符的属性变更都可能触发一次新的字体 face 查找。3000 字符 × 5-6 种字体 face，加上 CJK 字符的字体回退链（CJK 字形在 systemFont 中不完整时需回退到专用中文字体），字形查找本身就是显著的 CPU 开销。</p>
+<p><strong>换行计算。</strong>
+CoreText 的 line breaker 对每一行都要做宽度测量（候选断点位置的累积字符宽度）、断点选择（在允许的断点中选最优，考虑连字符、标点禁则）、中文特殊规则（行首禁则：。，、不能出现在行首；行末溢出：标点可以略微突出边界）。一个 3000 字的段落，假定平均每行 30 个字符、总共 100 行，断点评估的量级远比“扫描一遍字符串“大得多。</p>
+<p><strong>内存分配与 ARC 开销。</strong> 这是最容易被忽略的一项。每个 tick 的完整路径：<code>cmark_parser_new</code> + <code>cmark_node_new</code> × N + <code>cmark_parser_free</code>（malloc/free AST 节点树）→ <code>NSMutableAttributedString.append()</code> × M 个 block（每个 append 可能触发属性字典 NSDictionary 分配）→ <code>CTFramesetterCreateWithAttributedString</code>（内部分配 CTTypesetter + CTLine × 100 行 + 字形缓存）。9 次/秒 × 3000 字：大量短暂存活的对象在单次 runloop iteration 中创建和丢弃，ARC 的 retain/release 在这些对象间高频触发，autorelease pool 在 runloop 末尾 drain 时集中释放，产生额外 CPU 尖峰。</p>
 <p><strong>量化对比：</strong></p>
 <div class="table-wrapper">
 <table>
@@ -259,7 +261,7 @@ cmark_parser_free()   → 销毁 parser
 <p>对比 CSS layout engine：浏览器里 <code>element.appendChild(newParagraph)</code> 只标记父节点为 “layout dirty”，然后只重排那个子树，页面大部分内容保持原位。而 CoreText 的 <code>textView.attributedText = newAttrString</code>，一切 invalidate，从头到尾全量重排。</p>
 <p>Markdown 的块级结构更是放大了这个问题。列表嵌套深度、代码块边界、角标定义，这些跨段落上下文依赖意味着即使 CoreText 支持 dirty reflow，Markdown 解析层的全局依赖也会让“局部修改“扩散为“全局 dirty“。</p>
 <hr>
-<h2 id="三路线-a边输出边渲染flowdown-模式"><a class="header" href="#三路线-a边输出边渲染flowdown-模式">三、路线 A：边输出边渲染（FlowDown 模式）</a></h2>
+<h2 id="三路线-a边输出边渲染"><a class="header" href="#三路线-a边输出边渲染">三、路线 A：边输出边渲染</a></h2>
 <h3 id="balancedemitter节流发射器"><a class="header" href="#balancedemitter节流发射器">BalancedEmitter：节流发射器</a></h3>
 <pre><code class="language-swift">actor BalancedEmitter {
     private var buffer: String = ""
@@ -288,7 +290,7 @@ if emotionalDamage &gt;= 5000 {
 // 默认 20次/秒
 </code></pre>
 <p>设计思想：“宁可视觉上慢一点，也不能让 UI 掉帧。”</p>
-<h3 id="代价on²-从哪来"><a class="header" href="#代价on²-从哪来">代价：O(n²) 从哪来</a></h3>
+<h3 id="代价on²"><a class="header" href="#代价on²">代价：O(n²)</a></h3>
 <p>每次渲染是 O(n)。但流式场景下 O(n) 被执行了 O(n) 次：</p>
 <pre><code>tick  1: parse(50字)  + build(50字)  + layout(50字)
 tick  2: parse(100字) + build(100字) + layout(100字)
@@ -344,7 +346,7 @@ tick 90: parse(3000字)+ build(3000字)+ layout(3000字)
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch07-stack-matrix.svg" alt="五个技术栈各自解决了哪一层：解析层全是全量，差距在 ⑤⑥"><span class="img-wrapper"><img src="assets/ch07-stack-matrix.svg" alt="五个技术栈各自解决了哪一层：解析层全是全量，差距在 ⑤⑥"></span></label></p>
 <p>下面展开 WebView、RN 和 Lynx 三条路：它们各自的优势、代价和适用边界。</p>
 <h3 id="61-webview增量-reflow-是出厂能力"><a class="header" href="#61-webview增量-reflow-是出厂能力">6.1 WebView：增量 reflow 是出厂能力</a></h3>
-<p>浏览器渲染引擎（Blink / WebKit）从 90 年代 Netscape 时代就在解决“网页被 JavaScript 不断修改“的问题，增量 reflow 是它的第一性能力，不是后加的特性。</p>
+<p>浏览器渲染引擎（Blink / WebKit）从 90 年代 Netscape 时代就在解决“网页被 JavaScript 不断修改“的问题，增量 reflow 是它的第一能力，不是后加的特性。</p>
 <p>当 JavaScript 向 DOM 追加新节点时（<code>appendChild</code>），渲染引擎只标记受影响子树为 dirty：Style Computation 只对新增节点做 selector matching；Layout 从 dirty node 向上找到最近的 block formatting context root，向下做局部重排，兄弟节点不受影响；Paint 只重绘 dirty region；Composite 直接复用未变动的 GPU texture 图层。</p>
 <p>但 Markdown 解析仍在 JS 层，<code>marked.js</code>、<code>markdown-it</code> 每次仍然是全量 parse。所以实际做法分两类：</p>
 <p><strong>做法 A：innerHTML 全量替换。</strong> 每次新 chunk 到达，把整段 Markdown 重新转成 HTML 字符串，赋给 <code>innerHTML</code>。这条路径没有节点级复用：<code>innerHTML</code> 赋值的标准行为是解析整段 HTML 字符串、销毁旧子树、构建新子树，浏览器不在这条路径上做新旧 DOM diff，不存在“结构一致就复用节点“的优化。它的收益在重建之后：新子树挂上文档时，渲染引擎按正常的 dirty 传播做增量 reflow 和重绘，兄弟容器和页面其余部分不受影响；而且 HTML 解析本身是高度优化的 C++ 路径，比 JS 层的 reconcile 便宜得多。所以“全量“全在 DOM 构建层，并不全在渲染层。</p>
@@ -358,11 +360,12 @@ tick 90: parse(3000字)+ build(3000字)+ layout(3000字)
 <p>Lynx（字节跳动出品）在两个关键设计上对 AI 流式场景特别友好：双线程架构（Main Thread + Background Thread）将网络流解析和业务逻辑处理放在非 UI 线程：token 到达 → 后台解析 → 生成 UI 更新 → 提交给主线程渲染，正好匹配 LLM SSE 流式数据的处理需求。<code>fetchStream</code> 在引擎层面提供了三端统一的流式资源接口，不像 RN 需要依赖第三方 SSE 库做桥接。<code>updateData</code> 支持从原生侧增量推送数据，不需要每次重刷整个模板。</p>
 <p>Lynx 在流式渲染上的优势，本质上和 RN 新架构类似，后台线程处理流式数据和 UI diff，主线程只负责渲染。但 Lynx 把流式网络、模板更新、列表虚拟化做成了引擎内置能力，不需要开发者自己搭 pipe。</p>
 <h3 id="64-结论"><a class="header" href="#64-结论">6.4 结论</a></h3>
-<p><strong>不存在“增量 Markdown 解析“的跨平台魔法。</strong> 各技术栈只是在下游渲染架构上有不同程度的增量优化。WebView / RN / Lynx 的渲染架构天然更适应高频增量更新的冲击，原生 CoreText 在这方面是最脆弱的。技术栈选型时别再找“能增量解析 Markdown“的方案，不存在；真正该问的是“谁的渲染引擎能更好地吸收高频增量更新的冲击“。</p>
+<p><strong>不存在“增量 Markdown 解析“的跨平台魔法。</strong></p>
+<p>各技术栈只是在下游渲染架构上有不同程度的增量优化。WebView / RN / Lynx 的渲染架构天然更适应高频增量更新的冲击，原生 CoreText 在这方面是最脆弱的。技术栈选型时别再找“能增量解析 Markdown“的方案，不存在；真正该问的是“谁的渲染引擎能更好地吸收高频增量更新的冲击“。</p>
 <hr>
 <h2 id="七为什么移动端比桌面端严重得多"><a class="header" href="#七为什么移动端比桌面端严重得多">七、为什么移动端比桌面端严重得多</a></h2>
 <p>同一段 3000 字流式 Markdown，Mac 上 10-15% CPU，iPhone 飙到 60%。原因不在代码：</p>
-<p><strong>散热墙。</strong> iPhone 是被动散热，持续高负载触发 thermal throttling 后 CPU 降频，单次 layout 从 30ms 升到 50ms，CPU 占用率反而更高，恶性循环。</p>
+<p><strong>散热。</strong> iPhone 是被动散热，持续高负载触发 thermal throttling 后 CPU 降频，单次 layout 从 30ms 升到 50ms，CPU 占用率反而更高，恶性循环。</p>
 <p><strong>CPU 微架构。</strong> Mac M 系列芯片的共享 L2 与系统级缓存（SLC）更大，内存带宽更高。CoreText 布局阶段大量访问字形缓存，cache miss 时 iPhone 代价远高于 Mac。</p>
 <p><strong>WKWebView 成本。</strong> WebView 的进程隔离在移动端是实打实的代价，每个 WebContent 进程占用独立内存空间，超限会被 jetsam 杀掉（直接白屏）。桌面端无所谓，移动端多 cell 场景是真实的稳定性风险。</p>
 <hr>
@@ -382,12 +385,12 @@ tick 90: parse(3000字)+ build(3000字)+ layout(3000字)
 </div>
 <p>方案 2 的 ROI 最高。方案 4 留给相关库的长期演进——或者留给 WebView/RN，它们的渲染架构天生更适应这个场景。最稀缺的工程能力不是写出复杂的方案，是判断一个方案不该做。</p>
 <hr>
-<h2 id="九对照第-3-篇同一个问题两种介质"><a class="header" href="#九对照第-3-篇同一个问题两种介质">九、对照第 3 篇：同一个问题，两种介质</a></h2>
+<h2 id="九总结"><a class="header" href="#九总结">九、总结</a></h2>
 <p>第 3 篇讲 TUI 上的 Markdown 流式渲染，困在字符网格和物理行计算里。这一篇讲 GUI 上的同一问题，困在解析器和 CoreText 的全量重建里。核心矛盾完全相同：<strong>Markdown 是“写完再解析“的语言，Agent 是“边想边输出“的过程。</strong> 两种介质只是在不同的层面与这个矛盾搏斗。</p>
 <p>TUI 的策略：降级映射 + Stable Prefix Cache + 防御性 retreat。GUI 的策略：节流降频 + 纯文本 fallback + 模块检测。</p>
 <p>没有哪个介质解决了这个问题。都只是在不同的约束下做了不同的折中。</p>
 <hr>
-<h2 id="十总结"><a class="header" href="#十总结">十、总结</a></h2>
+<h2 id="十后续"><a class="header" href="#十后续">十、后续</a></h2>
 <p>第 10 篇：权限 UX 与 Diff UX，Agent 真正的“主界面“。前几篇（TUI 三部曲和 GUI 两篇）都在讲“怎么渲染“，下一篇开始讲“渲染什么“：在 Agent 的所有输出中，哪两样东西最值得精心设计界面。</p>
 <hr>
 <h2 id="参考与延伸"><a class="header" href="#参考与延伸">参考与延伸</a></h2>

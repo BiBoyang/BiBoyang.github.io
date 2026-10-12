@@ -36,7 +36,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-478b9049.js";
+            window.path_to_searchindex_js = "searchindex-0458ccd9.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-da67e966.js"></script>
@@ -975,9 +975,10 @@ if stableSource.count &gt; maxStableSourceChars { reset() }
 </code></pre>
 <p>不做这个偏移，下一个 <code>operationEnd</code> 的 <code>lineIndex</code> 就指向了错误的行，结果写到别人的位置。</p>
 <blockquote>
-<p>补记（2026.08）：本节描述的是全屏自管派的乱序处理：在扁平行数组上做坐标手术。inline viewport 派把乱序配对提前到了数据层：工具调用按稳定 id 在内存模型里配对、完成后才“发射“进终端 scrollback，乱序问题从坐标手术退化为字典查找。详见第 13 篇。</p>
+<p>补记（2026.08）：本节描述的是全屏自管派的乱序处理：在扁平行数组上做坐标手术。inline viewport 派把乱序配对提前到了数据层：工具调用按稳定 id 在内存模型里配对、完成后才“发射“进终端 scrollback，乱序问题从坐标手术退化为字典查找。</p>
 </blockquote>
-<p>这里要和第 2 篇的一个结论对齐：commit/live 分区模型里，committed 区“只追加，不改写“。那上面这些 <code>lines.replace</code> 原地替换（以及后面 thinking 的原地更新、通知的删除）不矛盾吗？不矛盾，关键在时序：这些操作针对的行都还处于 live 阶段，尚未被 Live Budget Planner 沉降到 committed 区。一行内容在 commit 之前是可变的，可以被替换、删除、连带偏移；一旦沉降完成，它进入只追加区域，后续任何事件都不会再改写它。“不可变“是 commit 之后的性质，不是写入即生效的性质。</p>
+<p>这里要和第 2 篇的一个结论对齐：commit/live 分区模型里，committed 区“只追加，不改写“。那上面这些 <code>lines.replace</code> 原地替换（以及后面 thinking 的原地更新、通知的删除）不矛盾吗？</p>
+<p>不矛盾，关键在时序：这些操作针对的行都还处于 live 阶段，尚未被 Live Budget Planner 沉降到 committed 区。一行内容在 commit 之前是可变的，可以被替换、删除、连带偏移；一旦沉降完成，它进入只追加区域，后续任何事件都不会再改写它。“不可变“是 commit 之后的性质，不是写入即生效的性质。</p>
 <hr>
 <h2 id="四thinking-块的渲染"><a class="header" href="#四thinking-块的渲染">四、thinking 块的渲染</a></h2>
 <p>thinking（推理过程）和普通流式输出的区别在于：它是模型在“想“，不是对用户的回复。视觉上需要区分。</p>
@@ -1079,22 +1080,23 @@ private func appendNotification(_ line: String) {
 <hr>
 <blockquote>
 <p>补记（2026.10）：本篇的槽位队列是扁平行数组上的坐标手术；第三节末尾的补记提过，inline 派把乱序配对提前到数据层，坐标手术退化为字典查找。最近读 Codex 的 TUI 源码（<code>codex-rs/tui/src/chatwidget/streaming.rs</code> 一带），见到了这个论断的一种完整实现形态，补在这里作为证据。</p>
-<p>Codex 的 transcript 不是行数组，是<strong>定稿 cell 序列 + 唯一一个 active 槽位</strong>。cell 是类型化的：<code>AgentMessageCell</code> 承载流式放行的行、<code>StreamingAgentTailCell</code> 是活动尾部、<code>ExecCell</code> 是工具调用、回答定稿后整段换成由原始源支撑的 <code>AgentMarkdownCell</code>（resize 时可从源重渲染）。流式期间尾部 cell 反复重建进 active 槽位，但内容没变就不触动版本号——<code>sync_active_stream_tail</code> 先比较、相等就直接返回，避免无效重绘；commit tick 放行的行则固化为新 cell，追加进定稿序列。</p>
+<p>Codex 的 transcript 不是行数组，是<strong>定稿 cell 序列 + 唯一一个 active 槽位</strong>。cell 是类型化的：<code>AgentMessageCell</code> 承载流式放行的行、<code>StreamingAgentTailCell</code> 是活动尾部、<code>ExecCell</code> 是工具调用、回答定稿后整段换成由原始源支撑的 <code>AgentMarkdownCell</code>（resize 时可从源重渲染）。流式期间尾部 cell 反复重建进 active 槽位，但内容没变就不触动编号——<code>sync_active_stream_tail</code> 先比较、相等就直接返回，避免无效重绘；commit tick 放行的行则固化为新 cell，追加进定稿序列。</p>
 <p>对照本篇，三个观察。其一，乱序与偏移问题在结构上消失：cell 有类型和身份，定位是查表而非坐标运算，<code>shiftIndices</code> 那样的连带偏移没有存在必要。其二，“原地可改写“的范围被压缩到一个槽位：本篇里流式块、thinking、工具槽位、通知都在同一份 <code>lines</code> 上做手术，正确性系于全局索引的同步偏移；Codex 把所有可变性收进唯一一个 active cell，定稿区连索引都不必维护。其三，权威来源的取舍：流式 delta 可能因传输饱和丢失，Codex 在 item 完成事件到达时用完成文本与流式累积源对账，注释写得很白——“item completion is authoritative”，传输丢 delta 不能让 transcript 截断。这个设计前提本篇没有对应物：ForgeLoopTUI 假定事件流本身可靠。</p>
 </blockquote>
 <hr>
 <h2 id="十总结-1"><a class="header" href="#十总结-1">十、总结</a></h2>
-<p>三篇文章覆盖了从底层渲染到上层 Agent 场景的完整技术栈：</p>
+<p>三篇文章覆盖了从底层渲染到上层 Agent 场景的完整场景：</p>
 <pre><code>第2篇: ANSI 序列 + 字符网格 + 增量 diff  → 渲染引擎层
 第3篇: 降级映射 + Stable Prefix Cache + 流式检测 → Markdown 层
 第4篇: 事件乱序 + 工具渲染 + 状态管理    → Agent 层
 </code></pre>
 <p>这三层之间有一个递进关系：每一层都建立在下一层之上，每一层的问题都因为底层的限制而更难解决。Agent 的树状事件在终端里变成线性输出——这个“树展平“的过程，就是 TUI 渲染引擎存在的全部意义。</p>
-<p>但展平只是手段。真正的问题是：凭什么树状事件一定要被展平成线性？如果终端不是唯一的投影介质呢？</p>
-<p>不过在去中场之前，还差最后一块。第 2 到第 4 篇讲的全是输出侧——怎么把内容画对、画快、画不崩；输入侧——键盘事件怎么进来、弹窗怎么不打架、终端能力怎么探测——还一页未写。接下来两篇（第 5、6 篇）补上这一半，然后才是系列的中场：<strong>Event Sourcing，Agent UI 的底层模型</strong>。中场会解释 CLI/TUI 的挣扎为什么不是终端的锅：真正有结构性矛盾的是“树状事件 → 线性输出“这个投影方式本身。一旦把 Agent 的执行抽象为事件流，CLI/TUI/GUI/IDE/Web/Mobile 各自应该站在哪里，就不再是形态之争了。</p>
+<p>但展平只是手段。真正的问题是：<strong>凭什么树状事件一定要被展平成线性？如果终端不是唯一的投影介质呢？</strong></p>
+<p>不过在继续讲这个问题之前，还差最后一块。第 2 到第 4 篇讲的全是输出侧——怎么把内容画对、画快、画不崩；而输入侧——键盘事件怎么进来、弹窗怎么不打架、终端能力怎么探测还一页未写。接下来两篇（第 5、6 篇）补上这一半，然后才是系列的中场：<strong>Event Sourcing，Agent UI 的底层模型</strong>。中场会解释 CLI/TUI 的纠结为什么不是终端的锅：真正有结构性矛盾的是“树状事件 → 线性输出“这个投影方式本身。</p>
+<p>一旦把 Agent 的执行抽象为事件流，CLI/TUI/GUI/IDE/Web/Mobile 各自应该站在哪里，就不再是形态之争了。</p>
 <hr>
 <h2 id="参考与延伸-3"><a class="header" href="#参考与延伸-3">参考与延伸</a></h2>
-<p><em>本文所有技术细节基于 <a href="https://github.com/BiBoyang/ForgeLoopTUI">ForgeLoopTUI</a> v1.2.0 的实际源码。其中 thinking 替换的 <code>shiftIndices</code> 调用为 v1.2.1 的索引偏移修复，v1.2.0 及更早版本中不存在。补记部分基于 <a href="https://github.com/openai/codex">Codex</a> 本地源码 2026-10-04 的阅读：<code>codex-rs/tui/src/chatwidget/streaming.rs</code>、<code>history_cell.rs</code>，快照 main <code>6b9826e3</code>（2026-09-09）。</em></p>
+<p>*本文所有技术细节基于 <a href="https://github.com/BiBoyang/ForgeLoopTUI">ForgeLoopTUI</a> v1.2.0 的实际源码。其中 thinking 替换的 <code>shiftIndices</code> 调用为 v1.2.1 的索引偏移修复，v1.2.0 及更早版本中不存在。补记部分基于 <a href="https://github.com/openai/codex">Codex</a> *</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="输入框agent-tui-最被低估的组件"><a class="header" href="#输入框agent-tui-最被低估的组件">输入框——agent TUI 最被低估的组件</a></h1>
 <blockquote>
@@ -1102,25 +1104,30 @@ private func appendNotification(_ line: String) {
 </blockquote>
 <hr>
 <h2 id="一最大的单文件"><a class="header" href="#一最大的单文件">一、最大的单文件</a></h2>
-<p>先看一个经验事实：在 Codex 的 TUI 里，代码量最大的单文件不是渲染控制器，不是事件总线，是输入框。<code>bottom_pane/chat_composer.rs</code> 一个文件 1.3 万行——实现约五千行，测试约八千行——测试比实现还多出六成，这个比例第 16 篇还会回来讲。</p>
-<p>一个“打字的地方“为什么值五千行实现？因为键盘事件流只有一条，而想消费它的东西越来越多：普通文本、光标编辑、历史回溯、slash 命令候选、文件引用弹窗、skill 弹窗、@提及弹窗、粘贴、外部编辑器、组合键。这些消费者不是并存，是<strong>互斥又嵌套</strong>——弹窗开着的时候，上下方向键归弹窗，不归文本；但 Enter 归谁，要看弹窗里有没有选中项。第 2 篇 §7 讲的光标定位和 IME 是这个组件的底层，第 4 篇 §8 讲的多行输入竞态是它的边界，本篇不再重复；本篇讲的是它的中层：那个决定“这个按键归谁“的仲裁结构。</p>
+<p>先看一个经验事实：在 Codex 的 TUI 里，代码量最大的单文件不是渲染控制器，不是事件总线，而是输入框。<code>bottom_pane/chat_composer.rs</code> 一个文件 1.3 万行，功能实现约五千行，测试约八千行。</p>
+<p>一个“打字的地方“为什么值五千行实现？因为键盘事件流只有一条，而想消费它的东西越来越多：普通文本、光标编辑、历史回溯、slash 命令候选、文件引用弹窗、skill 弹窗、@提及弹窗、粘贴、外部编辑器、组合键。这</p>
+<p>些消费者不是并存，是<strong>互斥又嵌套</strong>：弹窗开着的时候，上下方向键归弹窗，不归文本；但 Enter 归谁，要看弹窗里有没有选中项。第 2 篇 §7 讲的光标定位和 IME 是这个组件的底层，第 4 篇 §8 讲的多行输入竞态是它的边界，本篇不再重复；本篇讲的是它的中层：那个决定“这个按键归谁“的仲裁结构。</p>
 <hr>
 <h2 id="二弹窗优先级链"><a class="header" href="#二弹窗优先级链">二、弹窗优先级链</a></h2>
-<p>Codex 的仲裁结构是一条显式的优先级链。按键到达 composer 后，处理函数按固定顺序逐级问询：文件弹窗在不在？在就归它，它选择吞掉还是放行；放行则问 skill 弹窗；再放行问 @提及弹窗；都没有，才走裸文本路径。每一级的返回是 <code>(InputResult, bool)</code>——结果加“是否已消费“。</p>
+<p>Codex 在这里的判断结构是一条显式的优先级链。按键到达 composer 后，处理函数按固定顺序逐级问询：文件弹窗在不在？在就归它，它选择吞掉还是放行；放行则问 skill 弹窗；再放行问 @提及弹窗；都没有，才走裸文本路径。每一级的返回是 <code>(InputResult, bool)</code>——结果加“是否已消费“。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch21-popup-priority.svg" alt="按键的旅程：弹窗优先级链"><span class="img-wrapper"><img src="assets/ch21-popup-priority.svg" alt="按键的旅程：弹窗优先级链"></span></label></p>
-<p>这个设计的要点不在链本身（任何 GUI 的响应链都长这样），在于它把“哪个弹窗优先“从运行时状态变成了<strong>代码顺序</strong>。弹窗之间的优先级不靠注册表、不靠 z-index，靠 if-else 的书写顺序——最显式、最不可能被配置改坏的形式。考虑到这些弹窗涉及文件引用和 skill 调用这种直接影响上下文组装的功能，“优先级不可配置“是刻意的保守。</p>
+<p>这个设计的要点不在链本身（因为任何 GUI 的响应链就应该长这样），而在于它把“哪个弹窗优先“从运行时状态变成了<strong>代码顺序</strong>。弹窗之间的优先级不靠注册表、不靠 z-index，靠 if-else 的书写顺序——这是最显式、最不可能被配置改坏的形式。考虑到这些弹窗涉及文件引用和 skill 调用这种直接影响上下文组装的功能，“优先级不可配置“是刻意的保守。</p>
 <p>Kimi Code 走了另一条路，而且走得更远：它的 <code>editor-component.ts</code> 把整个编辑器定义成一个可替换接口（<code>EditorComponent</code>），注释明说动机——让扩展可以提供自己的编辑器实现，比如 vim 模式、emacs 模式、自定义键位。Codex 把优先级固化在代码顺序里，Kimi 把整个输入行为做成扩展点。一个防的是“被改坏“，一个赌的是“被扩展“。</p>
+<ul>
+<li>笔者注:在这个方面我其实更倾向于 Kimi Code.Codex 有些过于保守了</li>
+</ul>
 <hr>
 <h2 id="三这段输入是什么在-composer-内部裁决"><a class="header" href="#三这段输入是什么在-composer-内部裁决">三、“这段输入是什么“在 composer 内部裁决</a></h2>
 <p>回车之后发生什么，答案不是一个字符串，是一个枚举。Codex 的 <code>InputResult</code> 把提交裁决为几类：<code>Submitted{text, text_elements}</code>（普通消息，附带已解析的元素区间）、<code>Command</code>（slash 命令）、<code>CommandWithArgs</code> 等。“这是消息还是命令“的判断在 composer 内部完成，上游拿到的已经是结构化的裁决结果。</p>
-<p>slash 命令因此分两层：composer 层负责解析候选、驱动补全弹窗；执行分派在 ChatWidget 侧，<code>slash_dispatch.rs</code> 一个文件 1288 行。另有一个 <code>!</code> 前缀的 shell 逃生口，提交时剥掉前缀直接进 shell。这个职责切分值得记住：composer 管“这是什么“，分派层管“拿去怎么做“——前者是交互状态机，后者是业务路由。</p>
+<p>slash 命令因此分两层：composer 层负责解析候选、驱动补全弹窗；执行分派在 ChatWidget 侧，<code>slash_dispatch.rs</code> 一个文件 1288 行。另有一个 <code>!</code> 前缀的 shell 逃生口，提交时剥掉前缀直接进 shell。这个职责切分值得记住：composer 管“这是什么“，是交互状态机;分派层管“拿去怎么做“,是业务路由。</p>
 <hr>
 <h2 id="四粘贴不是一种操作是四种"><a class="header" href="#四粘贴不是一种操作是四种">四、粘贴不是一种操作，是四种</a></h2>
 <p>“用户粘贴了一段东西“在实现层至少是四种不同的东西：</p>
-<p><strong>其一，bracketed paste 事件。</strong> 终端用 <code>ESC[200~</code>/<code>ESC[201~</code> 包裹粘贴内容，TUI 收到一个完整的 Paste 事件，做 CRLF 归一化后进 composer。这是最干净的路径，前提是终端支持并开启了括号粘贴模式——第 6 篇会讲这个前提有多不牢靠。</p>
+<p><strong>其一，bracketed paste 事件。</strong> 终端用 <code>ESC[200~</code>/<code>ESC[201~</code> 包裹粘贴内容，TUI 收到一个完整的 Paste 事件，做 CRLF 归一化后进 composer。这是最干净的路径，前提是终端支持并开启了括号粘贴模式——后续会讲这个前提有多不牢靠。</p>
 <p><strong>其二，系统剪贴板直读。</strong> 图片粘贴走的是另一条路：直接读系统剪贴板，探测图片数据、编码、存临时文件、在文本里留占位。Codex 有专门的 <code>clipboard_paste.rs</code> 和一整组 <code>PasteImageError</code> 类型；Claude Code 的发布产物里也有独立的图片粘贴快捷键处理。</p>
 <p><strong>其三，大粘贴占位符。</strong> 粘贴几万字符的日志，不该把输入框撑爆。Claude Code 的做法：超过一万字符，显示时只留头 500 字符和尾 500 字符，中间折叠成一个占位引用（<code>inputPaste.ts</code>）。Codex 同构：大粘贴替换为占位符，提交时才还原展开（composer 头注释里的 “expands pending paste placeholders”）。两家独立收敛到同一个形态：<strong>显示层是占位符，数据层是全文，提交时对账。</strong></p>
-<p><strong>其四，paste-burst——没有括号粘贴时的湍流识别。</strong> 这是我最喜欢的一个。有些终端（特别是 Windows 上）不发 bracketed paste 标记，粘贴到达时就是一串<strong>极快的普通按键</strong>：人打字到不了那个速度，机器可以。于是识别粘贴变成了湍流识别：Codex 的 <code>paste_burst.rs</code> 和 Kimi 的 <code>paste-burst.ts</code> 是同一个启发式状态机的两次独立实现——字符间隔在毫秒级（Kimi 的参数：连续 ≥8 个字符、间隔 ≤8ms）就怀疑是粘贴；粘贴流里的 Enter 必须当换行而不是提交（Kimi 的 Enter 抑制窗口是 120ms）。两家的文件头注释写着同一个动机：防止粘贴里的回车把半截内容提交出去。</p>
+<p><strong>其四，paste-burst——没有括号粘贴时的湍流识别。</strong> 这是我最喜欢的一个(因为我自己做的时候就深受其扰)。</p>
+<p>有些终端（特别是 Windows 上）不发 bracketed paste 标记，粘贴到达时就是一串<strong>极快的普通按键</strong>：人打字到不了那个速度，机器可以。于是识别粘贴变成了湍流识别：Codex 的 <code>paste_burst.rs</code> 和 Kimi 的 <code>paste-burst.ts</code> 是同一个启发式状态机的两次独立实现——字符间隔在毫秒级（Kimi 的参数：连续 ≥8 个字符、间隔 ≤8ms）就怀疑是粘贴；粘贴流里的 Enter 必须当换行而不是提交（Kimi 的 Enter 抑制窗口是 120ms）。两家的文件头注释写着同一个动机：防止粘贴里的回车把半截内容提交出去。</p>
 <p>第四种的启示超出粘贴本身：<strong>当协议信号缺失时，行为信号（速度分布）可以顶替。</strong> 这在终端输入里是通用技法。</p>
 <hr>
 <h2 id="五把键盘交出去外部编辑器接力"><a class="header" href="#五把键盘交出去外部编辑器接力">五、把键盘交出去：外部编辑器接力</a></h2>
@@ -1128,43 +1135,48 @@ private func appendNotification(_ line: String) {
 <p>这是一次跨进程的状态交接：终端模式、按键流、绘制权，全部先交出去再拿回来。任何一个环节没对齐——raw mode 没退干净、事件流没暂停、恢复时状态对不上——用户看到的就是花屏或按键丢失。输入框因此不只是“消费键盘“的组件，还是键盘这个资源的<strong>进出关口</strong>。</p>
 <hr>
 <h2 id="六keymap-只做解析"><a class="header" href="#六keymap-只做解析">六、keymap 只做解析</a></h2>
-<p>最后一个职责切分：keymap 不管行为。Codex 的 <code>keymap.rs</code> 只做“配置 → 运行时键位“的解析（<code>from_config</code>），产出键位表；按键命中表之后做什么，是各组件自己的事。组合键（chord）有等待窗口——按下前缀键后等 <code>KEY_CHORD_TIMEOUT</code>，超时按单键处理，这个等待是用全局帧调度器的 <code>schedule_frame_in</code> 实现的，和状态行动画（第 15 篇）共用同一套定时基建。</p>
+<p>最后一个职责切分：keymap 不管行为。Codex 的 <code>keymap.rs</code> 只做“配置 → 运行时键位“的解析（<code>from_config</code>），产出键位表；按键命中表之后做什么，是各组件自己的事。组合键（chord）有等待窗口——按下前缀键后等 <code>KEY_CHORD_TIMEOUT</code>，超时按单键处理，这个等待是用全局帧调度器的 <code>schedule_frame_in</code> 实现的，和状态行动画共用同一套定时基建。</p>
 <p>Kimi 的对应物是声明式的：<code>keybindings.ts</code> 是一张全局键位注册表，下游包靠声明合并往里加键位；编辑动作枚举得极细，连 kill-ring（yank/yankPop，emacs 的剪切环）都有。读这些枚举就像读一份“用户手指习惯“的清单——肌肉记忆是存量资产，输入组件是这笔资产的托管所。</p>
 <hr>
 <h2 id="七总结"><a class="header" href="#七总结">七、总结</a></h2>
 <p>诚实交代 ForgeLoopTUI 的位置。它是渲染引擎不是产品，输入侧停在引擎层：<code>InputPipeline</code> 做 bracketed paste 聚合（<code>ESC[200~</code> 进、聚合成纯文本、<code>ESC[201~</code> 出为一个 <code>.paste</code> 事件），<code>KeyParser</code> 把 CSI/CSI-u/SS3/Alt/控制字符归一成 <code>KeyEvent</code>，未知序列静默丢弃。没有弹窗层、没有 slash 命令、没有外部编辑器——这些在它的定位里属于接入方。</p>
-<p>读完 Codex 的 composer，我的修正不是“ForgeLoopTUI 缺功能“，而是一个判断尺度的更新：<strong>composer 的状态机复杂度是 harness 成熟度的镜子。</strong> 一个 agent 产品支持多少种“输入不只是文本“的情形——文件、skill、图片、命令、长粘贴、外部编辑器——它的输入框就必须长出一副对应的状态机。输出侧的复杂度藏在渲染管线里，用户看不见；输入侧的复杂度直接顶在用户手指下面，每一个弹窗优先级、每一毫秒 Enter 抑制窗，用户都能感觉到。</p>
-<p>下一篇继续往下挖一层：这一篇的所有机制都假设键盘事件流是可靠的——按键是什么、粘贴有没有标记、模式开没开。这个假设在真实终端世界里有多脆弱，是输入侧真正的地狱。</p>
+<p>读完 Codex 的 composer，我的修正不是“ForgeLoopTUI 缺功能“，而是一个判断尺度的更新：<strong>composer 的状态机复杂度是 harness 成熟度的镜子。</strong> 一个 agent 产品支持多少种“输入不只是文本“的情形——包括不限于文件、skill、图片、命令、长粘贴、外部编辑器——它的输入框就必须在幕后弄出一副对应的状态机。</p>
+<p>输出侧的复杂度藏在渲染管线里，真要出了些问题导致变慢卡顿，用户可能还没那么敏感,可能会因为是网络问题；输入侧的复杂度直接顶在用户手指下面，每一个弹窗优先级、每一毫秒 Enter 抑制窗，用户都能感觉到且非常敏感。</p>
+<p>如果你觉得这篇内容讲得东西已经很黑暗了，那么你先别感叹，下一篇继续往下进入更加黑暗的地方：这一篇的所有机制都假设键盘事件流是可靠的——按键是什么、粘贴有没有标记、模式开没开。然而一旦真的做过就会发现一个事实——假设在真实终端世界里有多脆弱，我们将要面对的是输入侧真正的黑暗。</p>
 <hr>
 <h2 id="参考与延伸-4"><a class="header" href="#参考与延伸-4">参考与延伸</a></h2>
-<p><em>本文基于 2026-10-04 对以下源码的实际阅读：<a href="https://github.com/openai/codex">Codex</a> 本地快照 main <code>6b9826e3</code>（2026-09-09）：<code>codex-rs/tui/src/bottom_pane/chat_composer.rs</code>（弹窗优先级链、<code>InputResult</code>）、<code>bottom_pane/paste_burst.rs</code>、<code>clipboard_paste.rs</code>、<code>external_editor.rs</code>、<code>keymap.rs</code>、<code>chatwidget/slash_dispatch.rs</code>；<a href="https://github.com/MoonshotAI/kimi-code">kimi-code</a> 本地源码 <code>54117a6b</code>（2026-09-24）：<code>packages/pi-tui/src/editor-component.ts</code>、<code>keybindings.ts</code>、<code>paste-burst.ts</code>；Claude Code 发布产物中的源码（2026-03-31 经 npm source map 外泄的公开快照）：<code>src/components/PromptInput/inputPaste.ts</code>、<code>src/hooks/useTextInput.ts</code>。对照部分基于 <a href="https://github.com/BiBoyang/ForgeLoopTUI">ForgeLoopTUI</a> v1.2.1 源码（<code>Input/InputPipeline.swift</code>、<code>Input/KeyParser.swift</code>）。</em></p>
+<p><em>本文基于 2026-10-01 对以下源码的实际阅读：<a href="https://github.com/openai/codex">Codex</a> 本地快照 main <code>6b9826e3</code>（2026-09-09）：<code>codex-rs/tui/src/bottom_pane/chat_composer.rs</code>（弹窗优先级链、<code>InputResult</code>）、<code>bottom_pane/paste_burst.rs</code>、<code>clipboard_paste.rs</code>、<code>external_editor.rs</code>、<code>keymap.rs</code>、<code>chatwidget/slash_dispatch.rs</code>；<a href="https://github.com/MoonshotAI/kimi-code">kimi-code</a> 本地源码 <code>54117a6b</code>（2026-09-24）：<code>packages/pi-tui/src/editor-component.ts</code>、<code>keybindings.ts</code>、<code>paste-burst.ts</code>；Claude Code 发布产物中的源码（2026-03-31 经 npm source map 外泄的公开快照）：<code>src/components/PromptInput/inputPaste.ts</code>、<code>src/hooks/useTextInput.ts</code>。对照部分基于 <a href="https://github.com/BiBoyang/ForgeLoopTUI">ForgeLoopTUI</a> v1.2.1 源码（<code>Input/InputPipeline.swift</code>、<code>Input/KeyParser.swift</code>）。</em></p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="输入的地狱终端能力探测与降级"><a class="header" href="#输入的地狱终端能力探测与降级">输入的地狱——终端能力探测与降级</a></h1>
 <blockquote>
-<p>系列第六篇，第 5 篇的下半部。第 2 篇 §4.3 讲过输出侧的能力降级链——颜色从 true color 一路退到 16 色，是“能力有没有“的问题。输入侧是另一半，行业讨论比输出侧少一个数量级，难度却更高：<strong>输出降级是“能力有没有“，输入地狱是“行为一不一致“</strong>——同一个按键，在不同终端模拟器里是不同含义；同一条查询序列，有的终端回答、有的沉默、有的回一半。上一篇讲的 composer 状态机，全部建立在这条事件流可靠的假设上。这一篇讲这个假设本身。</p>
+<p>系列第六篇，第 5 篇的下半部。第 2 篇 §4.3 讲过输出侧的能力降级链——颜色从 true color 一路退到 16 色，是“能力有没有“的问题。输入侧是另一半，行业讨论比输出侧少一个数量级，难度却更高：<strong>输出降级是“能力有没有“，输入地狱是“行为一不一致“</strong>——同一个按键，在不同终端模拟器里是不同含义；同一条查询序列，有的终端回答、有的沉默、有的回一半。上一篇讲的 composer 状态机，全部建立在这条事件流可靠的假设上。从我遇到再到调研然后解决这个大坑花了我几百块的 token，这一篇讲这个大坑本身。</p>
 </blockquote>
 <hr>
 <h2 id="一探测启动时的第一次对账"><a class="header" href="#一探测启动时的第一次对账">一、探测：启动时的第一次对账</a></h2>
 <p>终端能力没法靠 <code>$TERM</code> 问出来——环境变量会撒谎（SSH 之后它是远端机器的猜测），所以严肃的 TUI 都在启动时做一次实况探测：向终端发查询序列，等回应，按回应决定启用哪些增强。</p>
 <p>但“等回应“本身就是设计难题：等多久？等来的字节和用户的按键混在同一条 stdin 里，怎么分？三家的答案几乎是一个光谱。</p>
-<p><strong>Codex：有预算的轮询，加一条哨兵捷径。</strong> <code>terminal_probe</code> 模块存在的原因是注释里的一句话：crossterm 的公共查询 API 最长会等两秒——“对启动和恢复来说太久，不支持的终端应该干脆退回保守默认”。所以 Codex 自己写探测：每组查询 100ms 墙钟预算，探光标位置、OSC 10/11 默认前景背景色、kitty 键盘增强支持；探测消耗掉的字节会回放进 crossterm 的解析器，保证探测期间用户的真实按键不丢。kitty 探测里还藏着一条捷径：查询后面跟着一个主设备属性（DA）请求，终端按序应答，DA 到了而键盘标志没到，就<strong>立即</strong>判定不支持，不必等满 100ms。整个过程带耗时埋点（“terminal startup probes completed”），探测是启动链路里被当成功耗来管理的正式公民。</p>
-<p><strong>Claude Code：用顺序代替超时。</strong> 同一条哨兵，Claude Code 押得更彻底——<code>terminal-querier</code> <strong>不设超时</strong>。技巧叫 DA1 哨兵：每批查询末尾追加一个 DA1 查询（主设备属性），而 VT100 以来的每个终端都会回答 DA1，且终端按顺序应答。于是判定变成纯顺序问题：你的响应先于 DA1 到，说明支持；DA1 先到了，说明不支持。超时这个维度被从设计里删掉了，换成对一个老旧但普适的协议不变量的信任。探测目录里的清单也值得看：DECRQM 问同步输出（2026）与 grapheme 聚簇（2027）模式、OSC 11 问背景色、kitty 键盘查询、XTVERSION 问终端名——XTVERSION 的注释点破了为什么环境变量不可靠：查询走 pty 不走环境，<strong>能穿透 SSH</strong>，而 <code>TERM_PROGRAM</code> 不能。</p>
-<p><strong>Kimi：协商式握手。</strong> kitty 键盘协议的完整三件套一次发出：推入目标标志位、查询当前标志、追加设备属性查询（<code>ESC[&gt;7u</code> <code>ESC[?u</code> <code>ESC[c</code>），然后按 150ms 分片超时收集回应。另有一个容易漏的收尾细节：退出前先排空 stdin——否则 kitty 协议下按过的键会留下“释放事件“，终端在你退出后还在吐字节。</p>
-<p>还有第四种哲学，是我自己的：ForgeLoopTUI <strong>不探测</strong>。<code>RawTTY.enter()</code> 无条件推入 kitty 消歧标志和 bracketed paste 开关，注释写明理由——“不支持的终端会静默吸收这些序列”。这是拿终端生态的一个经验事实当赌注：未知序列无害。赌注大体成立，但它是赌，不是证。</p>
+<p><strong>Codex：有预算的轮询，加一条哨兵捷径。</strong>
+<code>terminal_probe</code> 模块存在的原因是注释里的一句话：crossterm 的公共查询 API 最长会等两秒——“对启动和恢复来说太久，不支持的终端应该干脆退回保守默认”。所以 Codex 自己写探测：每组查询 100ms 预算，探光标位置、OSC 10/11 默认前景背景色、kitty 键盘增强支持；探测消耗掉的字节会回放进 crossterm 的解析器，保证探测期间用户的真实按键不丢。kitty 探测里还藏着一条捷径：查询后面跟着一个主设备属性（DA）请求，终端按序应答，DA 到了而键盘标志没到，就<strong>立即</strong>判定不支持，不必等满 100ms。整个过程带耗时埋点（“terminal startup probes completed”），探测是启动链路里被当成功耗来管理的正式公民。</p>
+<p><strong>Claude Code：用顺序代替超时。</strong>
+同一条哨兵，Claude Code 押得更彻底—— <code>terminal-querier</code> <strong>不设超时</strong> 。技巧叫 DA1 哨兵：每批查询末尾追加一个 DA1 查询（主设备属性），而 VT100 以来的每个终端都会回答 DA1，且终端按顺序应答。于是判定变成纯顺序问题：你的响应先于 DA1 到，说明支持；DA1 先到了，说明不支持。超时这个维度被从设计里删掉了，换成对一个老旧但普适的协议不变量的信任。探测目录里的清单也值得看：DECRQM 问同步输出（2026）与 grapheme 聚簇（2027）模式、OSC 11 问背景色、kitty 键盘查询、XTVERSION 问终端名——XTVERSION 的注释点破了为什么环境变量不可靠：查询走 pty 不走环境，<strong>能穿透 SSH</strong>，而 <code>TERM_PROGRAM</code> 不能。</p>
+<p><strong>Kimi：协商式握手。</strong>
+kitty 键盘协议的完整三件套一次发出：推入目标标志位、查询当前标志、追加设备属性查询（<code>ESC[&gt;7u</code> <code>ESC[?u</code> <code>ESC[c</code>），然后按 150ms 分片超时收集回应。另有一个容易漏的收尾细节：退出前先排空 stdin——否则 kitty 协议下按过的键会留下“释放事件“，终端在你退出后还在吐字节。</p>
+<p>还有第四种哲学，是我自己设计出来的：ForgeLoopTUI <strong>不探测</strong>。<code>RawTTY.enter()</code> 无条件推入 kitty 消歧标志和 bracketed paste 开关，注释写明理由——“不支持的终端会静默吸收这些序列”。这是拿终端生态的一个经验事实当赌注：未知序列无害。</p>
 <hr>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch22-terminal-probe.svg" alt="启动探测的四种姿态"><span class="img-wrapper"><img src="assets/ch22-terminal-probe.svg" alt="启动探测的四种姿态"></span></label></p>
 <h2 id="二一个键为什么不是一个键"><a class="header" href="#二一个键为什么不是一个键">二、一个键为什么不是一个键</a></h2>
 <p>探测的主要对象之一是键盘协议，因为传统终端键盘编码是歧义丛生的：Esc 键和 Alt 前缀共用 <code>0x1b</code>，Ctrl+I 和 Tab 是同一个字节，Ctrl+M 和回车是同一个字节。kitty 键盘协议（CSI-u）的存在意义就是消歧：给每个按键事件完整的键码与修饰符。</p>
 <p>启用它是改善，也是新负债。Codex 留了显式逃生门（<code>CODEX_TUI_DISABLE_KEYBOARD_ENHANCEMENT</code> 环境变量）；Kimi 除协议外还备了一条原生侧通路——通过原生 helper 直接轮询真实修饰键状态（<code>native-modifiers.ts</code>），协议报不上来的时候问操作系统；Claude Code 则同时解析两套编码——CSI-u 和 xterm 的 modifyOtherKeys——并注释了两者的参数顺序相反（<code>ESC[13;2u</code> vs <code>ESC[27;2;13~</code>），后者主要在 SSH 场景出现，因为“TERM 嗅探认不出 Ghostty，而我们从不主动推 kitty 模式“。</p>
-<p>同一条消歧目标，四家四种姿态：Codex 探测后启用、留开关；Kimi 协商加原生兜底；Claude 只解析不推送，把两种编码都当既成事实接受；ForgeLoopTUI 乐观推送、解析器只映射 Enter 一个键（其余 CSI-u 键码静默丢弃——够用主义：我要的只是 Shift+Enter 和回车的区分）。这没有对错，是各自对“多少终端会把我送进歧义“的不同估计。</p>
+<p>同一条消歧目标，四家四种姿态：Codex 探测后启用、留开关；Kimi 协商加原生兜底；Claude 只解析不推送，把两种编码都当既成事实接受；ForgeLoopTUI 乐观推送、解析器只映射 Enter 一个键（其余 CSI-u 键码静默丢弃——够用主义：我要的只是 Shift+Enter 和回车的区分）。</p>
+<p>这没有对错，是各自对“多少终端会把我送进歧义“的不同估计。</p>
 <hr>
 <h2 id="三模式开关开了要对关了要对被劫持了也要对"><a class="header" href="#三模式开关开了要对关了要对被劫持了也要对">三、模式开关：开了要对，关了要对，被劫持了也要对</a></h2>
-<p>bracketed paste、focus 事件、同步输出、kitty 键盘——输入侧的能力几乎全是<strong>模式</strong>：进入时打开，退出时关闭。第 20 篇把模式开关列为攻击面（它讲“为什么危险“），这一篇补工程侧：为什么难对。</p>
+<p>bracketed paste、focus 事件、同步输出、kitty 键盘——输入侧的能力几乎全是<strong>模式</strong>：进入时打开，退出时关闭。后续把模式开关列为攻击面（它讲“为什么危险“），这一篇补工程侧：为什么难对。</p>
 <p>难在状态的所有权不排他。终端模式是全 fd 共享的全局状态，而进程会挂起：Codex 里 Ctrl+Z 是特殊键位（<code>SUSPEND_KEY</code>），进程切后台再回来，raw mode 可能已经被 shell 或别的程序动过——所以有 <code>reapply_raw_mode_after_resume</code>，resume 时重新对账。外部编辑器（第 5 篇）是同一类问题的放大版：起 <code>$EDITOR</code> 前退 raw mode、暂停事件总线，回来后全部恢复。模式开关的正确性不是一个布尔值，是“开、关、被别人动过之后恢复“的三态对账。</p>
-<p>这也解释了一个看似多余的字段为什么存在：Codex 的输入事件栈从 crossterm 的 EventStream 收敛成七种 <code>TuiEvent</code>——Key、Paste、Resize、Draw、Resume、FocusGained、FocusLost。Resume 和两种 Focus 能进这个清单，本身就是对账需求的化石：挂起恢复要重同步，焦点得失要影响光标样式与轮询节奏。事件枚举的形状，记录的是终端现实的形状。</p>
+<p>这也解释了一个看似多余的字段为什么存在：Codex 的输入事件栈从 crossterm 的 EventStream 收敛成七种 <code>TuiEvent</code>——Key、Paste、Resize、Draw、Resume、FocusGained、FocusLost。Resume 和两种 Focus 能进这个清单，本身就是对账需求的化石：挂起恢复要重同步，焦点得失要影响光标样式与轮询节奏。</p>
 <hr>
 <h2 id="四复用器与-alt-screen中间还有一层翻译"><a class="header" href="#四复用器与-alt-screen中间还有一层翻译">四、复用器与 alt screen：中间还有一层翻译</a></h2>
-<p>以上所有假设之上还有一层：用户可能隔着 tmux 或 Zellij。复用器是一个中间人终端——它代理你的查询、转译你的模式开关、按自己的窗口管理切割你的输出。第 13 篇 §七-7 讲过 Codex 在这上面的演进：从 Zellij 特判，到特判删除、换成 ScrollbackStrategy 三档策略（并用一个测试把“特判不存在“钉死，第 16 篇讲这类守护测试）。这里只补一句输入侧的对称事实：复用器对输出做的是转译，对输入做的是<strong>过滤与改造</strong>——bracketed paste 标记、kitty 序列、focus 事件过一道复用器之后可能变形、延迟或消失，上一篇的 paste-burst 启发式，有一部分用户就是复用器制造出来的。</p>
+<p>以上所有假设之上还有一层：用户可能隔着 tmux 或 Zellij。复用器是一个中间人终端——它代理你的查询、转译你的模式开关、按自己的窗口管理切割你的输出。后续我会讲 Codex 在这上面的演进：从 Zellij 特判，到特判删除、换成 ScrollbackStrategy 三档策略。这里只补一句输入侧的对称事实：复用器对输出做的是转译，对输入做的是<strong>过滤与改造</strong>——bracketed paste 标记、kitty 序列、focus 事件过一道复用器之后可能变形、延迟或消失，上一篇的 paste-burst 启发式，有一部分用户就是复用器制造出来的。</p>
 <p>alt screen 的启用判定（Codex 的 <code>determine_alt_screen_mode</code>）因此也不是配置读取，是一次综合判决：用户配置、终端能力、复用器在场与否，三方会审。</p>
 <hr>
 <h2 id="五雷区表与它的空缺"><a class="header" href="#五雷区表与它的空缺">五、雷区表与它的空缺</a></h2>
@@ -1183,18 +1195,17 @@ private func appendNotification(_ line: String) {
 </tbody>
 </table>
 </div>
-<p>表的最后我想诚实标注一个空缺：这张表的列是“家“，不是“终端模拟器“。我原本想按第 13 篇四家记分牌的思路，收一张“输入侧能力 × 终端模拟器“的雷区矩阵——哪个终端在哪个序列上行为异常。结果是收不齐：这类数据不存在于任何公开处，它分散在各家的 issue tracker 和运维记忆里，每个 TUI 团队都在私下重攒一份。输入侧讨论比输出侧少一个数量级，这张填不出来的表就是证据本身。</p>
+<p>表的最后我想诚实标注一个空缺：我原本想收一张“输入侧能力 × 终端模拟器“的雷区矩阵表，哪个终端在哪个序列上行为异常。结果是压根就收不齐：这类数据存在于各家的 issue tracker 和运维记忆里，每个 TUI 团队都在私下重攒一份。</p>
+<p>输入侧的讨论比输出侧少一个数量级，重视程度也低一级，但是并不代表这里不重要或者坑少，反而这里处处都是大坑，这张填不出来的表就是证据本身。我其实在这里做的并不完备，主要就是已经被各种黑暗大坑弄得疲惫不堪。</p>
 <hr>
 <h2 id="六总结-1"><a class="header" href="#六总结-1">六、总结</a></h2>
-<p>输出侧的降级链有一个舒服的终点：颜色退到 16 色，内容还在。输入侧没有这个终点——按键的含义错了，不是降级，是<strong>错误</strong>。所以输入侧的工程主题不是“降级“，是“对账“：启动时探测对账、模式开关三态对账、挂起恢复对账、复用器在场对账。终端是上世纪七十年代的协议，每一家 agent 都在为它重新谈判一次。</p>
+<p>输出侧的降级链有一个舒服的终点：颜色退到 16 色，内容还在。</p>
+<p>输入侧没有这个终点——按键的含义错了，不是降级，是<strong>彻彻底底没有借口的错误</strong>。所以输入侧的工程主题不是“降级“，是“对账“：启动时探测对账、模式开关三态对账、挂起恢复对账、复用器在场对账。终端是上世纪七十年代的协议，每一家 agent 都在为它重新对账一次。</p>
 <p>输出侧讲完了，输入侧也讲完了。现在可以去中场了：第 7 篇的 Event Sourcing 会回答一个这两篇不断逼近的问题——为什么输入输出两侧的挣扎，最后都收敛到“事件“这个抽象上。</p>
-<hr>
-<h2 id="参考与延伸-5"><a class="header" href="#参考与延伸-5">参考与延伸</a></h2>
-<p><em>本文基于 2026-10-04 对以下源码的实际阅读：<a href="https://github.com/openai/codex">Codex</a> 本地快照 main <code>6b9826e3</code>（2026-09-09）：<code>codex-rs/tui/src/terminal_probe.rs</code> 与 <code>terminal_probe/</code>（启动探测与字节回放）、<code>tui.rs</code>（<code>init()</code>、七种 <code>TuiEvent</code>、<code>reapply_raw_mode_after_resume</code>）、<code>tui/keyboard_modes.rs</code>、<code>tui/job_control.rs</code>（<code>SUSPEND_KEY</code>）、<code>lib.rs</code>（<code>determine_alt_screen_mode</code>）；<a href="https://github.com/MoonshotAI/kimi-code">kimi-code</a> 本地源码 <code>54117a6b</code>（2026-09-24）：<code>packages/pi-tui/src/terminal.ts</code>、<code>keys.ts</code>、<code>native-modifiers.ts</code>；Claude Code 发布产物中的源码（2026-03-31 经 npm source map 外泄的公开快照）：<code>src/ink/terminal-querier.ts</code>、<code>src/ink/parse-keypress.ts</code>。ForgeLoopTUI 部分基于 v1.2.1 源码（<code>Input/RawTTY.swift</code>、<code>Input/KeyParser.swift</code>）。Claude Code 的挂起恢复行为未做全量排查，表中“未见“以本次阅读范围为准。</em></p>
-<div style="break-before: page; page-break-before: always;"></div>
+<hr><div style="break-before: page; page-break-before: always;"></div>
 <h1 id="中场event-sourcingagent-ui-的底层模型"><a class="header" href="#中场event-sourcingagent-ui-的底层模型">中场——Event Sourcing，Agent UI 的底层模型</a></h1>
 <blockquote>
-<p>系列第七篇，正篇的中场。前五篇（02–06）完成了 TUI 侧的完整深潜：输出侧的渲染引擎、Markdown 流式、事件树展平，输入侧的键盘事件流与终端能力探测。这一篇先不继续往前冲，往上走一层：输出侧三篇暴露的所有挣扎，到底有没有一个统一的理论解释？如果有，它是什么？</p>
+<p>系列第七篇，正篇的中场。前五篇（02–06）完成了 TUI 侧的完整深潜：输出侧的渲染引擎、Markdown 流式、事件树展平，输入侧的键盘事件流与终端能力探测。这一篇先不继续往前冲，往上走一层：输出侧三篇暴露的所有麻烦，到底有没有一个统一的理论解释？如果有，它是什么？</p>
 </blockquote>
 <hr>
 <h2 id="一中场为什么有必要"><a class="header" href="#一中场为什么有必要">一、中场为什么有必要</a></h2>
@@ -1206,9 +1217,9 @@ private func appendNotification(_ line: String) {
 </ul>
 <p>答案藏在一个更根本的问题里：</p>
 <blockquote>
-<p><strong>Agent 的执行过程本身不是任何 UI 的“内部状态“。它是一组独立于界面的、按时间顺序发生的事件。TUI 的困境（脆弱的状态记忆、防御逻辑、索引追踪）根子不在“终端难用“，在“把事件树强行投影成线性输出“这个投影操作本身的结构性代价。</strong></p>
+<p><strong>Agent 的执行过程本身不是任何 UI 的“内部状态“。它是一组独立于界面的、按时间顺序发生的事件集合。TUI 的困境（脆弱的状态记忆、防御逻辑、索引追踪）根子不在“终端难用“，在“把事件树强行投影成线性输出“这个投影操作本身的结构性代价。</strong></p>
 </blockquote>
-<p>换一个投影方式（比如 GUI），这些代价并不会消失——它们会以不同的形态重新出现。</p>
+<p>换一个投影方式（比如 GUI），这些代价会消失吗?不会!它们会以不同的形态重新出现。</p>
 <hr>
 <h2 id="二agent-的执行本质一条事件流"><a class="header" href="#二agent-的执行本质一条事件流">二、Agent 的执行本质：一条事件流</a></h2>
 <p>如果你把 Agent 的一次完整执行记录下来，去掉所有 UI 相关的渲染细节，底层是什么？</p>
@@ -1246,17 +1257,20 @@ private func appendNotification(_ line: String) {
 </table>
 </div>
 <p>这三层只覆盖“执行相关“的事件。<code>message</code>、<code>thinking</code>、<code>notification</code> 不在其中，它们是内容流（对话内容、推理过程、系统提示），同样以事件形式被各端投影，但不参与执行流/副作用流/交互流的划分。</p>
-<p>这个分类在学术上未必严谨，价值在于它解释了为什么不同 UI 对“同一套事件“的消费策略如此不同。</p>
+<p>这个分类在学术上未必严谨(因为实际上就是我自己总结的)，价值在于它解释了为什么不同 UI 对“同一套事件“的消费策略如此不同。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch05-event-lanes.svg" alt="事件三层分类：执行流、副作用流、交互流在 CLI 与 GUI 上的不同投影"><span class="img-wrapper"><img src="assets/ch05-event-lanes.svg" alt="事件三层分类：执行流、副作用流、交互流在 CLI 与 GUI 上的不同投影"></span></label></p>
-<p><strong>执行流</strong>是所有 UI 都要处理的基线。CLI 把它展平成线性文本，GUI 把它映射成卡片和状态动画。</p>
+<p><strong>执行流</strong>是所有 UI 都要处理的基线。CLI/TUI 把它展平成线性文本，GUI 把它映射成卡片和状态动画。</p>
 <p><strong>副作用流</strong>在不同 UI 上的处理成本差异最大。TUI 里 <code>file.changed</code> 就是一行路径字符串；GUI 里它需要一个 diff 审查面板：并排对比、行级高亮、部分采纳/拒绝。同一个事件，投影成本差一个数量级。</p>
 <p><strong>交互流</strong>是最有意思的。CLI 里 <code>permission.requested</code> 是阻塞式 <code>[y/n]</code>：输入循环停下来，进程阻塞在 stdin 上等用户输入。GUI 里同一个事件可以是非阻塞 toast + badge counter，用户喝咖啡回来再处理。<strong>事件类型相同，但 UI 和事件之间的响应契约完全不同。</strong> 这就是为什么“先稳定事件协议，再谈 GUI 复杂交互“不是空话：事件协议里如果不区分“需要即时响应“和“可以延迟处理“，GUI 的优势就无从发挥。</p>
 <hr>
 <h2 id="四两种极端说法的共同盲区"><a class="header" href="#四两种极端说法的共同盲区">四、两种极端说法的共同盲区</a></h2>
 <p>当前关于 Agent UI 的讨论里，有两种极端的说法。</p>
-<p><strong>说法一：CLI/TUI 只是早期原型，GUI 必然到来。</strong> 这个观点假设 CLI/TUI 和 GUI 是线性进化关系：蛋 → 幼虫 → 成虫。但用 event-sourcing 的框架看，这不是进化，是<strong>共存</strong>。SSH 到远程服务器跑 agent、在 tmux 里恢复一个跑了 3 小时的会话，这些场景里 CLI/TUI 不是“过渡方案“，是最优投影。GUI 在 diff 审查和多模态展示上有结构性优势，但这不是“替代“，是“分工“。</p>
+<p><strong>说法一：CLI/TUI 只是早期原型，GUI 必然到来。</strong>
+这个观点假设 CLI/TUI 和 GUI 是线性进化关系：卵 → 幼虫 → 成虫。但用 event-sourcing 的框架看，这不是进化，是<strong>共存</strong>。</p>
+<p>SSH 到远程服务器跑 agent、在 tmux 里恢复一个跑了 3 小时的会话，这些场景里 CLI/TUI 不是“过渡方案“，是最优投影。GUI 在 diff 审查和多模态展示上有结构性优势，但这不是“替代“，是“分工“。</p>
 <p>再往下推一层：这个说法还隐含一个成本假设：GUI 的投影成本会随着框架成熟趋近于零，所以“替代“只是时间问题。但 Agent GUI 的成本大头跟“画界面“关系不大，真正贵的是两个媒介基线差异带来的子系统数量：diff 审查面板、权限弹窗、多模态附件，每一个都是独立子系统（第 8 篇会逐一拆解）。这个成本由 Agent 场景的需求决定，不随框架成熟收敛。</p>
-<p><strong>说法二：GUI Agent 方向可能从根本上就是错的，Agent 就应该走 CLI 原生路线。</strong> 这是港大 CLI-Anything 项目（2026.06）的立场。这个说法正确的一面是：为 Agent 设计结构化接口、输出 JSON 而非像素，确实比让 Agent 模仿人类操作 GUI 更可靠。但它错误的一面是：把“Agent 的核心接口应该是结构化的“和“用户界面应该全是 CLI“混为一谈了。event-sourcing 框架下，Agent 核心走结构化协议，用户界面走多端投影，这两件事不互斥。</p>
+<p><strong>说法二：GUI Agent 方向可能从根本上就是错的，Agent 就应该走 CLI 原生路线。</strong>
+这是港大 CLI-Anything 项目（2026.06）的立场。这个说法正确的一面是：为 Agent 设计结构化接口、输出 JSON 而非 UI 界面，确实比让 Agent 模仿人类操作 GUI 更可靠。但它错误的一面是：把“Agent 的核心接口应该是结构化的“和“用户界面应该全是 CLI“混为一谈了。event-sourcing 框架下，Agent 核心走结构化协议，用户界面走多端投影，这两件事不互斥。</p>
 <p>再往下推一层：CLI-Anything 回答的是“Agent 如何可靠地操作软件“，这是接口层的问题，结构化协议确实是正确答案。但“人如何可靠地监督 Agent“是另一个问题：审查 diff、批准权限、审计历史，这些事情的载体是视觉界面，不是 JSON。把接口层的正确结论外推到界面层，就是这个说法越界的地方。</p>
 <p>两种说法的共同盲区：<strong>把 UI 当成了 Agent 的本体，而不是 Agent 的投影。</strong></p>
 <hr>
@@ -1280,11 +1294,15 @@ case operationEnd(id: "A", isError: false, result: "...")
 <hr>
 <h2 id="六append-only-event-log-的长期价值"><a class="header" href="#六append-only-event-log-的长期价值">六、append-only event log 的长期价值</a></h2>
 <p>事件流不只是渲染层的技术选型。它在 Agent 产品的几个关键维度上都有结构性的价值：</p>
-<p><strong>恢复。</strong> 用户关闭客户端、Agent 继续执行。重连时，客户端从 event log 的最后一条已知事件开始消费，所有状态重建，不需要存储“当时的 UI 状态“，只需要回放事件。第 2 篇讲的帧状态记忆（8 个字段、resize 全盘失效）之所以脆弱，正是因为 TUI 存的是“渲染结果“而不是“事件源头“。</p>
-<p><strong>审计。</strong> 想知道 Agent 昨天在哪个文件上做了什么改动？查 event log，<code>file.changed</code> 事件带时间戳、路径和 diff，不需要翻聊天记录。</p>
-<p><strong>协作。</strong> 两个用户看同一个 Agent 会话，Web 端看到富文本 diff 面板，IDE 端看到行级采纳/拒绝按钮。同一个事件流，两个投影，不需要为每个端单独维护状态。</p>
-<p><strong>回放。</strong> 调试 Agent 行为时，回放 event log 比复现对话快得多。</p>
-<p>已有开源实践在走这条路：Zacp 通过 ACP 协议把多个 CLI Agent 的事件流转发到 WebUI，是多端投影的一个雏形。细节第 11 篇展开。</p>
+<p><strong>恢复。</strong></p>
+<p>用户关闭客户端、Agent 继续执行。重连时，客户端从 event log 的最后一条已知事件开始消费，所有状态重建，不需要存储“当时的 UI 状态“，只需要回放事件。第 2 篇讲的帧状态记忆（8 个字段、resize 全盘失效）之所以脆弱，正是因为 TUI 存的是“渲染结果“而不是“事件源头“。</p>
+<p><strong>审计。</strong></p>
+<p>想知道 Agent 昨天在哪个文件上做了什么改动？查 event log，<code>file.changed</code> 事件带时间戳、路径和 diff，不需要翻聊天记录。</p>
+<p><strong>协作。</strong></p>
+<p>两个用户看同一个 Agent 会话，Web 端看到富文本 diff 面板，IDE 端看到行级采纳/拒绝按钮。同一个事件流，两个投影，不需要为每个端单独维护状态。</p>
+<p><strong>回放。</strong></p>
+<p>调试 Agent 行为时，回放 event log 比复现对话快得多。</p>
+<p>已有开源实践在走这条路：Zacp 通过 ACP 协议把多个 CLI Agent 的事件流转发到 WebUI，是多端投影的一个雏形。</p>
 <hr>
 <h2 id="七这个框架不能解决什么"><a class="header" href="#七这个框架不能解决什么">七、这个框架不能解决什么</a></h2>
 <p>Event Sourcing 解释了结构，但有两个问题它不能替你回答。</p>
@@ -1296,12 +1314,12 @@ case operationEnd(id: "A", isError: false, result: "...")
 <blockquote>
 <p><strong>Agent UI 的问题，本质上无关 CLI/TUI 和 GUI 的形态之争，真正的问题是如何为一条不确定、乱序、可中断的事件流设计多端投影。</strong></p>
 </blockquote>
-<p>前五篇（02–06）的 TUI 深潜，展示的是“线性投影“这种特定投影方式的完整成本。接下来三篇（08–10）转向 GUI，展示同一套事件在像素世界里的投影成本：同样的结构性矛盾，不同的表现形式。</p>
+<p>前五篇（02–06）的 TUI 深入研究，展示的是“线性投影“这种特定投影方式的完整成本。接下来三篇（08–10）转向 GUI，展示同一套事件在像素世界里的投影成本：同样的结构性矛盾，不同的表现形式。</p>
 <p>一条事件流，多种投影。</p>
-<p>第 8 篇：为什么做一个“不错“的 Agent GUI 这么难，从“两个媒介的基线不同“切入，拆解 FlowDown 的七个子系统，看同样的 Agent 事件在 GUI 世界需要多少额外的基础设施。</p>
 <hr>
-<h2 id="参考与延伸-6"><a class="header" href="#参考与延伸-6">参考与延伸</a></h2>
-<p><em>本文的 event-sourcing 框架部分受 <a href="https://github.com/BiBoyang/ForgeLoopTUI">ForgeLoopTUI</a> 的 CoreRenderEvent 设计和 <a href="https://github.com/helloxz/zacp">Zacp</a> 的 ACP 多 Agent WebUI 架构启发。知乎讨论参考：<a href="https://www.zhihu.com/question/2026125412049101416">为什么现在大多 Code Agent 的主形态是 CLI/TUI？</a>。港大 CLI-Anything 项目：<a href="https://github.com/HKUDS/CLI-Anything">https://github.com/HKUDS/CLI-Anything</a>。</em></p>
+<h2 id="参考与延伸-5"><a class="header" href="#参考与延伸-5">参考与延伸</a></h2>
+<p><em>本文的 event-sourcing 框架部分受 <a href="https://github.com/BiBoyang/ForgeLoopTUI">ForgeLoopTUI</a> 的 CoreRenderEvent 设计和 <a href="https://github.com/helloxz/zacp">Zacp</a> 的 ACP 多 Agent WebUI 架构启发。
+港大 CLI-Anything 项目：<a href="https://github.com/HKUDS/CLI-Anything">https://github.com/HKUDS/CLI-Anything</a>。</em></p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="为什么做一个不错的-agent-gui-这么难"><a class="header" href="#为什么做一个不错的-agent-gui-这么难">为什么做一个“不错“的 Agent GUI 这么难</a></h1>
 <blockquote>
@@ -1310,7 +1328,7 @@ case operationEnd(id: "A", isError: false, result: "...")
 <hr>
 <h2 id="一不错的标准不在同一基线"><a class="header" href="#一不错的标准不在同一基线">一、“不错“的标准不在同一基线</a></h2>
 <p>TUI 用户看到 box-drawing 字符画的表格（<code>┌───┬───┐</code>）会觉得“这是个表格“。GUI 用户看到表格没有交替行背景色、没有列排序按钮、不能横向滚动，就会觉得“这做得不好“。</p>
-<p>这不是用户挑剔。这是两个媒介的基线不同：</p>
+<p>这并非用户挑剔，而是两个媒介的基线不同：</p>
 <div class="table-wrapper">
 <table>
 <thead>
@@ -1327,7 +1345,7 @@ case operationEnd(id: "A", isError: false, result: "...")
 </table>
 </div>
 <p>TUI 的“功能完备“往往已经接近 GUI 的“勉强可用“。要在 GUI 上做到“不错“，你需要处理的子系统数量通常会比 TUI 多出数倍。</p>
-<p>第 1 篇引过一个判断：做 GUI 要么 VSCode 换皮（上限被封死），要么自研（至少半年以上）。这里把它量化：自研到底要做多少东西？以 FlowDown（我见过的开源原生 iOS Agent 客户端里技术拆分最完整的一个）为例。</p>
+<p>第 1 篇引过一个判断：做 GUI 要么 VSCode 换皮，要么自研。这里把它量化：自研到底要做多少东西？以 FlowDown 为例。</p>
 <hr>
 <h2 id="二flowdown-的七个子系统"><a class="header" href="#二flowdown-的七个子系统">二、FlowDown 的七个子系统</a></h2>
 <p>FlowDown 的界面层建立在这些独立库之上：</p>
@@ -1384,7 +1402,10 @@ error    → 红色叉 + 错误信息（可重试按钮）
 <p>GUI 上这是一个弹窗或内联确认卡片，含工具描述、权限列表、允许/拒绝/总是允许三个按钮。TUI 上是一行 <code>[y/n]</code> 提示。后者可以很轻，前者是一个完整的弹窗子系统，AlertController 的代码量不亚于一个小型 UI 库。</p>
 <h3 id="33-上下文窗口可视化"><a class="header" href="#33-上下文窗口可视化">3.3 上下文窗口可视化</a></h3>
 <p>Agent 的上下文窗口是有限资源。GUI 上可以展示 token 用量进度条、上下文溢出预警、历史消息压缩提示：<code>UIProgressView</code> + <code>UILabel</code> + 动画过渡，组合在一起就是一套完整的子系统。TUI 上你最多在状态栏展示 <code>[context: 85%]</code>。</p>
-<p>机制上这个子系统有三层。数据层：token 用量从哪来？API 响应里的 usage 字段是滞后值（一次请求完成后才知道），流式期间的实时用量要靠本地 tokenizer 估算，两个数据源的口径并不一致，界面上要决定显示哪一个。状态层：用量是会话级的单调递增状态，但历史消息压缩会让它突然回落，进度条要处理这种非单调跳变，动画方向是反的。交互层：预警阈值触发后做什么？只是变红，还是给出“开启新会话 / 压缩历史“的操作入口？这是产品决策，不是 UI 决策。</p>
+<p>机制上这个子系统有三层。</p>
+<p>数据层：token 用量从哪来？API 响应里的 usage 字段是滞后值（一次请求完成后才知道），流式期间的实时用量要靠本地 tokenizer 估算，两个数据源的口径并不一致，界面上要决定显示哪一个。</p>
+<p>状态层：用量是会话级的单调递增状态，但历史消息压缩会让它突然回落，进度条要处理这种非单调跳变，动画方向是反的。</p>
+<p>交互层：预警阈值触发后做什么？只是变红，还是给出“开启新会话 / 压缩历史“的操作入口？这是产品决策，不是 UI 决策。</p>
 <h3 id="34-多模态嵌入"><a class="header" href="#34-多模态嵌入">3.4 多模态嵌入</a></h3>
 <p>GUI Agent 客户端需要支持图片附件（Vision 模型输入）、文件附件（代码文件、PDF）、语音输入（转写）。每种附件类型都需要自己的缩略图渲染、上传进度指示、错误重试、点击放大/预览。TUI 上多模态是文件路径字符串：<code>file:///path/to/image.png</code>。</p>
 <p>每种附件背后是一条完整的管线：选取（系统 picker 或拖拽）→ 本地校验（格式、大小）→ 缩略图生成（后台线程，主线程不能卡）→ 上传（进度回调、失败重试）→ 发送后预览（点击放大、长按保存）。管线的每一环都是一个状态机，而它们共享同一个 cell：附件还在上传途中用户就点了发送，“文本已发、附件未完成“这个中间态怎么展示，是没有现成答案的问题。TUI 绕开了整条管线：路径字符串不需要状态机。</p>
@@ -1392,7 +1413,7 @@ error    → 红色叉 + 错误信息（可重试按钮）
 <h2 id="四长会话的性能"><a class="header" href="#四长会话的性能">四、长会话的性能</a></h2>
 <p>第 2 篇讲过 TUI 在长会话下的困境：帧超过终端高度触发全量重绘，Live Budget Planner 把超预算的 live 行沉降到 committed 区，物理行缓存全部重算。</p>
 <p>GUI 在长会话下的性能问题是不同性质的。<code>UITableView</code> / <code>UICollectionView</code> 天生支持 cell 复用：屏幕外 cell 被回收，屏幕内 cell 被复用填充新数据。这是 iOS SDK 内建能力，不需要手写。</p>
-<p>但这不意味 GUI 没有性能挑战。万级消息的列表仍然需要：</p>
+<p>但这不意味 GUI 没有性能挑战。超长消息的列表仍然需要：</p>
 <ul>
 <li>分页加载（滚到顶部时异步加载更早的消息）</li>
 <li>动态高度缓存（避免每次 <code>heightForRowAt</code> 都重新 layout cell；iOS 8+ 的 self-sizing cell 能自动算高，但对流式更新、高度异构的富文本 cell，自动计算意味着反复 layout，手写缓存仍有必要）</li>
@@ -1402,12 +1423,12 @@ error    → 红色叉 + 错误信息（可重试按钮）
 <hr>
 <h2 id="五dark-mode-和无障碍tui-相对省事gui-要逐项手写"><a class="header" href="#五dark-mode-和无障碍tui-相对省事gui-要逐项手写">五、Dark Mode 和无障碍：TUI 相对省事，GUI 要逐项手写</a></h2>
 <p>这是 TUI 相对省事的能力，但不是免费。终端设置的颜色方案通常会自动带到 ANSI 渲染上；无障碍支持取决于终端和具体实现。</p>
-<p>GUI 上这两个是实打实的工作量，但要分开说。Dark Mode 对系统颜色免费，对自定义颜色不免费：每个自定义颜色都要定义 light/dark variant，每个自定义 view 都要在 <code>traitCollectionDidChange</code> 里刷新。还有一个隐蔽成本是动态色解析：<code>UIColor.systemBlue</code> 这类动态颜色在 trait 变化时重新解析，但自定义绘制（<code>draw(_:)</code>、CALayer）里的颜色不会自动跟随，需要手动监听并重绘；渐变、阴影这类叠加效果在两种模式下的对比度要分别调。</p>
+<p>GUI 上这两个是实打实的工作量，但要分开说。Dark Mode 对系统颜色简单，对自定义颜色稍微复杂：每个自定义颜色都要定义 light/dark variant，每个自定义 view 都要在 <code>traitCollectionDidChange</code> 里刷新。还有一个隐蔽成本是动态色解析：<code>UIColor.systemBlue</code> 这类动态颜色在 trait 变化时重新解析，但自定义绘制（<code>draw(_:)</code>、CALayer）里的颜色不会自动跟随，需要手动监听并重绘；渐变、阴影这类叠加效果在两种模式下的对比度要分别调。</p>
 <p>无障碍同样分两半：标准控件（UIButton、UILabel）由系统免费获得 VoiceOver 支持；自定义绘制的 view 则全是手写工作量，为每个交互元素设置 <code>accessibilityLabel</code> / <code>accessibilityHint</code>，为自定义容器实现 <code>UIAccessibilityContainer</code>，为图表类内容提供文字化描述。而 Agent 客户端恰好多是自定义绘制：tool card、diff 视图、流式动画。不难，但多——每个自定义 view 都要做，漏一个就是 bug。</p>
 <hr>
 <h2 id="六跨平台从零成本到选阵营"><a class="header" href="#六跨平台从零成本到选阵营">六、跨平台：从零成本到选阵营</a></h2>
 <p>第 2 篇讲过 TUI 的跨平台：同一套 ANSI 序列，所有终端通用。</p>
-<p>GUI 没有这个选项。选了 UIKit → 只有 Apple 平台。选了 Electron → 全平台但有 150MB+ 基线。选了 Flutter → 全平台但 Dart 生态有限。选了 Compose Multiplatform → iOS 已稳定，但生态和三方库覆盖仍比 UIKit / SwiftUI 薄。</p>
+<p>GUI 没有这个选项。选了 UIKit → 只有 Apple 平台。选了 Electron → 全桌面平台但有 150MB+ 基线。选了 Flutter → 全平台但 Dart 生态有限。选了 Compose Multiplatform → iOS 已稳定，但生态和三方库覆盖仍比 UIKit / SwiftUI 薄。</p>
 <p>对于独立开发者或小团队，这个选择直接决定能做多大。FlowDown 选择 UIKit，所以当前实现只覆盖 Apple 平台。覆盖 Android 和 Web 基本等于重写整个 UI 层。</p>
 <hr>
 <h2 id="七回到-event-sourcing同一套事件翻倍的投影成本"><a class="header" href="#七回到-event-sourcing同一套事件翻倍的投影成本">七、回到 Event Sourcing：同一套事件，翻倍的投影成本</a></h2>
@@ -1420,8 +1441,9 @@ error    → 红色叉 + 错误信息（可重试按钮）
 <p>不是谁更好。选 TUI 是因为你必须在受限环境中交付：ssh、低配机器、管道化、CI 集成。选 GUI 是因为你的用户期望“不错“——而“不错“在 GUI 上的门槛，比很多人想象的高得多。</p>
 <p>下一篇聚焦这个门槛里最核心的一块：GUI 上的 Markdown 流式渲染：打字机效果背后的三层管线（解析 → 构建 → 布局），以及为什么全量重建才是瓶颈。</p>
 <hr>
-<h2 id="参考与延伸-7"><a class="header" href="#参考与延伸-7">参考与延伸</a></h2>
-<p><em>本文的 GUI 子系统拆解基于 <a href="https://github.com/Lakr233/FlowDown">FlowDown</a> 的实际架构分析。TUI 对照部分基于 <a href="https://github.com/BiBoyang/ForgeLoopTUI">ForgeLoopTUI</a> v1.2.0。</em></p>
+<h2 id="参考与延伸-6"><a class="header" href="#参考与延伸-6">参考与延伸</a></h2>
+<p><em>本文的 GUI 子系统拆解基于 <a href="https://github.com/Lakr233/FlowDown">FlowDown</a> 的实际架构分析。
+TUI 对照部分基于 <a href="https://github.com/BiBoyang/ForgeLoopTUI">ForgeLoopTUI</a> v1.2.0。</em></p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="gui-上的-markdown-流式渲染全量重建与工程折中"><a class="header" href="#gui-上的-markdown-流式渲染全量重建与工程折中">GUI 上的 Markdown 流式渲染——全量重建与工程折中</a></h1>
 <blockquote>
@@ -1429,7 +1451,7 @@ error    → 红色叉 + 错误信息（可重试按钮）
 </blockquote>
 <hr>
 <h2 id="一打字机效果--增量渲染"><a class="header" href="#一打字机效果--增量渲染">一、打字机效果 ≠ 增量渲染</a></h2>
-<p>用过 ChatGPT、Claude、FlowDown 的人一定熟悉打字机效果——AI 回复逐字出现。但这是视觉错觉。</p>
+<p>用过 ChatGPT、Claude的人一定熟悉流式输出的打字机效果——AI 回复逐字出现。但这是视觉错觉。</p>
 <p>真实情况：<strong>数据层是增量的，渲染层不是。</strong></p>
 <pre><code>网络 SSE chunk → BalancedEmitter（增量吐出字符）
   → message.document += newText               // 全文拼接
@@ -1467,7 +1489,7 @@ error    → 红色叉 + 错误信息（可重试按钮）
 <p>④⑤⑥ 深度耦合。问题不能靠单独替换某一层解决。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch07-full-rebuild-pipeline.svg" alt="从 token 到像素的六阶段管线：④⑤⑥ 每步都是全量"><span class="img-wrapper"><img src="assets/ch07-full-rebuild-pipeline.svg" alt="从 token 到像素的六阶段管线：④⑤⑥ 每步都是全量"></span></label></p>
 <h3 id="解析层最根本的限制"><a class="header" href="#解析层最根本的限制">解析层：最根本的限制</a></h3>
-<p>以 cmark 为例（Swift 侧最主流的 Markdown 解析库，被 FlowDown/MarkdownView、Down 等使用）：</p>
+<p>以 cmark 为例：</p>
 <pre><code>cmark_parser_new()    → 创建 parser
 cmark_parser_feed()   → 喂入整个字符串
 cmark_parser_finish() → 结束解析，产出 AST
@@ -1481,11 +1503,13 @@ cmark_parser_free()   → 销毁 parser
 <p>整个 builder 假设输入是一份完整的解析结果。一次性产出完整的 <code>NSMutableAttributedString</code>，遍历所有 block node 做属性拼接。<code>NSMutableAttributedString</code> 本身有 <code>append(_:)</code>，但这条 builder 管线的设计假设不支持增量。</p>
 <h3 id="布局层"><a class="header" href="#布局层">布局层</a></h3>
 <p><code>textView.attributedText = doc</code> 之后，整段富文本重新进入文本系统计算。富文本布局比纯文本贵 50-100 倍：同样的 3000 字，纯文本布局 &lt;1ms，富文本 20-60ms。差距来自字形查找（6+ 种字体 face）、CJK 字体回退链、换行断点评估、内存分配风暴。</p>
-<h3 id="21-on-为什么这么重常数因子拆解"><a class="header" href="#21-on-为什么这么重常数因子拆解">2.1 O(n) 为什么这么重：常数因子拆解</a></h3>
+<h3 id="21-on-这么重常数因子拆解"><a class="header" href="#21-on-这么重常数因子拆解">2.1 O(n) 这么重：常数因子拆解</a></h3>
 <p>O(n) 的大 O 记法掩盖了常数因子。以 iPhone 上 3000 字富文本 NSAttributedString（包含代码块、标题、加粗、链接、表格等多种样式组合）为例，一次 CoreText 布局的实际开销拆开看：</p>
-<p><strong>字形生成。</strong> 纯文本布局是 trivial 的，一个字体 face，逐字符排版。但 Markdown 渲染产出的是高度异构的 NSAttributedString：正文用 <code>.systemFont</code>，加粗/斜体用不同 weight，代码块用等宽字体（<code>Menlo</code> 或 <code>SF Mono</code>），标题用不同 size（H1-H6 至少 2-3 种），链接可能换 foregroundColor，emoji 触发 Apple Color Emoji 字体回退路径。每个字符的属性变更都可能触发一次新的字体 face 查找。3000 字符 × 5-6 种字体 face，加上 CJK 字符的字体回退链（CJK 字形在 systemFont 中不完整时需回退到专用中文字体），字形查找本身就是显著的 CPU 开销。</p>
-<p><strong>换行计算。</strong> CoreText 的 line breaker 对每一行都要做宽度测量（候选断点位置的累积字符宽度）、断点选择（在允许的断点中选最优，考虑连字符、标点禁则）、中文特殊规则（行首禁则：。，、不能出现在行首；行末溢出：标点可以略微突出边界）。一个 3000 字的段落，假定平均每行 30 个字符、总共 100 行，断点评估的量级远比“扫描一遍字符串“大得多。</p>
-<p><strong>内存分配与 ARC 开销。</strong> 这是最容易被忽略的一项。每个 tick 的完整路径：<code>cmark_parser_new</code> + <code>cmark_node_new</code> × N + <code>cmark_parser_free</code>（malloc/free AST 节点树）→ <code>NSMutableAttributedString.append()</code> × M 个 block（每个 append 可能触发属性字典 NSDictionary 分配）→ <code>CTFramesetterCreateWithAttributedString</code>（内部分配 CTTypesetter + CTLine × 100 行 + 字形缓存）。9 次/秒 × 3000 字：大量短暂存活的对象在单次 runloop iteration 中创建和丢弃，ARC 的 retain/release 在这些对象间高频触发，autorelease pool 在 runloop 末尾 drain 时集中释放，产生额外 CPU spike。</p>
+<p><strong>字形生成。</strong>
+纯文本布局是 trivial 的，一个字体 face，逐字符排版。但 Markdown 渲染产出的是高度异构的 NSAttributedString：正文用 <code>.systemFont</code>，加粗/斜体用不同 weight，代码块用等宽字体（ <code>Menlo</code> 或 <code>SF Mono</code>），标题用不同 size（H1-H6 至少 2-3 种），链接可能换 foregroundColor，emoji 触发 Apple Color Emoji 字体回退路径。每个字符的属性变更都可能触发一次新的字体 face 查找。3000 字符 × 5-6 种字体 face，加上 CJK 字符的字体回退链（CJK 字形在 systemFont 中不完整时需回退到专用中文字体），字形查找本身就是显著的 CPU 开销。</p>
+<p><strong>换行计算。</strong>
+CoreText 的 line breaker 对每一行都要做宽度测量（候选断点位置的累积字符宽度）、断点选择（在允许的断点中选最优，考虑连字符、标点禁则）、中文特殊规则（行首禁则：。，、不能出现在行首；行末溢出：标点可以略微突出边界）。一个 3000 字的段落，假定平均每行 30 个字符、总共 100 行，断点评估的量级远比“扫描一遍字符串“大得多。</p>
+<p><strong>内存分配与 ARC 开销。</strong> 这是最容易被忽略的一项。每个 tick 的完整路径：<code>cmark_parser_new</code> + <code>cmark_node_new</code> × N + <code>cmark_parser_free</code>（malloc/free AST 节点树）→ <code>NSMutableAttributedString.append()</code> × M 个 block（每个 append 可能触发属性字典 NSDictionary 分配）→ <code>CTFramesetterCreateWithAttributedString</code>（内部分配 CTTypesetter + CTLine × 100 行 + 字形缓存）。9 次/秒 × 3000 字：大量短暂存活的对象在单次 runloop iteration 中创建和丢弃，ARC 的 retain/release 在这些对象间高频触发，autorelease pool 在 runloop 末尾 drain 时集中释放，产生额外 CPU 尖峰。</p>
 <p><strong>量化对比：</strong></p>
 <div class="table-wrapper">
 <table>
@@ -1505,7 +1529,7 @@ cmark_parser_free()   → 销毁 parser
 <p>对比 CSS layout engine：浏览器里 <code>element.appendChild(newParagraph)</code> 只标记父节点为 “layout dirty”，然后只重排那个子树，页面大部分内容保持原位。而 CoreText 的 <code>textView.attributedText = newAttrString</code>，一切 invalidate，从头到尾全量重排。</p>
 <p>Markdown 的块级结构更是放大了这个问题。列表嵌套深度、代码块边界、角标定义，这些跨段落上下文依赖意味着即使 CoreText 支持 dirty reflow，Markdown 解析层的全局依赖也会让“局部修改“扩散为“全局 dirty“。</p>
 <hr>
-<h2 id="三路线-a边输出边渲染flowdown-模式"><a class="header" href="#三路线-a边输出边渲染flowdown-模式">三、路线 A：边输出边渲染（FlowDown 模式）</a></h2>
+<h2 id="三路线-a边输出边渲染"><a class="header" href="#三路线-a边输出边渲染">三、路线 A：边输出边渲染</a></h2>
 <h3 id="balancedemitter节流发射器"><a class="header" href="#balancedemitter节流发射器">BalancedEmitter：节流发射器</a></h3>
 <pre><code class="language-swift">actor BalancedEmitter {
     private var buffer: String = ""
@@ -1534,7 +1558,7 @@ if emotionalDamage &gt;= 5000 {
 // 默认 20次/秒
 </code></pre>
 <p>设计思想：“宁可视觉上慢一点，也不能让 UI 掉帧。”</p>
-<h3 id="代价on²-从哪来"><a class="header" href="#代价on²-从哪来">代价：O(n²) 从哪来</a></h3>
+<h3 id="代价on²"><a class="header" href="#代价on²">代价：O(n²)</a></h3>
 <p>每次渲染是 O(n)。但流式场景下 O(n) 被执行了 O(n) 次：</p>
 <pre><code>tick  1: parse(50字)  + build(50字)  + layout(50字)
 tick  2: parse(100字) + build(100字) + layout(100字)
@@ -1590,7 +1614,7 @@ tick 90: parse(3000字)+ build(3000字)+ layout(3000字)
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch07-stack-matrix.svg" alt="五个技术栈各自解决了哪一层：解析层全是全量，差距在 ⑤⑥"><span class="img-wrapper"><img src="assets/ch07-stack-matrix.svg" alt="五个技术栈各自解决了哪一层：解析层全是全量，差距在 ⑤⑥"></span></label></p>
 <p>下面展开 WebView、RN 和 Lynx 三条路：它们各自的优势、代价和适用边界。</p>
 <h3 id="61-webview增量-reflow-是出厂能力"><a class="header" href="#61-webview增量-reflow-是出厂能力">6.1 WebView：增量 reflow 是出厂能力</a></h3>
-<p>浏览器渲染引擎（Blink / WebKit）从 90 年代 Netscape 时代就在解决“网页被 JavaScript 不断修改“的问题，增量 reflow 是它的第一性能力，不是后加的特性。</p>
+<p>浏览器渲染引擎（Blink / WebKit）从 90 年代 Netscape 时代就在解决“网页被 JavaScript 不断修改“的问题，增量 reflow 是它的第一能力，不是后加的特性。</p>
 <p>当 JavaScript 向 DOM 追加新节点时（<code>appendChild</code>），渲染引擎只标记受影响子树为 dirty：Style Computation 只对新增节点做 selector matching；Layout 从 dirty node 向上找到最近的 block formatting context root，向下做局部重排，兄弟节点不受影响；Paint 只重绘 dirty region；Composite 直接复用未变动的 GPU texture 图层。</p>
 <p>但 Markdown 解析仍在 JS 层，<code>marked.js</code>、<code>markdown-it</code> 每次仍然是全量 parse。所以实际做法分两类：</p>
 <p><strong>做法 A：innerHTML 全量替换。</strong> 每次新 chunk 到达，把整段 Markdown 重新转成 HTML 字符串，赋给 <code>innerHTML</code>。这条路径没有节点级复用：<code>innerHTML</code> 赋值的标准行为是解析整段 HTML 字符串、销毁旧子树、构建新子树，浏览器不在这条路径上做新旧 DOM diff，不存在“结构一致就复用节点“的优化。它的收益在重建之后：新子树挂上文档时，渲染引擎按正常的 dirty 传播做增量 reflow 和重绘，兄弟容器和页面其余部分不受影响；而且 HTML 解析本身是高度优化的 C++ 路径，比 JS 层的 reconcile 便宜得多。所以“全量“全在 DOM 构建层，并不全在渲染层。</p>
@@ -1604,11 +1628,12 @@ tick 90: parse(3000字)+ build(3000字)+ layout(3000字)
 <p>Lynx（字节跳动出品）在两个关键设计上对 AI 流式场景特别友好：双线程架构（Main Thread + Background Thread）将网络流解析和业务逻辑处理放在非 UI 线程：token 到达 → 后台解析 → 生成 UI 更新 → 提交给主线程渲染，正好匹配 LLM SSE 流式数据的处理需求。<code>fetchStream</code> 在引擎层面提供了三端统一的流式资源接口，不像 RN 需要依赖第三方 SSE 库做桥接。<code>updateData</code> 支持从原生侧增量推送数据，不需要每次重刷整个模板。</p>
 <p>Lynx 在流式渲染上的优势，本质上和 RN 新架构类似，后台线程处理流式数据和 UI diff，主线程只负责渲染。但 Lynx 把流式网络、模板更新、列表虚拟化做成了引擎内置能力，不需要开发者自己搭 pipe。</p>
 <h3 id="64-结论"><a class="header" href="#64-结论">6.4 结论</a></h3>
-<p><strong>不存在“增量 Markdown 解析“的跨平台魔法。</strong> 各技术栈只是在下游渲染架构上有不同程度的增量优化。WebView / RN / Lynx 的渲染架构天然更适应高频增量更新的冲击，原生 CoreText 在这方面是最脆弱的。技术栈选型时别再找“能增量解析 Markdown“的方案，不存在；真正该问的是“谁的渲染引擎能更好地吸收高频增量更新的冲击“。</p>
+<p><strong>不存在“增量 Markdown 解析“的跨平台魔法。</strong></p>
+<p>各技术栈只是在下游渲染架构上有不同程度的增量优化。WebView / RN / Lynx 的渲染架构天然更适应高频增量更新的冲击，原生 CoreText 在这方面是最脆弱的。技术栈选型时别再找“能增量解析 Markdown“的方案，不存在；真正该问的是“谁的渲染引擎能更好地吸收高频增量更新的冲击“。</p>
 <hr>
 <h2 id="七为什么移动端比桌面端严重得多"><a class="header" href="#七为什么移动端比桌面端严重得多">七、为什么移动端比桌面端严重得多</a></h2>
 <p>同一段 3000 字流式 Markdown，Mac 上 10-15% CPU，iPhone 飙到 60%。原因不在代码：</p>
-<p><strong>散热墙。</strong> iPhone 是被动散热，持续高负载触发 thermal throttling 后 CPU 降频，单次 layout 从 30ms 升到 50ms，CPU 占用率反而更高，恶性循环。</p>
+<p><strong>散热。</strong> iPhone 是被动散热，持续高负载触发 thermal throttling 后 CPU 降频，单次 layout 从 30ms 升到 50ms，CPU 占用率反而更高，恶性循环。</p>
 <p><strong>CPU 微架构。</strong> Mac M 系列芯片的共享 L2 与系统级缓存（SLC）更大，内存带宽更高。CoreText 布局阶段大量访问字形缓存，cache miss 时 iPhone 代价远高于 Mac。</p>
 <p><strong>WKWebView 成本。</strong> WebView 的进程隔离在移动端是实打实的代价，每个 WebContent 进程占用独立内存空间，超限会被 jetsam 杀掉（直接白屏）。桌面端无所谓，移动端多 cell 场景是真实的稳定性风险。</p>
 <hr>
@@ -1628,15 +1653,15 @@ tick 90: parse(3000字)+ build(3000字)+ layout(3000字)
 </div>
 <p>方案 2 的 ROI 最高。方案 4 留给相关库的长期演进——或者留给 WebView/RN，它们的渲染架构天生更适应这个场景。最稀缺的工程能力不是写出复杂的方案，是判断一个方案不该做。</p>
 <hr>
-<h2 id="九对照第-3-篇同一个问题两种介质"><a class="header" href="#九对照第-3-篇同一个问题两种介质">九、对照第 3 篇：同一个问题，两种介质</a></h2>
+<h2 id="九总结"><a class="header" href="#九总结">九、总结</a></h2>
 <p>第 3 篇讲 TUI 上的 Markdown 流式渲染，困在字符网格和物理行计算里。这一篇讲 GUI 上的同一问题，困在解析器和 CoreText 的全量重建里。核心矛盾完全相同：<strong>Markdown 是“写完再解析“的语言，Agent 是“边想边输出“的过程。</strong> 两种介质只是在不同的层面与这个矛盾搏斗。</p>
 <p>TUI 的策略：降级映射 + Stable Prefix Cache + 防御性 retreat。GUI 的策略：节流降频 + 纯文本 fallback + 模块检测。</p>
 <p>没有哪个介质解决了这个问题。都只是在不同的约束下做了不同的折中。</p>
 <hr>
-<h2 id="十总结-2"><a class="header" href="#十总结-2">十、总结</a></h2>
+<h2 id="十后续"><a class="header" href="#十后续">十、后续</a></h2>
 <p>第 10 篇：权限 UX 与 Diff UX，Agent 真正的“主界面“。前几篇（TUI 三部曲和 GUI 两篇）都在讲“怎么渲染“，下一篇开始讲“渲染什么“：在 Agent 的所有输出中，哪两样东西最值得精心设计界面。</p>
 <hr>
-<h2 id="参考与延伸-8"><a class="header" href="#参考与延伸-8">参考与延伸</a></h2>
+<h2 id="参考与延伸-7"><a class="header" href="#参考与延伸-7">参考与延伸</a></h2>
 <p><em>本文分析基于 FlowDown 源码（pin MarkdownView 3.9.1）和 ForgeLoopTUI 项目，性能数据来自 FlowDown 流式卡顿分析笔记。§三补记基于 <a href="https://github.com/openai/codex">Codex</a> 本地源码 2026-10-04 的阅读：<code>codex-rs/tui/src/streaming/chunking.rs</code>（两档与迟滞参数）、<code>streaming/commit_tick.rs</code>、<code>tui.rs</code>（<code>TARGET_FRAME_INTERVAL</code>），快照 main <code>6b9826e3</code>（2026-09-09）。</em></p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="权限-ux-与-diff-uxagent-真正的主界面"><a class="header" href="#权限-ux-与-diff-uxagent-真正的主界面">权限 UX 与 Diff UX——Agent 真正的“主界面“</a></h1>
@@ -1760,9 +1785,8 @@ tick 90: parse(3000字)+ build(3000字)+ layout(3000字)
 <p>更好的信息架构：聊天框是指令和解释的主通道。权限请求是侧栏的独立卡片。diff 是可展开的文件树面板。三者各有各的空间，不互相抢占。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch08-trust-architecture.svg" alt="信任界面的信息架构：聊天框、权限卡片、diff 面板各有空间"><span class="img-wrapper"><img src="assets/ch08-trust-architecture.svg" alt="信任界面的信息架构：聊天框、权限卡片、diff 面板各有空间"></span></label></p>
 <p>这不是 GUI 做得“更漂亮“。这是在回答第 1 篇提出的那个根本需求：<strong>程序员要的不是更聪明的黑箱，是可观察、可复现、可回滚的自动化。</strong> 权限 UX 做“可观察“，Diff UX 做“可复现 + 可回滚“。聊天框做“交互“。三个界面，同一个信任模型的三根柱子。</p>
-<p>第 11 篇：多端 Agent 架构，回到第 7 篇的 event-sourcing 框架，展开 CLI、TUI、IDE、Desktop、Web、Mobile 各自的定位和交互契约，外加 API 作为自动化集成入口。不再是“哪种 UI 更好“，而是“这些投影怎么共存在同一个 Agent Runtime 之上“。</p>
 <hr>
-<h2 id="参考与延伸-9"><a class="header" href="#参考与延伸-9">参考与延伸</a></h2>
+<h2 id="参考与延伸-8"><a class="header" href="#参考与延伸-8">参考与延伸</a></h2>
 <p><em>本文的权限 UX 与 Diff UX 分析基于作者对主流 Agent 客户端的权限与 diff 交互观察。Diff UX 讨论基于对现有 Code Review 工具（GitHub PR、Gerrit、Reviewable）与 Agent 产出的结构性差异分析。</em></p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="多端-agent-架构clituiidedesktopwebmobile"><a class="header" href="#多端-agent-架构clituiidedesktopwebmobile">多端 Agent 架构——CLI、TUI、IDE、Desktop、Web、Mobile</a></h1>
@@ -1819,7 +1843,7 @@ tick 90: parse(3000字)+ build(3000字)+ layout(3000字)
 <p>适合承载：多任务队列、团队审批流、会话回放和分析、成本统计。Zacp 项目是这条路线的一个实际案例：WebUI + ACP 协议 + 多 CLI Agent，CLI Agent 不知道 WebUI 的存在，WebUI 只消费 ACP 事件，加一个 Web 端不需要改任何 agent 核心。它还顺便回应了一个争论：第 7 篇引过的两种极端观点，“GUI 必然到来“和“GUI Agent 方向根本上错了”（CLI-Anything 的立场），Zacp 恰好是两者的折中实例：agent 核心保持 CLI 原生、走结构化协议，用户界面侧用 Web 做投影。</p>
 <p>不适合承载：实时执行（延迟和网络依赖）、本地文件系统操作。</p>
 <h3 id="mobilecompanion不是主战场"><a class="header" href="#mobilecompanion不是主战场">Mobile：Companion，不是主战场</a></h3>
-<p>Mobile 不适合做 Agent 的主执行入口：屏幕小、输入慢、后台限制、散热墙、文件系统权限受限。但 Mobile 有一个不可替代的价值：<strong>用户离开电脑后，Mobile 是唯一能触达用户的端。</strong> 它作为审批触达点的具体场景，第 12 篇展开。</p>
+<p>Mobile 不适合做 Agent 的主执行入口：屏幕小、输入慢、后台限制、散热墙、文件系统权限受限。但 Mobile 有一个不可替代的价值：<strong>用户离开电脑后，Mobile 是唯一能触达用户的端。</strong></p>
 <p>适合承载：任务状态查看、高风险操作审批、执行总结阅读、简单回复。类似“远程任务控制器“，不是“缩小版 IDE“。</p>
 <h3 id="api自动化与集成入口"><a class="header" href="#api自动化与集成入口">API：自动化与集成入口</a></h3>
 <p>六个端之外还有第七个入口：API。它没有任何界面：CI/CD 流水线里触发 Agent（<code>./agent fix --auto</code> 背后就是一个 API 调用）、GitHub webhook 回调（PR 打开时自动发起 review）、脚本化工作流（定时任务、批量仓库维护），事件流以 JSON 形式被程序直接消费。</p>
@@ -1876,14 +1900,14 @@ tick 90: parse(3000字)+ build(3000字)+ layout(3000字)
 <p>满足这四个统一之后，每个端只是一个轻量的投影层：消费事件、渲染 UI、发送用户输入回 Runtime。你加一个 Mobile 端不需要改 Agent 逻辑，加一个 Web 端不需要改权限模型。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch09-four-unified.svg" alt="四个统一：Runtime、Event Log、Permission Engine、Workspace Model，各端只是薄投影层"><span class="img-wrapper"><img src="assets/ch09-four-unified.svg" alt="四个统一：Runtime、Event Log、Permission Engine、Workspace Model，各端只是薄投影层"></span></label></p>
 <hr>
-<h2 id="六不是所有产品都需要所有端"><a class="header" href="#六不是所有产品都需要所有端">六、不是所有产品都需要所有端</a></h2>
+<h2 id="六总结-2"><a class="header" href="#六总结-2">六、总结</a></h2>
 <p>六端 + API 是分析框架，不是 checklist。一个独立开发者的 Agent 工具可能只需要 CLI + TUI。一个团队协作的 Agent 平台可能需要 Web + IDE + Mobile。选哪些端，取决于用户在哪里、用户在那个场景下需要消费哪些事件。</p>
 <p>端多不多不是关键，关键是每加一个端，是不是只需要写投影层，不用重写 Agent 核心。如果每次加端都要重构事件模型和权限引擎，说明架构还没到位。</p>
 <hr>
-<h2 id="七总结-1"><a class="header" href="#七总结-1">七、总结</a></h2>
+<h2 id="七后续"><a class="header" href="#七后续">七、后续</a></h2>
 <p>最后一篇。从具体的技术和架构回到人：一个大前端开发者，在 Agent 时代的能力地图是什么？移动端、桌面端、TUI、全栈，这些经验怎么迁移到 Agent Workflow Engineer 这个新方向上。</p>
 <hr>
-<h2 id="参考与延伸-10"><a class="header" href="#参考与延伸-10">参考与延伸</a></h2>
+<h2 id="参考与延伸-9"><a class="header" href="#参考与延伸-9">参考与延伸</a></h2>
 <p><em>本文的多端架构框架参考了 ForgeLoopTUI 的 CoreRenderEvent 设计、Zacp 的 ACP 多 Agent WebUI 架构，以及第 7 篇提出的 Event Sourcing 模型。</em></p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="移动端的位置--从大前端到-agent-workflow-engineer"><a class="header" href="#移动端的位置--从大前端到-agent-workflow-engineer">移动端的位置 + 从大前端到 Agent Workflow Engineer</a></h1>
@@ -1940,7 +1964,7 @@ tick 90: parse(3000字)+ build(3000字)+ layout(3000字)
 <p>（补记：本篇写完时是原定的收官。结果收没收住——后面又续了十篇，从渲染的所有权一路写到上下文账本、计划与回滚，外加整个下半部「另一半·基建」。所以在这本书里，这里只是上半程的中点。）</p>
 <p>如果这个系列对你正在做的事情有参考价值，<a href="https://github.com/BiBoyang/ForgeLoopTUI">ForgeLoopTUI</a> 和 <a href="https://github.com/Lakr233/FlowDown">FlowDown</a> 的源码是最好的延伸阅读。</p>
 <hr>
-<h2 id="参考与延伸-11"><a class="header" href="#参考与延伸-11">参考与延伸</a></h2>
+<h2 id="参考与延伸-10"><a class="header" href="#参考与延伸-10">参考与延伸</a></h2>
 <p><em>全系列基于 ForgeLoopTUI v1.2.0 和 FlowDown 的实际源码分析。知乎讨论参考：<a href="https://www.zhihu.com/question/2026125412049101416">为什么现在大多 Code Agent 的主形态是 CLI/TUI？</a>。</em></p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="渲染的所有权模型谁为已完成内容记账"><a class="header" href="#渲染的所有权模型谁为已完成内容记账">渲染的所有权模型——谁为已完成内容记账</a></h1>
@@ -2100,7 +2124,7 @@ print(history);                  // 内存里的全部历史按新宽度重新�
 <p>我漏掉这条分界线的原因值得记下来：两条路线在视觉上无法区分。我是读了源码才发现的。这也是本系列反复出现的主题的另一个实例：<strong>看起来一样的界面，底下的成本结构可以完全不同。</strong> 区别不在像素里，在所有权里。</p>
 <p>下一篇（第 14 篇）把这个问题推进到工程细节：既然双模已成事实，那“同一引擎里两种所有权共存“到底怎么实现？Kimi Code 在四家里给出了接口最干净的一个样本，包括一个前无古人的设计：退出时把历史归还给终端。</p>
 <hr>
-<h2 id="参考与延伸-12"><a class="header" href="#参考与延伸-12">参考与延伸</a></h2>
+<h2 id="参考与延伸-11"><a class="header" href="#参考与延伸-11">参考与延伸</a></h2>
 <p><em>本文基于 <a href="https://github.com/xai-org/grok-build">Grok Build</a>（commit <code>9fabade</code>，2026-08-16；<code>xai-ratatui-inline</code>、<code>xai-grok-pager</code>、<code>xai-grok-pager-minimal</code>）、<a href="https://github.com/openai/codex">Codex</a>（<code>codex-rs/tui/src/insert_history.rs</code>、<code>tests/suite/vt100_live_commit.rs</code>；<code>tui.alternate_screen</code> 的 Zellij 特判已于 2026-05-13 在 #22214 中移除，官方配置文档至今仍写旧行为，本文初稿按文档口径转述，2026-09-29 依本地源码（main <code>6b9826e3</code>，2026-09-09）补正，见第七节第 7 条）与 Claude Code 发布产物中的源码（<code>src/components/Messages.tsx</code> 的 <code>shouldRenderStatically</code>、<code>src/utils/staticRender.tsx</code>、<code>src/ink/</code> 内置 fork）的实际阅读。对照部分基于 <a href="https://github.com/BiBoyang/ForgeLoopTUI">ForgeLoopTUI</a> v1.2.0。</em></p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="双模渲染同一引擎里的两种所有权"><a class="header" href="#双模渲染同一引擎里的两种所有权">双模渲染——同一引擎里的两种所有权</a></h1>
@@ -2214,7 +2238,7 @@ if (firstChanged &lt; prevViewportTop) {
 <p>运行期，把历史留在自己手里，缴“自建滚动/搜索/选择“的税，换来可交互的会话；退出时，把历史打印回 scrollback，缴一次“全量重印“的税，换来用户终端里的完整记录。甚至同一个引擎里还可以再备一套 inline 差分实现，缴“核平兜底“的税，作为默认模式的日常形态。</p>
 <p>所有权模型因而从一道单选题变成了一份调度表：什么东西、在什么阶段、归谁记账，每个问题都可以单独回答。介质还是那个只进不退的电传打字机，但和地基的关系，比第 13 篇设想的还要再自由一点。</p>
 <hr>
-<h2 id="参考与延伸-13"><a class="header" href="#参考与延伸-13">参考与延伸</a></h2>
+<h2 id="参考与延伸-12"><a class="header" href="#参考与延伸-12">参考与延伸</a></h2>
 <p><em>本文基于 <a href="https://github.com/MoonshotAI/kimi-code">Kimi Code</a> 源码的实际阅读：<code>packages/pi-tui/src/tui-main-screen.ts</code>（主屏差分渲染器）、<code>packages/pi-tui/src/tui-alt-screen.ts</code>（全屏渲染器）、<code>apps/kimi-code/src/tui/tui-state.ts</code>（模式选择）、<code>packages/pi-tui/AGENTS.md</code> 与两处 CHANGELOG（fork 分歧与事故史）。行文时 Kimi Code 版本为 commit <code>1e553fc</code>（2026-08-18）。ForgeLoopTUI 的退出行为核对基于其 v1.2.0 源码：主屏渲染，无 alt screen，无退出时清屏/归还逻辑。</em></p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="一行状态文字的状态机"><a class="header" href="#一行状态文字的状态机">一行状态文字的状态机</a></h1>
@@ -2249,12 +2273,12 @@ if (firstChanged &lt; prevViewportTop) {
 <p>最后一块拼图是帧从哪来。spinner 不需要等内容事件，它在自己的渲染里通过 <code>schedule_frame_in</code> 主动预约下一帧（有动画时约 32ms 后，只有计时器时 1 秒后）；shimmer 那道扫过文字的渐变高光同理，是按已流逝时间计算的纯函数。第 9 篇补记讲的全局帧调度只管内容放行，状态行动画自请帧，两条帧请求线在同一个渲染循环里合流。</p>
 <p>这也是状态行与第 14 篇提过的 spinner 细节的对照点：Kimi 的差分渲染器把“只有一行变化（例如 spinner 动画）“列为最小化重绘的显式动机。状态行是 TUI 里唯一<strong>合法</strong>的高频自更新区域，所有为它服务的机制——自请帧、单行重绘、闸门防闪——本质上都在回答同一个问题：怎样让唯一会动的东西安分地动。</p>
 <hr>
-<h2 id="六总结-2"><a class="header" href="#六总结-2">六、总结</a></h2>
+<h2 id="六总结-3"><a class="header" href="#六总结-3">六、总结</a></h2>
 <p>写 spinner 只要半小时，写状态行的状态机要付出的代价全在边界上：放行与恢复的互斥、显隐的时机、多写者的偏序、动画的帧来源。这行文字的复杂度不在它显示什么，在于它什么时候<strong>不</strong>该显示。</p>
 <p>这也是我读完 Codex 这部分源码后修正的一个直觉。我原以为状态指示是“锦上添花“层，属于打磨；看完三闸门才意识到它是 turn 生命周期在用户侧的投影——turn 的每个相位迁移（推理、输出、工具、等待输入）都必须在这行文字上有唯一确定的显示状态，不多不少。<strong>一帧里出现两个状态，或一个状态出现两帧，都是 bug。</strong> 这个标准比一般 UI 组件苛刻得多，而它是 agent TUI 的日常。</p>
 <p>下一篇讲测试：这样的状态机、连同前几篇讲的所有渲染机制，怎么被钉在回归测试里——TUI 的输出是带状态的字节流，断言它需要的不是一两个技巧，是一整套基建。</p>
 <hr>
-<h2 id="参考与延伸-14"><a class="header" href="#参考与延伸-14">参考与延伸</a></h2>
+<h2 id="参考与延伸-13"><a class="header" href="#参考与延伸-13">参考与延伸</a></h2>
 <p><em>本文基于 <a href="https://github.com/openai/codex">Codex</a> 本地源码 2026-10-04 的逐行阅读：<code>codex-rs/tui/src/chatwidget/streaming.rs</code>（reasoning 标题提取、防闪烁三闸门、<code>defer_or_handle</code>）、<code>status_indicator_widget.rs</code>（<code>schedule_frame_in</code> 自请帧）、<code>shimmer.rs</code>（渐变高光）、<code>streaming/commit_tick.rs</code>。对照部分基于 <a href="https://github.com/BiBoyang/ForgeLoopTUI">ForgeLoopTUI</a> v1.2.0 的 <code>operationStart/End</code> 机制（见第 4 篇）。快照 main <code>6b9826e3</code>（2026-09-09）；行号可能随上游漂移，机制名稳定。</em></p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="把-ansi-变成可断言的tui-回归测试基建"><a class="header" href="#把-ansi-变成可断言的tui-回归测试基建">把 ANSI 变成可断言的——TUI 回归测试基建</a></h1>
@@ -2301,7 +2325,7 @@ if (firstChanged &lt; prevViewportTop) {
 <p>四层的共同主题是翻译：把不可断言的（字节流、时序、纪律）逐层翻译成可断言的（字节计数、文本快照、不变量、标识符）。</p>
 <p>对我自己的评测工作，这套基建还有一个反向启发。评测注入故障想测出 UI 层缺陷，等价性层指明了最敏感的注入点：delta 切分方式。同一个模型输出，按 token 切、按行切、按随机字节切，收敛性不变量任何一个被破坏，就是渲染层的真 bug——这是把“流式“这个变量本身变成故障注入的旋钮。测试基建与故障注入，在这里是同一件事的两面。</p>
 <hr>
-<h2 id="参考与延伸-15"><a class="header" href="#参考与延伸-15">参考与延伸</a></h2>
+<h2 id="参考与延伸-14"><a class="header" href="#参考与延伸-14">参考与延伸</a></h2>
 <p><em>本文基于 <a href="https://github.com/openai/codex">Codex</a> 本地源码 2026-10-04 的阅读：<code>codex-rs/tui/src/streaming/controller.rs</code>（等价性测试与 resize×drain 组合专测）、<code>tui/src/**/snapshots/</code>（insta 快照库）、<code>tui/src/test_backend.rs</code>、<code>tests/suite/vt100_live_commit.rs</code>、<code>lib.rs</code>（<code>alternate_screen_auto_uses_alt_screen</code>），快照 main <code>6b9826e3</code>（2026-09-09）。Grok Build 的 guard.rs 转述自第 13 篇的既有分析（commit <code>9fabade</code>，2026-08-16 阅读）。</em></p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="收敛的另一面pi-mono-暗线与生态同源"><a class="header" href="#收敛的另一面pi-mono-暗线与生态同源">收敛的另一面——pi-mono 暗线与生态同源</a></h1>
@@ -2386,11 +2410,11 @@ if (firstChanged &lt; prevViewportTop) {
 <p>最后把 ForgeLoopTUI 放回这张图上，说个私人的部分。</p>
 <p>ForgeLoopTUI 最早的起点，是想模仿 kwwk。动手之后，在“已完成内容归谁记账“那条轴上分了岔：kwwk 选了 inline，我造出了全屏自管。当时觉得是走岔了，要模仿的东西没模仿成。放在血缘图上看，岔路反而是位置：独立实现的那一侧只剩 Claude Code、Codex、Grok Build，全部出自头部公司；一个无血统、Swift 原生、全屏自管的引擎，是这张图上稀有的独立数据点。</p>
 <p>第 13 篇说分叉发生在所有权轴上。这一篇补一句：分叉之上还有血缘轴。个人项目在巨头生态里的活路，往往不在主路上，在血缘图的空格里。</p>
-<h2 id="七总结-2"><a class="header" href="#七总结-2">七、总结</a></h2>
+<h2 id="七总结-1"><a class="header" href="#七总结-1">七、总结</a></h2>
 <p>第 13 篇问“谁为已完成内容记账“，第 14 篇答“可以按生命周期分期“，这一篇的答案更平淡：先问这份代码是谁的。三篇连起来，“所有权“从引擎与终端的关系，延伸到了 fork 与上游的关系：你的渲染器记得每一行的账，但它的族谱决定了它的默认值、它的坑、它下一次升级时要重验的八件事。</p>
 <p>下一篇回到自己的引擎：读完五份源码之后，ForgeLoopTUI 吸收 inline 派工程件的改造做到哪一步了：什么抄了，什么没抄，什么决定不抄。</p>
 <hr>
-<h2 id="参考与延伸-16"><a class="header" href="#参考与延伸-16">参考与延伸</a></h2>
+<h2 id="参考与延伸-15"><a class="header" href="#参考与延伸-15">参考与延伸</a></h2>
 <p><em>本文基于本地源码副本的实际阅读与发布产物取证：<a href="https://github.com/MoonshotAI/kimi-code">kimi-code</a> <code>1e553fc</code>（2026-08-18，与第 14 篇同一 pin；<code>packages/pi-tui/package.json</code>、<code>packages/pi-tui/AGENTS.md</code>、<code>src/tui-main-screen.ts</code>）；<a href="https://github.com/EYHN/kwwk">kwwk</a> <code>ae0771d</code>（2026-08-19；<code>Sources/KWWKCli/TUI.swift</code>、<code>Sources/KWWKAgent/*.swift</code>、<code>Sources/KWWKAI/ModelsCatalog.swift</code>、<code>Scripts/GenerateModelsCore/</code>）；mcode 为 <code>@minimax-ai/code@0.1.4</code> 发布产物取证（<code>cli.js</code>，23,321,152 字节，标记计数见文中表格）。pi-mono 本体未直接阅读，本文对其结构的了解全部来自上述三个下游的引用与再生成命令，这一点本身即文中论点的一部分。</em></p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="回到自己的引擎forgelooptui-改造实录"><a class="header" href="#回到自己的引擎forgelooptui-改造实录">回到自己的引擎——ForgeLoopTUI 改造实录</a></h1>
@@ -2465,7 +2489,7 @@ if (firstChanged &lt; prevViewportTop) {
 <p>第 13 篇结尾说过，ForgeLoopTUI 的 committed 区在语义上已经是 append-only，和 inline 派的 scrollback“只差最后一步——物理上还归不归我管“。这一步现在有了答案的形状：<strong>物理归属不再由引擎统一决定，由每一行内容在稳定瞬间自己决定</strong>。所有权从引擎的出厂设置，变成了内容级的调度表。</p>
 <p>下一篇（第 19 篇）把这套账本带出终端：GUI 和移动端没有 scrollback 这回事，没有免费的历史基础设施，每一行从诞生起就必须有人管。FlowDown 是那边的样本。</p>
 <hr>
-<h2 id="参考与延伸-17"><a class="header" href="#参考与延伸-17">参考与延伸</a></h2>
+<h2 id="参考与延伸-16"><a class="header" href="#参考与延伸-16">参考与延伸</a></h2>
 <p><em>本文基于 <a href="https://github.com/BiBoyang/ForgeLoopTUI">ForgeLoopTUI</a> 本地仓库的实际阅读：HEAD <code>f99367b</code>（2026-09-01），覆盖 2026-08-28 至 09-01 的 61 个提交；关键证据为 <code>Examples/MinimalAIApp/Sources/MinimalAIApp/main.swift</code>（render() 的预览切片与三步结算）、<code>Sources/ForgeLoopTUI/Transcript/StreamingTranscriptAppendState.swift</code>、<code>Tests/ForgeLoopTUITests/Runtime/CommittedPreviewAnchorTests.swift</code>（ScrollbackTerminal 预言机与 S1–S6）、<code>Sources/ForgeLoopTUI/Runtime/TUIRuntime.swift</code>（TASK-37 的 unretainedAppendedRows 与底窗回退）、<code>Sources/ForgeLoopTUI/Runtime/RenderLoop.swift</code>（2026-05-07 引入的 16ms 调度器）。性能类实测数据（帧字节数、resize 耗用对比）尚未采集，本篇以行为学证据（oracle 断言）替代，数据缺口留待补记。</em></p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="终端之外渲染所有权模型在-gui-与移动端的映射"><a class="header" href="#终端之外渲染所有权模型在-gui-与移动端的映射">终端之外——渲染所有权模型在 GUI 与移动端的映射</a></h1>
@@ -2553,7 +2577,7 @@ if (firstChanged &lt; prevViewportTop) {
 <p>这也补上了第 1 篇补记那个判断的机制。agent 早期的需求结构（一维 token 流、文本工具链、处处可审计）恰好压在终端白送的格子上；而长会话、并行多 agent、行级审批、checkpoint 回放、手机伴随端（第 10、17–20 篇与基建系列），每一项都在消费 GUI 白送的东西。<strong>不是 GUI 更好所以赢，是需求结构越过了两边税收结构的交叉点。</strong> 选界面从来不是选范式，是在 agent 生命周期的不同阶段，选哪边的税你更愿意缴。</p>
 <p>这也是本系列正文在这个系列里的终点站：界面的账本记完了，下一程换轨：事件流离开本地之后的命运：断线、重连、多服务器，以及一条 SSE 中断之后，谁还记得它讲到哪了。</p>
 <hr>
-<h2 id="参考与延伸-18"><a class="header" href="#参考与延伸-18">参考与延伸</a></h2>
+<h2 id="参考与延伸-17"><a class="header" href="#参考与延伸-17">参考与延伸</a></h2>
 <p><em>本文基于 <a href="https://github.com/Lakr233/FlowDown">FlowDown</a> 本地源码副本的实际阅读（commit <code>b2cecfd6</code>，2026-05-15）：<code>Frameworks/Storage/Package.swift</code>（WCDB 与 MarkdownParser 依赖）、<code>FlowDown/Backend/Conversation/Pipeline/ConversationSession.swift</code>（save/update/discard）、<code>Pipeline/Execute/ConversationSession+ExecuteOnce.swift</code>（流式修补序列）、<code>Pipeline/ConversationSessionManager.swift</code>（countIncomingTokens 与 Live Activity）、<code>FlowDown/Interface/MessageListView/MessageListView.swift</code>（ListViewKit 接线）。数据模型部分参照作者本人的既有分析笔记《FlowDown 对话上下文保存机制分析》并与源码核对。流式热路径“每 chunk 不写库“的表述基于调用链阅读，未做逐帧取证，以此口径为准。</em></p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="渲染的信任边界agent-ui-没有同源策略"><a class="header" href="#渲染的信任边界agent-ui-没有同源策略">渲染的信任边界——Agent UI 没有同源策略</a></h1>
@@ -2612,7 +2636,7 @@ if (firstChanged &lt; prevViewportTop) {
 <p>放到系列坐标里：渲染所有权四部曲（11/12/14/15）讲的是“谁为像素记账“；这一篇讲“像素本身能不能被信任“。两件事在终端上还是两个问题，到了 GUI 时代会合成一个：信任边界必须和渲染边界同构，否则就是给 innerHTML 写文档。</p>
 <p>下一篇转向感知的反面：记忆。引擎开始替你忘掉上下文的那一刻，没有对话框，没有提示音，只有一行灰字：context low。谁授权了这次遗忘，丢掉了什么，能不能审计，第 21 篇记这笔账。</p>
 <hr>
-<h2 id="参考与延伸-19"><a class="header" href="#参考与延伸-19">参考与延伸</a></h2>
+<h2 id="参考与延伸-18"><a class="header" href="#参考与延伸-18">参考与延伸</a></h2>
 <p><em>事件部分核实状态（截至 2026-09-28）：Terminal DiLLMa（<a href="https://arxiv.org/abs/2412.11807">arXiv 2412.11807</a>，2024-12）、Trail of Bits《Deceiving users with ANSI terminal codes in MCP》（2025-04-29）、EchoLeak CVE-2025-32711（Aim Security 2025-06 披露，多源交叉）、jqwik 1.10.0 事件（2026-05，Snyk 2026-06-02 分析）均经多源检索核实；Invariant Labs tool poisoning 未复核原文，按公开报道转述；编号为 CVE-2026-21852 的条目始终未能核实到原始记录，本文不引用。引擎排查基于本地源码：kimi-code <code>1e553fc</code>（<code>packages/pi-tui/src/utils.ts</code>）、grok-build <code>9fabade</code>（全仓库检索）、kwwk <code>ae0771d</code>（<code>Sources/KWWKCli/</code>）、ForgeLoopTUI <code>f99367b</code>（<code>Sources/ForgeLoopTUI/Markdown/MarkdownEngine.swift</code>）。方法局限：grep 加人工阅读命中处，不能排除存在未被这两种方式覆盖的防线，结论以“未发现“为准，不断言“不存在“。</em></p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="上下文账本agent-唯一的内存和它的-gc"><a class="header" href="#上下文账本agent-唯一的内存和它的-gc">上下文账本——Agent 唯一的内存，和它的 GC</a></h1>
@@ -2663,11 +2687,11 @@ if (firstChanged &lt; prevViewportTop) {
 <h2 id="五两条设计主张"><a class="header" href="#五两条设计主张">五、两条设计主张</a></h2>
 <p><strong>压缩应该是一等事件。</strong> 事件流里应该有 <code>context.compacted { kept: 摘要引用, dropped: [被折叠/截断的事件引用], reason }</code>，可订阅、可审计、可回放。grok 的落盘档案已经示范了“丢弃即归档“的物理形态；差的是把它接回事件协议，让 UI 能渲染“本次压缩收起了 47 条工具输出，保留 3 个决定，点开看原文“。摘要错了要能申诉：拒绝这次压缩、带着原上下文重开会话。第 19 篇说 GUI 端数据所有权是生存必需；这条是它在状态层的延伸，<strong>上下文的内容归用户，窗口只是引擎租用的</strong>。</p>
 <p><strong>仪表和熔断器必须读同一张表。</strong> 计量失真的根治不是校准估算，是让显示和触发共享同一个事实源。这句承诺在本系列的下一程兑现，事件流离开本机之后，“单一事实源“从好实践变成整个系统的地基。</p>
-<h2 id="六总结-3"><a class="header" href="#六总结-3">六、总结</a></h2>
+<h2 id="六总结-4"><a class="header" href="#六总结-4">六、总结</a></h2>
 <p>四本账连起来读：11/12 记像素的账，15 记数据的账，16 问像素的真，17 记状态的账。所有权的问法始终同一个：<strong>这个东西归谁，什么时候换手，换手时留没留字据</strong>。渲染所有权争的是和终端的关系，数据所有权争的是和磁盘的关系，状态所有权争的是和用户记忆的关系。前两笔账行业已经开始算了，第三笔刚刚开张：谁家的产品先给用户一本可查的上下文账，谁就先拿到这个时代界面信任的下一块地皮。</p>
 <p>下一篇换轨。事件流离开本机：断线、重连、多服务器，以及那条中断的 SSE 流，谁还记得它讲到哪了。基建系列，从“账本“开始。</p>
 <hr>
-<h2 id="参考与延伸-20"><a class="header" href="#参考与延伸-20">参考与延伸</a></h2>
+<h2 id="参考与延伸-19"><a class="header" href="#参考与延伸-19">参考与延伸</a></h2>
 <p><em>Claude Code 部分基于泄露源码的多家交叉分析（知乎“Claude Code 代码分析“系列、GitHub 上下文压缩深度解析、腾讯云分析报告；熔断注释数字“1,279 会话/50+ 次连续失败/日 25 万次调用“出自 CSDN 源码分析引注，二手转述）与公开 issue（“Auto compact does not trigger at 100% context”，2026-06）；33K/45K 缓冲与提前触发的量化来自 claudefa.st 与 hyperdev 的第三方分析。泄露源码分析中提及的 25K 附件重注入预算、Session Memory 快路径、effectiveWindow−13K 三个数字未能独立核实，本文不引用。本地一手取证：kwwk <code>ae0771d</code>（<code>Sources/KWWKAgent/AgentContextCompactor.swift</code>、<code>CompactionRecapRenderer.swift</code>、<code>CompactionFactsExtractor.swift</code>）、grok-build <code>9fabade</code>（<code>crates/codegen/xai-compaction-transcript/src/lib.rs</code>）、FlowDown <code>b2cecfd6</code>（<code>ConversationManager+Compress.swift</code>）。</em></p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="规则与记忆agent-的长期状态文件还是黑箱"><a class="header" href="#规则与记忆agent-的长期状态文件还是黑箱">规则与记忆——Agent 的长期状态，文件还是黑箱</a></h1>
@@ -2722,12 +2746,12 @@ if (firstChanged &lt; prevViewportTop) {
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch18-computed-config.svg" alt="生效配置预览：agent 需要 Computed Styles 面板的对应物"><span class="img-wrapper"><img src="assets/ch18-computed-config.svg" alt="生效配置预览：agent 需要 Computed Styles 面板的对应物"></span></label></p>
 <p>价值清单随手可列：排错时它是第一站（“它为什么坚持用这个过时约定“十有八九是规则层的事故）；信任上它是 16 篇的感知前提（看不到携带的规则，“遵循你的约定“就是一句不可验证的话）；工程上它是文件派治理的最后一环，有 diff、有 review、有就近级联，独独没有“实际生效值”，整套 git 流程差最后一厘米。</p>
 <p>它为什么还没长出来？因为合成规则的每一层归属不同的实现：文件是用户写的，加载是客户端定的，记忆是服务端存的，<strong>恰好因为没有人拥有全部三层，才没有人有立场给出合成视图</strong>。标准割据的代价，从第二节那行 <code>cp</code> 升级成了整块缺失的界面。</p>
-<h2 id="六总结-4"><a class="header" href="#六总结-4">六、总结</a></h2>
+<h2 id="六总结-5"><a class="header" href="#六总结-5">六、总结</a></h2>
 <p>规则与记忆是 agent 的人格层。界面会换、模型会换、这个系列讨论过的每一种渲染策略都会过时，而人格层一旦建立，每一次交互都从它出发。2026 年的行业给了它两副身位：git 里的文本，或数据库里的条目，两副都在生长，也都不完整：文件派有审计没有合成，托管派有列表没有出处。</p>
 <p>判准可以是一句话：看一个产品把长期状态放在哪。放进 git 的，把用户当工程师；放进数据库的，把用户当用户；两样都放、又不给合成视图的，把用户当猜谜者。而那块叫“生效配置预览“的界面，会是这个方向的下一块必争之地，谁先做出来，谁就拿到了 agent 行为可审计性的最后一厘米。</p>
 <p>下一篇回到基建轨：MCP、ACP、AG-UI，agent 与工具、编辑器、前端之间那三套正在三国杀的协议，三个边界各欠着谁的债。</p>
 <hr>
-<h2 id="参考与延伸-21"><a class="header" href="#参考与延伸-21">参考与延伸</a></h2>
+<h2 id="参考与延伸-20"><a class="header" href="#参考与延伸-20">参考与延伸</a></h2>
 <p><em>核查分层（截至 2026-09-28）：AGENTS.md 的定位、采用名单与“非正式标准“口径来自 <a href="https://agents.md">agents.md</a> 官网（多源交叉）；ChatGPT 记忆管理基于 OpenAI 帮助中心与官方公告，Claude 记忆管理基于 Anthropic 支持文档（含按主题查看、按项目开关、2026-09-09 截止的旧记忆导出窗口）；kimi-code 为本地一手（<code>1e553fc</code>：12 份嵌套 AGENTS.md 全清单、根文件治理规则引文、CLAUDE.md 与 AGENTS.md 双写比对）；kwwk <code>ae0771d</code>、grok-build <code>9fabade</code>、mcode-inspect 深扫均无规则文件；作者本机 <code>~/AGENTS.md</code>（61 行）为第一人称素材，其内容不在本文公开细节之列的部分未展开。“AGENTS.override.md 野生层级约定“未能核实，不引用。</em></p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="计划即界面checklist-正在成为-agent-时代的-diff"><a class="header" href="#计划即界面checklist-正在成为-agent-时代的-diff">计划即界面——checklist 正在成为 Agent 时代的 diff</a></h1>
@@ -2759,7 +2783,7 @@ if (firstChanged &lt; prevViewportTop) {
 <h2 id="五总结-5"><a class="header" href="#五总结-5">五、总结</a></h2>
 <p>事前的计划、事中的审批、事后的回滚，是同一根信任链条的三节。第 10 篇讲了中节，这一篇讲了前节：把审批的粒度升到计划，用清单把执行钉在计划上，让偏离可定义。链条还缺最后一节：当一切已经发生，那个叫“回滚“的按钮，到底能兑现多少。下一篇拆它：checkpoint 能回滚什么，以及它假装能回滚什么。</p>
 <hr>
-<h2 id="参考与延伸-22"><a class="header" href="#参考与延伸-22">参考与延伸</a></h2>
+<h2 id="参考与延伸-21"><a class="header" href="#参考与延伸-21">参考与延伸</a></h2>
 <p><em>核查分层（截至 2026-09-28）：Claude Code plan mode 基于 <a href="https://code.claude.com/docs">官方权限模式文档</a>（Shift+Tab 轮换、plan 模式阻止写入直至计划批准）及多家第三方解读交叉；Kiro 三件套基于 kiro.dev/AWS 官方材料与社区文档（<code>.kiro/specs/</code> 目录、EARS 语法、steering 目录）；kimi-code 为本地一手（<code>1e553fc</code>：<code>packages/agent-core/src/tools/builtin/state/todo-list.ts</code> 的存储与纪律注释、<code>src/agent/injection/todo-list.ts</code> 的 10 轮提醒注入器、transcript 层的 plan 版本化记录与 <code>/transcript/plan</code> 端）。“plans/</em>.md 社区工作流“的普遍性未核实，不引用。*</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="checkpoint-的谎言回滚按钮能兑现多少"><a class="header" href="#checkpoint-的谎言回滚按钮能兑现多少">Checkpoint 的谎言——回滚按钮能兑现多少</a></h1>
@@ -2793,7 +2817,7 @@ if (firstChanged &lt; prevViewportTop) {
 <p>事前的计划、事中的审批、事后的回滚，三节链条的公共原理只有一句话：<strong>让用户在对的时间看到对的边界。</strong> 计划展示意图的边界（打算做什么），审批展示操作的边界（正要碰什么），回滚本应展示可逆性的边界（哪些错能改）。第三节现在是三者中最虚的，虚到用户普遍不知道它有边界。</p>
 <p>而比边界更深的那个问题，三部曲也只能触到边：模型说“做完了“，勾选框打了勾，回滚也用不上——<strong>声明不等于证据</strong>。计划可以被批准，操作可以被允许，错误可以被回滚，唯独“完成“本身还没有被验证。这是系列后面“回放与验收“要拆的最后一道缝：让“做完了“三个字带上证据。</p>
 <hr>
-<h2 id="参考与延伸-23"><a class="header" href="#参考与延伸-23">参考与延伸</a></h2>
+<h2 id="参考与延伸-22"><a class="header" href="#参考与延伸-22">参考与延伸</a></h2>
 <p><em>核查分层（截至 2026-09-28）：Claude Code checkpointing 基于官方文档（追踪 Write/Edit/NotebookEdit、三向回滚菜单、每 prompt 一快照、最近 100 个）与第三方实测（30 天上限、跳过子 agent 编辑与软链、bash 删除不可恢复、“surgical recovery tool“的定位建议）交叉；kwwk 为本地一手（<code>ae0771d</code>：<code>SessionStore.swift</code> 的 <code>.rewind</code> 操作类型、<code>AgentLoop.swift</code> 的 <code>.streamRewind</code> 事件）；风险补偿为 HCI 常识性论述。“三向回滚菜单“的第三项（code-only）以官方文档为准。Cursor 的 checkpoint 机制未核实，不引用。</em></p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="第四条边界当主语是引擎"><a class="header" href="#第四条边界当主语是引擎">第四条边界——当主语是引擎</a></h1>
@@ -2835,7 +2859,7 @@ if (firstChanged &lt; prevViewportTop) {
 <p>最后一个内侧观察，关于新能力怎么进引擎。以 computer use 为例：截屏、点击、拖拽的实现<strong>不在开源引擎里</strong>——它们经一个叫 <code>cua_repl</code> 的 MCP server 从宿主（桌面端 JS 侧）进入，引擎核心不认识鼠标。但围绕它的治理是全开源的：功能门由服务端 requirements 控制、每个模型声明自己对 computer_use/shell/file_changes 等动作的审批覆盖、操作规范是模型目录下发的 Markdown、回合中途换模型不允许降低审查水位。</p>
 <p>三个问题三个归属：**能做什么由宿主决定，允许做什么由引擎决定，怎么做由模型目录决定。**界面在这套结构里拿到的承诺也因此分层：权限弹窗里显示什么、要不要拦，是引擎和策略面定死的；而弹窗背后那个动作具体怎么执行，界面不需要知道，也不必信任——这正是“协议给说什么、不给怎么画“在能力层的版本。</p>
 <p>对想自建 glue 的人，这条比任何机制都可迁移：<strong>核心不长手，手永远可替换；但缰绳必须长在核心身上。</strong></p>
-<h2 id="七总结-3"><a class="header" href="#七总结-3">七、总结</a></h2>
+<h2 id="七总结-2"><a class="header" href="#七总结-2">七、总结</a></h2>
 <p>把本篇的账合到最后一张表里。基建篇会反复验证两句话：承诺的真假取决于事实源在哪一层，承诺往下挖两层碰到协议条款；本篇从引擎内侧补上第三步——<strong>承诺的兑现还要穿过一个方向选择、一次握手、一个降级分支</strong>：</p>
 <div class="table-wrapper">
 <table>
@@ -2854,7 +2878,7 @@ if (firstChanged &lt; prevViewportTop) {
 <p>而所有这些机制的成本，都由一个朴素的问题定价：这两端，是不是独立发布？是，就付协议税；不是，就允许紧耦合。胶水层的设计，说到底是发布关系的会计。</p>
 <p>这条缝先讲到这里。再往下走一层，承诺要穿过的东西从进程边界换成网络和操作系统：连接会断、端会被操作系统杀掉、协议对面坐着别家的主语——那是基建三篇的事，从《没报错，就代表输出没问题吗》那个问句开场。</p>
 <hr>
-<h2 id="参考与延伸-24"><a class="header" href="#参考与延伸-24">参考与延伸</a></h2>
+<h2 id="参考与延伸-23"><a class="header" href="#参考与延伸-23">参考与延伸</a></h2>
 <p><em>事实核查分层（截至 2026-10-07）：本文 Codex 事实基于 rust-v0.154.0（HEAD 6b9826e3a，2026-09-09 快照）亲读——initialize 握手结构（app-server-protocol/src/protocol/v1.rs）、experimental 门控（message_processor.rs:912-920）、v1 冻结纪律（仓库 AGENTS.md:269）、TUI 内嵌走 JSON-RPC envelope（app-server/src/in_process.rs:22）、历史投影与分页（app-server-protocol/src/protocol/thread_history.rs、thread_history_projection.rs:1-3、v2/thread.rs:400,450）、静默降级分支（tui/src/lib.rs:518-521，逐行亲验）、voice-host 同构建校验（voice-host/src/main.rs:48 的 –build-commit）、computer use 治理面（features/src/lib.rs:271、protocol/src/openai_models.rs:402、core/src/session/step_activation.rs:110）与 cua_repl 通道（protocol/src/mcp.rs:38）。降级分支的数据影响（同一 codex_home、数据不断裂、<code>/status</code> Remote Connection 行整体消失）为 2026-10-07 晚接力复核增补（tui/src/lib.rs:518-521、thread-store/src/local/read_thread.rs:30）。桌面 0.155 vs CLI 0.160 的版本错位为本机实证（2026-10-03）。openai/codex 官方博文《Unlocking the Codex harness: how we built the App Server》（2026-02）为“协议起源“的一手旁证。</em></p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="把协议变成可断言的承诺需要证人"><a class="header" href="#把协议变成可断言的承诺需要证人">把协议变成可断言的——承诺需要证人</a></h1>
@@ -2912,12 +2936,12 @@ if (firstChanged &lt; prevViewportTop) {
 <p>最后一组承诺关于昨天：<strong>换台设备、重启进程之后，历史还在，且是真的。</strong></p>
 <p>先回忆承诺的机制面：rollout 是 append-only 的事实源，客户端看到的 turn/item 视图是 <code>thread_history.rs</code>——一个 5024 行投影器——的产物。**这个事实有一个经常被忽视的推论：客户端看到的从来不是真相，是真相的投影。**对界面这是渲染问题，对评测这是取数纪律：任何从 UI 侧采集的数据，都必须意识到投影层的存在——投影器的一个 bug，会让你的评测数据整齐地错，而且错得毫无破绽。</p>
 <p>恢复路径的断言要测两条，不是一条。正常退出重启，人人测；<strong>kill -9 之后重启，才是承诺被检验的时刻</strong>。Codex 的崩溃恢复靠一个写入顺序：发首个采样请求前，TurnContext、初始上下文消息、TurnStarted、用户消息依次写 rollout。这个顺序本身就该是断言对象——在顺序的不同点位杀掉进程，恢复后的状态必须一致；顺序错一位，崩溃就从一个可恢复事件变成一次历史撕裂。同样，不持久化的内存态——进程内的 registry、后台任务的活状态——恢复后的缺失必须<strong>可检测</strong>，而不是静默蒸发：界面可以合法地说“这部分状态随进程结束了“，不能合法地假装它从未存在。</p>
-<h2 id="九总结"><a class="header" href="#九总结">九、总结</a></h2>
+<h2 id="九总结-1"><a class="header" href="#九总结-1">九、总结</a></h2>
 <p>五组证人派完——先交代为什么不是 §二 说的六个维度：完成语义那一组在 Codex 里<strong>没有证人可传</strong>，§五 的不变量是判它缺席之后，我们替它提出的新证人。五组是现存的，第六组是该长的；缺席本身也是证词。把它们放回全书的框架里归位。配对与时序、降级、竞态这三组是纯<strong>炸弹类</strong>：一票否决，百分之百通过才放行，九百九十九次绿的抵不掉一次红的。兼容矩阵与历史对账是<strong>一致性类</strong>：它们不拦单次发布，拦的是回归。胶水层也有可量的东西——TTFT、turn 收敛时长，Codex 的协议自带 <code>time_to_first_token_ms</code> 和 <code>duration_ms</code>，零插桩就能拿到——但这类分数只做同引擎的纵向回归，<strong>不做跨产品排名</strong>：不同产品的协议形状不同，分数不可通约，硬排就是拿尺子量体重。一句话收束全篇的产出方向：接 fail-closed 的发布管道，不接排行榜。</p>
 <p>在全书的地图上，这一篇认领的是评测卷四问地图上“协议“那层被测对象；四问之中，它主要回答“坏了会不会察觉“。评测卷讲统一定律——两个世界产出同一个绿灯，观测就是盲的；这一篇做的事，是在协议层把每个“两个世界“的格子找出来，一格配一名证人。</p>
 <p>上一篇结尾说：界面的每一个承诺，往下挖两层会碰到一条协议的条款，挖三层会碰到一个 try/catch 分支。这一篇把这句话补完——<strong>挖到第几层不重要，重要的是每一层都该有一条断言住在那里。承诺不是被信守的，是被看守的。</strong></p>
 <hr>
-<h2 id="参考与延伸-25"><a class="header" href="#参考与延伸-25">参考与延伸</a></h2>
+<h2 id="参考与延伸-24"><a class="header" href="#参考与延伸-24">参考与延伸</a></h2>
 <p><em>（全章初稿，2026-10-07。Codex 行号基准 rust-v0.154.0，HEAD <code>6b9826e3a</code>；降级分支病例、guardian 延迟测试、版本并存事实整理自 2026-10-03/05 本机实证与源码亲验；降级病例的数据层结论（同一 codex_home、数据不断裂、对账会绿、<code>/status</code> 行消失）为 2026-10-07 晚接力复核增补。§五的语义定性不变量与§六的异步等待显式语义为本书提出的设计，Codex 协议当前不含此面；文中已就地注明。）</em></p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="没报错就代表输出没问题吗"><a class="header" href="#没报错就代表输出没问题吗">没报错，就代表输出没问题吗？</a></h1>
@@ -3096,7 +3120,7 @@ complete               以上全部排除，才轮到我
 <p>所以这一篇的结论可以压成一句：<strong>界面承诺的真假，不取决于渲染层多努力，取决于事实源存在哪一层。</strong> 半行字卡在屏幕上的那一刻，界面能说“正在重连，已恢复到第 N 个事件“，还是只能让动画继续转下去骗人，这个差别在上线之前，就已经被后端的一张表决定了。</p>
 <p>下一篇把镜头从连接的两端拉近到拿在手里的那一端：一部随时会被操作系统杀掉的手机，如何在一台会话的每个站点（输入、发送、排队、流式、回看）保住“流畅“和“完整“这两件互相打架的事。</p>
 <hr>
-<h2 id="参考与延伸-26"><a class="header" href="#参考与延伸-26">参考与延伸</a></h2>
+<h2 id="参考与延伸-25"><a class="header" href="#参考与延伸-25">参考与延伸</a></h2>
 <p><em>事实核查分层（截至 2026-09-28）：MCP 部分引自官方 changelog（<a href="https://modelcontextprotocol.io/specification/2026-07-28/changelog">modelcontextprotocol.io/specification/2026-07-28/changelog</a>，“Remove SSE stream resumability and message redelivery…“为原文引用）及多家第三方解读交叉；Vercel 部分基于 AI SDK 官方文档（Chatbot Resume Streams，<code>resumable-stream</code> + Redis）与第三方边界测评；Cloudflare 部分基于官方 Agents 文档（Agent class internals：DO 单写者、WebSocket 休眠）与仓库 issue #1837；kimi-code 部分为本地一手阅读（<code>1e553fc</code>：<code>packages/transcript/AGENTS.md</code> 的 op-batch sequencing contract、<code>packages/kap-server/AGENTS.md</code> 的 journal/<code>transcript_since</code>/冷重建描述）；Claude Code 会话文件为本机取证（2026-09-28，类型分布为单样本）。SSE 协议行为（id/Last-Event-ID/EventSource 限制）为标准协议常识。</em></p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="一条消息的生命线移动端会话的六个断点"><a class="header" href="#一条消息的生命线移动端会话的六个断点">一条消息的生命线——移动端会话的六个断点</a></h1>
@@ -3143,7 +3167,7 @@ complete               以上全部排除，才轮到我
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/infra02a-six-stations.svg" alt="六个站点，一个常数：用户在任一站断掉，会话都要能活下来"><span class="img-wrapper"><img src="assets/infra02a-six-stations.svg" alt="六个站点，一个常数：用户在任一站断掉，会话都要能活下来"></span></label></p>
 <p>流畅和完整这对冤家也是这么和解的：完整性靠事实外置（搬到磁盘和服务端），流畅性靠降级自由（画面可以随时扔，因为事实扔不掉）。下一篇（二·下）把这六个站点背后的架构账单一次摊开：被操作系统禁止的长连接、只肯当信号用的推送通道、替 agent 跑工具的服务端工作区，以及那句话作为第一原则的完整含义：agent loop 不能拥有 socket。</p>
 <hr>
-<h2 id="参考与延伸-27"><a class="header" href="#参考与延伸-27">参考与延伸</a></h2>
+<h2 id="参考与延伸-26"><a class="header" href="#参考与延伸-26">参考与延伸</a></h2>
 <p><em>一手取证：FlowDown <code>b2cecfd6</code>（<code>ConversationManager.swift</code> 的 <code>temporaryEditorObjects</code> 防抖持久化、<code>ConversationSessionManager.swift</code> 的 <code>countIncomingTokens</code>/Live Activity、<code>Pipeline/</code> 的流式与结算路径）；Claude Code 本机会话 JSONL（<code>type: "queue-operation"</code>/<code>"operation": "enqueue"</code>，2026-09-28 取证）。平台行为（iOS 后台宽限为数十秒量级、挂起与杀死可能无回调、网络切换导致 TCP 半开）为移动端工程常识，按量级表述未引具体数字。快照+尾部增量与游标机制的工程细节引自基01 的核查（kimi-code <code>1e553fc</code>）。</em></p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="移动端的架构代价推送工作区与一条第一原则"><a class="header" href="#移动端的架构代价推送工作区与一条第一原则">移动端的架构代价——推送、工作区与一条第一原则</a></h1>
@@ -3173,14 +3197,14 @@ complete               以上全部排除，才轮到我
 <p><strong>审批挂起与会话休眠。</strong> 用户三小时不回，agent 停在等审批的状态上，会话资源怎么办？Cloudflare 的 Durable Object 休眠给了一个参考形态：对象睡了，WebSocket 状态还保着，消息到达即唤醒，休眠期不收活跃算力的钱。<strong>“等待“在服务端是被明码计价的资源</strong>，谁的账单、按什么计，是移动端产品没法回避的伦理题，因为等待的发起者（用户离开）和付费者未必是同一个预期。</p>
 <p><strong>云和本地抢同一个仓库。</strong> 云端 agent 在自己的工作区里跑，用户的桌面可能正开着同一个 repo，两边的改动如何合流，是 09 篇“统一 Workspace Model“在云时代的完整形态。这个问题目前没有谁真正答好，记为开放题。</p>
 <p><strong>工作区还是一个网络主体。</strong> 容器或 microVM 划定了文件系统边界，却没有自动划定网络边界：agent 在工作区里可以发任意出站连接，而它恰是一个会被自己处理的输入策反的执行者——一条恶意工具输出就能借 <code>curl</code> 或 npm 的 postinstall 把环境变量送出去。这类流量走 shell、不走 MCP，下一篇的工具边界管不到它。执行环境因此迟早要补上第三道边界：按 agent 实例签发的短命身份、默认拒绝的出站白名单，且强制执行点必须在 agent 进程之外（胶水层声明“需要连谁“，沙箱网关负责“别的什么都不通“）。还有一条传统网络里不存在的通道要单独盯：到模型 API 的那条 TLS 既是指令输入通道，又是带宽最高的数据外泄出口——两类历来分开管控的流量，在 agent 这里合成了一条加密流。这层目前没有公认形态，与云端工作区并记为开放题。</p>
-<h2 id="六总结-5"><a class="header" href="#六总结-5">六、总结</a></h2>
+<h2 id="六总结-6"><a class="header" href="#六总结-6">六、总结</a></h2>
 <p>把上下两篇收进一句话：<strong>agent loop 不能拥有 socket。</strong></p>
 <p>执行不拥有连接（挂起、杀进程、换服务器，会话继续）；连接不携带事实（断了，游标和 log 还在）；推送不携带内容（门铃只负责叫人）；客户端不携带状态（它的每样记忆都有磁盘或服务端的备份）。移动端不是这套原则的一个应用场景，<strong>它是最苛刻的那个证明环境</strong>：进程朝不保夕、网络七零八落、版本几周漂移，在这样的地基上还能兑现“流畅且完整“，靠的就是把每一样事实都安放在比进程、比连接、比画面活得久的地方。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/infra02b-first-principle.svg" alt="agent loop 不能拥有 socket：四条分离原则"><span class="img-wrapper"><img src="assets/infra02b-first-principle.svg" alt="agent loop 不能拥有 socket：四条分离原则"></span></label></p>
 <p>第 11 篇当年写过“Mobile 是 Companion，不是主战场“，从渲染负担看它依然成立；但从架构纪律看要补一句：<strong>移动端是这个行业里最诚实的甲方。</strong> 它不允许任何“先连着再说“的懒惰假设，每一条都在逼你把事实和传输分开。桌面端能蒙混过关的架构，在手机上四秒内露馅。</p>
 <p>下一篇回到地面：agent 与编辑器、前端、工具之间那三套正在三国杀的协议，MCP、ACP、AG-UI，三个边界各欠着谁的债。</p>
 <hr>
-<h2 id="参考与延伸-28"><a class="header" href="#参考与延伸-28">参考与延伸</a></h2>
+<h2 id="参考与延伸-27"><a class="header" href="#参考与延伸-27">参考与延伸</a></h2>
 <p><em>核查分层：Durable Object 休眠与单写者语义基于 Cloudflare Agents 官方文档（同基01 核查）；APNs payload 上限与静默推送限流按平台公开行为的量级表述（数千字节；低优先级、合并、受低电量与后台刷新设置影响），未引具体政策编号；厂商推送联盟为国内公开现状。kimi 契约的可选字段姿态引自基01 的本地一手核查（<code>1e553fc</code>）。冷启动路径、通知直批安全边界、出站身份与网络管控为设计层论述（后者为开放题，未引具体产品）。</em></p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="协议三边界mcpacpag-ui各欠谁的债"><a class="header" href="#协议三边界mcpacpag-ui各欠谁的债">协议三边界——MCP、ACP、AG-UI，各欠谁的债</a></h1>
@@ -3227,11 +3251,11 @@ complete               以上全部排除，才轮到我
 <p>规律就藏在“会话性“那一行：<strong>协议的会话性由边界另一端是否有状态决定。</strong> 工具无视图，MCP 可以拍掉会话；编辑器有状态，ACP 必须扛住会话；前端要增量，AG-UI 干脆把整个协议做成事件流。选协议之前先看对面是谁，跟第 11 篇选端先看约束是同一个思考方式。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/infra03-three-borders.svg" alt="三条协议边界：会话性由边界另一端是否有状态决定"><span class="img-wrapper"><img src="assets/infra03-three-borders.svg" alt="三条协议边界：会话性由边界另一端是否有状态决定"></span></label></p>
 <p>两条债也记下。其一，<strong>协议会咬人</strong>：MCP 2026-07-28 删 GET stream 的破坏性修订就是现场案例，依赖协议承诺的字段（比如断线恢复）说没就没，基01 里 kimi 那份“seq 字段全可选“的契约，就是客户端对协议咬人的标准防御。其二，<strong>registry 也在割据</strong>：Zed 一个、JetBrains 一个，agent 要么入驻两次要么选边，第 22 篇里 CLAUDE.md 和 AGENTS.md 的双写，在协议层换了个名字重演。</p>
-<h2 id="六总结-6"><a class="header" href="#六总结-6">六、总结</a></h2>
+<h2 id="六总结-7"><a class="header" href="#六总结-7">六、总结</a></h2>
 <p>把三篇基建的账合到界面上：ACP 决定编辑器能不能内联渲染 agent 的 diff、能不能把权限请求嵌进侧栏；AG-UI 决定前端组件收到的是增量还是全量、状态会不会静默漂移；MCP 的无状态化决定断线那一刻，工具调用这条支路上的界面敢不敢承诺续传。<strong>界面的每一个承诺，往下挖两层都会碰到一条协议的条款。</strong></p>
 <p>基建系列到此收口：连接（基01）、端（基02）、协议（基03），事件流离开本机之后的全部旅程。旅程之外还站着一个这三篇没请进来的角色——网络本身：当 principal 是一个会被输入策反、还会瞬时繁殖子代的 agent，“谁能连谁、能碰什么“该按什么身份强制执行，今天还散落在工具授权和沙箱配置里，没有长成自己的一层（基02 末尾把它和云端工作区并记为开放题）。下一篇回到界面本体轨，讲控制的三部曲之首：计划。逐条审批必然疲劳，可扩展的控制粒度是事前批准一份可编辑的计划——checklist 正在成为 agent 时代的 diff。</p>
 <hr>
-<h2 id="参考与延伸-29"><a class="header" href="#参考与延伸-29">参考与延伸</a></h2>
+<h2 id="参考与延伸-28"><a class="header" href="#参考与延伸-28">参考与延伸</a></h2>
 <p><em>核查分层（截至 2026-09-28）：ACP Registry 名单与接入方式基于 Zed 官方博客与文档、JetBrains 官方博客（2026-01）及 agentclientprotocol.com 目录，多源交叉；AG-UI 事件分组基于 CopilotKit 官方资料与第三方教程（事件计数 16–17 存在版本差异，按量级表述）；MCP 无状态化修订引自基01 轮核查的官方 changelog；kimi-code 一手（<code>1e553fc</code>：<code>packages/acp-adapter</code>、<code>@agentclientprotocol/sdk@0.23.0</code>、测试文件名）；zacp 为系列既有引用（helloxz/zacp）。</em></p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="没报错只是开始行为的可断言性"><a class="header" href="#没报错只是开始行为的可断言性">没报错只是开始——行为的可断言性</a></h1>
@@ -3285,7 +3309,7 @@ complete               以上全部排除，才轮到我
 <p>二是故障注入：主动把坏世界造出来，看有没有人叫。对检查，喂坏样本——把目录改名、把配置删一行再跑一遍。红了，这个检查才算存在；不红，它只是装饰。对流程，做消融——把你以为是主干的部件拆掉再跑一遍：分数掉了，说明它真的在被测；分数没动，说明你测的从来就不是你以为的东西。</p>
 <p>最后：每次靠偶然发现或翻日志才看见问题，本身就是症状——当时没有任何检查在场。而每次惊讶都标出一块该写断言的空地。把惊讶的具体原因写成一条指名道姓的测试，起名这一步不能省：一条没有名字的边界，对下一个改代码的人不存在。起完名，“只在某一天才分开“就从侥幸变成了每天都要过的一道关。</p>
 <hr>
-<h2 id="参考与延伸-30"><a class="header" href="#参考与延伸-30">参考与延伸</a></h2>
+<h2 id="参考与延伸-29"><a class="header" href="#参考与延伸-29">参考与延伸</a></h2>
 <p><em>本章为底稿（2026-10-05 定稿，2026-10-06 入册），成章时按 <code>新增分卷写作简报-eval-2026-10</code> 扩写病例段（收编博客《从 trace 到 eval》《给流式协议造故障》，六条绕行通道展开）。密钥目录病例整理自作者 2026-10-05 与 @echo_vic 在 X 上关于 agent harness eval 的公开讨论，他的原表述是「密钥目录的信任检查问的是“这个文件在不在“，而它该问的是“这个目录能不能信“」；两种谎言的归纳、因果机制与对策展开是作者的。</em></p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="炸弹故障注入下沉到内容完整性"><a class="header" href="#炸弹故障注入下沉到内容完整性">炸弹——故障注入下沉到内容完整性</a></h1>

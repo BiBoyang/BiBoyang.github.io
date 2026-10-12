@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-478b9049.js";
+            window.path_to_searchindex_js = "searchindex-0458ccd9.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-da67e966.js"></script>
@@ -184,7 +184,7 @@
 <hr>
 <h2 id="一不错的标准不在同一基线"><a class="header" href="#一不错的标准不在同一基线">一、“不错“的标准不在同一基线</a></h2>
 <p>TUI 用户看到 box-drawing 字符画的表格（<code>┌───┬───┐</code>）会觉得“这是个表格“。GUI 用户看到表格没有交替行背景色、没有列排序按钮、不能横向滚动，就会觉得“这做得不好“。</p>
-<p>这不是用户挑剔。这是两个媒介的基线不同：</p>
+<p>这并非用户挑剔，而是两个媒介的基线不同：</p>
 <div class="table-wrapper">
 <table>
 <thead>
@@ -201,7 +201,7 @@
 </table>
 </div>
 <p>TUI 的“功能完备“往往已经接近 GUI 的“勉强可用“。要在 GUI 上做到“不错“，你需要处理的子系统数量通常会比 TUI 多出数倍。</p>
-<p>第 1 篇引过一个判断：做 GUI 要么 VSCode 换皮（上限被封死），要么自研（至少半年以上）。这里把它量化：自研到底要做多少东西？以 FlowDown（我见过的开源原生 iOS Agent 客户端里技术拆分最完整的一个）为例。</p>
+<p>第 1 篇引过一个判断：做 GUI 要么 VSCode 换皮，要么自研。这里把它量化：自研到底要做多少东西？以 FlowDown 为例。</p>
 <hr>
 <h2 id="二flowdown-的七个子系统"><a class="header" href="#二flowdown-的七个子系统">二、FlowDown 的七个子系统</a></h2>
 <p>FlowDown 的界面层建立在这些独立库之上：</p>
@@ -258,7 +258,10 @@ error    → 红色叉 + 错误信息（可重试按钮）
 <p>GUI 上这是一个弹窗或内联确认卡片，含工具描述、权限列表、允许/拒绝/总是允许三个按钮。TUI 上是一行 <code>[y/n]</code> 提示。后者可以很轻，前者是一个完整的弹窗子系统，AlertController 的代码量不亚于一个小型 UI 库。</p>
 <h3 id="33-上下文窗口可视化"><a class="header" href="#33-上下文窗口可视化">3.3 上下文窗口可视化</a></h3>
 <p>Agent 的上下文窗口是有限资源。GUI 上可以展示 token 用量进度条、上下文溢出预警、历史消息压缩提示：<code>UIProgressView</code> + <code>UILabel</code> + 动画过渡，组合在一起就是一套完整的子系统。TUI 上你最多在状态栏展示 <code>[context: 85%]</code>。</p>
-<p>机制上这个子系统有三层。数据层：token 用量从哪来？API 响应里的 usage 字段是滞后值（一次请求完成后才知道），流式期间的实时用量要靠本地 tokenizer 估算，两个数据源的口径并不一致，界面上要决定显示哪一个。状态层：用量是会话级的单调递增状态，但历史消息压缩会让它突然回落，进度条要处理这种非单调跳变，动画方向是反的。交互层：预警阈值触发后做什么？只是变红，还是给出“开启新会话 / 压缩历史“的操作入口？这是产品决策，不是 UI 决策。</p>
+<p>机制上这个子系统有三层。</p>
+<p>数据层：token 用量从哪来？API 响应里的 usage 字段是滞后值（一次请求完成后才知道），流式期间的实时用量要靠本地 tokenizer 估算，两个数据源的口径并不一致，界面上要决定显示哪一个。</p>
+<p>状态层：用量是会话级的单调递增状态，但历史消息压缩会让它突然回落，进度条要处理这种非单调跳变，动画方向是反的。</p>
+<p>交互层：预警阈值触发后做什么？只是变红，还是给出“开启新会话 / 压缩历史“的操作入口？这是产品决策，不是 UI 决策。</p>
 <h3 id="34-多模态嵌入"><a class="header" href="#34-多模态嵌入">3.4 多模态嵌入</a></h3>
 <p>GUI Agent 客户端需要支持图片附件（Vision 模型输入）、文件附件（代码文件、PDF）、语音输入（转写）。每种附件类型都需要自己的缩略图渲染、上传进度指示、错误重试、点击放大/预览。TUI 上多模态是文件路径字符串：<code>file:///path/to/image.png</code>。</p>
 <p>每种附件背后是一条完整的管线：选取（系统 picker 或拖拽）→ 本地校验（格式、大小）→ 缩略图生成（后台线程，主线程不能卡）→ 上传（进度回调、失败重试）→ 发送后预览（点击放大、长按保存）。管线的每一环都是一个状态机，而它们共享同一个 cell：附件还在上传途中用户就点了发送，“文本已发、附件未完成“这个中间态怎么展示，是没有现成答案的问题。TUI 绕开了整条管线：路径字符串不需要状态机。</p>
@@ -266,7 +269,7 @@ error    → 红色叉 + 错误信息（可重试按钮）
 <h2 id="四长会话的性能"><a class="header" href="#四长会话的性能">四、长会话的性能</a></h2>
 <p>第 2 篇讲过 TUI 在长会话下的困境：帧超过终端高度触发全量重绘，Live Budget Planner 把超预算的 live 行沉降到 committed 区，物理行缓存全部重算。</p>
 <p>GUI 在长会话下的性能问题是不同性质的。<code>UITableView</code> / <code>UICollectionView</code> 天生支持 cell 复用：屏幕外 cell 被回收，屏幕内 cell 被复用填充新数据。这是 iOS SDK 内建能力，不需要手写。</p>
-<p>但这不意味 GUI 没有性能挑战。万级消息的列表仍然需要：</p>
+<p>但这不意味 GUI 没有性能挑战。超长消息的列表仍然需要：</p>
 <ul>
 <li>分页加载（滚到顶部时异步加载更早的消息）</li>
 <li>动态高度缓存（避免每次 <code>heightForRowAt</code> 都重新 layout cell；iOS 8+ 的 self-sizing cell 能自动算高，但对流式更新、高度异构的富文本 cell，自动计算意味着反复 layout，手写缓存仍有必要）</li>
@@ -276,12 +279,12 @@ error    → 红色叉 + 错误信息（可重试按钮）
 <hr>
 <h2 id="五dark-mode-和无障碍tui-相对省事gui-要逐项手写"><a class="header" href="#五dark-mode-和无障碍tui-相对省事gui-要逐项手写">五、Dark Mode 和无障碍：TUI 相对省事，GUI 要逐项手写</a></h2>
 <p>这是 TUI 相对省事的能力，但不是免费。终端设置的颜色方案通常会自动带到 ANSI 渲染上；无障碍支持取决于终端和具体实现。</p>
-<p>GUI 上这两个是实打实的工作量，但要分开说。Dark Mode 对系统颜色免费，对自定义颜色不免费：每个自定义颜色都要定义 light/dark variant，每个自定义 view 都要在 <code>traitCollectionDidChange</code> 里刷新。还有一个隐蔽成本是动态色解析：<code>UIColor.systemBlue</code> 这类动态颜色在 trait 变化时重新解析，但自定义绘制（<code>draw(_:)</code>、CALayer）里的颜色不会自动跟随，需要手动监听并重绘；渐变、阴影这类叠加效果在两种模式下的对比度要分别调。</p>
+<p>GUI 上这两个是实打实的工作量，但要分开说。Dark Mode 对系统颜色简单，对自定义颜色稍微复杂：每个自定义颜色都要定义 light/dark variant，每个自定义 view 都要在 <code>traitCollectionDidChange</code> 里刷新。还有一个隐蔽成本是动态色解析：<code>UIColor.systemBlue</code> 这类动态颜色在 trait 变化时重新解析，但自定义绘制（<code>draw(_:)</code>、CALayer）里的颜色不会自动跟随，需要手动监听并重绘；渐变、阴影这类叠加效果在两种模式下的对比度要分别调。</p>
 <p>无障碍同样分两半：标准控件（UIButton、UILabel）由系统免费获得 VoiceOver 支持；自定义绘制的 view 则全是手写工作量，为每个交互元素设置 <code>accessibilityLabel</code> / <code>accessibilityHint</code>，为自定义容器实现 <code>UIAccessibilityContainer</code>，为图表类内容提供文字化描述。而 Agent 客户端恰好多是自定义绘制：tool card、diff 视图、流式动画。不难，但多——每个自定义 view 都要做，漏一个就是 bug。</p>
 <hr>
 <h2 id="六跨平台从零成本到选阵营"><a class="header" href="#六跨平台从零成本到选阵营">六、跨平台：从零成本到选阵营</a></h2>
 <p>第 2 篇讲过 TUI 的跨平台：同一套 ANSI 序列，所有终端通用。</p>
-<p>GUI 没有这个选项。选了 UIKit → 只有 Apple 平台。选了 Electron → 全平台但有 150MB+ 基线。选了 Flutter → 全平台但 Dart 生态有限。选了 Compose Multiplatform → iOS 已稳定，但生态和三方库覆盖仍比 UIKit / SwiftUI 薄。</p>
+<p>GUI 没有这个选项。选了 UIKit → 只有 Apple 平台。选了 Electron → 全桌面平台但有 150MB+ 基线。选了 Flutter → 全平台但 Dart 生态有限。选了 Compose Multiplatform → iOS 已稳定，但生态和三方库覆盖仍比 UIKit / SwiftUI 薄。</p>
 <p>对于独立开发者或小团队，这个选择直接决定能做多大。FlowDown 选择 UIKit，所以当前实现只覆盖 Apple 平台。覆盖 Android 和 Web 基本等于重写整个 UI 层。</p>
 <hr>
 <h2 id="七回到-event-sourcing同一套事件翻倍的投影成本"><a class="header" href="#七回到-event-sourcing同一套事件翻倍的投影成本">七、回到 Event Sourcing：同一套事件，翻倍的投影成本</a></h2>
@@ -295,7 +298,8 @@ error    → 红色叉 + 错误信息（可重试按钮）
 <p>下一篇聚焦这个门槛里最核心的一块：GUI 上的 Markdown 流式渲染：打字机效果背后的三层管线（解析 → 构建 → 布局），以及为什么全量重建才是瓶颈。</p>
 <hr>
 <h2 id="参考与延伸"><a class="header" href="#参考与延伸">参考与延伸</a></h2>
-<p><em>本文的 GUI 子系统拆解基于 <a href="https://github.com/Lakr233/FlowDown">FlowDown</a> 的实际架构分析。TUI 对照部分基于 <a href="https://github.com/BiBoyang/ForgeLoopTUI">ForgeLoopTUI</a> v1.2.0。</em></p>
+<p><em>本文的 GUI 子系统拆解基于 <a href="https://github.com/Lakr233/FlowDown">FlowDown</a> 的实际架构分析。
+TUI 对照部分基于 <a href="https://github.com/BiBoyang/ForgeLoopTUI">ForgeLoopTUI</a> v1.2.0。</em></p>
 
                     </main>
 
