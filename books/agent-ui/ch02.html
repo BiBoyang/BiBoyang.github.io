@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-0458ccd9.js";
+            window.path_to_searchindex_js = "searchindex-bb5388bc.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-da67e966.js"></script>
@@ -183,12 +183,12 @@
 </blockquote>
 <hr>
 <h2 id="一从一个常见的错觉说起"><a class="header" href="#一从一个常见的错觉说起">一、从一个常见的错觉说起</a></h2>
-<p>先看一眼这个领域的实际阵容：2025-2026 年的主流 coding agent:Claude Code、Codex CLI、Gemini CLI、Goose、Aider、Devin CLI、Qwen Code——绝大多数是 TUI-first。上一篇讲了这个选择的结构性原因（这份名单的时间锚点、以及 2026 年秋天 GUI 一侧的进展，见第 1 篇的补记），这一篇讲它们脚下的技术底座。</p>
-<p>很多人对 TUI 的印象是“在终端里画界面“。用一些现成的框架,比如说——Bubble Tea（Go）、Ink/React（JS）、Ratatui（Rust）—— 组合几个组件，就能在终端里做出类似 GUI 的布局。</p>
+<p>先看一眼这个领域的实际阵容：2025-2026 年的主流 coding agent：Claude Code、Codex CLI、Gemini CLI、Goose、Aider、Devin CLI、Qwen Code——绝大多数是 TUI-first。上一篇讲了这个选择的结构性原因（这份名单的时间锚点、以及 2026 年秋天 GUI 一侧的进展，见第 1 篇的补记），这一篇讲它们脚下的技术底座。</p>
+<p>很多人对 TUI 的印象是“在终端里画界面“。用一些现成的框架，比如说——Bubble Tea（Go）、Ink/React（JS）、Ratatui（Rust）—— 组合几个组件，就能在终端里做出类似 GUI 的布局。</p>
 <p>这条路能做出来。很多项目也确实走通了。但这条路和“手写一个 TUI 渲染引擎“之间，隔着一段很少有人细看过的距离。框架帮你做了什么？框架没帮你做什么？不搞清楚这些，TUI 就永远只是“GUI 的低配模仿“。</p>
 <p>这篇文章做的事：以 ForgeLoopTUI（我写的一个用 Swift 写的 TUI 渲染引擎）的实际源码为参照，逐层拆开一个 TUI 渲染引擎到底在处理什么问题。从 ANSI 字节到屏幕上的字符这一完整的链路。</p>
 <ul>
-<li>注:之所以拿这个项目做参照,是因为这是我使用 Swift 做的一个实验性质的产品,虽然一开始的目的并非实验品,但是实际上后期因为缺乏各种 TUI 相关的基础组件,导致我想要实现各种功能都需要手搓,在这个过程中我学到了很多更加底层的知识.</li>
+<li>注：之所以拿这个项目做参照，是因为这是我使用 Swift 做的一个实验性质的产品，虽然一开始的目的并非实验品，但是实际上后期因为缺乏各种 TUI 相关的基础组件，导致我想要实现各种功能都需要手搓，在这个过程中我学到了很多更加底层的知识。</li>
 </ul>
 <hr>
 <h2 id="二字符网格一切困境的根源也是一切优势的根源"><a class="header" href="#二字符网格一切困境的根源也是一切优势的根源">二、字符网格：一切困境的根源，也是一切优势的根源</a></h2>
@@ -204,7 +204,7 @@
 <p>真正的差异在更底下一层——<strong>程序和显示端之间的契约</strong>。</p>
 <p>GUI 的显示端是有状态的：window server 和合成器持有每个窗口的像素，窗口被挡住再露出来，不用你的代码重画；点击落在哪个 view，系统替你做命中测试。手写 frame 也站在这套基础设施上。</p>
 <p>终端给程序的契约是一条<strong>只写的字节流</strong>：字符发出去就进了模拟器的网格，你既不能回读“第三行第五列现在是什么“，也没有“撤销上一次写入“的 API。想改？只能用 ANSI 转义序列回到目标位置 → 擦除 → 重写。模拟器自己当然持有网格（否则它没法显示），但那份状态不在你的契约里。</p>
-<p>整个增量 diff 渲染机制的复杂性都源于这一点。理想情况下不需要 undo，只需要 <code>print()</code>。但是真做起来你没法不需要 undo,因为 Agent 的流式输出会高频触发渲染，不断改写已显示的内容（比如说表格），所以你需要精确知道光标在哪、上一帧是什么、差异从第几行开始，然后生成一串 ANSI 序列，像手术一样修改终端屏幕上的内容。</p>
+<p>整个增量 diff 渲染机制的复杂性都源于这一点。理想情况下不需要 undo，只需要 <code>print()</code>。但是真做起来你没法不需要 undo，因为 Agent 的流式输出会高频触发渲染，不断改写已显示的内容（比如说表格），所以你需要精确知道光标在哪、上一帧是什么、差异从第几行开始，然后生成一串 ANSI 序列，像手术一样修改终端屏幕上的内容。</p>
 <hr>
 <h2 id="四ansi-转义序列半个世纪的遗产"><a class="header" href="#四ansi-转义序列半个世纪的遗产">四、ANSI 转义序列：半个世纪的遗产</a></h2>
 <h3 id="41-工作原理"><a class="header" href="#41-工作原理">4.1 工作原理</a></h3>

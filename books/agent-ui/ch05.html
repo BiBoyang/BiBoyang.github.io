@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-0458ccd9.js";
+            window.path_to_searchindex_js = "searchindex-bb5388bc.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-da67e966.js"></script>
@@ -193,7 +193,7 @@
 <blockquote>
 <p><strong>Agent 的执行过程本身不是任何 UI 的“内部状态“。它是一组独立于界面的、按时间顺序发生的事件集合。TUI 的困境（脆弱的状态记忆、防御逻辑、索引追踪）根子不在“终端难用“，在“把事件树强行投影成线性输出“这个投影操作本身的结构性代价。</strong></p>
 </blockquote>
-<p>换一个投影方式（比如 GUI），这些代价会消失吗?不会!它们会以不同的形态重新出现。</p>
+<p>换一个投影方式（比如 GUI），这些代价会消失吗？不会！它们会以不同的形态重新出现。</p>
 <hr>
 <h2 id="二agent-的执行本质一条事件流"><a class="header" href="#二agent-的执行本质一条事件流">二、Agent 的执行本质：一条事件流</a></h2>
 <p>如果你把 Agent 的一次完整执行记录下来，去掉所有 UI 相关的渲染细节，底层是什么？</p>
@@ -231,7 +231,7 @@
 </table>
 </div>
 <p>这三层只覆盖“执行相关“的事件。<code>message</code>、<code>thinking</code>、<code>notification</code> 不在其中，它们是内容流（对话内容、推理过程、系统提示），同样以事件形式被各端投影，但不参与执行流/副作用流/交互流的划分。</p>
-<p>这个分类在学术上未必严谨(因为实际上就是我自己总结的)，价值在于它解释了为什么不同 UI 对“同一套事件“的消费策略如此不同。</p>
+<p>这个分类在学术上未必严谨（因为实际上就是我自己总结的），价值在于它解释了为什么不同 UI 对“同一套事件“的消费策略如此不同。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch05-event-lanes.svg" alt="事件三层分类：执行流、副作用流、交互流在 CLI 与 GUI 上的不同投影"><span class="img-wrapper"><img src="assets/ch05-event-lanes.svg" alt="事件三层分类：执行流、副作用流、交互流在 CLI 与 GUI 上的不同投影"></span></label></p>
 <p><strong>执行流</strong>是所有 UI 都要处理的基线。CLI/TUI 把它展平成线性文本，GUI 把它映射成卡片和状态动画。</p>
 <p><strong>副作用流</strong>在不同 UI 上的处理成本差异最大。TUI 里 <code>file.changed</code> 就是一行路径字符串；GUI 里它需要一个 diff 审查面板：并排对比、行级高亮、部分采纳/拒绝。同一个事件，投影成本差一个数量级。</p>
