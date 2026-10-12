@@ -1,0 +1,28 @@
+#!/bin/sh
+# pre-commit: 提交涉及 book-src 小册源文件时，自动重跑 mdBook 构建并把产物捎进本次 commit。
+# 链路: book-src/<册>/chapters*.md → src/ → books/<册>/（网站实际服务的是产物）
+# 安装: git config core.hooksPath .githooks（本仓库已配置）
+
+set -e
+cd "$(git rev-parse --show-toplevel)"
+
+# 快路径: 两册的源文件（chapters/ 与 chapters.txt）在暂存区和工作区都没动 → 直接放行
+if [ -z "$(git status --porcelain -- book-src)" ]; then
+    exit 0
+fi
+
+# 源文件有未暂存改动 → 一并暂存（构建读的是工作区内容，产物必须与同源内容一起提交）
+git add -u -- book-src
+
+# 判断动了哪些册
+books=""
+[ -n "$(git diff --cached --name-only -- book-src/agent-ui)" ] && books="$books agent-ui"
+[ -n "$(git diff --cached --name-only -- book-src/eval-series)" ] && books="$books eval-series"
+
+for b in $books; do
+    echo "[pre-commit] 重建小册: $b"
+    python3 book-src/build-books.py "$b"
+    git add -A -- "book-src/$b/src" "books/$b"
+done
+
+exit 0
