@@ -35,10 +35,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-b11dc2bd.js";
+            window.path_to_searchindex_js = "searchindex-38aeaa9f.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-06183840.js"></script>
+        <script src="toc-da67e966.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -376,6 +376,7 @@ if stableSource.count &gt; maxStableSourceChars { reset() }
 <p>稳定缓存不能无限增长。一次长对话的流式输出可能超过几万个字符。65K 是折中值：超出后 reset，下一帧把全部内容重新渲染一次，重新开始缓存。</p>
 <hr>
 <h2 id="四流式期间到底要不要渲染-markdown"><a class="header" href="#四流式期间到底要不要渲染-markdown">四、流式期间到底要不要渲染 Markdown</a></h2>
+<p>第 2 篇和第 9 篇（GUI 部分）都会涉及这个问题，值得把账算清楚。</p>
 <p>Agent 流式输出时，每秒几十个 token 到达。即使有 Stable Prefix Cache，每次渲染仍然需要：</p>
 <ol>
 <li>跑 <code>stableAdvance</code>：扫描候选文本，检测是否是流式表格（可能 O(n) 回退扫描）</li>
@@ -405,12 +406,15 @@ if stableSource.count &gt; maxStableSourceChars { reset() }
 <p>这和 CommonMark 规范有两个微妙区别。其一，CommonMark 要求闭合 fence 的长度不小于开 fence：三个反引号打开，就得三个或更多才能关闭；四个反引号打开的块里，三连反引号只是内容。ForgeLoopTUI 不检查长度匹配，只要看到三连反引号就切换 in-code-fence 状态。其二，先 trim 等于丢掉了 CommonMark“fence 最多允许 3 格缩进“的规则，缩进 4 格以上的行若以三连反引号开头，会被误判为 fence。</p>
 <p>这是一个有意的简化。在 Agent 流式场景下，代码块的内容来自 LLM 输出，不太会出现“四个反引号打开、三个反引号在内容里“的边界情况。而且实现正确的分隔符匹配需要回溯（代码块可能在几十行之前打开），与 Stable Prefix Cache 的假设冲突。</p>
 <hr>
-<h2 id="六从这里出发"><a class="header" href="#六从这里出发">六、从这里出发</a></h2>
+<h2 id="六总结"><a class="header" href="#六总结">六、总结</a></h2>
 <p>TUI 上 Markdown 流式渲染的核心矛盾可以总结为三句话：</p>
 <ol>
-<li><strong>Markdown 是“写完再解析“的语言，Agent 是“边想边输出“的过程。</strong> 两者的设计哲学根本冲突。</li>
-<li><strong>终端只有字符，Markdown 的视觉语义必须降级映射。</strong> 但降级不等于功能缺失，true color 语法高亮和 OSC 8 可点击超链接在终端里都可行，成本是手写 tokenizer，没法靠调库解决。</li>
-<li><strong>流式渲染 Markdown 的成本可以靠 Stable Prefix Cache 摊薄，但防御逻辑和盲区是必要之恶。</strong> 纯文本 fallback（流式期间跳过 Markdown、结束再切换）是更省的选择。</li>
+<li><strong>Markdown 是“写完再解析“的语言，Agent 是“边想边输出“的过程。</strong>
+两者的设计哲学根本冲突。</li>
+<li><strong>终端只有字符，Markdown 的视觉语义必须降级映射。</strong>
+但降级不等于功能缺失，true color 语法高亮和 OSC 8 可点击超链接在终端里都可行，成本是手写 tokenizer，没法靠调库解决。</li>
+<li><strong>流式渲染 Markdown 的成本可以靠 Stable Prefix Cache 摊薄，但防御逻辑和盲区是必要之恶。</strong>
+纯文本 fallback（流式期间跳过 Markdown、结束再切换）是更省的选择。</li>
 </ol>
 <p>下一篇讲 Agent TUI 最核心的难题——流式输出、工具调用、thinking 展开之后，这些问题如何从“难“变成“几近失控“。第 1 篇提过一个判断：Agent 的真实输出不是 1D 的，下一篇把这句话完整展开。</p>
 <hr>
@@ -418,9 +422,10 @@ if stableSource.count &gt; maxStableSourceChars { reset() }
 <p>补记（2026.10）：本篇定稿两个月后，我逐行读了 Codex 的流式渲染模块（<code>codex-rs/tui/src/streaming/</code>）。两个发现值得记在这里：§3.2 的表格陷阱，Codex 用另一种机制独立解了一遍；§3.3 的代码块盲区，Codex 里有一个现成的完整答案。</p>
 <p>Codex 的对应物叫 table holdback，是一个三态状态机：没有表格迹象时放行一切；末行看着像表头、分隔行还没到，就进入“待确认“，乐观地把这一行拦在稳定区之外；表头与分隔行一旦配对确认，从表头起的内容全部保持可变，直到表格结束。它解的问题和 retreat 是同一个——给表格加一行会改变所有列宽、重塑之前所有行，所以表格在闭合前不能定型——但机制相反。ForgeLoopTUI 是<strong>事后回退</strong>：先按换行符乐观切分，发现劈开风险再回头扫描，最坏 O(n)，平时零常驻状态。Codex 是<strong>事前状态机</strong>：扫描器随每个 delta 增量推进，只记住上一行的事实，常数成本，提前拦住。第六节说防御逻辑是必要之恶，这两家只是选择了不同的纳税时点——一个按需补缴，一个分期预缴。</p>
 <p>两个细节值得点名。其一，Codex 的源累积器只在换行符处交付：没写完的半行根本不进入渲染管线，注释里写明了动机——防止用户先瞥见结构未定的畸形块、下一帧又看它消失。§3.2 里那类闪烁，在这个设计里从源头不存在。其二，§3.3 盲区的他山答案：Codex 全程维护 fence 状态，开着的代码块走一条快路径——直接追加渲染行、不重新解析，fence 状态跨帧连续，盲区在结构上不存在。</p>
-<p>时间线如实写：ForgeLoopTUI v1.2.1 的 fence retreat 修复在前，我读 Codex 在后。两家独立收敛到了同一个判断——fence 状态必须跨帧保持——区别只在用回退还是用状态机来实现。另外，Codex 给这套机制配的测试不是逐帧断言，而是断言一个不变量：任意 delta 切分下，“已上屏 + 待放行“恒等于一次性全量渲染。这个思路本身值得展开，见第 24 篇。</p>
+<p>时间线：ForgeLoopTUI v1.2.1 的 fence retreat 修复在前，我读 Codex 在后。两家独立收敛到了同一个判断——fence 状态必须跨帧保持——区别只在用回退还是用状态机来实现。另外，Codex 给这套机制配的测试不是逐帧断言，而是断言一个不变量：任意 delta 切分下，“已上屏 + 待放行“恒等于一次性全量渲染。这个思路本身值得展开，见第 16 篇。</p>
 </blockquote>
 <hr>
+<h2 id="参考与延伸"><a class="header" href="#参考与延伸">参考与延伸</a></h2>
 <p><em>本文所有技术细节基于 <a href="https://github.com/BiBoyang/ForgeLoopTUI">ForgeLoopTUI</a> v1.2.0 的实际源码。§3.3 的代码块盲区已在 v1.2.1 修复（<code>retreatToAvoidSplittingUnclosedCodeFence</code>），正文保留该盲区的完整分析作为案例。补记部分基于 <a href="https://github.com/openai/codex">Codex</a> 本地源码 2026-10-04 的阅读：<code>codex-rs/tui/src/streaming/table_holdback.rs</code>（holdback 状态机）、<code>markdown_stream.rs</code>（换行门控）、<code>streaming/render.rs</code> 与 <code>streaming/code_fence.rs</code>（fence 快路径），快照 main <code>6b9826e3</code>（2026-09-09）。</em></p>
 
                     </main>

@@ -35,10 +35,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-b11dc2bd.js";
+            window.path_to_searchindex_js = "searchindex-38aeaa9f.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-06183840.js"></script>
+        <script src="toc-da67e966.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -186,7 +186,7 @@
 <p>先给一张十秒钟的地图。一个 agent 今天要和三类对话者说话，行业为每条边界造了一套协议：跟工具说话用 MCP，主语是 agent，它去征用外界的能力；跟编辑器说话用 ACP，主语是编辑器，它去征用一个 agent；跟浏览器前端说话用 AG-UI，前端是消费者，它订阅 agent 的事件流。这三条国境线各自怎么划、各欠谁的债，基建第 3 篇会逐条清算——这一篇只需要它们的朝向。因为 Codex 的 app-server 协议不在这张地图上。</p>
 <p>它当然不是 MCP——能力方向反了，是引擎被界面征用，不是引擎去征用工具。它有点像 ACP 的镜像：ACP 里编辑器把 agent 当子进程拉起，编辑器是主语；Codex 的 app-server 里<strong>引擎把界面当客户端服务</strong>，引擎是 server，TUI、桌面端、IDE、手机、连 UI 都没有的 <code>codex exec</code>，全是 client。三条边界里主语最强势的是“编辑器征用 agent“，这里是“agent 征用一切界面“。</p>
 <p>方向反过来，债务清单跟着换。编辑器当主语时，最难的问题是“agent 的权限请求怎么嵌进我的 UI“；引擎当主语时，最难的问题变成：<strong>一个 server，怎么向自己的 client 开口要东西</strong>。审批不是界面弹个窗那么简单——是 server 在 turn 跑到一半时，向 client 发一条反向 request，挂起执行，等一个 oneshot 回填决定。Codex 把这个“反向通道“做成了一个枚举：执行审批、文件变更审批、向用户提问、MCP elicitation、权限申请、甚至宿主代管 token 时的刷新请求，全部走同一类 server→client request。“宿主怎么反问用户“这个 ACP 边界上最难的设计点，在引擎当主语的世界里不是一个 UI 问题，是<strong>协议里的一类消息</strong>。</p>
-<p>server 身份带来的第二件事是<strong>历史的归属</strong>。编辑器当主语时，会话历史跟着编辑器的项目走；引擎当 server 之后，thread 的历史归引擎持久：append-only 的 rollout 文件是事实源，客户端看到的 turn/item 视图是投影器的产物——<code>thread_history.rs</code>，一个 5024 行的文件，把 rollout 逐行译成增量 ChangeSet。全量水合已经被协议注释判了死刑（“Full-history hydration is deprecated for paginated threads”），往回翻页走 opaque cursor。界面部分第 5 篇的 Event Sourcing、第 9 篇的统一 Event Log，在这里不是主张，是一个每天被好几种客户端消费的真实部件；“换一台设备接着聊“是出厂设置，因为历史从来不在任何一台设备上。记住这个承诺，§四会回来撕它。</p>
+<p>server 身份带来的第二件事是<strong>历史的归属</strong>。编辑器当主语时，会话历史跟着编辑器的项目走；引擎当 server 之后，thread 的历史归引擎持久：append-only 的 rollout 文件是事实源，客户端看到的 turn/item 视图是投影器的产物——<code>thread_history.rs</code>，一个 5024 行的文件，把 rollout 逐行译成增量 ChangeSet。全量水合已经被协议注释判了死刑（“Full-history hydration is deprecated for paginated threads”），往回翻页走 opaque cursor。界面部分第 7 篇的 Event Sourcing、第 11 篇的统一 Event Log，在这里不是主张，是一个每天被好几种客户端消费的真实部件；“换一台设备接着聊“是出厂设置，因为历史从来不在任何一台设备上。记住这个承诺，§四会回来撕它。</p>
 <p>server 身份还带来一件 ACP/AG-UI 都没有的事：<strong>多 client 共存，且版本不一</strong>。daemon 让一个引擎进程同时伺候多个客户端——桌面端走 alpha 发布线落后五个 minor 这种事（本机实证：桌面 0.155.0-alpha、CLI 0.160.0），在“编辑器养 agent“的世界里几乎不存在，在“引擎养界面“的世界里是日常。于是每条连接建立时都要重新对账一次能力，这就是下一节的握手。</p>
 <h2 id="二协议里没有版本号"><a class="header" href="#二协议里没有版本号">二、协议里没有版本号</a></h2>
 <p>先给结论再给证据：Codex 的 initialize 握手有 clientInfo（名字、版本）和 capabilities（实验性 API opt-in、通知 opt-out、MCP 扩展声明），<strong>唯独没有 protocolVersion 字段</strong>。全文 grep 无结果，不是藏得深，是没有。</p>
@@ -199,7 +199,7 @@
 <p>协议是会咬人的：依赖它承诺的字段，一次破坏性修订说没就没。对这种恐惧，基建第 1 篇里 kimi 的防御是“seq 字段全可选“，Codex 在这里的防御是加法 + 举手 + 封版——同一类恐惧，两种解。数字协商承诺的是“我支持 1.x 到 2.y 的全序“，加法演化承诺的是更弱但更诚实的两句话：旧消息永远可读，新能力你自己举手。</p>
 <p>对界面，这意味着承诺的形状：<strong>旧客户端的可见世界被握手时刻永久定格</strong>，它不会因为服务端升级而突然报错，也不会突然多出不认识的能力。反过来，服务端永远不能假定新客户端存在——能力永远以客户端声明为准。界面承诺的边界，在握手那几百毫秒里就签完了。</p>
 <h2 id="三同进程也过协议"><a class="header" href="#三同进程也过协议">三、同进程，也过协议</a></h2>
-<p>这一节是界面部分第 9 篇四个统一（Runtime、Event Log、Permission Engine、Workspace Model）在 Codex 里兑现得最狠的一条。TUI 和引擎跑在同一个进程里，它们之间仍然走 JSON-RPC——进程内 channel 传输的只是换了信封的同一套消息，注释明说不引入第二套响应契约。连“连 UI 都没有“的 exec 模式，也是这套协议的客户端。</p>
+<p>这一节是界面部分第 11 篇四个统一（Runtime、Event Log、Permission Engine、Workspace Model）在 Codex 里兑现得最狠的一条。TUI 和引擎跑在同一个进程里，它们之间仍然走 JSON-RPC——进程内 channel 传输的只是换了信封的同一套消息，注释明说不引入第二套响应契约。连“连 UI 都没有“的 exec 模式，也是这套协议的客户端。</p>
 <p>初看是洁癖，再想是纪律：<strong>协议一旦为“进程边界“破例，就会为“反正只是内部用“破第二次</strong>。协议一等公民的直接收益是我们验证过的实证：core 侧删掉了 <code>Op::UserTurn</code>、换成 <code>TurnInput</code>/<code>start_or_steer_turn</code> 的破坏性重构，TUI 一行没改——它对 core 内部类型的引用为零。四个统一里“统一 Runtime、统一 Event Log“是主张时人人点头；只有当 UI 连进程内的捷径都不走时，它才从主张变成事实。</p>
 <p>还有一句值得单独记住的评注方向：TUI 完全客户端化，保证了<strong>不会出现“内部 API 比公开协议强“的腐化</strong>——界面永远是能力的最小公分母，引擎想长新能力，先扩协议。这条纪律的代价是同进程还要序列化一次的样板税，收益是任何新端接入零特权；税和收益怎么配平，是整部基建卷还会反复拨动的算盘。</p>
 <h2 id="四进程形态学三种连接和一次静默的降级"><a class="header" href="#四进程形态学三种连接和一次静默的降级">四、进程形态学：三种连接，和一次静默的降级</a></h2>
@@ -216,7 +216,7 @@
 <p>最后一个内侧观察，关于新能力怎么进引擎。以 computer use 为例：截屏、点击、拖拽的实现<strong>不在开源引擎里</strong>——它们经一个叫 <code>cua_repl</code> 的 MCP server 从宿主（桌面端 JS 侧）进入，引擎核心不认识鼠标。但围绕它的治理是全开源的：功能门由服务端 requirements 控制、每个模型声明自己对 computer_use/shell/file_changes 等动作的审批覆盖、操作规范是模型目录下发的 Markdown、回合中途换模型不允许降低审查水位。</p>
 <p>三个问题三个归属：**能做什么由宿主决定，允许做什么由引擎决定，怎么做由模型目录决定。**界面在这套结构里拿到的承诺也因此分层：权限弹窗里显示什么、要不要拦，是引擎和策略面定死的；而弹窗背后那个动作具体怎么执行，界面不需要知道，也不必信任——这正是“协议给说什么、不给怎么画“在能力层的版本。</p>
 <p>对想自建 glue 的人，这条比任何机制都可迁移：<strong>核心不长手，手永远可替换；但缰绳必须长在核心身上。</strong></p>
-<h2 id="七收束界面承诺的胶水层清单"><a class="header" href="#七收束界面承诺的胶水层清单">七、收束：界面承诺的胶水层清单</a></h2>
+<h2 id="七总结"><a class="header" href="#七总结">七、总结</a></h2>
 <p>把本篇的账合到最后一张表里。基建篇会反复验证两句话：承诺的真假取决于事实源在哪一层，承诺往下挖两层碰到协议条款；本篇从引擎内侧补上第三步——<strong>承诺的兑现还要穿过一个方向选择、一次握手、一个降级分支</strong>：</p>
 <div class="table-wrapper">
 <table>
@@ -235,6 +235,7 @@
 <p>而所有这些机制的成本，都由一个朴素的问题定价：这两端，是不是独立发布？是，就付协议税；不是，就允许紧耦合。胶水层的设计，说到底是发布关系的会计。</p>
 <p>这条缝先讲到这里。再往下走一层，承诺要穿过的东西从进程边界换成网络和操作系统：连接会断、端会被操作系统杀掉、协议对面坐着别家的主语——那是基建三篇的事，从《没报错，就代表输出没问题吗》那个问句开场。</p>
 <hr>
+<h2 id="参考与延伸"><a class="header" href="#参考与延伸">参考与延伸</a></h2>
 <p><em>事实核查分层（截至 2026-10-07）：本文 Codex 事实基于 rust-v0.154.0（HEAD 6b9826e3a，2026-09-09 快照）亲读——initialize 握手结构（app-server-protocol/src/protocol/v1.rs）、experimental 门控（message_processor.rs:912-920）、v1 冻结纪律（仓库 AGENTS.md:269）、TUI 内嵌走 JSON-RPC envelope（app-server/src/in_process.rs:22）、历史投影与分页（app-server-protocol/src/protocol/thread_history.rs、thread_history_projection.rs:1-3、v2/thread.rs:400,450）、静默降级分支（tui/src/lib.rs:518-521，逐行亲验）、voice-host 同构建校验（voice-host/src/main.rs:48 的 –build-commit）、computer use 治理面（features/src/lib.rs:271、protocol/src/openai_models.rs:402、core/src/session/step_activation.rs:110）与 cua_repl 通道（protocol/src/mcp.rs:38）。降级分支的数据影响（同一 codex_home、数据不断裂、<code>/status</code> Remote Connection 行整体消失）为 2026-10-07 晚接力复核增补（tui/src/lib.rs:518-521、thread-store/src/local/read_thread.rs:30）。桌面 0.155 vs CLI 0.160 的版本错位为本机实证（2026-10-03）。openai/codex 官方博文《Unlocking the Codex harness: how we built the App Server》（2026-02）为“协议起源“的一手旁证。</em></p>
 
                     </main>

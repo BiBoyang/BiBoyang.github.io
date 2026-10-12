@@ -12,7 +12,7 @@
 
 方向反过来，债务清单跟着换。编辑器当主语时，最难的问题是"agent 的权限请求怎么嵌进我的 UI"；引擎当主语时，最难的问题变成：**一个 server，怎么向自己的 client 开口要东西**。审批不是界面弹个窗那么简单——是 server 在 turn 跑到一半时，向 client 发一条反向 request，挂起执行，等一个 oneshot 回填决定。Codex 把这个"反向通道"做成了一个枚举：执行审批、文件变更审批、向用户提问、MCP elicitation、权限申请、甚至宿主代管 token 时的刷新请求，全部走同一类 server→client request。"宿主怎么反问用户"这个 ACP 边界上最难的设计点，在引擎当主语的世界里不是一个 UI 问题，是**协议里的一类消息**。
 
-server 身份带来的第二件事是**历史的归属**。编辑器当主语时，会话历史跟着编辑器的项目走；引擎当 server 之后，thread 的历史归引擎持久：append-only 的 rollout 文件是事实源，客户端看到的 turn/item 视图是投影器的产物——`thread_history.rs`，一个 5024 行的文件，把 rollout 逐行译成增量 ChangeSet。全量水合已经被协议注释判了死刑（"Full-history hydration is deprecated for paginated threads"），往回翻页走 opaque cursor。界面部分第 5 篇的 Event Sourcing、第 9 篇的统一 Event Log，在这里不是主张，是一个每天被好几种客户端消费的真实部件；"换一台设备接着聊"是出厂设置，因为历史从来不在任何一台设备上。记住这个承诺，§四会回来撕它。
+server 身份带来的第二件事是**历史的归属**。编辑器当主语时，会话历史跟着编辑器的项目走；引擎当 server 之后，thread 的历史归引擎持久：append-only 的 rollout 文件是事实源，客户端看到的 turn/item 视图是投影器的产物——`thread_history.rs`，一个 5024 行的文件，把 rollout 逐行译成增量 ChangeSet。全量水合已经被协议注释判了死刑（"Full-history hydration is deprecated for paginated threads"），往回翻页走 opaque cursor。界面部分第 7 篇的 Event Sourcing、第 11 篇的统一 Event Log，在这里不是主张，是一个每天被好几种客户端消费的真实部件；"换一台设备接着聊"是出厂设置，因为历史从来不在任何一台设备上。记住这个承诺，§四会回来撕它。
 
 server 身份还带来一件 ACP/AG-UI 都没有的事：**多 client 共存，且版本不一**。daemon 让一个引擎进程同时伺候多个客户端——桌面端走 alpha 发布线落后五个 minor 这种事（本机实证：桌面 0.155.0-alpha、CLI 0.160.0），在"编辑器养 agent"的世界里几乎不存在，在"引擎养界面"的世界里是日常。于是每条连接建立时都要重新对账一次能力，这就是下一节的握手。
 
@@ -32,7 +32,7 @@ server 身份还带来一件 ACP/AG-UI 都没有的事：**多 client 共存，�
 
 ## 三、同进程，也过协议
 
-这一节是界面部分第 9 篇四个统一（Runtime、Event Log、Permission Engine、Workspace Model）在 Codex 里兑现得最狠的一条。TUI 和引擎跑在同一个进程里，它们之间仍然走 JSON-RPC——进程内 channel 传输的只是换了信封的同一套消息，注释明说不引入第二套响应契约。连"连 UI 都没有"的 exec 模式，也是这套协议的客户端。
+这一节是界面部分第 11 篇四个统一（Runtime、Event Log、Permission Engine、Workspace Model）在 Codex 里兑现得最狠的一条。TUI 和引擎跑在同一个进程里，它们之间仍然走 JSON-RPC——进程内 channel 传输的只是换了信封的同一套消息，注释明说不引入第二套响应契约。连"连 UI 都没有"的 exec 模式，也是这套协议的客户端。
 
 初看是洁癖，再想是纪律：**协议一旦为"进程边界"破例，就会为"反正只是内部用"破第二次**。协议一等公民的直接收益是我们验证过的实证：core 侧删掉了 `Op::UserTurn`、换成 `TurnInput`/`start_or_steer_turn` 的破坏性重构，TUI 一行没改——它对 core 内部类型的引用为零。四个统一里"统一 Runtime、统一 Event Log"是主张时人人点头；只有当 UI 连进程内的捷径都不走时，它才从主张变成事实。
 
@@ -66,7 +66,7 @@ server 身份还带来一件 ACP/AG-UI 都没有的事：**多 client 共存，�
 
 对想自建 glue 的人，这条比任何机制都可迁移：**核心不长手，手永远可替换；但缰绳必须长在核心身上。**
 
-## 七、收束：界面承诺的胶水层清单
+## 七、总结
 
 把本篇的账合到最后一张表里。基建篇会反复验证两句话：承诺的真假取决于事实源在哪一层，承诺往下挖两层碰到协议条款；本篇从引擎内侧补上第三步——**承诺的兑现还要穿过一个方向选择、一次握手、一个降级分支**：
 
@@ -83,5 +83,7 @@ server 身份还带来一件 ACP/AG-UI 都没有的事：**多 client 共存，�
 这条缝先讲到这里。再往下走一层，承诺要穿过的东西从进程边界换成网络和操作系统：连接会断、端会被操作系统杀掉、协议对面坐着别家的主语——那是基建三篇的事，从《没报错，就代表输出没问题吗》那个问句开场。
 
 ---
+
+## 参考与延伸
 
 *事实核查分层（截至 2026-10-07）：本文 Codex 事实基于 rust-v0.154.0（HEAD 6b9826e3a，2026-09-09 快照）亲读——initialize 握手结构（app-server-protocol/src/protocol/v1.rs）、experimental 门控（message_processor.rs:912-920）、v1 冻结纪律（仓库 AGENTS.md:269）、TUI 内嵌走 JSON-RPC envelope（app-server/src/in_process.rs:22）、历史投影与分页（app-server-protocol/src/protocol/thread_history.rs、thread_history_projection.rs:1-3、v2/thread.rs:400,450）、静默降级分支（tui/src/lib.rs:518-521，逐行亲验）、voice-host 同构建校验（voice-host/src/main.rs:48 的 --build-commit）、computer use 治理面（features/src/lib.rs:271、protocol/src/openai_models.rs:402、core/src/session/step_activation.rs:110）与 cua_repl 通道（protocol/src/mcp.rs:38）。降级分支的数据影响（同一 codex_home、数据不断裂、`/status` Remote Connection 行整体消失）为 2026-10-07 晚接力复核增补（tui/src/lib.rs:518-521、thread-store/src/local/read_thread.rs:30）。桌面 0.155 vs CLI 0.160 的版本错位为本机实证（2026-10-03）。openai/codex 官方博文《Unlocking the Codex harness: how we built the App Server》（2026-02）为"协议起源"的一手旁证。*

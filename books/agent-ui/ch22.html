@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>22 · 输入的地狱：终端能力探测与降级 - 自顶向下拆 Agent：从界面到地基</title>
+        <title>06 · 输入的地狱：终端能力探测与降级 - 自顶向下拆 Agent：从界面到地基</title>
 
 
         <!-- Custom HTML head -->
@@ -35,10 +35,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-b11dc2bd.js";
+            window.path_to_searchindex_js = "searchindex-38aeaa9f.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-06183840.js"></script>
+        <script src="toc-da67e966.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -179,7 +179,7 @@
                     <main>
                         <h1 id="输入的地狱终端能力探测与降级"><a class="header" href="#输入的地狱终端能力探测与降级">输入的地狱——终端能力探测与降级</a></h1>
 <blockquote>
-<p>系列第二十二篇，第 21 篇的下半部。第 2 篇 §4.3 讲过输出侧的能力降级链——颜色从 true color 一路退到 16 色，是“能力有没有“的问题。输入侧是另一半，行业讨论比输出侧少一个数量级，难度却更高：<strong>输出降级是“能力有没有“，输入地狱是“行为一不一致“</strong>——同一个按键，在不同终端模拟器里是不同含义；同一条查询序列，有的终端回答、有的沉默、有的回一半。上一篇讲的 composer 状态机，全部建立在这条事件流可靠的假设上。这一篇讲这个假设本身。</p>
+<p>系列第六篇，第 5 篇的下半部。第 2 篇 §4.3 讲过输出侧的能力降级链——颜色从 true color 一路退到 16 色，是“能力有没有“的问题。输入侧是另一半，行业讨论比输出侧少一个数量级，难度却更高：<strong>输出降级是“能力有没有“，输入地狱是“行为一不一致“</strong>——同一个按键，在不同终端模拟器里是不同含义；同一条查询序列，有的终端回答、有的沉默、有的回一半。上一篇讲的 composer 状态机，全部建立在这条事件流可靠的假设上。这一篇讲这个假设本身。</p>
 </blockquote>
 <hr>
 <h2 id="一探测启动时的第一次对账"><a class="header" href="#一探测启动时的第一次对账">一、探测：启动时的第一次对账</a></h2>
@@ -197,12 +197,12 @@
 <p>同一条消歧目标，四家四种姿态：Codex 探测后启用、留开关；Kimi 协商加原生兜底；Claude 只解析不推送，把两种编码都当既成事实接受；ForgeLoopTUI 乐观推送、解析器只映射 Enter 一个键（其余 CSI-u 键码静默丢弃——够用主义：我要的只是 Shift+Enter 和回车的区分）。这没有对错，是各自对“多少终端会把我送进歧义“的不同估计。</p>
 <hr>
 <h2 id="三模式开关开了要对关了要对被劫持了也要对"><a class="header" href="#三模式开关开了要对关了要对被劫持了也要对">三、模式开关：开了要对，关了要对，被劫持了也要对</a></h2>
-<p>bracketed paste、focus 事件、同步输出、kitty 键盘——输入侧的能力几乎全是<strong>模式</strong>：进入时打开，退出时关闭。第 16 篇把模式开关列为攻击面（它讲“为什么危险“），这一篇补工程侧：为什么难对。</p>
-<p>难在状态的所有权不排他。终端模式是全 fd 共享的全局状态，而进程会挂起：Codex 里 Ctrl+Z 是特殊键位（<code>SUSPEND_KEY</code>），进程切后台再回来，raw mode 可能已经被 shell 或别的程序动过——所以有 <code>reapply_raw_mode_after_resume</code>，resume 时重新对账。外部编辑器（第 21 篇）是同一类问题的放大版：起 <code>$EDITOR</code> 前退 raw mode、暂停事件总线，回来后全部恢复。模式开关的正确性不是一个布尔值，是“开、关、被别人动过之后恢复“的三态对账。</p>
+<p>bracketed paste、focus 事件、同步输出、kitty 键盘——输入侧的能力几乎全是<strong>模式</strong>：进入时打开，退出时关闭。第 20 篇把模式开关列为攻击面（它讲“为什么危险“），这一篇补工程侧：为什么难对。</p>
+<p>难在状态的所有权不排他。终端模式是全 fd 共享的全局状态，而进程会挂起：Codex 里 Ctrl+Z 是特殊键位（<code>SUSPEND_KEY</code>），进程切后台再回来，raw mode 可能已经被 shell 或别的程序动过——所以有 <code>reapply_raw_mode_after_resume</code>，resume 时重新对账。外部编辑器（第 5 篇）是同一类问题的放大版：起 <code>$EDITOR</code> 前退 raw mode、暂停事件总线，回来后全部恢复。模式开关的正确性不是一个布尔值，是“开、关、被别人动过之后恢复“的三态对账。</p>
 <p>这也解释了一个看似多余的字段为什么存在：Codex 的输入事件栈从 crossterm 的 EventStream 收敛成七种 <code>TuiEvent</code>——Key、Paste、Resize、Draw、Resume、FocusGained、FocusLost。Resume 和两种 Focus 能进这个清单，本身就是对账需求的化石：挂起恢复要重同步，焦点得失要影响光标样式与轮询节奏。事件枚举的形状，记录的是终端现实的形状。</p>
 <hr>
 <h2 id="四复用器与-alt-screen中间还有一层翻译"><a class="header" href="#四复用器与-alt-screen中间还有一层翻译">四、复用器与 alt screen：中间还有一层翻译</a></h2>
-<p>以上所有假设之上还有一层：用户可能隔着 tmux 或 Zellij。复用器是一个中间人终端——它代理你的查询、转译你的模式开关、按自己的窗口管理切割你的输出。第 11 篇 §七-7 讲过 Codex 在这上面的演进：从 Zellij 特判，到特判删除、换成 ScrollbackStrategy 三档策略（并用一个测试把“特判不存在“钉死，第 24 篇讲这类守护测试）。这里只补一句输入侧的对称事实：复用器对输出做的是转译，对输入做的是<strong>过滤与改造</strong>——bracketed paste 标记、kitty 序列、focus 事件过一道复用器之后可能变形、延迟或消失，上一篇的 paste-burst 启发式，有一部分用户就是复用器制造出来的。</p>
+<p>以上所有假设之上还有一层：用户可能隔着 tmux 或 Zellij。复用器是一个中间人终端——它代理你的查询、转译你的模式开关、按自己的窗口管理切割你的输出。第 13 篇 §七-7 讲过 Codex 在这上面的演进：从 Zellij 特判，到特判删除、换成 ScrollbackStrategy 三档策略（并用一个测试把“特判不存在“钉死，第 16 篇讲这类守护测试）。这里只补一句输入侧的对称事实：复用器对输出做的是转译，对输入做的是<strong>过滤与改造</strong>——bracketed paste 标记、kitty 序列、focus 事件过一道复用器之后可能变形、延迟或消失，上一篇的 paste-burst 启发式，有一部分用户就是复用器制造出来的。</p>
 <p>alt screen 的启用判定（Codex 的 <code>determine_alt_screen_mode</code>）因此也不是配置读取，是一次综合判决：用户配置、终端能力、复用器在场与否，三方会审。</p>
 <hr>
 <h2 id="五雷区表与它的空缺"><a class="header" href="#五雷区表与它的空缺">五、雷区表与它的空缺</a></h2>
@@ -221,12 +221,13 @@
 </tbody>
 </table>
 </div>
-<p>表的最后我想诚实标注一个空缺：这张表的列是“家“，不是“终端模拟器“。我原本想按第 11 篇四家记分牌的思路，收一张“输入侧能力 × 终端模拟器“的雷区矩阵——哪个终端在哪个序列上行为异常。结果是收不齐：这类数据不存在于任何公开处，它分散在各家的 issue tracker 和运维记忆里，每个 TUI 团队都在私下重攒一份。输入侧讨论比输出侧少一个数量级，这张填不出来的表就是证据本身。</p>
+<p>表的最后我想诚实标注一个空缺：这张表的列是“家“，不是“终端模拟器“。我原本想按第 13 篇四家记分牌的思路，收一张“输入侧能力 × 终端模拟器“的雷区矩阵——哪个终端在哪个序列上行为异常。结果是收不齐：这类数据不存在于任何公开处，它分散在各家的 issue tracker 和运维记忆里，每个 TUI 团队都在私下重攒一份。输入侧讨论比输出侧少一个数量级，这张填不出来的表就是证据本身。</p>
 <hr>
-<h2 id="六收束"><a class="header" href="#六收束">六、收束</a></h2>
+<h2 id="六总结"><a class="header" href="#六总结">六、总结</a></h2>
 <p>输出侧的降级链有一个舒服的终点：颜色退到 16 色，内容还在。输入侧没有这个终点——按键的含义错了，不是降级，是<strong>错误</strong>。所以输入侧的工程主题不是“降级“，是“对账“：启动时探测对账、模式开关三态对账、挂起恢复对账、复用器在场对账。终端是上世纪七十年代的协议，每一家 agent 都在为它重新谈判一次。</p>
-<p>输出侧讲完了，输入侧也讲完了。现在可以去中场了：第 5 篇的 Event Sourcing 会回答一个这两篇不断逼近的问题——为什么输入输出两侧的挣扎，最后都收敛到“事件“这个抽象上。</p>
+<p>输出侧讲完了，输入侧也讲完了。现在可以去中场了：第 7 篇的 Event Sourcing 会回答一个这两篇不断逼近的问题——为什么输入输出两侧的挣扎，最后都收敛到“事件“这个抽象上。</p>
 <hr>
+<h2 id="参考与延伸"><a class="header" href="#参考与延伸">参考与延伸</a></h2>
 <p><em>本文基于 2026-10-04 对以下源码的实际阅读：<a href="https://github.com/openai/codex">Codex</a> 本地快照 main <code>6b9826e3</code>（2026-09-09）：<code>codex-rs/tui/src/terminal_probe.rs</code> 与 <code>terminal_probe/</code>（启动探测与字节回放）、<code>tui.rs</code>（<code>init()</code>、七种 <code>TuiEvent</code>、<code>reapply_raw_mode_after_resume</code>）、<code>tui/keyboard_modes.rs</code>、<code>tui/job_control.rs</code>（<code>SUSPEND_KEY</code>）、<code>lib.rs</code>（<code>determine_alt_screen_mode</code>）；<a href="https://github.com/MoonshotAI/kimi-code">kimi-code</a> 本地源码 <code>54117a6b</code>（2026-09-24）：<code>packages/pi-tui/src/terminal.ts</code>、<code>keys.ts</code>、<code>native-modifiers.ts</code>；Claude Code 发布产物中的源码（2026-03-31 经 npm source map 外泄的公开快照）：<code>src/ink/terminal-querier.ts</code>、<code>src/ink/parse-keypress.ts</code>。ForgeLoopTUI 部分基于 v1.2.1 源码（<code>Input/RawTTY.swift</code>、<code>Input/KeyParser.swift</code>）。Claude Code 的挂起恢复行为未做全量排查，表中“未见“以本次阅读范围为准。</em></p>
 
                     </main>

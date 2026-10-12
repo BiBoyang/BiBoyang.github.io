@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>23 · 一行状态文字的状态机 - 自顶向下拆 Agent：从界面到地基</title>
+        <title>15 · 一行状态文字的状态机 - 自顶向下拆 Agent：从界面到地基</title>
 
 
         <!-- Custom HTML head -->
@@ -35,10 +35,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-b11dc2bd.js";
+            window.path_to_searchindex_js = "searchindex-38aeaa9f.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-06183840.js"></script>
+        <script src="toc-da67e966.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -179,7 +179,7 @@
                     <main>
                         <h1 id="一行状态文字的状态机"><a class="header" href="#一行状态文字的状态机">一行状态文字的状态机</a></h1>
 <blockquote>
-<p>系列第二十三篇，按阅读顺序插在第 12 篇之后。前面各篇讲的都是“大“问题：渲染所有权、双模、事件树展平。这一篇讲一个“小“东西——状态行，就是那行“正在工作“的提示：一个 spinner、一行 shimmer 文字、一句“Working (0s · esc to interrupt)“。每个人都写过 spinner，没人写过“什么时候显示什么、什么时候必须消失”。2026 年 10 月我逐行读完 Codex 的状态指示代码，发现这行文字背后是我在这个系列里见过的最密集的微观决策集合——它的难点不在动画，在防闪烁。</p>
+<p>系列第十五篇。前面各篇讲的都是“大“问题：渲染所有权、双模、事件树展平。这一篇讲一个“小“东西——状态行，就是那行“正在工作“的提示：一个 spinner、一行 shimmer 文字、一句“Working (0s · esc to interrupt)“。每个人都写过 spinner，没人写过“什么时候显示什么、什么时候必须消失”。2026 年 10 月我逐行读完 Codex 的状态指示代码，发现这行文字背后是我在这个系列里见过的最密集的微观决策集合——它的难点不在动画，在防闪烁。</p>
 </blockquote>
 <hr>
 <h2 id="一状态行的两种所有权"><a class="header" href="#一状态行的两种所有权">一、状态行的两种所有权</a></h2>
@@ -195,7 +195,7 @@
 <hr>
 <h2 id="三防闪烁三闸门"><a class="header" href="#三防闪烁三闸门">三、防闪烁三闸门</a></h2>
 <p>现在到了正题。状态行和流式内容共享同一块屏幕底部区域，两者共存会闪——一帧里既有新放行的内容又有“正在工作“，视觉上就是抽搐。Codex 的解法是三道理性得近乎偏执的闸门。</p>
-<p><strong>闸门一：放行即隐藏。</strong> commit tick（第 7 篇补记讲的两档变速箱）每放行一批行进历史区，第一件事就是隐藏状态指示器。流式内容与状态行互斥，没有例外路径。</p>
+<p><strong>闸门一：放行即隐藏。</strong> commit tick（第 9 篇补记讲的两档变速箱）每放行一批行进历史区，第一件事就是隐藏状态指示器。流式内容与状态行互斥，没有例外路径。</p>
 <p><strong>闸门二：恢复看空闲。</strong> 一段 commentary（前言性输出）结束时，不立刻把状态行放回来。先置一个“待恢复“标记，然后等三个条件同时成立：turn 还在运行、两个流式队列（回答流与计划流）全部 idle、标记置位——才恢复。缺任何一个条件就继续压着。没有这个闸门，“前言结束→工具即将开始“的间隙里状态行会闪现一下又被压掉，形成“显示→隐藏→显示“的三连闪。</p>
 <p><strong>闸门三：收尾看队列。</strong> 最终回答完成时，状态行是否恢复，取决于输入队列里有没有用户插进来的 steer 消息。如果用户已经插了话，turn 马上又要忙起来，恢复那一帧就是多余的闪烁——不恢复了，直接保持隐藏等下一波。</p>
 <p>三道闸门串起来的判断标准是同一个：<strong>状态行的每一次显隐都必须对应用户心智模型里的一次真实状态切换</strong>，任何“技术上正确但感知上是噪声“的显隐都要被闸门吃掉。</p>
@@ -206,14 +206,15 @@
 <p>理由和防闪烁同源：状态区与流内容如果交错落笔，两者的时间线都会乱。生命周期事件是<strong>状态</strong>，流式内容是<strong>正文</strong>，正文正在流动时，状态必须排队。这等于承认了一个调度原则：底部状态区是单写的，两个写者之间用偏序关系串行化，而不是靠运气。</p>
 <hr>
 <h2 id="五动画是自驱动的"><a class="header" href="#五动画是自驱动的">五、动画是自驱动的</a></h2>
-<p>最后一块拼图是帧从哪来。spinner 不需要等内容事件，它在自己的渲染里通过 <code>schedule_frame_in</code> 主动预约下一帧（有动画时约 32ms 后，只有计时器时 1 秒后）；shimmer 那道扫过文字的渐变高光同理，是按已流逝时间计算的纯函数。第 7 篇补记讲的全局帧调度只管内容放行，状态行动画自请帧，两条帧请求线在同一个渲染循环里合流。</p>
-<p>这也是状态行与第 12 篇提过的 spinner 细节的对照点：Kimi 的差分渲染器把“只有一行变化（例如 spinner 动画）“列为最小化重绘的显式动机。状态行是 TUI 里唯一<strong>合法</strong>的高频自更新区域，所有为它服务的机制——自请帧、单行重绘、闸门防闪——本质上都在回答同一个问题：怎样让唯一会动的东西安分地动。</p>
+<p>最后一块拼图是帧从哪来。spinner 不需要等内容事件，它在自己的渲染里通过 <code>schedule_frame_in</code> 主动预约下一帧（有动画时约 32ms 后，只有计时器时 1 秒后）；shimmer 那道扫过文字的渐变高光同理，是按已流逝时间计算的纯函数。第 9 篇补记讲的全局帧调度只管内容放行，状态行动画自请帧，两条帧请求线在同一个渲染循环里合流。</p>
+<p>这也是状态行与第 14 篇提过的 spinner 细节的对照点：Kimi 的差分渲染器把“只有一行变化（例如 spinner 动画）“列为最小化重绘的显式动机。状态行是 TUI 里唯一<strong>合法</strong>的高频自更新区域，所有为它服务的机制——自请帧、单行重绘、闸门防闪——本质上都在回答同一个问题：怎样让唯一会动的东西安分地动。</p>
 <hr>
-<h2 id="六收束"><a class="header" href="#六收束">六、收束</a></h2>
+<h2 id="六总结"><a class="header" href="#六总结">六、总结</a></h2>
 <p>写 spinner 只要半小时，写状态行的状态机要付出的代价全在边界上：放行与恢复的互斥、显隐的时机、多写者的偏序、动画的帧来源。这行文字的复杂度不在它显示什么，在于它什么时候<strong>不</strong>该显示。</p>
 <p>这也是我读完 Codex 这部分源码后修正的一个直觉。我原以为状态指示是“锦上添花“层，属于打磨；看完三闸门才意识到它是 turn 生命周期在用户侧的投影——turn 的每个相位迁移（推理、输出、工具、等待输入）都必须在这行文字上有唯一确定的显示状态，不多不少。<strong>一帧里出现两个状态，或一个状态出现两帧，都是 bug。</strong> 这个标准比一般 UI 组件苛刻得多，而它是 agent TUI 的日常。</p>
 <p>下一篇讲测试：这样的状态机、连同前几篇讲的所有渲染机制，怎么被钉在回归测试里——TUI 的输出是带状态的字节流，断言它需要的不是一两个技巧，是一整套基建。</p>
 <hr>
+<h2 id="参考与延伸"><a class="header" href="#参考与延伸">参考与延伸</a></h2>
 <p><em>本文基于 <a href="https://github.com/openai/codex">Codex</a> 本地源码 2026-10-04 的逐行阅读：<code>codex-rs/tui/src/chatwidget/streaming.rs</code>（reasoning 标题提取、防闪烁三闸门、<code>defer_or_handle</code>）、<code>status_indicator_widget.rs</code>（<code>schedule_frame_in</code> 自请帧）、<code>shimmer.rs</code>（渐变高光）、<code>streaming/commit_tick.rs</code>。对照部分基于 <a href="https://github.com/BiBoyang/ForgeLoopTUI">ForgeLoopTUI</a> v1.2.0 的 <code>operationStart/End</code> 机制（见第 4 篇）。快照 main <code>6b9826e3</code>（2026-09-09）；行号可能随上游漂移，机制名稳定。</em></p>
 
                     </main>

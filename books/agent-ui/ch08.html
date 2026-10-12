@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>08 · 权限 UX 与 Diff UX - 自顶向下拆 Agent：从界面到地基</title>
+        <title>10 · 权限 UX 与 Diff UX - 自顶向下拆 Agent：从界面到地基</title>
 
 
         <!-- Custom HTML head -->
@@ -35,10 +35,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-b11dc2bd.js";
+            window.path_to_searchindex_js = "searchindex-38aeaa9f.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-06183840.js"></script>
+        <script src="toc-da67e966.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -179,7 +179,7 @@
                     <main>
                         <h1 id="权限-ux-与-diff-uxagent-真正的主界面"><a class="header" href="#权限-ux-与-diff-uxagent-真正的主界面">权限 UX 与 Diff UX——Agent 真正的“主界面“</a></h1>
 <blockquote>
-<p>系列第八篇。前七篇的大部分篇幅花在了“怎么渲染“上：ANSI 序列、Markdown 降级、事件树展平、CoreText 管线。这一篇换一个问题：在 Agent 产出的所有内容里，什么最值得精心设计界面？答案不是聊天框。</p>
+<p>系列第十篇。前九篇的大部分篇幅花在了“怎么渲染“上：ANSI 序列、Markdown 降级、事件树展平、CoreText 管线。这一篇换一个问题：在 Agent 产出的所有内容里，什么最值得精心设计界面？答案不是聊天框。</p>
 </blockquote>
 <hr>
 <h2 id="一聊天框是-agent-的命令行不是它的主界面"><a class="header" href="#一聊天框是-agent-的命令行不是它的主界面">一、聊天框是 Agent 的“命令行“，不是它的“主界面“</a></h2>
@@ -226,7 +226,7 @@
 </ul>
 <p>就我观察到的产品而言，做满四层的很少，多数停在前面两层。后两层需要持久化授权策略：本地存储一份“信任规则“，Agent 在上报权限请求前先匹配规则。这不难实现，Claude Code 的 <code>/permissions</code> 和 settings 文件已经在做（会话、项目、全局三级），但把四层做全、且把规则管理做好的，仍然不多。</p>
 <h3 id="24-授权疲劳和过度打断的平衡"><a class="header" href="#24-授权疲劳和过度打断的平衡">2.4 授权疲劳和过度打断的平衡</a></h3>
-<p>第 5 篇讲过 TUI 的 <code>[y/n]</code> 是阻塞式的，Agent 停下来等用户输入；同一篇还分析了 <code>permission.requested</code> 事件的交互流特性：它需要 UI 在限定时间内给出响应。</p>
+<p>第 7 篇讲过 TUI 的 <code>[y/n]</code> 是阻塞式的，Agent 停下来等用户输入；同一篇还分析了 <code>permission.requested</code> 事件的交互流特性：它需要 UI 在限定时间内给出响应。</p>
 <p>GUI 的优势在这里：同一个权限请求，可以做非阻塞的 toast + badge，用户喝咖啡回来再处理。但这也引入了一个新问题：如果用户不在，Agent 就一直等着？超时策略和默认行为（超时拒绝 vs 超时自动批准低风险操作）是权限 UX 里最需要产品判断力的部分，也是最容易被忽视的。</p>
 <p>信任等级还要在界面上被“表达“出来，而不只是存在于配置里。常见的做法是把 2.2 的四层风险映射到视觉层级：只读操作用中性色、默认按钮聚焦“允许“；难回滚和外部副作用换警示色、去掉“总是允许“选项、默认聚焦“拒绝“，让用户在误触场景下落在安全的一侧。信任等级表达得好的界面，用户不读完整段描述也能判断“这个请求值不值得停下来细看“；表达得差的界面，所有请求长一个样，用户要么全部无脑点允许，要么全部停下来读，上面说的授权疲劳和过度打断，一半原因在这里。</p>
 <blockquote>
@@ -284,7 +284,7 @@
 <p>CLI/TUI：适合<strong>快速扫一眼</strong>。<code>git diff</code> 在终端里看 20 行变更，半秒判断“没问题“。适合小任务、小改动。</p>
 <p>CLI/TUI 还有一个容易被低估的位置：<strong>过程展示</strong>。Agent 工作过程中，每产生一个 <code>file.changed</code>，终端里就实时追加一段 <code>+/-</code> 行，用户在 Agent 边干的时候边看 diff 逐步成形，发现方向不对可以立即打断，不用等它写完 10 个文件再审。GUI 的 diff 面板通常按“完成后集中审查“设计，实时流式展示反而是它的弱项，并排视图在中间态下频繁重排，阅读体验很差。过程展示用 CLI/TUI，集中审查用 GUI，这才是两种介质在 diff 上真正的分工。</p>
 <p>GUI/IDE：适合<strong>深度审查</strong>。并排对比、行级高亮、hunk 级采纳/拒绝、文件树导航。适合大任务、多文件改动、需要仔细审计的场景。</p>
-<p>这无关谁更好，同一份 diff 在两种介质的投影各有优势。第 5 篇的 event-sourcing 框架在这里再次成立：<code>file.changed</code> 事件只有一个，但 TUI 投影（<code>+/-</code> 行文本）和 GUI 投影（并排审查面板）服务于不同阶段的用户需求。</p>
+<p>这无关谁更好，同一份 diff 在两种介质的投影各有优势。第 7 篇的 event-sourcing 框架在这里再次成立：<code>file.changed</code> 事件只有一个，但 TUI 投影（<code>+/-</code> 行文本）和 GUI 投影（并排审查面板）服务于不同阶段的用户需求。</p>
 <h3 id="35-信息提取效率为什么-gui-diff-不只是更好看"><a class="header" href="#35-信息提取效率为什么-gui-diff-不只是更好看">3.5 信息提取效率：为什么 GUI diff 不只是“更好看“</a></h3>
 <p>第 3 篇讲过 TUI 的表格渲染：用 box-drawing 字符画边框（<code>┌───┬───┐</code>），在终端里它“像一个表格“，但它的本质是字符排列。当终端宽度不够时，需要复杂的截断策略。GUI 的原生表格：Auto Layout 自动处理宽度分配，不需要手动计算 cell 字符宽度。</p>
 <p>同一个逻辑迁移到 diff：</p>
@@ -292,16 +292,15 @@
 <p><strong>GUI 的 diff 面板：</strong> 并排对比（旧在左、新在右），新增/删除/修改用不同背景色标记，行内差异用更深色高亮（比如变量名从 <code>oldName</code> 改成 <code>newName</code>，只高亮 <code>old</code>→<code>new</code> 两个词而不是整行），文件树显示每个文件的变更行数概要。你可以先扫文件树定位感兴趣的文件，再看并排对比理解具体变更，最后 hunk 级别决定采纳还是拒绝。</p>
 <p>这不是“好看“，是信息架构的维度差异。TUI 把 diff 的二维结构（哪些文件 × 每个文件改了什么）压缩成了一维文本流。GUI 保留了二维结构，用户可以跳读。两者分别适合“快速确认“和“深度审计“两种认知模式。</p>
 <hr>
-<h2 id="四收束信任界面才是-agent-的主界面"><a class="header" href="#四收束信任界面才是-agent-的主界面">四、收束：信任界面才是 Agent 的主界面</a></h2>
+<h2 id="四总结"><a class="header" href="#四总结">四、总结</a></h2>
 <p>权限是“执行前“的信任建立。Diff 是“执行后“的信任验证。</p>
 <p>把 Agent UI 设计成一个大聊天框 + 小字状态栏，等于把信任建立和信任验证都塞进了一条线性对话流里。用户需要自己从聊天的 100 行文本里挖出“它刚才请求了什么权限“和“它到底改了什么“。</p>
 <p>更好的信息架构：聊天框是指令和解释的主通道。权限请求是侧栏的独立卡片。diff 是可展开的文件树面板。三者各有各的空间，不互相抢占。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch08-trust-architecture.svg" alt="信任界面的信息架构：聊天框、权限卡片、diff 面板各有空间"><span class="img-wrapper"><img src="assets/ch08-trust-architecture.svg" alt="信任界面的信息架构：聊天框、权限卡片、diff 面板各有空间"></span></label></p>
 <p>这不是 GUI 做得“更漂亮“。这是在回答第 1 篇提出的那个根本需求：<strong>程序员要的不是更聪明的黑箱，是可观察、可复现、可回滚的自动化。</strong> 权限 UX 做“可观察“，Diff UX 做“可复现 + 可回滚“。聊天框做“交互“。三个界面，同一个信任模型的三根柱子。</p>
+<p>第 11 篇：多端 Agent 架构，回到第 7 篇的 event-sourcing 框架，展开 CLI、TUI、IDE、Desktop、Web、Mobile 各自的定位和交互契约，外加 API 作为自动化集成入口。不再是“哪种 UI 更好“，而是“这些投影怎么共存在同一个 Agent Runtime 之上“。</p>
 <hr>
-<h2 id="五下一篇"><a class="header" href="#五下一篇">五、下一篇</a></h2>
-<p>第 9 篇：多端 Agent 架构，回到第 5 篇的 event-sourcing 框架，展开 CLI、TUI、IDE、Desktop、Web、Mobile 各自的定位和交互契约，外加 API 作为自动化集成入口。不再是“哪种 UI 更好“，而是“这些投影怎么共存在同一个 Agent Runtime 之上“。</p>
-<hr>
+<h2 id="参考与延伸"><a class="header" href="#参考与延伸">参考与延伸</a></h2>
 <p><em>本文的权限 UX 与 Diff UX 分析基于作者对主流 Agent 客户端的权限与 diff 交互观察。Diff UX 讨论基于对现有 Code Review 工具（GitHub PR、Gerrit、Reviewable）与 Agent 产出的结构性差异分析。</em></p>
 
                     </main>

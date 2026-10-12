@@ -35,10 +35,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-b11dc2bd.js";
+            window.path_to_searchindex_js = "searchindex-38aeaa9f.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-06183840.js"></script>
+        <script src="toc-da67e966.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -337,7 +337,7 @@ SSH config      → 私有仓库、远程服务器
 <p>但另一半隐含了一个更强的假设：<strong>CLI/TUI 和 GUI 是线性进化关系，前者迟早被后者迭代掉。</strong></p>
 <p>这个假设成立吗？SSH 到远程服务器跑 agent、CI/CD 流水线里集成 agent、在 tmux 里恢复一个跑了 3 小时的会话——这些场景里，CLI/TUI 的位置到底是什么？要完整回答这个问题，“进化论“这个框架不够用。后面会给出另一个框架——Event Sourcing：<strong>CLI/TUI 和 GUI 的关系不是谁迭代谁，而是同一条事件流在不同介质上的投影</strong>。这里先按下不表。</p>
 <hr>
-<h2 id="十这篇的收束"><a class="header" href="#十这篇的收束">十、这篇的收束</a></h2>
+<h2 id="十总结"><a class="header" href="#十总结">十、总结</a></h2>
 <p>这篇文章试图回答一个问题：为什么 2025-2026 年的头部 coding agent 在一开始绝大多数选择了 CLI/TUI-first，而且这不太可能是一个会被“快速迭代掉“的早期选择。</p>
 <p>三条线汇总：</p>
 <ol>
@@ -356,15 +356,10 @@ agent 的工作流是动态的、不确定的、会中断和恢复的。CLI 用�
 </ol>
 <p>CLI/TUI 是 Agent 在“执行阶段“的最优投影。
 GUI 的机会在下一层——把复杂过程结构化、把 diff 和风险审查化、把多任务和团队协作产品化。这会是本系列后续各篇逐步展开的内容。</p>
-<hr>
-<h2 id="下一篇"><a class="header" href="#下一篇">下一篇</a></h2>
 <p>接下来会沉到技术底层：<strong>TUI 到底是怎么渲染的？</strong> —— ANSI 转义序列、字符网格、物理行 vs 逻辑行、增量 diff、RenderLoop 帧调度 —— 从 ForgeLoopTUI 的实际源码出发，讲清楚一个 TUI 渲染引擎到底在做什么。</p>
-<!--
----
-
- *本文为系列第 1 篇。系列全部技术细节基于 [ForgeLoopTUI](https://github.com/BiBoyang/ForgeLoopTUI) v1.2.0 和 [FlowDown](https://github.com/Lakr233/FlowDown) 的实际源码分析。知乎讨论参考：[为什么现在大多 Code Agent 的主形态是 CLI/TUI？](https://www.zhihu.com/question/2026125412049101416)*
-
--->
+<hr>
+<h2 id="参考与延伸"><a class="header" href="#参考与延伸">参考与延伸</a></h2>
+<p><em>本文为系列第 1 篇。系列全部技术细节基于 <a href="https://github.com/BiBoyang/ForgeLoopTUI">ForgeLoopTUI</a> v1.2.0 和 <a href="https://github.com/Lakr233/FlowDown">FlowDown</a> 的实际源码分析。知乎讨论参考：<a href="https://www.zhihu.com/question/2026125412049101416">为什么现在大多 Code Agent 的主形态是 CLI/TUI？</a></em></p>
 
                     </main>
 
