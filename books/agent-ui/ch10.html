@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-c0ff70b9.js";
+            window.path_to_searchindex_js = "searchindex-c94b02ee.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-da67e966.js"></script>
@@ -179,7 +179,7 @@
                     <main>
                         <h1 id="移动端的位置--从大前端到-agent-workflow-engineer"><a class="header" href="#移动端的位置--从大前端到-agent-workflow-engineer">移动端的位置 + 从大前端到 Agent Workflow Engineer</a></h1>
 <blockquote>
-<p>系列第十二篇，写作时的第一次收束——后来没收住，在这本书里它是「界面」部的中点（二十四篇，这是第十二篇）。前十一篇从第 2 篇的 ANSI 序列一路讲到多端架构，完整的技术和设计全景。这一篇收束到个人：做移动端、桌面端、TUI、全栈这些经验，在 Agent 时代到底意味着什么。</p>
+<p>系列第十二篇，写作时的第一次收束——后来没收住，在这本书里它是「界面」卷的中场（二十四篇，这是第十二篇）。前十一篇从第 2 篇的 ANSI 序列一路讲到多端架构，完整的技术和设计全景。这一篇收束到个人：做移动端、桌面端、TUI、全栈这些经验，在 Agent 时代到底意味着什么。</p>
 </blockquote>
 <hr>
 <h2 id="一移动端在-agent-产品中的位置"><a class="header" href="#一移动端在-agent-产品中的位置">一、移动端在 Agent 产品中的位置</a></h2>
@@ -217,26 +217,22 @@
 <p><strong>IDE / CLI Integration Engineer。</strong><br>把 Agent 嵌入开发者的现有工具链，不另起 Agent 专属界面，让 Agent 在 VS Code、终端、git 工作流里自然出现。</p>
 <p>这些方向现在还处于早期。但回头看第 1 篇列的那个名单（Claude Code、Codex CLI、Gemini CLI、Goose、Aider、Devin CLI、Qwen Code），每个项目背后都需要这样的人（名单的时间锚点、以及到 2026 年秋天各家 GUI 的进展，见第 1 篇的补记：界面在变多，这类岗位的需求只多不少）。他们写的是 Agent 的界面，但做的不是传统意义上的“前端“。</p>
 <hr>
-<h2 id="四上半程地图"><a class="header" href="#四上半程地图">四、上半程地图</a></h2>
-<p>走了半程，回到系列的开头看一眼。前十一篇，从 ANSI 转义序列写到多端架构，回答的是同一个问题：</p>
+<h2 id="四中场地图"><a class="header" href="#四中场地图">四、中场地图</a></h2>
+<p>界面这一卷走到中场，回到系列的开头看一眼。前十一篇，从 ANSI 转义序列写到多端架构，回答的是同一个问题：</p>
 <blockquote>
-<p><strong>从 LLM token 到用户看到的画面，中间到底经历了什么，以及这个经历在不同介质里有怎样完全不同的形态。</strong></p>
+<p><strong>从 LLM 输出 token 到用户看到的画面，中间到底经历了什么，以及这个经历在不同介质里有怎样完全不同的形态。</strong></p>
 </blockquote>
 <p>第 1 篇问：为什么 Agent 从 CLI/TUI 开始？答案不是 GUI 不好，是因为当前最硬的问题不在界面表达，在执行过程不确定、权限边界敏感、本地工程环境复杂。CLI/TUI 以最低成本解决了当前最硬的问题。</p>
 <p>第 2–4 篇展示了这套“最低成本方案“底下的真实代价。第 7 篇把问题抽象为 Event Sourcing 框架。第 8–9 篇展示了同一套问题进入 GUI 世界后的新形态。第 10 篇是跨端的信任设计，权限与 diff 这两块“信任界面“，才是 Agent 的主界面。第 11 篇回到全局，多端并存才是终态。</p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch10-series-map.svg" alt="上半程，同一个问题：从 LLM token 到用户看到的画面"><span class="img-wrapper"><img src="assets/ch10-series-map.svg" alt="上半程，同一个问题：从 LLM token 到用户看到的画面"></span></label></p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch10-series-map.svg" alt="界面卷中场，同一个问题：从 LLM token 到用户看到的画面"><span class="img-wrapper"><img src="assets/ch10-series-map.svg" alt="界面卷中场，同一个问题：从 LLM token 到用户看到的画面"></span></label></p>
 <p>如果这个系列在读者心里留下了一件事，我希望是：</p>
 <blockquote>
 <p><strong>Agent 的界面不是聊天框的变体。它是为一种全新的执行体（不确定、长运行、可中断、可审计、会调用工具）设计的工作流界面。这个领域需要的人，不是“会写聊天 UI 的前端“，是同时理解终端渲染、事件系统、权限模型、diff 审查和本地开发环境的工程师。</strong></p>
 </blockquote>
 <hr>
-<h2 id="五下半程的问题清单"><a class="header" href="#五下半程的问题清单">五、下半程的问题清单</a></h2>
-<p>写到这里，上半程的结构性工作完成了：问题域从像素一路摊到多端。但内容本身还有很多可以深入的点，当时列了一张清单：权限模型的信任规则 DSL、diff 审查面板的具体交互稿、多端 event log 的同步协议、Mobile Companion 的推送通道设计。</p>
-<p>成书时回头看，清单上已有两项兑现：多端 event log 的同步与重连，写成了基建部分的《连接与会话》；推送通道和移动端的架构条款，写成了《一条消息的生命线》与《移动端的架构代价》上下篇。清单外的下半程走得更远：从渲染的所有权一路写到上下文账本、计划与回滚，再往下穿过胶水层，到基建与评测。上半程摊开问题域，下半程下去查账。</p>
-<p>如果这个系列对你正在做的事情有参考价值，<a href="https://github.com/BiBoyang/ForgeLoopTUI">ForgeLoopTUI</a> 和 <a href="https://github.com/Lakr233/FlowDown">FlowDown</a> 的源码是最好的延伸阅读。</p>
-<hr>
-<h2 id="参考与延伸"><a class="header" href="#参考与延伸">参考与延伸</a></h2>
-<p><em>全系列基于 ForgeLoopTUI v1.2.0 和 FlowDown 的实际源码分析。知乎讨论参考：<a href="https://www.zhihu.com/question/2026125412049101416">为什么现在大多 Code Agent 的主形态是 CLI/TUI？</a>。</em></p>
+<h2 id="五中场总结"><a class="header" href="#五中场总结">五、中场总结</a></h2>
+<p>写到这里，界面这一卷的中场到了：问题域从像素一路摊到多端。但内容本身还有很多可以深入的点，当时列了一张清单：权限模型的信任规则 DSL、diff 审查面板的具体交互稿、多端 event log 的同步协议、Mobile Companion 的推送通道设计。</p>
+<p>成书时回头看，清单上已有两项兑现，而且都不在界面这一卷：多端 event log 的同步与重连，写成了基建卷的《连接与会话》；推送通道和移动端的架构条款，写成了《一条消息的生命线》与《移动端的架构代价》上下篇——界面层提的问题，答案长在下面一层。本卷中场之后也没停在原地：第 13 到 24 篇从渲染的所有权一路写到上下文、计划与回滚；再往下，胶水层、基建、评测各自成卷。</p>
 
                     </main>
 
