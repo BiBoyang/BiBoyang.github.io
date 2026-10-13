@@ -36,7 +36,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-bb5388bc.js";
+            window.path_to_searchindex_js = "searchindex-c0ff70b9.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-da67e966.js"></script>
@@ -1912,56 +1912,60 @@ tick 90: parse(3000字)+ build(3000字)+ layout(3000字)
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="移动端的位置--从大前端到-agent-workflow-engineer"><a class="header" href="#移动端的位置--从大前端到-agent-workflow-engineer">移动端的位置 + 从大前端到 Agent Workflow Engineer</a></h1>
 <blockquote>
-<p>系列第十二篇，写作时的第一次收束。前十一篇从第 2 篇的 ANSI 序列一路讲到多端架构，完整的技术和设计全景。这一篇收束到个人：做移动端、桌面端、TUI、全栈这些经验，在 Agent 时代到底意味着什么。</p>
+<p>系列第十二篇，写作时的第一次收束——后来没收住，在这本书里它是「界面」部的中点（二十四篇，这是第十二篇）。前十一篇从第 2 篇的 ANSI 序列一路讲到多端架构，完整的技术和设计全景。这一篇收束到个人：做移动端、桌面端、TUI、全栈这些经验，在 Agent 时代到底意味着什么。</p>
 </blockquote>
 <hr>
 <h2 id="一移动端在-agent-产品中的位置"><a class="header" href="#一移动端在-agent-产品中的位置">一、移动端在 Agent 产品中的位置</a></h2>
-<p>先把这个说清楚。移动端不适合做 Agent 的主执行入口——这不是“屏幕小“的问题，是结构性的：</p>
+<p>先把这个说清楚。移动端不适合做 Agent 的主执行入口（即使我个人其实非常偏爱移动端）——这不是“屏幕小“的问题，是结构性的矛盾：</p>
 <ul>
 <li><strong>长运行</strong>：Agent 的一个任务可能跑 20 分钟。iOS 的后台限制让长运行进程几乎不可能。</li>
 <li><strong>高密度文本</strong>：diff、日志、堆栈，这些在 6 寸屏幕上阅读体验极差。</li>
 <li><strong>本地工具链</strong>：编译器、包管理器、git，手机上跑不了完整的开发环境。</li>
-<li><strong>散热</strong>：持续高负载 = thermal throttling = 恶性循环。第 9 篇的 CoreText 例子已经展示了移动端的散热墙有多真实。</li>
+<li><strong>平台政策</strong>：App Store 禁止 App 下载并执行改变自身功能的代码（2.5.2），2026 年已因这条下架多个 vibe coding 应用。</li>
+<li><strong>散热</strong>：持续高负载 = thermal throttling = 恶性循环。</li>
+<li><strong>内存经济</strong>：AI 浪潮把存储产能吸向 HBM，DRAM 合约价一路疯涨，“大内存手机“越来越奢侈；Agent 偏偏是内存饥渴型负载。两条曲线是反着的。</li>
+<li><strong>安全边界</strong>：手机是身份中枢——银行、2FA、通讯录都在上面。让 Agent 在上面跑任意工具，一次注入攻击的代价是身份沦陷。桌面可以沙箱、可以重装，手机不行。</li>
 </ul>
 <p>但移动端有一个不可替代的位置：<strong>human-in-the-loop 的最后一公里。</strong></p>
 <p>用户离开电脑。Agent 在后台继续跑（Mac 上跑着本地 daemon，或者远程服务器上跑着 Agent）。碰到一个需要确认的操作，移动端推一条通知。用户看一眼，知道 Agent 在做什么，批准或拒绝。Agent 继续。</p>
-<p>这不是“把桌面端缩小“。移动端 Companion 应该极简：当前任务状态、最近一次权限请求、一键批准/拒绝。类似远程汽车钥匙——不需要方向盘，只需要锁门和解锁。</p>
+<p>这不是“把桌面端缩小“。移动端的 Companion 应该极简：当前任务状态、最近一次权限请求、一键批准/拒绝。类似远程汽车钥匙——不需要方向盘，只需要锁门和解锁。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch10-mobile-companion.svg" alt="Mobile Companion：human-in-the-loop 的最后一公里"><span class="img-wrapper"><img src="assets/ch10-mobile-companion.svg" alt="Mobile Companion：human-in-the-loop 的最后一公里"></span></label></p>
-<p>从移动端交互经验里带过来的直觉：<strong>在受限屏幕上，真正练出来的是取舍：什么信息值得放上去，什么该砍掉。</strong> 这个克制力在做 Agent 的任何一端时都有用。</p>
+<p>从移动端交互经验里带过来的观点：<strong>在手机这个受限屏幕上，真正要考虑的是取舍：什么信息值得放上去，什么该砍掉。</strong></p>
+<p>同时我们可以把这个经验扩展开来：这个克制力在做 Agent 的任何一端时都有用。</p>
 <hr>
 <h2 id="二一个全栈开发者的经验怎么迁移"><a class="header" href="#二一个全栈开发者的经验怎么迁移">二、一个全栈开发者的经验怎么迁移</a></h2>
 <p>这几项我都做过，移动端、桌面端、TUI、全栈。回头看，每一项在 Agent 时代都有直接的迁移路径：</p>
-<p><strong>移动端 → 权限和通知 UX。</strong> 移动端的天性就是处理权限：相机、定位、通讯录、通知。授权粒度怎么分（以定位权限为例：授权状态其实只有“使用期间 / 始终“两级，弹窗上那个“允许一次“是临时的“使用期间“，App 停止使用后失效；而且首次弹窗根本没有“始终“选项）、授权疲劳长什么样、推送通知的触达率和骚扰率之间怎么平衡，这些是移动端开发者的日常。我做 FlowDown 的时候，这些经验直接映射到了 Agent 的权限模型和 Mobile Companion 设计上。</p>
-<p><strong>桌面端 → 本地集成和系统交互。</strong> 文件系统权限、shell 环境继承、code signing、auto update、crash recovery，第 1 篇和第 8 篇反复提到的 GUI 额外成本，做桌面端的时候我已经交过学费了。Agent Desktop App 是这些经验的直接应用场景。</p>
-<p><strong>TUI → 高密度文本信息架构。</strong> 写 ForgeLoopTUI 的过程，就是在一个只有字符的终端里把信息组织清晰的过程，靠的不是像素能力，是信息优先级。什么该放 committed 区、什么该放 live 区（第 2 篇），通知超过 3 条就该移除（第 4 篇），这些判断不是框架给的，是在字符网格里逼出来的。这套判断力在 GUI 上同样适用，信息多了，Panel 不会帮你自动排优先级。</p>
-<p><strong>全栈 → Runtime 和持久化设计。</strong> Event log 的 append-only 模型、权限引擎的信任规则持久化、Workspace 状态管理，这些不是 UI 问题，是后端问题。全栈经验让我能同时理解 Agent 的 Runtime 层和投影层，不用只做其中一半。</p>
-<p><strong>大前端 → 复杂交互状态管理。</strong> 大前端的核心能力不是“会写多个平台“，是<strong>管理复杂交互状态</strong>：一个操作触发多个副作用、多个异步事件并发到达、用户中途介入改变状态流向。这和第 4 篇拆解的 Agent 事件处理模型是完全同构的能力。我在 ForgeLoopTUI 里手写的 <code>pendingTools</code> 稳定槽位队列 + <code>shiftIndices</code> 偏移追踪，回头看就是一个手动实现的响应式状态管理系统。</p>
+<p><strong>移动端 → 权限和通知 UX。</strong><br>移动端的天性就是处理权限：相机、定位、通讯录、通知。授权粒度怎么分（以定位权限为例：授权状态其实只有“使用期间 / 始终“两级，弹窗上那个“允许一次“是临时的“使用期间“，App 停止使用后失效；而且首次弹窗根本没有“始终“选项）、授权疲劳长什么样、推送通知的触达率和骚扰率之间怎么平衡，这些是移动端开发者的日常。</p>
+<p><strong>桌面端 → 本地集成和系统交互。</strong><br>文件系统权限、shell 环境继承、code signing、auto update、crash recovery，第 1 篇和第 8 篇反复提到的 GUI 额外成本，做桌面端的时候我已经交过学费了。Agent Desktop App 是这些经验的直接应用场景。</p>
+<p><strong>TUI → 高密度文本信息架构。</strong><br>写 ForgeLoopTUI 的过程，就是在一个只有字符的终端里把信息组织清晰的过程，靠的不是像素能力，是信息优先级。什么该放 committed 区、什么该放 live 区，通知超过 3 条就该移除，这些判断不是框架给的，是在字符网格里逼出来的。这套判断力在 GUI 上同样适用，信息多了，Panel 不会帮你自动排优先级。</p>
+<p><strong>全栈 → Runtime 和持久化设计。</strong><br>Event log 的 append-only 模型、权限引擎的信任规则持久化、Workspace 状态管理，这些不是 UI 问题，是后端问题。全栈经验让我能同时理解 Agent 的 Runtime 层和投影层，不用只做其中一半。</p>
+<p><strong>大前端 → 复杂交互状态管理。</strong><br>大前端的核心能力不是“会写多个平台“，是<strong>管理复杂交互状态</strong>：一个操作触发多个副作用、多个异步事件并发到达、用户中途介入改变状态流向。这和第 4 篇拆解的 Agent 事件处理模型是完全同构的能力。我在 ForgeLoopTUI 里手写的 <code>pendingTools</code> 稳定槽位队列 +  <code>shiftIndices</code> 偏移追踪，回头看就是一个手动实现的响应式状态管理系统。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch10-skill-migration.svg" alt="五项经验的迁移路径，汇聚到 Agent Workflow Engineer"><span class="img-wrapper"><img src="assets/ch10-skill-migration.svg" alt="五项经验的迁移路径，汇聚到 Agent Workflow Engineer"></span></label></p>
 <hr>
 <h2 id="三新岗位方向"><a class="header" href="#三新岗位方向">三、新岗位方向</a></h2>
 <p>如果“Agent 时代的开发者界面“成为一个独立的专业领域，这些岗位可能会出现或已经在出现：</p>
-<p><strong>Agent Workflow Engineer。</strong> 不设计聊天框，设计 Agent 的工作流界面：工具调用时间线、权限审批流、diff 审查面板、多任务编排。需要同时理解 Agent 的执行模型和 GUI 的交互模式。</p>
-<p><strong>AI DevTools Product Engineer。</strong> 介于产品经理和工程师之间，不需要手写 ANSI 状态机，但需要知道物理行计算为什么让增量 diff 翻倍复杂。在工程约束和用户体验之间做判断。</p>
-<p><strong>Local-first Agent Platform Engineer。</strong> Agent 核心跑在用户机器上，event log 本地持久化，隐私和延迟优于云端方案。需要桌面端开发经验 + Runtime 设计能力。</p>
-<p><strong>IDE / CLI Integration Engineer。</strong> 把 Agent 嵌入开发者的现有工具链，不另起 Agent 专属界面，让 Agent 在 VS Code、终端、git 工作流里自然出现。</p>
+<p><strong>Agent Workflow Engineer。</strong><br>不设计聊天框，设计 Agent 的工作流界面：工具调用时间线、权限审批流、diff 审查面板、多任务编排。需要同时理解 Agent 的执行模型和 GUI 的交互模式。</p>
+<p><strong>AI DevTools Product Engineer。</strong><br>介于产品经理和工程师之间，不需要手写 ANSI 状态机，但需要知道物理行计算为什么让增量 diff 翻倍复杂。在工程约束和用户体验之间做判断。</p>
+<p><strong>Local-first Agent Platform Engineer。</strong><br>Agent 核心跑在用户机器上，event log 本地持久化，隐私和延迟优于云端方案。需要桌面端开发经验 + Runtime 设计能力。</p>
+<p><strong>IDE / CLI Integration Engineer。</strong><br>把 Agent 嵌入开发者的现有工具链，不另起 Agent 专属界面，让 Agent 在 VS Code、终端、git 工作流里自然出现。</p>
 <p>这些方向现在还处于早期。但回头看第 1 篇列的那个名单（Claude Code、Codex CLI、Gemini CLI、Goose、Aider、Devin CLI、Qwen Code），每个项目背后都需要这样的人（名单的时间锚点、以及到 2026 年秋天各家 GUI 的进展，见第 1 篇的补记：界面在变多，这类岗位的需求只多不少）。他们写的是 Agent 的界面，但做的不是传统意义上的“前端“。</p>
 <hr>
-<h2 id="四回到系列的开头"><a class="header" href="#四回到系列的开头">四、回到系列的开头</a></h2>
-<p>十篇文章，从 ANSI 转义序列写到多端架构，回答的是同一个问题：</p>
+<h2 id="四上半程地图"><a class="header" href="#四上半程地图">四、上半程地图</a></h2>
+<p>走了半程，回到系列的开头看一眼。前十一篇，从 ANSI 转义序列写到多端架构，回答的是同一个问题：</p>
 <blockquote>
 <p><strong>从 LLM token 到用户看到的画面，中间到底经历了什么，以及这个经历在不同介质里有怎样完全不同的形态。</strong></p>
 </blockquote>
 <p>第 1 篇问：为什么 Agent 从 CLI/TUI 开始？答案不是 GUI 不好，是因为当前最硬的问题不在界面表达，在执行过程不确定、权限边界敏感、本地工程环境复杂。CLI/TUI 以最低成本解决了当前最硬的问题。</p>
 <p>第 2–4 篇展示了这套“最低成本方案“底下的真实代价。第 7 篇把问题抽象为 Event Sourcing 框架。第 8–9 篇展示了同一套问题进入 GUI 世界后的新形态。第 10 篇是跨端的信任设计，权限与 diff 这两块“信任界面“，才是 Agent 的主界面。第 11 篇回到全局，多端并存才是终态。</p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch10-series-map.svg" alt="十篇，同一个问题：从 LLM token 到用户看到的画面"><span class="img-wrapper"><img src="assets/ch10-series-map.svg" alt="十篇，同一个问题：从 LLM token 到用户看到的画面"></span></label></p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch10-series-map.svg" alt="上半程，同一个问题：从 LLM token 到用户看到的画面"><span class="img-wrapper"><img src="assets/ch10-series-map.svg" alt="上半程，同一个问题：从 LLM token 到用户看到的画面"></span></label></p>
 <p>如果这个系列在读者心里留下了一件事，我希望是：</p>
 <blockquote>
 <p><strong>Agent 的界面不是聊天框的变体。它是为一种全新的执行体（不确定、长运行、可中断、可审计、会调用工具）设计的工作流界面。这个领域需要的人，不是“会写聊天 UI 的前端“，是同时理解终端渲染、事件系统、权限模型、diff 审查和本地开发环境的工程师。</strong></p>
 </blockquote>
 <hr>
-<h2 id="五总结"><a class="header" href="#五总结">五、总结</a></h2>
-<p>这个系列写到这里，10 篇的结构性工作完成了。但内容本身还有很多可以深入的点：权限模型的信任规则 DSL、diff 审查面板的具体交互稿、多端 event log 的同步协议、Mobile Companion 的推送通道设计。这些是下一个阶段的事。</p>
-<p>（补记：本篇写完时是原定的收官。结果收没收住——后面又续了十篇，从渲染的所有权一路写到上下文账本、计划与回滚，外加整个下半部「另一半·基建」。所以在这本书里，这里只是上半程的中点。）</p>
+<h2 id="五下半程的问题清单"><a class="header" href="#五下半程的问题清单">五、下半程的问题清单</a></h2>
+<p>写到这里，上半程的结构性工作完成了：问题域从像素一路摊到多端。但内容本身还有很多可以深入的点，当时列了一张清单：权限模型的信任规则 DSL、diff 审查面板的具体交互稿、多端 event log 的同步协议、Mobile Companion 的推送通道设计。</p>
+<p>成书时回头看，清单上已有两项兑现：多端 event log 的同步与重连，写成了基建部分的《连接与会话》；推送通道和移动端的架构条款，写成了《一条消息的生命线》与《移动端的架构代价》上下篇。清单外的下半程走得更远：从渲染的所有权一路写到上下文账本、计划与回滚，再往下穿过胶水层，到基建与评测。上半程摊开问题域，下半程下去查账。</p>
 <p>如果这个系列对你正在做的事情有参考价值，<a href="https://github.com/BiBoyang/ForgeLoopTUI">ForgeLoopTUI</a> 和 <a href="https://github.com/Lakr233/FlowDown">FlowDown</a> 的源码是最好的延伸阅读。</p>
 <hr>
 <h2 id="参考与延伸-10"><a class="header" href="#参考与延伸-10">参考与延伸</a></h2>
@@ -2233,7 +2237,7 @@ if (firstChanged &lt; prevViewportTop) {
 <p><strong>3. 我那派的“赎回清单“有了工业参照。</strong> 第 2 篇我写的是引擎的渲染核心；Kimi 的 alt 模式展示了渲染核心之外，把一个全屏 TUI 做到产品级还需要什么：嵌套滚动、应用级选择、数据层搜索、OSC 133 锚点、图片显存预算、复用器降级。每一项都是“终端免费给的“对照项。</p>
 <p><strong>4. “退出归还 scrollback“是一个新的架构选项。</strong> 它回避了两派各自最难堪的时刻：inline 派在会话中无法提供可交互的历史，全屏派在退出后把历史带走。串行混合（运行期自管、终态归还）让“所有权“从一个静态选择变成了一个随生命周期变化的转移过程。如果 ForgeLoopTUI 未来要解决“退出后没有干净归档“的问题（它跑在主屏，退出后最后一帧仍在屏幕上，但全量重印顶进 scrollback 的陈旧副本让那份记录不可用），这是可以直接借鉴的范式。</p>
 <hr>
-<h2 id="五总结-1"><a class="header" href="#五总结-1">五、总结</a></h2>
+<h2 id="五总结"><a class="header" href="#五总结">五、总结</a></h2>
 <p>第 13 篇的结论是：两派没有高下，是同一条公理（终端没有 undo）的两种缴税方式。Kimi Code 这个案例把结论往前推了一步：<strong>既然只是缴税方式，就可以按生命周期分期缴。</strong></p>
 <p>运行期，把历史留在自己手里，缴“自建滚动/搜索/选择“的税，换来可交互的会话；退出时，把历史打印回 scrollback，缴一次“全量重印“的税，换来用户终端里的完整记录。甚至同一个引擎里还可以再备一套 inline 差分实现，缴“核平兜底“的税，作为默认模式的日常形态。</p>
 <p>所有权模型因而从一道单选题变成了一份调度表：什么东西、在什么阶段、归谁记账，每个问题都可以单独回答。介质还是那个只进不退的电传打字机，但和地基的关系，比第 13 篇设想的还要再自由一点。</p>
@@ -2484,7 +2488,7 @@ if (firstChanged &lt; prevViewportTop) {
 <p>（appendFrame 是永久历史的唯一通道。）这就是 inline 派“发射即定型“纪律在混合模式里的对应物，只不过它管的方向反过来：inline 派用它约束“不许碰已发射的历史“，这里用它约束“不许从别的门进历史“。同一句纪律，两种所有制下各管一边。</p>
 <p>配套的是一笔记账：<code>unretainedAppendedRows</code>，appendFrame 写下、但还没被任何 retained 帧接管的光标行数。有了它，erase→append→redraw 序列里万一发生超屏重绘，重绘从新追加历史的<strong>下方</strong>开画，而不是从 home 把刚 append 的行覆盖掉。回归测试的口径也很硬：118×12 终端、7 字符 chunk、帧模式与两个消费者 app 完全一致；断言整场流式期间 scrollback 保持为空、<code>| --- |</code> 永不出现、<code>Kubernetes</code> 哨兵词恰好出现一次。</p>
 <p>这个事故值得单独定性：它不是第 13 篇 5.2（resize 核平误伤 scrollback）的复读，诱因不是 resize，是<strong>回退路径 × 混合所有权</strong>的乘积。单一所有权下不存在这类 bug：历史全归终端时没有“回退重写“，历史全归引擎时没有“scrollback 污染“。第 14 篇说每种所有权都要缴税；这里补一条：<strong>分期缴税本身也要缴税</strong>，两条通道并存的那一刻，就要为“别让内容走错门“付出工程。</p>
-<h2 id="五总结-2"><a class="header" href="#五总结-2">五、总结</a></h2>
+<h2 id="五总结-1"><a class="header" href="#五总结-1">五、总结</a></h2>
 <p>两个月，五天里的 61 个提交，七件清单落了半件，但引擎完成了一次跨阵营的半程：全屏自管的引擎，长出了一条逐行归还 scrollback 的通道，配上了一个真实终端语义的预言机、一道“唯一之门“的纪律、和一笔跨通道的记账。</p>
 <p>第 13 篇结尾说过，ForgeLoopTUI 的 committed 区在语义上已经是 append-only，和 inline 派的 scrollback“只差最后一步——物理上还归不归我管“。这一步现在有了答案的形状：<strong>物理归属不再由引擎统一决定，由每一行内容在稳定瞬间自己决定</strong>。所有权从引擎的出厂设置，变成了内容级的调度表。</p>
 <p>下一篇（第 19 篇）把这套账本带出终端：GUI 和移动端没有 scrollback 这回事，没有免费的历史基础设施，每一行从诞生起就必须有人管。FlowDown 是那边的样本。</p>
@@ -2538,7 +2542,7 @@ if (firstChanged &lt; prevViewportTop) {
 <p><strong>运行期的租借投影。</strong> 流式输出每收到新文本，<code>ConversationSessionManager.countIncomingTokens</code> 累计增量，喂给 Live Activity，锁屏和灵动岛上有一个实时跳动的字数投影。这是把投影<strong>租给锁屏</strong>一块：运行期存在，会话结束收回。第 11 篇说“每个端只消费自己适合的事件子集“，锁屏消费的是最极端的子集：一个字数。</p>
 <p><strong>身后的归档。</strong> iOS 应用没有“退出仪式“可依赖，进程随时可能被杀，不会有 goodbye 回调。Kimi alt 退出时把历史打印回 scrollback，那份“归还“之所以可能，是因为终端这个介质还在；iOS 上唯一的长寿介质是磁盘（和云），所以“归还“只能变形为“落盘“，而且必须随时可发生。持久化在移动端不是功能项，是生存方式。被杀那一刻账本是否完整，取决于上一个结算点落在哪里，这正是基建系列要展开的话题。</p>
 <p>顺带一提，冷启动的 <code>refreshContentsFromDatabase</code> 就是 GUI 版的“追平“：<code>listMessages</code> 全量读库重放，投影从事实源重建。基建系列里要用快照 + 尾部增量才能做对的那道题，本地 SQLite 快到不用优化，动作是同一个动作，成本差了几个量级。</p>
-<h2 id="五总结-3"><a class="header" href="#五总结-3">五、总结</a></h2>
+<h2 id="五总结-2"><a class="header" href="#五总结-2">五、总结</a></h2>
 <p>四篇的所有权问题放进一张表：</p>
 <div class="table-wrapper">
 <table>
@@ -2631,7 +2635,7 @@ if (firstChanged &lt; prevViewportTop) {
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch16-trust-separation.svg" alt="三种信任级别：混在同一渲染面的现状，与结构化分离的三层防线"><span class="img-wrapper"><img src="assets/ch16-trust-separation.svg" alt="三种信任级别：混在同一渲染面的现状，与结构化分离的三层防线"></span></label></p>
 <p><strong>协议层已经在承认。</strong> MCP 后来加的 elicitation URL mode，让敏感交互绕开 MCP client、走用户的浏览器完成，协议设计者自己承认了 client 内的渲染信道不可信。这是对的方向：信道不可信，就把最敏感的问答挪到各自可信的介质上去。</p>
 <p>最后记一笔我的欠账：ForgeLoopTUI 的内容转义过滤器进待办。第 18 篇结尾那张欠了六件的清单，现在是七件。</p>
-<h2 id="五总结-4"><a class="header" href="#五总结-4">五、总结</a></h2>
+<h2 id="五总结-3"><a class="header" href="#五总结-3">五、总结</a></h2>
 <p>第 10 篇问“批不批“，这一篇问“看到的真的吗“。前者是决策设计，后者是感知前提，感知层失守，决策层的一切精巧（分级、超时、auto mode 的信任衰减）都建在沙地上。human-in-the-loop 的完整拼写从来不是 approve what you see，是 <strong>see what you approve</strong>。</p>
 <p>放到系列坐标里：渲染所有权四部曲（11/12/14/15）讲的是“谁为像素记账“；这一篇讲“像素本身能不能被信任“。两件事在终端上还是两个问题，到了 GUI 时代会合成一个：信任边界必须和渲染边界同构，否则就是给 innerHTML 写文档。</p>
 <p>下一篇转向感知的反面：记忆。引擎开始替你忘掉上下文的那一刻，没有对话框，没有提示音，只有一行灰字：context low。谁授权了这次遗忘，丢掉了什么，能不能审计，第 21 篇记这笔账。</p>
@@ -2780,7 +2784,7 @@ if (firstChanged &lt; prevViewportTop) {
 <h2 id="四计划是契约还是散文"><a class="header" href="#四计划是契约还是散文">四、计划是契约还是散文</a></h2>
 <p>反方观点值得严肃对待：spec-driven 是瀑布借尸还魂；模型从不逐字执行计划，批准它纯粹是仪式感，给人虚假的掌控。</p>
 <p>仪式感的批评打不倒计划，因为计划的工程价值从来不在被执行到字面，在于三件更便宜的事：<strong>沟通</strong>（一份可编辑的计划把“我以为你说的是“提前到动手之前暴露）；<strong>对齐</strong>（批准计划是对 08 那套四层授权的一次性打包，计划≈会话级授权的操作集合）；<strong>参照</strong>（偏离子有定义，追责有基准）。真正该批评的是另一种形态：不可编辑的计划、批准后即蒸发的计划、没有版本的计划。kimi 给计划文档上 sha256 和版本号，就是在把“计划是事实“这件事做实，而不是做成一段聊天记录里的散文。</p>
-<h2 id="五总结-5"><a class="header" href="#五总结-5">五、总结</a></h2>
+<h2 id="五总结-4"><a class="header" href="#五总结-4">五、总结</a></h2>
 <p>事前的计划、事中的审批、事后的回滚，是同一根信任链条的三节。第 10 篇讲了中节，这一篇讲了前节：把审批的粒度升到计划，用清单把执行钉在计划上，让偏离可定义。链条还缺最后一节：当一切已经发生，那个叫“回滚“的按钮，到底能兑现多少。下一篇拆它：checkpoint 能回滚什么，以及它假装能回滚什么。</p>
 <hr>
 <h2 id="参考与延伸-21"><a class="header" href="#参考与延伸-21">参考与延伸</a></h2>
@@ -2813,7 +2817,7 @@ if (firstChanged &lt; prevViewportTop) {
 <li><strong>不可逆清单成为一等数据。</strong> 哪些工具的副作用出了仓库，应该是产品的显式清单而不是用户的知识，它同时是审批界面的输入（标红）和回滚界面的边界说明。</li>
 <li><strong>回滚覆盖度接进审批。</strong> 同一颗允许按钮，对“checkpoint 罩得住“的操作和罩不住的操作，视觉与文案应该不同，这不必新发明，第 10 篇的模型就差这最后一公里。</li>
 </ol>
-<h2 id="五总结-6"><a class="header" href="#五总结-6">五、总结</a></h2>
+<h2 id="五总结-5"><a class="header" href="#五总结-5">五、总结</a></h2>
 <p>事前的计划、事中的审批、事后的回滚，三节链条的公共原理只有一句话：<strong>让用户在对的时间看到对的边界。</strong> 计划展示意图的边界（打算做什么），审批展示操作的边界（正要碰什么），回滚本应展示可逆性的边界（哪些错能改）。第三节现在是三者中最虚的，虚到用户普遍不知道它有边界。</p>
 <p>而比边界更深的那个问题，三部曲也只能触到边：模型说“做完了“，勾选框打了勾，回滚也用不上——<strong>声明不等于证据</strong>。计划可以被批准，操作可以被允许，错误可以被回滚，唯独“完成“本身还没有被验证。这是系列后面“回放与验收“要拆的最后一道缝：让“做完了“三个字带上证据。</p>
 <hr>

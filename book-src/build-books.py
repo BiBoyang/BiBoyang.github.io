@@ -30,7 +30,7 @@ import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
-BOOKS = ["agent-ui", "eval-series"]
+BOOKS = ["agent-ui", "eval-series", "rag"]
 
 
 def parse_manifest(path: Path, book_dir: Path):
