@@ -35,10 +35,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-c94b02ee.js";
+            window.path_to_searchindex_js = "searchindex-8345cfa3.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-da67e966.js"></script>
+        <script src="toc-be1830de.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -414,14 +414,14 @@ while settleCount &lt; maxSettle, remaining &gt; budget {
 }
 </code></pre>
 <hr>
-<h2 id="十所有权模型谁为已完成内容记账"><a class="header" href="#十所有权模型谁为已完成内容记账">十、所有权模型：谁为已完成内容记账</a></h2>
+<h2 id="十所有权模型已完成的内容归谁管"><a class="header" href="#十所有权模型已完成的内容归谁管">十、所有权模型：已完成的内容归谁管</a></h2>
 <blockquote>
 <p>本节为 2026.09 补记。本篇写完后我读了 Codex、Grok Build 的源码和 Claude Code 的发布产物，发现这里漏掉了一条重要的分界线，完整论述见第 13 篇，这里只补坐标系。</p>
 </blockquote>
-<p>本篇从头到尾解剖的是一种特定范式：<strong>全屏自管</strong>，即屏幕上每一行都归引擎管，committed 区虽然“只追加、不改写“，但只要还显示在屏幕上，就持续参与每帧的 diff 和 resize 重算，引擎为它持续记账。</p>
-<p>另一种范式是 <strong>inline viewport</strong>：内容一旦在语义上定型（工具调用完成、回复结束），就立刻打印进终端的原生 scrollback，从此归终端管，引擎销账；引擎只维护底部一小块活区。但要特别说明：<strong>2026 年中的头部实现没有一家单边押注</strong>——Claude Code 和 Kimi Code 默认 inline（前者是内置 Ink fork，<code>Messages.tsx</code> 的 <code>shouldRenderStatically()</code> 决定一条消息何时“静态化“），Codex 和 Grok Build 默认反而是全屏（都内置 inline 降级路径，前者是 <code>insert_history.rs</code>，测试直接叫 <code>vt100_live_commit</code>）——四家全都把这条分界线做成了产品内部的开关。细节见第 13 篇。</p>
+<p>本篇从头到尾解剖的是一种特定范式：<strong>全屏自管</strong>，即屏幕上每一行都归引擎管，committed 区虽然“只追加、不改写“，但只要还显示在屏幕上，就持续参与每帧的 diff 和 resize 重算，引擎就得一直管着它。</p>
+<p>另一种范式是 <strong>inline viewport</strong>：内容一旦在语义上定型（工具调用完成、回复结束），就立刻打印进终端的原生 scrollback，从此归终端管，引擎脱手；引擎只维护底部一小块活区。但要特别说明：<strong>2026 年中的头部实现没有一家单边押注</strong>——Claude Code 和 Kimi Code 默认 inline（前者是内置 Ink fork，<code>Messages.tsx</code> 的 <code>shouldRenderStatically()</code> 决定一条消息何时“静态化“），Codex 和 Grok Build 默认反而是全屏（都内置 inline 降级路径，前者是 <code>insert_history.rs</code>，测试直接叫 <code>vt100_live_commit</code>）——四家全都把这条分界线做成了产品内部的开关。细节见第 13 篇。</p>
 <p>两派的 live 区渲染是同构的：增量 diff、双缓冲、erase-rewrite 大家都做。</p>
-<p>分歧只在所有权：一个 block 完成之后，谁继续为它记账。全屏自管派换来任意可见历史的可改写性，代价是帧状态的持续脆弱；inline 派换来状态表面积的急剧缩小，代价是历史不可触碰（改写需求路由到模态查看器或导出）、resize 需要核平重印。完整的机制解剖和税单对照见第 13 篇。</p>
+<p>分歧只在所有权：一个 block 完成之后，谁继续管它。全屏自管派换来任意可见历史的可改写性，代价是帧状态的持续脆弱；inline 派换来状态表面积的急剧缩小，代价是历史不可触碰（改写需求路由到模态查看器或导出）、resize 需要核平重印。完整的机制解剖和代价对照见第 13 篇。</p>
 <hr>
 <h2 id="十一为什么框架教不会你这些"><a class="header" href="#十一为什么框架教不会你这些">十一、为什么框架教不会你这些</a></h2>
 <p>回到开头的问题。用 Bubble Tea 或 Ink 写一个 TUI，你不需要知道 ANSI 状态机怎么处理分片到达、不需要手动计算物理行、不需要自己维护 8 个帧状态字段。框架帮你做了这些，但框架的选择也定义了你的上限。</p>

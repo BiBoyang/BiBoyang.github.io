@@ -1,0 +1,315 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>02 · GraphRAG 的边界 - RAG 心得：从一份财报 PDF 到一个能扛的系统</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="favicon-8114d1fc.png">
+        <link rel="stylesheet" href="css/variables-8adf115d.css">
+        <link rel="stylesheet" href="css/general-e96d0476.css">
+        <link rel="stylesheet" href="css/chrome-d279d366.css">
+        <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex-c18298ee.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc-2a99541a.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">RAG 心得：从一份财报 PDF 到一个能扛的系统</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/BiBoyang/BiBoyang.github.io" title="Git repository" aria-label="Git repository">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="graph-rag-的边界我为什么不建议你先上它"><a class="header" href="#graph-rag-的边界我为什么不建议你先上它">Graph RAG 的边界：我为什么不建议你先上它</a></h1>
+<p>2024 年微软发布 GraphRAG 的时候，我上头过一次。demo 里它能答“腾讯投资了哪些公司“这种多跳问题——这正是纯向量检索答不好的那类。我把 119 页的腾讯中报喂进去建图，先等来的不是答案，是几十上百次 LLM 调用的账单，和一条“腾讯投资了微信“的错误关系。</p>
+<p>冷静下来，判断就一句话：它解决的问题是真的，问题是你付不付得起。第 17 篇聊 RAG 与 Agent 的边界，结尾我放了一句“另一个热门方向，先别上“——这篇把这句话摊开，一笔一笔算账。</p>
+<p>开算之前，先把一个概念争论搁置。GraphRAG 到底算不算 RAG？有人说算：伞概念之下，凡是 retrieval 服务于 generation 的实现都归 RAG，流传很广的那篇综述（arXiv:2312.10997）就是把图谱类方法归进 Modular RAG 的；也有人说不算：KG 是独立方向，不服务生成的任务它照样能干，只是被 RAG 调用时才临时充当组件。两种说法都自洽。我的态度是归属之争不影响选型——影响选型的是成本和甜蜜点，这篇只算这两笔账。</p>
+<h2 id="一先把话说公道它解决的问题是真的"><a class="header" href="#一先把话说公道它解决的问题是真的">一、先把话说公道：它解决的问题是真的</a></h2>
+<p>GraphRAG 的思路是不直接对原文做向量检索：先用 LLM 把文本抽成实体和关系建成图，检索时把向量、图遍历和社区摘要融合起来。有三类问题，它确实碾压纯向量检索：</p>
+<ul>
+<li>“腾讯投资了哪些公司？”——实体关系查询。向量检索只能找到“长得像“的段落，而投资关系分散在二十年的公告和附注里，语义匹配拼不出一张完整清单。</li>
+<li>“游戏毛利下降和行业政策收紧有因果吗？”——跨段落的多跳推理。证据散在管理层讨论、行业动态、财务附注三处，要跳着串起来。</li>
+<li>“跟腾讯业务最类似的公司有哪些？”——基于关系结构的相似，不是语义相似。两家公司文本描述可能毫不相像，但在图上是邻居。</li>
+</ul>
+<p>还有一个容易被忽略的能力：全局摘要。社区检测把图分成簇，预先给每簇生成摘要，“这批公司整体的战略重心在哪“这种宏观问题，不用遍历全部 chunk 就能答。</p>
+<p>所以我的立场不是“GraphRAG 不行“。是它的甜蜜点比宣传窄，门票比宣传贵。</p>
+<h2 id="二四本账建图更新查询出错"><a class="header" href="#二四本账建图更新查询出错">二、四本账：建图、更新、查询、出错</a></h2>
+<p>门票多少钱，拆成四笔算。</p>
+<p><strong>第一笔，建图账。</strong> 从财报抽实体和关系，听起来是 LLM 的强项，做起来到处是坑。一份 100 页的财报，按微软 GraphRAG 的标准流程，抽实体关系要几十到上百次 LLM 调用。调用量还只是问题的一半，准确率是另一半：“腾讯投资了微信“不是偶然口误，“投资“和“拥有“在 LLM 的关系抽取里经常混淆。实体消歧更要命——同一份港股中报里，“騰訊”“Tencent”“本公司”“集團“指的是同一个东西，LLM 不保证每次都认出来；认不出来，图就裂成几个互不相通的碎片。这些都要额外的规则、人工和调用去补。【待补：若有自己跑微软 GraphRAG 全流程的真实耗时/费用记录，补在此处替换估算口径】</p>
+<p><strong>第二笔，更新账。</strong> 第 16 篇讲运维时说过，知识库是活的。向量库更新很简单：新文档单独走一遍管线入库。图不是这么回事——图谱里的关系高度互联，新财报一发，不是一个实体加几条边的事，是一个实体变了牵连一片：持股比例变了、并表范围变了、高管换了，每个变动都要沿边扩散检查。500 家公司 10 年的年报就是 5000 份 PDF，建出来几十万实体、上百万条关系，每个财报季都是一次图手术。</p>
+<p><strong>第三笔，查询账。</strong> GraphRAG 的一次查询是向量检索加图遍历取邻居再加融合，延迟通常是纯向量检索的 3–5 倍。批量分析无所谓，但交互式问答有硬约束——我自己用的场景，超过 2 秒就能明显感到等待。为八成不需要图的问题付 3–5 倍延迟，怎么算都不划算。</p>
+<p><strong>第四笔，出错账。</strong> 这笔最容易被低估。向量检索错了，大不了是“没帮助“，LLM 拿到不相关的 chunk，最多答得空泛。图谱抽错了是另一回事：系统会拿着一条错误的边理直气壮地推理。“腾讯投资了微信“进图之后，所有沿这条边走出来的答案都带着这个错误。在错的图上推理，比不推理更糟——错得还特别像那么回事。</p>
+<h2 id="三拿自己的数据算一遍500-家为什么不成立"><a class="header" href="#三拿自己的数据算一遍500-家为什么不成立">三、拿自己的数据算一遍：500 家为什么不成立</a></h2>
+<p>四本账还是抽象的，落到我自己的场景算一遍。我的目标库是 500 家上市公司、20 年财报：</p>
+<ul>
+<li>500 家 × 20 年 × 每年 2 份（年报加中报）× 约 150 页 ≈ 2 万份 PDF、300 万页；</li>
+<li>按每页 500 tokens 估，原始文本约 15 亿 tokens。</li>
+</ul>
+<p>再按微软 GraphRAG 的完整流程（实体抽取、关系抽取、社区摘要）分项估建图成本：</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>阶段</th><th>每页成本</th><th>300 万页合计</th></tr>
+</thead>
+<tbody>
+<tr><td>实体抽取</td><td>~$0.01</td><td>~$30,000</td></tr>
+<tr><td>关系抽取</td><td>~$0.02</td><td>~$60,000</td></tr>
+<tr><td>社区摘要</td><td>~$0.05</td><td>~$150,000</td></tr>
+<tr><td>总计</td><td></td><td>~$240,000</td></tr>
+</tbody>
+</table>
+</div>
+<p>前提必须交代清楚：这是按 GPT-4 级别模型的单价、每页 500 tokens、含社区摘要的完整流程算出来的量级，是会过期的单价估算，不是报价【待核实：发布前按当时模型定价复核】。其实哪怕砍一个数量级，结论也不变——因为真正不成立的不是钱，是两个结构性错配。</p>
+<p>错配一，实体爆炸。500 家公司叠加，每家有历史更名（Facebook 改 Meta 那种）、时间化实体（“腾讯 2024 年收入“算属性还是独立实体？）、业务线、高管、供应商、客户、关联方，实体总量千万级起步。更要命的是 schema 不统一：500 家公司的财报格式、术语、会计政策全不一样，而知识图谱最怕的就是这个。</p>
+<p>错配二，时间在图里没有好位置。这是图数据库的经典难题，三种方案各有死法：</p>
+<pre><code class="language-text">方案 A：时间当属性  腾讯 {收入: 3200亿, 时间: 2024H1}
+  → 查"近5年收入趋势"要逐节点扫属性，图遍历的优势没了
+方案 B：时间当节点  (腾讯)-[2024年收入]-&gt;(3200亿)
+  → 每个指标每年都是独立边，边数爆炸
+方案 C：按时间切片，每年一个子图
+  → 跨时间查询要 join N 个子图
+</code></pre>
+<p>而财报查询的主力恰恰是时序——“近五年收入趋势”“毛利率哪年开始降”。图擅长关系网络，不擅长时序演变。所以这笔账算下来，我的结论很直接：500 家 × 20 年是时序 OLAP 问题，不是图问题。这类数据的正经归宿是结构化数据库加 SQL，外面再套一层向量检索处理非结构化论述——第 11 篇讲多市场分层存储时就是这个思路，分层混合架构这里只提一句，不展开。</p>
+<h2 id="四镜头拉近单家公司-20-年成立了吗"><a class="header" href="#四镜头拉近单家公司-20-年成立了吗">四、镜头拉近：单家公司 20 年，成立了吗</a></h2>
+<p>不做 500 家，只做腾讯一家 20 年呢？</p>
+<p>先算规模：2004 年上市到现在约 40 份 PDF、8000 页上下、400 万 tokens。这个量级建图成本完全可以接受，“能不能“的问题解决了。但“值不值“没有。</p>
+<p>把单公司财报的查询按类型过一遍，我的估算是大约八成落在两类：时序趋势（“近十年收入走势”）和精确数值（“2024 年游戏占比多少”）。这两类都是 SQL 和结构化数据的强项，GraphRAG 不但没优势，反而更慢。八成是估算口径，不同用户的查询分布会不一样，但方向我很有把握。刨掉这些，GraphRAG 真正占优的子集只剩三块：</p>
+<ul>
+<li>投资并购版图。腾讯的投资轨迹本身就有网络结构：早期投游戏（Riot、Supercell），中期投电商和本地生活（京东、拼多多、美团），近期转向 AI（Moonshot、MiniMax）。“投资风格经历了什么转变“这种问题，图答得比向量好。</li>
+<li>关联交易与并表范围。哪些子公司并表、哪些按联营合营处理、并表策略变化对报表有什么影响。</li>
+<li>业务重组历史。业务分部从“互联网增值服务/网络广告“到“游戏/社交网络/广告/金融科技“的划分变迁，背后是战略调整。</li>
+</ul>
+<p>所以单公司的结论是：可做，但不建议全量做。结构化数据为主，覆盖那八成查询；只在投资、并购、关联交易这些真有网络结构的子集上，局部用图。</p>
+<h2 id="五如果那-20-真的成立三条路和一条-mvp-路径"><a class="header" href="#五如果那-20-真的成立三条路和一条-mvp-路径">五、如果那 20% 真的成立：三条路和一条 MVP 路径</a></h2>
+<p>劝退不是堵死。如果你把自己的查询分布盘过一遍，发现关系类问题真的成立、真的高频，有三条路，按工程务实度排：</p>
+<p><strong>第一条，轻量实体层，我最推荐。</strong> 不建完整知识图谱，用规则加 metadata 抽一张实体关系表——谁投了谁、比例多少、什么时候投的。检索时这张表只做精确查询，复杂推理交给 LLM。工程成本最低，和现有向量库是加法关系，不是重构。</p>
+<p><strong>第二条，按需建子图。</strong> 不建全图，查询来了只对涉及的实体现场抽关系、建局部子图。省掉全图的构建和维护，代价是每次查询多花几次 LLM 调用、延迟上升。适合关系查询占比低但不能没有的场景。</p>
+<p><strong>第三条，全量 GraphRAG。</strong> 微软全家桶开箱即用，实体抽取、社区检测、分层摘要全包。它适合快速实验、验证想法，不适合当生产默认项：资源消耗大，中文支持也一般【待核实：“中文支持一般“基于 2024–2025 年的版本状态，发布前复核现状】。</p>
+<p>如果只是想先验证价值，我给一条 10 美元以内的 MVP 路径，拿“腾讯投资版图“这个单一主题切入：</p>
+<ol>
+<li>数据获取：从 IT桔子、Crunchbase 这类结构化数据源拿投资事件（时间、标的、轮次、金额），IT桔子有免费额度但有限【待核实：免费额度的具体政策，发布前核实】；不够用就手工整理 50–100 个重点事件。</li>
+<li>LLM 清洗标准化：统一成 {date, target, amount, round, sector} 的结构，几美元的事。</li>
+<li>建图：Python 加 networkx，或者 Neo4j Desktop 免费版，零成本。</li>
+<li>分析：把子图和问题一起丢给 LLM，按次计费。</li>
+</ol>
+<p>注意这条路是半自动的：结构化数据打底，LLM 只做清洗和补充。它的准确率反而高于让 LLM 从财报原文里猜——“腾讯 2014 年投资京东“在 IT桔子里是一条现成记录，在财报里是要 LLM 赌概率的一段文字。</p>
+<p>最后两句实话。第一，这个流程里成本大头不是 API 费，是你的时间，方案该按自己的时间预算选。第二，领域先验大约能替掉 80% 的 LLM 调用：股票代码是天然唯一 ID，会计科目是天然 schema，披露格式是天然解析规则。这些先验是财报场景白送的，不用白不用。</p>
+<h2 id="收尾"><a class="header" href="#收尾">收尾</a></h2>
+<p>回到开头那次上头。我不是要说 GraphRAG 不好——关系密集、多跳推理、全局摘要，这三个甜蜜点都是真的。是它的甜蜜点比宣传窄得多：至少在我的财报场景里，八成的问题做好分片、metadata 和检索优化就够了，第 4 到第 10 篇讲的全是这件事；剩下的，再谈图。</p>
+<p>这个判断有三个前提：个人或小团队、财报场景、当前的建图成本。有专门图谱团队的、业务本身关系密集的（供应链、反欺诈、社交关系），不在此列。</p>
+<p>第 17 篇聊 Agent，这篇聊 GraphRAG，两个边界判断用的是同一把尺子：不看热度，看约束。下一篇把这把尺子本身抽出来——从财报和电力两个完全不同的领域，归纳五个跨领域通用的设计模式。</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="rag17.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="rag19.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="rag17.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="rag19.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr-ef4e11c1.min.js"></script>
+        <script src="mark-09e88c2c.min.js"></script>
+        <script src="searcher-09f2665d.js"></script>
+
+        <script src="clipboard-1626706a.min.js"></script>
+        <script src="highlight-abc7f01d.js"></script>
+        <script src="book-609e4cb8.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

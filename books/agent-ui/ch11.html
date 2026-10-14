@@ -35,10 +35,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-c94b02ee.js";
+            window.path_to_searchindex_js = "searchindex-8345cfa3.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-da67e966.js"></script>
+        <script src="toc-be1830de.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -177,20 +177,17 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="渲染的所有权模型谁为已完成内容记账"><a class="header" href="#渲染的所有权模型谁为已完成内容记账">渲染的所有权模型——谁为已完成内容记账</a></h1>
-<blockquote>
-<p>系列第十三篇，严格说是续篇：第 0 篇到第 12 篇构成系列正文（第 5、6 两篇是后来插队补写的输入侧），第 12 篇是原定的收官篇；本篇与下一篇是正文写完后的续写。本篇的写作动机是一次自我修正。第 2 篇我以 ForgeLoopTUI 为样本拆解了 TUI 渲染引擎的完整构造，并默认了一个前提：主流的 Agent TUI 都长这样。写完之后我去读了 Codex、Grok Build（xai-org/grok-build，2026 年 7 月开源）的源码和 Claude Code 的发布产物，发现这个前提是错的。但错的方式比“另一条路线“更有意思：这条被我漏掉的分界线真实存在，而 2026 年中的头部实现没有一家把赌注押在单边——<strong>分界线在每家内部都成了一个开关</strong>。这篇讲这条分界线，以及四家各自站在线上的什么位置。</p>
-</blockquote>
-<hr>
+                        <h1 id="渲染的所有权模型已完成的内容归谁管"><a class="header" href="#渲染的所有权模型已完成的内容归谁管">渲染的所有权模型——已完成的内容归谁管</a></h1>
 <h2 id="一一个我以为不存在的问题"><a class="header" href="#一一个我以为不存在的问题">一、一个我以为不存在的问题</a></h2>
-<p>第 2 篇的结论是：Agent TUI 的渲染，核心是在“终端没有 undo“这片地基上，做增量 diff、物理行计算、帧状态记忆、commit/live 分区。这些内容全部基于 ForgeLoopTUI 的实际源码，描述本身没有错误。</p>
+<p>第 2 篇的结论是：Agent TUI 的渲染，核心是在 “终端没有 undo” 这片地基上，做增量 diff、物理行计算、帧状态记忆、commit/live 分区。这些内容全部基于 ForgeLoopTUI 的实际源码，描述本身没有错误。</p>
 <p>问题在于一个隐含假设：我以为 Claude Code 和 Codex 也是这么做的，毕竟用起来是一样的，流式输出原地更新，工具调用状态行被结果替换，底部输入框固定不动。</p>
 <p>直到我在 Codex 仓库里看到这个文件：</p>
 <pre><code>codex-rs/tui/src/insert_history.rs
 </code></pre>
 <p>名字就说明了一切：把完成的内容<strong>插入历史</strong>（<code>insert_history_lines()</code>，用 DECSTBM 滚动区把内容注入 viewport 上方）。配套的测试文件叫 <code>vt100_live_commit.rs</code>：live 区内容“提交“进历史。快照测试里还有 <code>zellij_raw_terminal_wrap_above_viewport.snap</code> 这种为冷门终端复用器准备的用例。</p>
 <p>Claude Code 建在自己的 Ink fork 上（发布产物中可见 <code>src/ink/</code> 目录），它的渲染层保留着同一个分裂：<code>shouldRenderStatically()</code> 判定一条消息是否可以“静态化“，静态内容打印进 scrollback 后不再参与重绘。<code>CompanionSprite.tsx</code> 里一句注释把约束说得很白：“floating into Static scrollback can’t be cleared”（飘进 Static scrollback 的东西就擦不掉了）。</p>
-<p>再翻 Grok Build，找到一个独立 crate <code>xai-ratatui-inline</code>，核心函数就叫 <code>emit_to_scrollback</code>：“发射进 scrollback”。我以为找到了第三个同路人。但继续追调用方，故事拐了弯：<strong>这个函数在生产代码里没有调用者</strong>，只出现在 crate 自带的示例和测试里。Grok Build 的默认形态（<code>[terminal] alt_screen = auto</code>）是一个进 alt screen 的全屏 pager，应用自管 scrollback，那恰恰是第 2 篇那条路的工业化版本。真正的 inline 形态是一个默认关闭的实验模式（<code>xai-grok-pager-minimal</code>），而且它也不用 <code>emit_to_scrollback</code>：它用 ratatui 自带的 <code>insert_before</code>（DECSTBM 滚动区）提交定型内容，还立了一个编译期守护测试，禁止任何人把 purge 重印机制接进 minimal 模式。</p>
+<p>再翻 Grok Build，找到一个独立 crate <code>xai-ratatui-inline</code>，核心函数就叫 <code>emit_to_scrollback</code>：“发射进 scrollback”。我以为找到了第三个同路人。但继续追调用方，故事拐了弯：<strong>这个函数在生产代码里没有调用者</strong>，只出现在 crate 自带的示例和测试里。Grok Build 的默认形态（<code>[terminal] alt_screen = auto</code>）是一个进 alt screen 的全屏分页器，应用自管 scrollback，那恰恰是第 2 篇那条路的工业化版本。</p>
+<p>真正的 inline 形态是一个默认关闭的实验模式（<code>xai-grok-pager-minimal</code>），而且它也不用 <code>emit_to_scrollback</code>：它用 ratatui 自带的 <code>insert_before</code>（DECSTBM 滚动区）提交定型内容，还立了一个编译期守护测试，禁止任何人把 purge 重印机制接进 minimal 模式。</p>
 <p>把四家的默认形态摆在一起，得到的不是收敛，是一张 2:2 的记分牌：</p>
 <div class="table-wrapper">
 <table>
@@ -201,17 +198,17 @@
 <tr><td>Claude Code</td><td>inline（Ink <code>&lt;Static&gt;</code> 静态化）</td><td>可选全屏 <code>/tui fullscreen</code>（2026 年中起，alt screen）</td></tr>
 <tr><td>Kimi Code</td><td>inline 差分（主屏）</td><td>实验性全屏（<code>KIMI_CODE_TUI_FULL_SCREEN=1</code>，详见第 14 篇；到 9 月底已升格为正式配置项 <code>tuiMode</code>）</td></tr>
 <tr><td>Codex</td><td>alt screen（<code>tui.alternate_screen = auto</code>，无条件生效；官方文档仍称“auto 在 Zellij 里跳过“，与代码脱节数月，见第七节第 7 条的补正）</td><td>inline viewport（<code>insert_history.rs</code> 那套）</td></tr>
-<tr><td>Grok Build</td><td>全屏 pager（auto；tmux 控制模式和 Zellij 里降级为全高 inline）</td><td>实验 minimal inline（<code>xai-grok-pager-minimal</code>）</td></tr>
+<tr><td>Grok Build</td><td>全屏分页器（auto；tmux 控制模式和 Zellij 里降级为全高 inline）</td><td>实验 minimal inline（<code>xai-grok-pager-minimal</code>）</td></tr>
 </tbody>
 </table>
 </div>
-<p>第 2 篇描述的引擎不是一条“少数派的错路“，它是四家全都内置着的一半。真正的新问题是这条分界线本身：<strong>一个 block 完成之后，谁继续为它记账？</strong> 以及，为什么每家都在同一产品里养着线的两边。</p>
+<p>第 2 篇描述的引擎不是一条“少数派的错路“，它是四家全都内置着的一半。真正的新问题是这条分界线本身：<strong>一个 block 完成之后，谁继续管它？</strong> 以及，为什么每家都在同一产品里养着线的两边。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch11-scoreboard.svg" alt="2:2 的默认分岔 + 全员双模：四家都内置了两种所有权模型"><span class="img-wrapper"><img src="assets/ch11-scoreboard.svg" alt="2:2 的默认分岔 + 全员双模：四家都内置了两种所有权模型"></span></label></p>
 <hr>
-<h2 id="二分界线已完成的内容谁继续为它记账"><a class="header" href="#二分界线已完成的内容谁继续为它记账">二、分界线：已完成的内容，谁继续为它记账</a></h2>
+<h2 id="二分界线已完成的内容谁继续管它"><a class="header" href="#二分界线已完成的内容谁继续管它">二、分界线：已完成的内容，谁继续管它</a></h2>
 <p>先把两个学派定义清楚。</p>
-<p><strong>全屏自管派（ForgeLoopTUI；Grok Build 和 Codex 的默认形态所属）</strong>：屏幕上每一行都归引擎管。每一帧合成完整画面，与上一帧 diff，精确改写变化的行。已完成的历史内容虽然逻辑上“只追加“，但只要它还显示在屏幕上（或活在自己接管的 alt screen 里），就持续参与每帧的 diff 计算和 resize 重算，引擎为它持续记账。</p>
-<p><strong>inline viewport 派（Claude Code 与 Kimi Code 的默认、Codex 与 Grok Build 的内置降级路径所属）</strong>：内容一旦“定型“就立刻打印进终端的原生 scrollback，从此归终端管，引擎销账。引擎自己只维护底部一小块“活区“（viewport），用双缓冲 diff 重绘。</p>
+<p><strong>全屏自管派（ForgeLoopTUI；Grok Build 和 Codex 的默认形态所属）</strong>：屏幕上每一行都归引擎管。每一帧合成完整画面，与上一帧 diff，精确改写变化的行。已完成的历史内容虽然逻辑上“只追加“，但只要它还显示在屏幕上（或活在自己接管的 alt screen 里），就持续参与每帧的 diff 计算和 resize 重算，引擎就得一直管着它。</p>
+<p><strong>inline viewport 派（Claude Code 与 Kimi Code 的默认、Codex 与 Grok Build 的内置降级路径所属）</strong>：内容一旦“定型“就立刻打印进终端的原生 scrollback，从此归终端管，引擎脱手。引擎自己只维护底部一小块“活区“（viewport），用双缓冲 diff 重绘。</p>
 <pre><code>全屏自管派:                     inline viewport 派:
 ┌─ scrollback ────────────┐    ┌─ scrollback ────────────┐
 │ （滚出屏幕才归终端）      │    │ 历史（定型即归终端）      │
@@ -222,13 +219,14 @@
 │ 输入框    ← 引擎管       │    │ 输入框（在 viewport 内）  │
 └──────────────────────────┘    └──────────────────────────┘
 </code></pre>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch11-ownership-two-schools.svg" alt="全屏自管派与 inline viewport 派：分歧只在 block 完成后谁继续记账"><span class="img-wrapper"><img src="assets/ch11-ownership-two-schools.svg" alt="全屏自管派与 inline viewport 派：分歧只在 block 完成后谁继续记账"></span></label></p>
-<p>这里要特别强调：<strong>两派的 live 区是同构的。</strong> ForgeLoopTUI 的增量 diff、Codex 的 ratatui 双缓冲、Ink 的行级 erase-rewrite，做的是同一件事，这正是我当初误判阵营的原因。表层行为一模一样。</p>
-<p>真正的分歧只有一个问题：<strong>一个 block 完成之后，谁还继续为它记账？</strong></p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch11-ownership-two-schools.svg" alt="全屏自管派与 inline viewport 派：分歧只在 block 完成后归谁管"><span class="img-wrapper"><img src="assets/ch11-ownership-two-schools.svg" alt="全屏自管派与 inline viewport 派：分歧只在 block 完成后归谁管"></span></label></p>
+<p>这里要特别强调：<strong>两派的 live 区是同构的。</strong> ForgeLoopTUI 的增量 diff、Codex 的 ratatui 双缓冲、Ink 的行级擦除重写，做的是同一件事，这正是我当初误判阵营的原因。表层行为一模一样。</p>
+<p>真正的分歧只有一个问题：<strong>一个 block 完成之后，谁还继续管着它？</strong></p>
 <ul>
-<li>ForgeLoopTUI：完成了也继续记。<code>committedLines</code>、<code>lastCommittedPhysicalRows</code> 等帧状态字段持续追踪它，直到它滚出屏幕顶边。</li>
-<li>inline 派：完成即销账。之后它的滚动、搜索、选择、复制都是终端模拟器的事，引擎一行代码都不用写。</li>
+<li>ForgeLoopTUI：完成了也继续管。<code>committedLines</code>、<code>lastCommittedPhysicalRows</code> 等帧状态字段持续追踪它，直到它滚出屏幕顶边。</li>
+<li>inline 派：完成即脱手。之后它的滚动、搜索、选择、复制都是终端模拟器的事，引擎一行代码都不用写。</li>
 </ul>
+<p>给这条分界线起个名字：<strong>渲染权的单向交割</strong>。inline 派的“脱手“不是甩手，是一次不可逆的所有权转移——scrollback 对应用不可寻址（见 5.1），交出去的渲染权收不回来。后文所有的派生差异都挂在这扇门上：定型时机被迫从几何问题变成生命周期问题（晚交不如早交，交得越晚，钉在 viewport 里的未定型内容越多）；resize 从 CPU 问题变成 I/O 问题（交割之后，重排的过程和结果都是终端侧的知识，应用插不上手）；失败模式从无法解释的乱码变成有界的“闪一下“（两个渲染者只会在门边出时序事故）。而“谁继续记账“只是这场交割的账面结果——帧状态字段之所以配叫记账，是因为它是渲染源；不渲染历史，才不需要记住历史。</p>
 <hr>
 <h2 id="三inline-派的机制发射即定型"><a class="header" href="#三inline-派的机制发射即定型">三、inline 派的机制：发射即定型</a></h2>
 <p>这套机制最干净的教科书版本在 Grok 的 crate 里：<code>emit_to_scrollback</code> 全部逻辑只有 60 行（<code>xai-ratatui-inline/src/scrollback.rs</code>，以下为简化伪代码）：</p>
@@ -251,7 +249,7 @@
     move_to(0, new_viewport_y);
     print("\x1b[J");
 
-    // ⑤ 双缓冲作废，viewport 全量重画；记账只有一个 Rect
+    // ⑤ 双缓冲作废，viewport 全量重画；要管的只有一个 Rect
     terminal.reset_back_buffer();
     terminal.set_viewport_area(new_viewport_y);
 }
@@ -260,7 +258,7 @@
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch11-emit-scrollback.svg" alt="emit_to_scrollback 五步：viewport 是可擦除的墨水，scrollback 是泼出去的水"><span class="img-wrapper"><img src="assets/ch11-emit-scrollback.svg" alt="emit_to_scrollback 五步：viewport 是可擦除的墨水，scrollback 是泼出去的水"></span></label></p>
 <p>但要如实说一句：这个参考实现在 Grok 产品里目前没有生产调用方。真正在跑的生产路径用的是同一思想的更保守版本：Codex 的 <code>insert_history_lines()</code> 和 ratatui 自带的 <code>insert_before</code> 都走 DECSTBM 滚动区，把内容“插“到 viewport 上方，不擦掉重印；Grok 的 minimal 模式直接复用后者。思想是同一条，工程上各家选了介质兼容性更好的变体。</p>
 <p>这套机制的纪律性质，在 Grok 仓库里有一个字面物证。<code>xai-grok-pager-minimal/src/guard.rs</code> 是一个守护测试：它用 <code>include_str!</code> 扫描 minimal 模式的每一个源码文件，断言其中<strong>不出现</strong> <code>emit_to_scrollback</code>、<code>resize_purge_rerender</code>、<code>resize_viewport_height</code> 这三个标识符。注释把理由写得很白：这些函数会重印已经归终端的历史，结果是 “double-printing (or, with ED3, wiping) committed scrollback”。这条路线赖以生存的纪律，在这里不是口头约定，是一个挂了就算构建失败的测试。</p>
-<p>对照第 2 篇的记账成本。全屏自管派维护 8 个帧状态字段，错一个全屏偏位；inline 派的全部渲染状态是一个 <code>Rect</code>（实质只有 <code>y</code> 在变）加一块可以随时作废的双缓冲。<strong>它不追求“记住屏幕“，它追求“随时能重建“。</strong></p>
+<p>对照第 2 篇的管理成本。全屏自管派维护 8 个帧状态字段，错一个全屏偏位；inline 派的全部渲染状态是一个 <code>Rect</code>（实质只有 <code>y</code> 在变）加一块可以随时作废的双缓冲。<strong>它不追求“记住屏幕“，它追求“随时能重建“。</strong></p>
 <p>发射时机的选择也随之改变。第 2 篇的 Live Budget Planner 是空间驱动：live 区超预算就把旧行沉降到 committed。inline 派是语义驱动：一个 block 在事件流里完成了（工具返回了、回复结束了）才发射。<strong>“什么时候算定型“从几何问题变成了生命周期问题。</strong> Claude Code 的 <code>shouldRenderStatically()</code>（<code>src/components/Messages.tsx</code>）把这个判定写得很直白：一条消息想“静态化”，需要它关联的 tool use 不在 streaming、不在 in-progress、已全部 resolved，连同组的兄弟 tool use 和 PostToolUse hooks 都结束了才行。推论是：未定型的内容必须钉在 viewport 里。一个跑五分钟的工具调用，它的 block 就在 viewport 里被反复重绘五分钟，直到拿到结果、定型、发射。</p>
 <p>这个变化和第 7 篇的 Event Sourcing 框架是自洽的：事件完成 → 投影定稿 → 归档。inline 派相当于把 Event Sourcing 在渲染层做到了底，投影一旦定稿，连撤回投影的能力都主动放弃。</p>
 <hr>
@@ -276,18 +274,25 @@
 <tr><td>Live Budget Planner</td><td>超预算沉降，不做部分行切割</td><td>机制消失，由 block 生命周期替代</td></tr>
 <tr><td>用户两帧之间滚动</td><td>假设破坏，diff 坐标出错</td><td>历史区滚动是终端的事，不构成假设</td></tr>
 <tr><td>历史的搜索/选择/复制</td><td>需要自己实现（或放弃）</td><td>终端原生免费，Cmd+F 直接可用</td></tr>
-<tr><td>resize</td><td>缓存全失效，重算重绘当前屏</td><td>见下节，这是 inline 派交税的地方</td></tr>
+<tr><td>resize</td><td>缓存全失效，重算重绘当前屏</td><td>见下节，这是 inline 派付出代价的地方</td></tr>
 </tbody>
 </table>
 </div>
-<p>前五行是真实的收益。但税没有消失，只是换了征收点。</p>
+<p>前五行是真实的收益。但代价没有消失，只是换了形式。</p>
 <hr>
-<h2 id="五税单inline-派的代价"><a class="header" href="#五税单inline-派的代价">五、税单：inline 派的代价</a></h2>
+<h2 id="五inline-派的代价"><a class="header" href="#五inline-派的代价">五、inline 派的代价</a></h2>
 <h3 id="51-发射后的内容不可触碰"><a class="header" href="#51-发射后的内容不可触碰">5.1 发射后的内容不可触碰</a></h3>
-<p>ANSI 光标序列只能寻址可见屏幕。一行内容滚过顶边进入 scrollback 后，不存在任何转义序列能再碰到它。而对还停在屏幕上、位于 viewport 上方的历史，inline 派给自己立了纪律：<strong>光标从不越过 viewport 顶边</strong>，一旦回写，就重新背上了帧状态记账的债，这条路线的全部意义就消失了。</p>
-<p>产品后果：用户想展开一个三分钟前完成的折叠 block，历史不能改。Grok Build 的 minimal 模式的答案是 <code>full_view.rs</code>：把整个 transcript 以强制展开模式重新渲染成一段 ANSI 文本，交给 <code>$PAGER</code>（<code>less -R</code>）。<strong>“重新消费历史“的需求被路由到外部 pager，不靠历史改写。</strong> 不可变历史 + 按需导出，是这条路线对“可改写性“需求的最终回答。（应用内的模态查看器 Grok 也有：<code>block_viewer.rs</code>，Ctrl-F 打开，提供搜索、选择、复制，但它长在默认的全屏 pager 里。那边的历史本来就归应用管，模态查看器是功能，不是妥协。）</p>
+<p>ANSI 光标序列只能寻址可见屏幕。一行内容滚过顶边进入 scrollback 后，不存在任何转义序列能再碰到它。而对还停在屏幕上、位于 viewport 上方的历史，inline 派给自己立了纪律：<strong>光标从不越过 viewport 顶边</strong>，一旦回写，就重新背上了帧状态那笔债，这条路线的全部意义就消失了。</p>
+<p>把“不可触碰“用一个例子走到底。屏幕上显示着折叠的字母表 ABC…XYZ，用户想把它原地展开成 26 个字母，分三种处境：</p>
+<ul>
+<li><strong>字母还没定型</strong>（还在流式输出）：两派都能改，而且都在改——一个跑五分钟的工具调用，它的 block 就在 viewport 里被重绘五分钟。这一层没有分歧。</li>
+<li><strong>字母已定型、还在屏幕上</strong>（viewport 上方）：inline 派物理上够得着、纪律上不准回头；全屏自管派原地展开即可，这正是帧状态记账买来的能力。</li>
+<li><strong>字母已滚出屏幕、被用户翻了回来</strong>：最容易误判的一种。那些字节此刻确实显示在屏幕上，但可见不等于可及——翻页改变的是显示，不是归属，它们仍然住在 scrollback 里，而 scrollback 在任何视口位置都不可寻址，这道门根本没有再开过。就算假设它开了，后面还排着两道：应用不知道用户翻到了哪（滚动偏移量、wrap/reflow 的结果都在终端手里，应用一无所知），而且应用一有输出，多数终端默认就把视口拽回底部。三道门各自独立致死，inline 派无路可走。</li>
+</ul>
+<p>同一个例子反过来量出全屏自管派内部的两档。alt screen 档（Grok 分页器、Codex 默认）连“翻回来“这个动作都是应用自己实现的——alt screen 里没有终端 scrollback，滚动是功能不是白送，每个 block 的位置永远在自己手里，原地展开连滚动位置都不丢。主屏档（ForgeLoopTUI）没这么从容：用户一翻页，diff 坐标系当时就废（第四节“用户两帧之间滚动“那条），想展开只能全量重画恢复坐标系，而任何输出都会把用户拽回底部——改得了，代价是一次核平重画加丢失滚动位置。所以严格地说：<strong>能把翻回来的历史原地展开的，只有把 scrollback 布局攥在自己手里的那一档。全屏派的力量不来自“够得着历史“，来自“不必够着历史“——正本在内存模型里，scrollback 只是溢出的副本。</strong></p>
+<p>产品后果：用户想展开一个三分钟前完成的折叠 block，历史不能改。Grok Build 的 minimal 模式的答案是 <code>full_view.rs</code>：把整个会话记录以强制展开模式重新渲染成一段 ANSI 文本，交给 <code>$PAGER</code>（<code>less -R</code>）。<strong>“重新消费历史“的需求被路由到外部分页器，不靠历史改写。</strong> 不可变历史 + 按需导出，是这条路线对“可改写性“需求的最终回答。（应用内的模态查看器 Grok 也有：<code>block_viewer.rs</code>，Ctrl-F 打开，提供搜索、选择、复制，但它长在默认的全屏分页器里。那边的历史本来就归应用管，模态查看器是功能，不是妥协。）</p>
 <h3 id="52-resize-的核平重印"><a class="header" href="#52-resize-的核平重印">5.2 resize 的核平重印</a></h3>
-<p>终端 resize 时，终端会先自动 reflow scrollback，应用随后才收到 SIGWINCH，边框被拆花，且各家终端的 reflow 行为不一致（grok 的注释原话：试过按字符数自己算 reflow，被各家终端的边界行为打回来了）。inline crate 里留着的解法是不修，直接重建（<code>xai-ratatui-inline/src/resize.rs</code>）：</p>
+<p>终端 resize 时，终端会先自动重排 scrollback，应用随后才收到 SIGWINCH，边框被拆花，且各家终端的重排行为不一致（grok 的注释原话：试过按字符数自己算重排，被各家终端的边界行为打回来了）。inline crate 里留着的解法是不修，直接重建（<code>xai-ratatui-inline/src/resize.rs</code>）：</p>
 <pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>// 注释是个事故报告：本来可以用 RIS (\x1bc) 硬重置，
@@ -297,40 +302,41 @@ print(history);                  // 内存里的全部历史按新宽度重新�
 // 顶出 viewport 空行、重算位置、clear
 <span class="boring">}</span></code></pre>
 <p>（同一个文件的文档注释和 README 还写着“用 RIS 重建“的旧方案，文档滞后于代码，以代码里这段事故报告式的注释为准。）</p>
-<p>走这条路的前提是必须在内存里保留完整的 block 数据模型，目的不是逐帧渲染，是为了 resize 后能重印，以及支撑应用内的搜索/选择/导出。值得记下的是，Grok 的 minimal 模式<strong>拒绝</strong>走这条路：它宁可使用终端内建的 autoresize、忍受各家 reflow 的差异，也绝不调用 purge 重印，因为 <code>\x1b[3J</code>（ED3）会把已经归终端的 scrollback 一起清掉。guard.rs 那个守护测试，禁的正是这条路。</p>
-<p>代价有两笔。一是 <strong>I/O 爆发</strong>：pty 是串行字节流，3 小时会话的历史是几万行、几 MB 文本，每次 resize 都重推一遍（用同步输出模式压住闪烁）。二是 <code>ESC[3J</code> <strong>误伤无辜</strong>：它清空终端的整个 scrollback，包括启动 agent 之前 shell 里留下的内容。</p>
+<p>走这条路的前提是必须在内存里保留完整的 block 数据模型，目的不是逐帧渲染，是为了 resize 后能重印，以及支撑应用内的搜索/选择/导出。这里值得点破一个容易混淆的区分：<strong>持有模型 ≠ 记账</strong>。不走重印路的 minimal 手里同样握着完整的会话数据（不然 <code>full_view.rs</code> 拿什么渲染给 <code>$PAGER</code>），但它不记账——那份数据是导出原料，不是渲染源。记账的分界线不在“手里有没有历史的数据“，在“还为不为历史的当前呈现负责“。值得记下的是，Grok 的 minimal 模式<strong>拒绝</strong>走这条路：它宁可使用终端内建的 autoresize、忍受各家的重排差异，也绝不调用 purge 重印，因为 <code>\x1b[3J</code>（ED3）会把已经归终端的 scrollback 一起清掉。guard.rs 那个守护测试，禁的正是这条路。</p>
+<p>代价有两笔。一是 <strong>I/O 爆发</strong>：pty（伪终端）是串行字节流，3 小时会话的历史是几万行、几 MB 文本，每次 resize 都重推一遍（用同步输出模式压住闪烁）。二是 <code>ESC[3J</code> <strong>误伤无辜</strong>：它清空终端的整个 scrollback，包括启动 agent 之前 shell 里留下的内容。</p>
 <p>对照第 2 篇：全屏自管派的 resize 成本是 CPU（物理行重算），量级是一屏；inline 派是 I/O 带宽，量级是整场会话。账单寄到了不同的地址。</p>
 <h3 id="53-终端免费给的能力想用就得自建一份"><a class="header" href="#53-终端免费给的能力想用就得自建一份">5.3 终端免费给的能力，想用就得自建一份</a></h3>
-<p>终端 scrollback 的滚动/搜索/选择对人免费，但对程序是黑箱：不能导出会话、不能程序化跳转、不能带格式复制。想把历史当数据用，只能靠内存里那份模型自建。Grok Build 那份 4242 行的 <code>text_selection.rs</code>（连同独立的 scrollback pane、history search、export 模块）就是这类自建的样子。不过严格按所有权划分，它长在默认的全屏 pager 里，是全屏派赎回原生能力的赎单（第 14 篇会逐条点这张赎单）；inline 派的 minimal 模式反而没有补这张票，它把“再看一眼历史“导出给了 <code>$PAGER</code>。</p>
+<p>终端 scrollback 的滚动/搜索/选择对人免费，但对程序是黑箱：不能导出会话、不能程序化跳转、不能带格式复制。想把历史当数据用，只能靠内存里那份模型自建。Grok Build 那份 4242 行的 <code>text_selection.rs</code>（连同独立的 scrollback 窗格、历史搜索、导出模块）就是这类自建的样子。不过严格按所有权划分，它长在默认的全屏分页器里，是全屏派赎回原生能力的赎单（第 14 篇会逐条点这张赎单）；inline 派的 minimal 模式反而没有补这张票，它把“再看一眼历史“导出给了 <code>$PAGER</code>。</p>
 <h3 id="54-活区膨胀的退化"><a class="header" href="#54-活区膨胀的退化">5.4 活区膨胀的退化</a></h3>
 <p>长任务场景下（后台任务跑 20 分钟、权限等待用户离开），未定型 block 一直钉在 viewport 里参与每帧 diff。“活区极小“的优势被稀释，渲染负担向全屏自管派回归。</p>
 <hr>
 <h2 id="六为什么分界线变成了开关"><a class="header" href="#六为什么分界线变成了开关">六、为什么分界线变成了开关</a></h2>
 <p>我初稿把四家写成了“收敛到 inline“，那是错的。真实的图景是 2:2 的默认分岔 + 全员双模。逐项分析之后，我认为有几个结构性原因。</p>
-<p><strong>1. 对话的介质本性。</strong> Agent 会话天然 append-only。为“历史原地改写“这个低频需求维护一条常驻的精确 diff 管道，是三条路线里最不划算的一笔投资。模态 viewer 和 <code>$PAGER</code> 导出覆盖了真实需求的大部分。这是 inline 派的拉力。</p>
-<p><strong>2. 失败模式的不对称。</strong> 全屏自管派的失败形态是屏幕上出现无法解释的乱码（IME 劫持光标、tmux 不同步、resize 时机错误），难复现、难定位，且发生在用户最看重的地方（别忘了这是一个需要用户审计 agent 行为的产品）。inline 派的失败形态是 resize 时闪一下，可见、有界、可恢复。对商业产品，这个不对称是决定性的。</p>
-<p><strong>3. 纪律比天才便宜。</strong> 8 个帧状态字段时刻正确，是一个只有引擎作者本人才能长期维护的承诺；“发射后永不触碰“是任何新人都能遵守的纪律。大组织选架构，选的是“不容易被改坏”。Grok 把这个论点推向了字面化：minimal 模式的纪律不是 Code Review 把关，是 guard.rs 里一个扫描全部源码的守护测试，<strong>纪律被写进了构建</strong>。</p>
-<p><strong>4. 成本支付频率的不对称。</strong> 全屏自管派的维护成本每天都在付（任何渲染改动都要过帧状态）；inline 派的爆发成本只在“长会话 + 用户拖窗口“的交集发生时付。pty 本身的吞吐是几十 MB/s，瓶颈其实在终端模拟器的解析渲染，但即便保守估计，几 MB 重印也只是百毫秒级的事。为罕见事件付重税，为日常事件零税。</p>
-<p><strong>5. 可测试性。</strong> <code>emit_to_scrollback</code> 的测试是 MockTerminal 接住字节流、断言 clear 了几次、flush 了几次，简单到近乎无聊，因为逻辑本身就简单。系统越聪明，证明它正确的基础设施越贵。</p>
-<p>以上五条解释了 inline 派的拉力，但解释不了为什么 Grok 和 Codex 把<strong>默认</strong>押在了全屏。把开关另一端的原因补上：</p>
-<p><strong>6. 会话内体验是真需求。</strong> 滚动、搜索、选择复制、平价 resize（全屏派 resize 是 O(屏高) 的 CPU 操作，没有 I/O 爆发）、鼠标交互，长会话用户每天都会用到。终端原生 scrollback 免费提供这些，但只对“人“免费，不对“程序“免费；而全屏派自建一份之后，这些能力对人和程序同时成立。</p>
-<p><strong>7. 用户环境是分裂的，但回应正在换代。</strong> 同一家公司必须同时服务 iTerm2 用户和 tmux/Zellij 用户，复用器（尤其 Zellij 和 tmux 控制模式）的 scrollback 语义确实让 alt screen 变成事故现场。Grok 的答案保留至今：auto 在 tmux 控制模式和 Zellij 里降级 inline。Codex 的答案则经历了一次转向，还留下一个文档与代码脱节的活案例：它曾经有同款特判，<code>tui.alternate_screen = auto</code> 在 Zellij 里跳过 alt screen，官方配置文档至今仍写着这句话；但代码在 2026 年 5 月中就把特判整个删掉了（#22214，提交标题就叫 “remove Zellij TUI workarounds”），auto 从此无条件进 alt screen，还配了一个测试（<code>alternate_screen_auto_uses_alt_screen</code>）把新行为钉死。我初稿按文档口径写了“auto 在 Zellij 里跳过“，发布前对源码才核出这个脱节，此处补正。特判也并非被简单扔掉，而是换了一层活法：新的 <code>ScrollbackStrategy</code> 在运行时检出 Standard/Zellij/FullScreen 三档终端，决定历史插入和视口生长各自用什么手法（9 月又为 Windows Terminal 补了一档，部分 DEC 滚动区在那儿会丢行）。按终端切模式的开关退役了，按终端选策略的适配接了班。用户环境的分裂没有变，变的是行业对它的回答：从“检测终端、切换模式“走向“统一模式、下放策略“。顺带证明，连“开关是必然产物“这种判断，保质期也可能只有几个月。</p>
-<p><strong>8. 历史有两种消费场景。</strong> 会话中（要交互、要导航）和退出后（要在终端里向上翻、Cmd+F、复制）对所有权的要求恰好相反。两个场景都真实、都高频，于是四家长出了同一答案：都养一套，或者串行地各管一段。这正是第 14 篇的主题。</p>
+<p><strong>1. 对话的介质本性。</strong><br>Agent 会话天然 append-only。为“历史原地改写“这个低频需求维护一条常驻的精确 diff 管道，是三条路线里最不划算的一笔投资。模态 viewer 和 <code>$PAGER</code> 导出覆盖了真实需求的大部分。这是 inline 派的拉力。</p>
+<p><strong>2. 失败模式的不对称。</strong><br>全屏自管派的失败形态是屏幕上出现无法解释的乱码（输入法劫持光标、tmux 不同步、resize 时机错误），难复现、难定位，且发生在用户最看重的地方（别忘了这是一个需要用户审计 agent 行为的产品）。inline 派的失败形态是 resize 时闪一下，可见、有界、可恢复。对商业产品，这个不对称是决定性的。</p>
+<p><strong>3. 纪律比天才便宜。</strong><br>8 个帧状态字段时刻正确，是一个只有引擎作者本人才能长期维护的承诺；而“发射后永不触碰“是任何新人都能遵守的纪律。大组织选架构，选的是“不容易被改坏“。这个不对称有机制上的根：帧状态是每一帧、每个字段都必须正确的连续承诺，源码扫描守不住一片连续的场；“光标永不越过 viewport 顶边“是一个离散的、可机械检查的边界——交割点是离散的，纪律才能被写成测试。Grok 把这个论点推向了字面化：minimal 模式的纪律不是 Code Review 把关，是 guard.rs 里一个扫描全部源码的守护测试，<strong>纪律被写进了构建</strong>。</p>
+<p><strong>4. 成本支付频率的不对称。</strong><br>全屏自管派的维护成本每天都在付（任何渲染改动都要过帧状态）；inline 派的爆发成本只在“长会话 + 用户拖窗口“的交集发生时付。pty（伪终端）本身的吞吐是几十 MB/s，瓶颈其实在终端模拟器的解析渲染，但即便保守估计，几 MB 重印也只是百毫秒级的事。为罕见事件多付，为日常事件零成本。</p>
+<p><strong>5. 可测试性。</strong><br><code>emit_to_scrollback</code> 的测试是 MockTerminal 接住字节流、断言 clear 了几次、flush 了几次，简单到近乎无聊，因为逻辑本身就简单。系统越聪明，证明它正确的基础设施越贵。</p>
+<p>以上五条解释了 inline 派的优点，但解释不了为什么 Grok 和 Codex 把<strong>默认</strong>押在了全屏。我分析了一下，把我认为的原因补上：</p>
+<p><strong>6. 会话内体验是真需求。</strong><br>滚动、搜索、选择复制、平价 resize（全屏派 resize 是 O(屏高) 的 CPU 操作，没有 I/O 爆发）、鼠标交互，长会话用户每天都会用到。终端原生 scrollback 免费提供这些，但只对“人“免费，不对“程序“免费；而全屏派自建一份之后，这些能力对人和程序同时成立。</p>
+<p><strong>7. 用户环境是分裂的，但回应正在换代。</strong><br>同一家公司必须同时服务 iTerm2 用户和 tmux/Zellij 用户，复用器（尤其 Zellij 和 tmux 控制模式）的 scrollback 语义确实让 alt screen 变成事故现场。Grok 的答案保留至今：auto 在 tmux 控制模式和 Zellij 里降级 inline。Codex 的答案则经历了一次转向，还留下一个文档与代码脱节的活案例：它曾经有同款特判，<code>tui.alternate_screen = auto</code> 在 Zellij 里跳过 alt screen，官方配置文档至今仍写着这句话；但代码在 2026 年 5 月中就把特判整个删掉了（#22214，提交标题就叫 “remove Zellij TUI workarounds”），auto 从此无条件进 alt screen，还配了一个测试（<code>alternate_screen_auto_uses_alt_screen</code>）把新行为钉死。我初稿按文档口径写了“auto 在 Zellij 里跳过“，发布前对源码才核出这个脱节，此处补正。特判也并非被简单扔掉，而是换了一层活法：新的 <code>ScrollbackStrategy</code> 在运行时检出 Standard/Zellij/FullScreen 三档终端，决定历史插入和视口生长各自用什么手法（9 月又为 Windows Terminal 补了一档，部分 DEC 滚动区在那儿会丢行）。按终端切模式的开关退役了，按终端选策略的适配接了班。用户环境的分裂没有变，变的是行业对它的回答：从“检测终端、切换模式“走向“统一模式、下放策略“。顺带证明，连“开关是必然产物“这种判断，保质期也可能只有几个月。</p>
+<p><strong>8. 历史有两种消费场景。</strong> 会话中（要交互、要导航）和退出后（要在终端里向上翻、Cmd+F、复制）对所有权的要求恰好相反。两个场景都真实、都高频，于是四家长出了同一答案：都养一套，或者串行地各管一段。</p>
 <hr>
 <h2 id="七这对本系列意味着什么"><a class="header" href="#七这对本系列意味着什么">七、这对本系列意味着什么</a></h2>
 <p>先说修正范围，比预想的小：</p>
 <ul>
-<li><strong>第 2 篇</strong>的技术内容不需要改，它描述 ForgeLoopTUI，而 ForgeLoopTUI 确实那样工作。需要补的是一个坐标系：TUI 渲染引擎存在两个学派，第 2 篇解剖的是全屏自管派的手工形态（Grok Build 的默认 pager 是它的工业化形态），而 Claude Code 与 Kimi Code 的默认属于 inline viewport 派。两派的分界不在“live 区怎么画“（那层同构），在“已完成的内容，谁继续为它记账“。</li>
+<li><strong>第 2 篇</strong>的技术内容不需要改，它描述 ForgeLoopTUI，而 ForgeLoopTUI 确实那样工作。需要补的是一个坐标系：TUI 渲染引擎存在两个学派，第 2 篇解剖的是全屏自管派的手工形态（Grok Build 的默认分页器是它的工业化形态），而 Claude Code 与 Kimi Code 的默认属于 inline viewport 派。两派的分界不在“live 区怎么画“（那层同构），在“已完成的内容，谁继续管它“。</li>
 <li><strong>第 4 篇</strong>只需一句限定：槽位队列和 shiftIndices 作用于 live 区；inline 派把乱序配对提前到了数据层：block 按稳定 id 在内存模型里配对完成后才发射，乱序问题从坐标手术退化为字典查找。</li>
 <li><strong>第 3、7–12 篇</strong>不受影响。第 7 篇的 Event Sourcing 框架反而被 Grok Build 的架构（TUI/headless/ACP 三端共用同一事件流）实证加强。</li>
 </ul>
-<p>然后说我的引擎的位置。ForgeLoopTUI 是少数派，但不是错误，Grok Build 和 Codex 的默认形态证明了全屏自管在大组织手里同样能产品化。这条路能做到 inline 派结构性做不到的事：任意可见历史的原地改写、每一帧每一个 ANSI 字节的精确控制、会话内完整的交互能力。如果未来出现“历史必须活“的产品需求（实时协作标注、历史中的 diff 就地更新），inline 派三个实现都得重构，全屏自管派不用。</p>
-<p>但演进方向也因此清晰了：ForgeLoopTUI 的 committed 区在语义上已经是 append-only，和 inline 派的 scrollback 只差最后一步：<strong>物理上还归不归我管</strong>。四家的开关给出了同一个提示：这道题不必一次答完，可以按生命周期分期回答。这笔交换是否值得，取决于约束集合，这正是第 11 篇“端的选择由约束决定“的同一个逻辑，在渲染层又成立了一次。</p>
+<p>然后说我做的 UI 引擎的定位。</p>
+<p>ForgeLoopTUI 是少数派，但我不认为是错误，Grok Build 和 Codex 的默认形态证明了全屏自管在大组织手里同样能产品化。这条路能做到 inline 派结构性做不到的事：<strong>任意可见历史的原地改写、每一帧每一个 ANSI 字节的精确控制、会话内完整的交互能力</strong>。如果未来出现“历史必须活“的产品需求（实时协作标注、历史中的 diff 就地更新），inline 派三个实现都得重构，全屏自管派不用。</p>
+<p>但演进方向也因此清晰了：ForgeLoopTUI 的 committed 区在语义上已经是 append-only，和 inline 派的 scrollback 只差最后一步：<strong>物理上还归不归我管</strong>——渲染权交不交、交出去还拿不拿得回。四家的开关给出了同一个提示：这道题不必一次答完，可以按生命周期分期回答。这笔交换是否值得，取决于约束集合，这正是第 11 篇“端的选择由约束决定“的同一个逻辑，在渲染层又成立了一次。</p>
 <hr>
 <h2 id="八总结"><a class="header" href="#八总结">八、总结</a></h2>
 <p>第 2 篇说：TUI 渲染是在“终端没有 undo“的地基上建引擎。这篇补上下半句：<strong>地基没法换，但你可以选择和地基的关系。</strong></p>
 <p>全屏自管派征服介质：终端没有 undo，就造一个 undo（光标手术 + 帧状态），换来 GUI 级的控制力。inline viewport 派顺应介质：终端的本性就是电传打字机，只进不退，那就不退，把“不可变“从限制变成架构原则。</p>
-<p>两种选择没有高下，是同一条公理的两种缴税方式：一个持续为“可改写性“纳税，一个一次性买断“不可改写“、再为重印机制和应用内补偿补票。2026 年中的头部产品用配置开关承认了这一点：<strong>四家全都内置了两种所有权模型</strong>，区别只在默认押哪边、以及另一边做到什么完成度。</p>
+<p>两种选择没有高下，是同一条公理的两种成本结构：一个持续为“可改写性“付出成本，一个一次性买断“不可改写“、再为重印机制和应用内补偿另行付费。2026 年中的头部产品用配置开关承认了这一点：<strong>四家全都内置了两种所有权模型</strong>，区别只在默认押哪边、以及另一边做到什么完成度。</p>
 <p>我漏掉这条分界线的原因值得记下来：两条路线在视觉上无法区分。我是读了源码才发现的。这也是本系列反复出现的主题的另一个实例：<strong>看起来一样的界面，底下的成本结构可以完全不同。</strong> 区别不在像素里，在所有权里。</p>
 <p>下一篇（第 14 篇）把这个问题推进到工程细节：既然双模已成事实，那“同一引擎里两种所有权共存“到底怎么实现？Kimi Code 在四家里给出了接口最干净的一个样本，包括一个前无古人的设计：退出时把历史归还给终端。</p>
 <hr>

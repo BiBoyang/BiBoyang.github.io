@@ -1,0 +1,1797 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>RAG 心得：从一份财报 PDF 到一个能扛的系统</title>
+        <meta name="robots" content="noindex">
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="favicon-8114d1fc.png">
+        <link rel="stylesheet" href="css/variables-8adf115d.css">
+        <link rel="stylesheet" href="css/general-e96d0476.css">
+        <link rel="stylesheet" href="css/chrome-d279d366.css">
+        <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex-c18298ee.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc-2a99541a.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">RAG 心得：从一份财报 PDF 到一个能扛的系统</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/BiBoyang/BiBoyang.github.io" title="Git repository" aria-label="Git repository">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="写在前面"><a class="header" href="#写在前面">写在前面</a></h1>
+<p>这本册子是一份财报 RAG 系统的建设记录，不是教程。</p>
+<p>它从一份 119 页的腾讯 2025 年中报进系统开始，沿着「抽取 → 清洗 → 分片 → 标注 → 索引 → 检索 → 生成」这条链路一路走到底，把每一环踩过的坑和坑换来的判断写下来。全册分四卷：数据上游、检索的错觉、从能跑到能扛、边界与展望。</p>
+<h2 id="这本书不是什么"><a class="header" href="#这本书不是什么">这本书不是什么</a></h2>
+<p>它不是 RAG 入门。市面上讲 RAG 的书会从「什么是向量检索」开始，这本不会——它假设你已经跑通过 demo，正在把 demo 变成能上线的东西，然后发现每一步都不对劲。</p>
+<p>它也不是一份可以照抄的配置清单。书里的每个数字都带着前提：<code>pdftotext</code> 在多栏页面上 20–30% 的错位，是这一份中报上的经验值；800–1200 token 的 chunk 区间，是这一个库上试出来的；M1 Pro 32GB 上跑 Qwen3-Embedding 的分档，换台机器结论就变。<strong>结论会过期，方法不会。</strong></p>
+<h2 id="四种读法"><a class="header" href="#四种读法">四种读法</a></h2>
+<ul>
+<li><strong>库还没搭、数据还脏</strong>：从「数据上游」卷顺序读，一路到「Metadata 设计」。</li>
+<li><strong>数据干净了，检索不准</strong>：直接跳「检索的错觉」卷，时间、口径、相似度、混合、精排五个错觉挨个查。</li>
+<li><strong>已经上线，要扛住</strong>：看「从能跑到能扛」卷，多市场架构、选型、参数、评估、排查、运维。</li>
+<li><strong>想判断边界和方向</strong>：读「边界与展望」卷，Agent、GraphRAG、通用模式、三年演进、未来。建议读完全卷再来。</li>
+</ul>
+<p>「数据上游」卷第 01 篇是全册地图，任何时候迷路都可以回到那里。</p>
+<h2 id="关于正文里的第-n-篇"><a class="header" href="#关于正文里的第-n-篇">关于正文里的「第 N 篇」</a></h2>
+<p>这些章节最初是双周刊上的连载文章，篇号按发布顺序编，和册内章节号不一致（比如评估那篇是首发，在册子里却排在中段）。成册时保留了原篇号做 slug，正文内的互指已按册内章节号改写。</p>
+<h2 id="关于还没写完的部分"><a class="header" href="#关于还没写完的部分">关于还没写完的部分</a></h2>
+<p>册子里有两章是空的（「Query 理解」和「生成层」），四个附录也还没写。它们标着待办，不是遗漏——这两章是七步链路里原本就没有专篇的环节，需要的不是整理，是再跑一遍项目才能写出来的东西。留着，比填一篇正确的空话好。</p>
+<p><em>本册与 Desktop 写作目录解耦（分叉模型）：<code>chapters/</code> 内的修订不会回流原稿。</em></p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="一个财报-rag-的七步链路和每一步都会踩的坑"><a class="header" href="#一个财报-rag-的七步链路和每一步都会踩的坑">一个财报 RAG 的七步链路，和每一步都会踩的坑</a></h1>
+<p>把 119 页的腾讯 2025 年中报灌进系统，问一句“毛利率多少”，系统秒回：“毛利……第 45 页”。</p>
+<p>它检索到的是目录页——相似度分数不低，信息量为零。</p>
+<p>这次答错，错不在模型。从它往回拆，能拆出一条七步链路；这套财报 RAG 后来的每次翻车，几乎都能挂到链路的某一环上。这篇是全系列的总纲：把链路画出来，把每一环最常见的烂法点名。怎么修是后面各篇的事，这里只给地图。</p>
+<h2 id="一七步链路全景一份-pdf-到一个答案"><a class="header" href="#一七步链路全景一份-pdf-到一个答案">一、七步链路全景：一份 PDF 到一个答案</a></h2>
+<pre><code>离线（数据进库）：       PDF → 1.抽取 → 2.清洗 → 3.分片 → 4.标注 → 5.索引
+在线（从 query 到答案）：6.检索 → 7.生成
+</code></pre>
+<p>每一步的输入输出都很直白：上一步的产物是下一步的原料，任何一环把东西弄坏，下游拿到的就是坏东西。我把七步分成离线五步和在线两步，不是步数凑巧——离线烂的是数据，在线烂的是匹配，修法完全不同。和通用的“七环”说法（解析、分块、向量化、索引、检索、生成、评估）对照，这条链路基本一一对应，差别是我在财报视角下把清洗和标注单独拎了出来。评估没有单列：它不是链路上的一站，是贯穿全线的事，留给第 14 篇。</p>
+<h2 id="二离线五步数据进库之前烂法都在数据里"><a class="header" href="#二离线五步数据进库之前烂法都在数据里">二、离线五步：数据进库之前，烂法都在数据里</a></h2>
+<p><strong>抽取：把为打印设计的东西，转成程序能处理的东西。</strong> PDF 告诉打印机“这个字在第 45 页第 3 行的哪个位置”，从没说过“这是标题”“这是表格的第二行”——所有结构信息都要靠代码还原。这一步最被低估的烂法是 reading order：多栏页面左右栏交叉拼接，页眉、正文、页脚被换行符拼成拼盘。抽出来的 raw.txt 看着成段通顺，语义其实已经坏了；肉眼很难发现，直到检索阶段才暴露。<code>pdftotext -layout</code> 在单栏页面上是准的，在这份中报的多栏页面上有 20–30% 的错位——这是我这一份文档上的经验值，不是普遍数字。</p>
+<p><strong>清洗</strong>干两件事：去掉噪声（页眉页脚、目录、纯页码），把被分页符切断的句子拼回去。这一步的烂法在顺序。先切 chunk 后清洗，噪声就和正文锁死在同一个 chunk 里，清理成本翻倍。切断的句子不拼回去更麻烦：断点恰好落在语义中间，后面任何分片策略都救不了它。</p>
+<p><strong>分片</strong>的目标不是“按 token 数均分”，是切出检索粒度合适的信息单元。最常见的烂法恰恰就是按 token 均分：一张表格拦腰切断，数字和表头分进两个 chunk——模型只看到数字，不知道这些数字代表什么。还有一个反向的迷信：“chunk 越大，上下文越足”。这话在检索阶段是反的，chunk 越大，embedding 被无关内容稀释得越厉害，检索先输。</p>
+<p>切完的 chunk 还是“黑户”，<strong>标注</strong>给它发身份证：年份、期间类型、章节类型，这些领域约束标签。这一步的烂法一句话就能说完——标了不用。metadata 只做 citation 展示、不进检索层，等于没标。这不是假设出来的问题：上一篇《当向量相似度把“2020 Q4”当成“2025 Q4”》拆的根因就是它，<code>report_year</code> 入库时标了，检索时却没拿它做过滤。</p>
+<p>离线阶段的收尾是<strong>建索引</strong>：把 chunk 编码成向量，存进向量库。烂法有两个。一是迷信“选最强的 embedding 模型”——领域适配比榜单分数重要，通用语料上的 SOTA 到了金融文本里，可能不如一个领域微调过的小模型。二更隐蔽：一些 embedding 模型训练时区分 query 和 passage，使用时得按各自的约定加前缀——E5 系列加 <code>query:</code> / <code>passage:</code>，BGE 系列是另一套，query 侧加固定指令 <code>Represent this sentence for searching relevant passages: </code>，passage 侧不加。漏加了不报错，只是召回分数偏低——质量肉眼可见地下降，日志里却什么错误都找不到。</p>
+<h2 id="三在线两步从-query-到答案烂法都在匹配上"><a class="header" href="#三在线两步从-query-到答案烂法都在匹配上">三、在线两步：从 query 到答案，烂法都在匹配上</a></h2>
+<p>数据进了库，问题换一种烂法。</p>
+<p><strong>检索</strong>做的事很直白：query 走向量取 top-k，可选 reranker 精排。最要命的错觉是把相似度当相关度——没有 metadata 过滤的时候，目录页的相似度可以高过正确数据页，开场那句“毛利率”就是这么错的。demo 阶段这个错觉不明显，库里只有一份年报时怎么问都对；孪生文档一多，系统就开始答错得很流畅。再点一个反直觉的：top-k 不是越大越好。跨年财报是典型的“语义近似但约束不同”，放大 top-k 只会引入更多假阳性，连 reranker 都会被低质量候选拖累。时间错配这个坑本身，上一篇已经整篇讲过，这里不重复。</p>
+<p><strong>生成</strong>把 top-N 个 chunk 和 query 拼进 prompt，让模型基于证据回答。这一步的烂法是“chunk 塞得越多越好”。prompt 里的 chunk 数量有一个收益递减点：Lost-in-the-Middle 效应下，LLM 对中间位置的注意力最弱，5 条精准上下文通常优于 20 条泛泛上下文——塞得越多，关键证据越容易被埋在中间。财报场景另有一条：数字问答别让模型一步“找+算+总结”，出错率会显著上升，该拆成先找证据、再生成回答两步。</p>
+<h2 id="四最高频的三个翻车点约束都在数据里系统没看见"><a class="header" href="#四最高频的三个翻车点约束都在数据里系统没看见">四、最高频的三个翻车点：约束都在数据里，系统没看见</a></h2>
+<p>七步走完回头看，这套系统的失败模式其实集中在三个地方。</p>
+<p><strong>目录污染，烂在清洗与检索的交界。</strong> 就是开场那个错法。目录页把全书的关键词完整抄了一遍——“收入”“毛利”“经营现金流”，这些 token 在 embedding 空间里和正文几乎一致：相似度满分，信息量零分。它一半烂在清洗，噪声没剔掉；一半烂在检索，没有任何机制区分“提到这个词”和“能回答这个问题”。怎么剔、怎么防，第 2 篇和第 8 篇分别讲。</p>
+<p><strong>时间错配，烂在标注与检索的交界。</strong> 2020 Q4 和 2025 Q4 的财报行文是语义同构的——管理层讨论的模板每年只换几个数字，在 embedding 看来两者几乎是邻居。<code>report_year</code> 标了，不进检索层，相似度就把 2020 当成了 2025。上一篇《当向量相似度把“2020 Q4”当成“2025 Q4”》已整篇拆过，这里只点名。</p>
+<p><strong>口径混乱，烂在数据本身。</strong> 同名“利润”，同一家公司、同一期有两个数字：GAAP 口径 1,150 亿，Non-GAAP 口径 1,320 亿。两个都对，都是财报里白纸黑字披露的；但系统从不同 chunk 各召回一个、拼在一起比较，就错了。这不是检索能修的问题，是数据自带的业务规则，第 7 篇专门拆口径。</p>
+<p>三个翻车点，没有一个是模型的锅。约束都在数据里，只是系统没看见——这正是后面十几篇要逐个拆的东西。</p>
+<h2 id="五全系列地图每一步对应哪一篇按痛点跳读"><a class="header" href="#五全系列地图每一步对应哪一篇按痛点跳读">五、全系列地图：每一步对应哪一篇，按痛点跳读</a></h2>
+<p>链路和篇目的对应关系：</p>
+<ul>
+<li>抽取、清洗烂了：第 2 篇（reading order）、第 3 篇（表格）、番外 A1（五种解析工具对比）</li>
+<li>分片烂了：第 4 篇；标注烂了：第 5 篇</li>
+<li>索引烂了：第 12 篇（embedding 选型）、第 13 篇（默认参数）</li>
+<li>检索烂了：第 6 篇（时间错配）、第 7 篇（口径）、第 8 篇（相似度）、第 9 篇（Hybrid）、第 10 篇（Rerank）</li>
+<li>生成和全链路：第 14 篇（评估）、第 15 篇（排查清单）；系统层面：第 11 篇（多市场）、第 16 篇（运维）</li>
+</ul>
+<p>按痛点跳读，我的建议是三句话。库还没搭、数据还脏，从第 2 篇顺序读；检索不准，直接跳第 6 到 10 篇；已经上线要扛，看第 11 到 16 篇。第 17 到 21 篇是边界和展望，读完前面再来。</p>
+<p>回到开场那句“毛利率多少”。它不是模型不行，是链路第一环就把数据弄坏了；而脏数据只会顺流而下，所以修链路的顺序是从上游往下游修。也有一条边界：这张地图来自我做的这一个财报系统，链路是通用的，烂法的优先级因文档类型而异——你的文档如果没有多栏和表格，前两环的优先级就没有这么高。</p>
+<p>链路从最上游开始烂，下一篇先讲最上游：同一份 119 页中报扔进 <code>pdfplumber</code> 之后，到底发生了什么——第 2 篇《PDF 解析：抽不出文本早不是问题了，reading order 才是》。</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="pdf-解析抽不出文本早不是问题了reading-order-才是"><a class="header" href="#pdf-解析抽不出文本早不是问题了reading-order-才是">PDF 解析：抽不出文本早不是问题了，reading order 才是</a></h1>
+<p>把 119 页的腾讯 2025 中报扔进 <code>pdftotext</code>，文本出来了，raw.txt 282KB。但打开细看，顺序是碎的：两栏页面左右穿插拼成一行，句子说到一半被分页符切断。目录页抢走召回第一名的症状，上一篇已经见过。</p>
+<p>抽得出文本，和抽得出对的顺序，是两件事。上一篇（第 1 篇，系列总纲）结尾说，RAG 的链路是从上游开始烂起的。这篇就讲最上游：PDF。</p>
+<h2 id="一抽完之后四个不对劲的地方"><a class="header" href="#一抽完之后四个不对劲的地方">一、抽完之后，四个不对劲的地方</a></h2>
+<p>先不急着分析原因，把抽取结果摆出来看。</p>
+<p>问“毛利率多少“，召回第一名是目录页。不难理解：目录页把“收入、毛利、经营现金流、风险因素“这些词完整抄了一遍，和查询的向量相似度拉满，但目录本身没有一个数字。相似度满分，信息量零分。</p>
+<p>页脚在每页重复。“二零二五年中期報告“加公司名，119 页出现 119 次。在 embedding 模型眼里这是强信号，结果是所有 chunk 被这些噪声“压“得彼此过于接近，区分度下降。</p>
+<p>句子被分页切断。模型读到的是“截至 6 月 30 日止六個月，本公司權益持有人應佔“——下半句在下一页开头。按字符数或 token 数切 chunk 时，这种断点经常正好落在语义中间。</p>
+<p>表格最典型。“收入 成本 毛利“是一行，“184,504 98,238 86,266“是另一行，在文本流里它们就是两行互不相干的字符串。embedding 看到的是孤立数字，不知道它们属于哪个指标、哪个期间。</p>
+<p>单独看，每一项都不致命。叠在一起，系统的回答会“看起来对、其实错“——而且错得很流畅。这是最难排查的一种错。</p>
+<h2 id="二为什么财报-pdf-和-demo-文档不是一种东西"><a class="header" href="#二为什么财报-pdf-和-demo-文档不是一种东西">二、为什么财报 PDF 和 demo 文档不是一种东西</a></h2>
+<p>根因一句话：RAG demo 里常用的博客、手册、FAQ 是线性文档，从上到下按阅读顺序排；财报是非线性的——多栏布局、内嵌表格、跨页段落、页眉页脚反复、图文穿插。</p>
+<p>PDF 的文本流是物理布局驱动的，不是语义驱动的。所以“抽出来“只解决了字符问题，没解决顺序问题。后面三节都是这句话的展开。</p>
+<h2 id="三抽取工具四个主流选择各自死在哪儿"><a class="header" href="#三抽取工具四个主流选择各自死在哪儿">三、抽取工具：四个主流选择各自死在哪儿</a></h2>
+<p>主流选择就四个，各自的死法不同：</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>工具</th><th>优点</th><th>财报场景下的致命问题</th></tr>
+</thead>
+<tbody>
+<tr><td>pypdf</td><td>快，纯 Python，不依赖外部命令</td><td>没有 layout 模式，多栏页面文本顺序完全乱掉</td></tr>
+<tr><td>pdfplumber</td><td>能拿字符坐标，支持表格提取</td><td>竖向合并单元格、跨页表格处理失败；全本抽取 CPU 和内存消耗大</td></tr>
+<tr><td>pdftotext -layout</td><td>保留物理布局，稳定，命令行友好</td><td>中文竖排、多栏布局仍可能错位</td></tr>
+<tr><td>MinerU</td><td>纯自动方案里 layout 恢复最强，直接输出 Markdown</td><td>依赖重：几个 GB 的模型权重，CPU 推理慢、要 GPU 才实用【待核实：发布前复核 MinerU 当月版本的部署依赖和权重大小】</td></tr>
+</tbody>
+</table>
+</div>
+<p>文本型中文财报，我的首选是 <code>pdftotext -layout</code>：</p>
+<pre><code class="language-bash">pdftotext -layout 腾讯-2025-中期报告.pdf raw.txt
+</code></pre>
+<p>（<code>pdftotext</code> 来自 poppler：macOS 上 <code>brew install poppler</code>，Linux 装 poppler-utils 包。）</p>
+<p>关键在 <code>-layout</code>：用空格和换行把文本在页面上的物理位置模拟出来，而不是按 PDF 内部文本流顺序直接吐。它不完美——多栏页照样会错——但比纯文本流好得多。代价是 raw.txt 里留着分页符、空格对齐这些“为打印保留“的痕迹，这些交给下一步清洗。</p>
+<p>pdfplumber 我不拿来做全本抽取，遇到竖向合并单元格或跨页表格时表现不稳定；但把范围限死在“特定页的特定表格“，它是可用的。MinerU 是另一个极端：能力最强，成本在部署，适合愿意为它配 GPU 的场景。</p>
+<p>pypdf 单独说一句：它是很多人的第一反应——纯 Python，pip 装上就能用——但它对页面布局没有任何概念，多栏页面的文本顺序完全乱掉。财报场景可以直接排除，不用试。顺带交代名字：老代码里的 PyPDF2 2022 年后就停更了，项目合并回 pypdf 持续维护，新代码直接装 <code>pypdf</code>。</p>
+<p>边界先说清：以上结论只适用于文本型 PDF。扫描件是另一条路，抽取层得换成 PaddleOCR 或多模态模型，raw.txt 的语义都不同了。</p>
+<h2 id="四清洗先全本清洗再切-chunk"><a class="header" href="#四清洗先全本清洗再切-chunk">四、清洗：先全本清洗，再切 chunk</a></h2>
+<p>顺序本身就值得强调：先切 chunk 再清洗是常见错误。一旦目录噪声和正文混进同一个 chunk，清理成本成倍上升——你得在每个 chunk 内部重新识别噪声，而不是在页级别一次删掉。</p>
+<p>我的清洗清单四项：</p>
+<ul>
+<li>页眉页脚。正则匹配“二零二五年中期報告“、公司全称、页码单独成行。注意不同章节页脚不一样，有的章节是“未经審核“，有的是“經審核“，规则要覆盖全。</li>
+<li>目录页。页码模式（右对齐数字、连续的“章节名……页码“行）是很好的检测特征，检测到就整段删除。目录里的“标题→页码“映射理论上对 section 识别有用，但除非愿意专门做 toc-aware 解析，否则直接删是更稳的选择——这点信息不值得引入风险。</li>
+<li>纯页码。单独成行的数字，前后不是数值上下文。</li>
+<li>分页断句。上一页最后一行以“截至““包括”“本公司“这类词结尾且没有句号，就和下一页第一行拼上。</li>
+</ul>
+<p>顺带提一个隐藏坑：会计写法 <code>(79,491)</code> 是负数，有的解析器会吞掉括号，把负值变正。这个错误单看文本很难发现，对数字问答却是致命的。清洗后值得做一次括号配对检查。</p>
+<p>清洗的工程原则是“宁可漏删，不要误删“。代价不对称：误删一段正文的数字，永远找不回来；留一段页脚在 chunk 里，噪声会被多段正文稀释，影响有限。保守是理性的。</p>
+<p>这份中报洗完，raw.txt 282KB 变成 cleaned.txt 190KB——三分之一的内容是噪声。</p>
+<p>还有一点值得说：清洗不是把所有文本拼成一大坨，而是按页保留边界。我的 cleaned.txt 里每页开头有一行 <code>===== PAGE n =====</code> 标记。这个标记后面用处很大——页码可以直接当 citation 展示给用户，前端也能跳回 PDF 原页核对。清洗阶段删掉的是噪声，不是结构。</p>
+<h2 id="五reading-order被低估的核心问题"><a class="header" href="#五reading-order被低估的核心问题">五、reading order：被低估的核心问题</a></h2>
+<p>绝大多数讲分块的教程有个隐性假设：输入文本的顺序是对的。PDF 经常打破这个假设，而且坏得悄无声息——英文里叫 silently corrupt。raw.txt 看着是成段的文字，检索结果“看起来相关“，回答里却出现莫名其妙的事实错误。没有报错，没有异常，就是错了。</p>
+<p>财报里有三个高发场景。</p>
+<p>多栏页面，左右栏穿插。腾讯中报的“公司資料“页是两栏：左边公司基本信息，右边往来银行和核数师。PDF 文本流从左到右逐行抽，出来的是“腾讯控股有限公司 香港上海滙豐銀行有限公司 置地廣場 皇后大道中 1 號……“——两栏内容交替拼在一起，不再是两个独立的语义块。</p>
+<p>表格内嵌文本，位置不定。正文中间穿插的表格，在 PDF 层级上和正文没有明确的先后关系，抽出来可能落在段落前面、中间或后面。</p>
+<p>图表说明文字，顺序不定。图片注释在文本流里的位置取决于排版引擎的实现，有时在图上方有时在下方，和正文的逻辑顺序对不上。</p>
+<p>没有银弹。我自己的做法是三个手段组合着用，按可靠度排。</p>
+<p>坐标排序是基础。用 pdfplumber 拿到每个字符的 (x, y) 坐标，按 y 降序（从上到下）、x 升序（从左到右）重排。单栏页面基本够用，多栏页面会出错，得先做栏位检测。</p>
+<p>栏位检测处理多栏。沿 x 方向找连续空白带（gutter）：存在超过一定宽度的空白带，就判定为多栏，先按栏切区域，再在每个栏内做 y 降序。这个宽度阈值我的经验值是 40pt——在 A4 版式的中文财报上试出来的，换个版式要重新调，别当普适标准。</p>
+<p>最可靠的是最笨的办法：关键页面人工 review。119 页的中报，真正承载关键财务数据的页面大约 15 到 20 页，逐页对照原 PDF 检查文本顺序，30 分钟能做完。这也是我的经验值，不是行业标准。但财报场景里数字错一个就是事故，这 30 分钟是整条流水线里性价比最高的投入。</p>
+<h2 id="六收尾没有完美工具只有拆开的子问题"><a class="header" href="#六收尾没有完美工具只有拆开的子问题">六、收尾：没有完美工具，只有拆开的子问题</a></h2>
+<p>回到开头的结论：PDF 是给人眼设计的，机器要的线性文本流和它的物理排版之间是结构化鸿沟，不存在一键抹平它的工具。能做的是把问题拆开——抽取选对工具、清洗先于 chunk、reading order 在关键页面人工兜底——每个子问题各自解决。</p>
+<p>拆开的另一个好处是可回溯、可复用。这条流水线跑完落地四个文件：raw.txt、cleaned.txt、chunks.jsonl（345 个 chunk，327KB）、metadata.json。换一份新报告，替换 PDF，30 秒重跑全部四层【待核实：这组产物数字（282KB / 190KB / 327KB / 345 个 chunk / 30 秒）来自腾讯 2025 中报的实际记录，发布前如有条件重跑脚本核对，对不上就更新】。chunk 怎么切、metadata 怎么设计，是另外两个独立的问题，分别留给第 4 篇和第 5 篇。</p>
+<p>但先别急着收工。本篇解决的是“正文的顺序“，而财报里所有关键数字不在正文里，在表格里。坐标排序、栏位检测、人工 review 这三招在正文页有效，碰到竖向合并单元格和跨页表格会集体失效——pdfplumber 直接崩溃，MinerU 也很吃力。表格是比正文难一个量级的问题，而这最难的 5% 恰恰是数字所在。下一篇（第 3 篇）《竖向大表格与跨页表格：财报 PDF 里最难的 5%，决定系统上限》，专门啃这块硬骨头。</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="竖向大表格与跨页表格财报-pdf-里最难的-5决定系统上限"><a class="header" href="#竖向大表格与跨页表格财报-pdf-里最难的-5决定系统上限">竖向大表格与跨页表格：财报 PDF 里最难的 5%，决定系统上限</a></h1>
+<pre><code class="language-text">財務表現摘要
+二零二五年第二季度
+收入  184,504  161,117  15%  180,022  2%
+毛利  105,013   85,895  22%  100,493  4%
+</code></pre>
+<p>这是腾讯 2025 中报第 4 页「財務表現摘要」抽成文本后的样子。先别急着庆幸——这算运气好的抽法，行名和数值还站在同一行。换个抽法，“收入、成本、毛利“是一行，“184,504、98,238、86,266“是另一行，两行互不相干的孤立字符串，一张利润表在文本流里直接解体。</p>
+<p>第 2 篇讲 PDF 解析时，这份 119 页中报的正文已经洗完了，reading order 解决的是正文的顺序。但正文之外还有东西：表格。它在财报里占的页数不多，难度却比正文高一个量级——而且所有财务数字都在里面。</p>
+<h2 id="表格在-pdf-里根本不是表格"><a class="header" href="#表格在-pdf-里根本不是表格">表格在 PDF 里根本不是表格</a></h2>
+<p>为什么会解体？因为 PDF 里压根没有“表格“这个东西。</p>
+<p>正文是线性的：从上到下、从左到右，字符顺序就是阅读顺序。表格是二维的：行、列、合并单元格、对齐关系。而 PDF 不存“这是一张表“的语义，只存绘图指令——在 (x=72, y=500) 画一条横线，在 (x=80, y=480) 放一个字符串 “184,504”。解析器拿到的是一堆线条和坐标，要从它们反向推断出行列结构。</p>
+<p>物理布局驱动和语义驱动之间的这道沟，就是表格难一个量级的根源。</p>
+<p>同一张利润表，抽法不同，文本流里就是两个东西。按行抽：“收入 184,504 成本 98,238”，行名数值挨着，还救得回来。按列抽：“收入 成本 毛利 184,504 98,238 86,266”——行名一串，数值一串，各自连贯，embedding 根本不知道“收入“和“184,504“有关系。结构散在这一步，后面所有环节都是在垃圾上做功。</p>
+<p>具体的崩法集中在两类表格上：竖向大表格和跨页表格。分开说。</p>
+<h2 id="竖向合并单元格pdfplumber-的临界点"><a class="header" href="#竖向合并单元格pdfplumber-的临界点">竖向合并单元格：pdfplumber 的临界点</a></h2>
+<p>先界定一下。竖向大表格指财报里行数多、层级深的大表——利润表是典型，资产负债表、现金流量表也常长这样。它还有一种形态是整张表旋转 90° 横排，pdftotext -layout 对旋转内容直接读不出来，这种只能交给版面分析模型，这里不展开。真正折磨人的是下面这种。</p>
+<p>Python 生态抽表格最常用 pdfplumber。它的机制就一层：检测 PDF 里的水平线和垂直线，推断单元格边界，再提取每个单元格内的文本。</p>
+<p>机制即命门。它的一切都建在线条上，而财报表格的三个特征正好打在这条线上：</p>
+<ul>
+<li><strong>竖向合并单元格。</strong> 利润表里“收入“这个总分类一格跨 5 行，下面挂着增值服务收入、网络广告收入这些子项。线条推断不出“这一格纵向跨了 5 行“的归属关系，子项和总分类的对应直接断掉。</li>
+<li><strong>无边框表格。</strong> 财报里大量表格没有完整网格线，靠对齐和空白暗示结构。线条检测引擎对这种“隐形表格“直接失明。</li>
+<li><strong>嵌套结构。</strong> “其中：增值服务“缩进一层，下面又是一张小表。线条的世界里没有缩进这个概念。</li>
+</ul>
+<p>三个解法，按代价排：</p>
+<p><strong>方案 A：多模态模型 / MinerU，页面截图直出结构化 JSON。</strong> 把表格所在页截图，发给 GPT-4o、Qwen-VL 这类多模态模型或 MinerU 的版面分析模块，让它像人眼一样直接“看“表格，输出结构化 JSON。它不需要推断线条，天然绕开了 pdfplumber 的命门。在我做过的项目里，这是对竖向大表格效果最好的方案——这是经验判断，不是评测结论，前提是表格页占比不高、调用量可控。代价是 GPU 加 API 成本，具体选哪个模型按你读到时的当代版本定。</p>
+<p><strong>方案 B：半自动提取。</strong> 只借 pdfplumber 拿字符和坐标，不用它的表格推断，自己写逻辑：按 y 坐标分组成行，按 x 坐标和缩进检测层级，再推断父子关系。不依赖外部 API，数据不出本地，但工程量是三个方案里最大的——本质是自己重写半个表格识别引擎。【待补：外部笔记《财报竖向大表格处理方案》未找到，缩进阈值、父子关系推断的具体规则暂缺，此处目前只有思路】</p>
+<p><strong>方案 C：标注 + 规则模板。</strong> 利润表、资产负债表的结构是固定的，手动标一次模板（第几行对应哪个指标），后续同类财报自动匹配。A 股财报格式高度统一，标一次吃很久，这个方案划算；港股、美股各有各的格式，模板复用率低，不成立。</p>
+<h2 id="跨页表格拼接还是继承表头"><a class="header" href="#跨页表格拼接还是继承表头">跨页表格：拼接，还是继承表头</a></h2>
+<p>场景先说具体。一张利润表跨三页：表头只在第一页顶部，后两页只剩数据行和一个“（续）“标记。按页切 chunk（也就是分片）之后，第二页的数值块成了孤儿——RAG 检索到 “86,266”，却不知道它是毛利还是净利。数字没有上下文就不是数据，是噪声。</p>
+<p>两种思路。</p>
+<p><strong>思路一：跨页拼接后再切。</strong> 先检测跨页：上一页最后一行没有表尾标记、下一页第一行以“（续）“或缩进数据行开始，就判定为同一张表；把几页的表格区域拼成一个逻辑块，再参与分片。表格完整性保住了，表头、数据、注释都在一个 chunk 里。代价是分片逻辑变复杂：得先“重组“文档再切，不能直接按页切。</p>
+<p><strong>思路二：每页重复表头。</strong> 清洗阶段检测到跨页表格，就把第一页的表头复制一份，插到后续每页的表格区域前面——“以下数据来自利润表：收入、成本、毛利……”。不动页面顺序，实现简单，对 RAG 检索的效果够用。</p>
+<p>我的选择是先上思路二。它只要清洗阶段加一条规则，比思路一省一半工程量——这是单个项目里的经验，不是测量结论。需要精确表格问答的场景，思路一的完整性才值回票价。</p>
+<p>比思路选择更重要的是三条原则：</p>
+<ul>
+<li><strong>表格不要切。</strong> 一张表完整作为一个 chunk，宁可 chunk 大一点。</li>
+<li><strong>用结构化格式（Markdown / JSON）代替纯文本。</strong> 纯文本里 “(79,491)” 这种括号负号的会计写法，有的解析器会吞掉括号、负值变正值；结构化输出至少能保住字符原样。数字保真是另一个坑，这里只提一句，不展开。</li>
+<li><strong>跨页表格自动合并。</strong> 不让一张表分成两块进索引。</li>
+</ul>
+<p>三条原则背后是一句话：表格是数字的载体，切散了数字就没意义。</p>
+<h2 id="pdf-工具在表格上的实际表现"><a class="header" href="#pdf-工具在表格上的实际表现">PDF 工具在表格上的实际表现</a></h2>
+<p>先交代口径。这张表合并自两份工程笔记：一份按“纯文本、规则表格、合并单元格、跨页、多栏、中文“六个维度记录，一份按“中文、跨页、旋转、输出格式“四个维度记录，个别定级还冲突——pdfplumber 的中文支持，一处标“好“（字符层面它抽中文确实没问题），一处标“一般“（中文财报大量无边框表格，表格场景下确实只有一般）。我统一成一个口径：中文财报表格场景下的实际表现。“—“表示我没有上手记录，不猜。整份表是使用记录，不是 benchmark 评测结论。</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>工具</th><th>纯文本</th><th>规则表格</th><th>竖向合并单元格</th><th>跨页表格</th><th>旋转内容</th><th>中文支持</th></tr>
+</thead>
+<tbody>
+<tr><td>pdftotext -layout</td><td>好</td><td>一般</td><td>差</td><td>差</td><td>读不出</td><td>好</td></tr>
+<tr><td>pypdf</td><td>一般</td><td>差</td><td>差</td><td>差</td><td>—</td><td>好</td></tr>
+<tr><td>pdfplumber</td><td>好</td><td>好</td><td>差</td><td>差，需手动拼</td><td>不行</td><td>一般</td></tr>
+<tr><td>Camelot</td><td>—</td><td>—</td><td>—</td><td>不支持</td><td>不行</td><td>一般</td></tr>
+<tr><td>Unstructured</td><td>—</td><td>—</td><td>—</td><td>部分支持</td><td>部分支持</td><td>差</td></tr>
+<tr><td>MinerU</td><td>好</td><td>好</td><td>好</td><td>能自动合并</td><td>能处理</td><td>原生优化</td></tr>
+<tr><td>GPT-4o / Qwen-VL</td><td>—</td><td>—</td><td>最好</td><td>最好</td><td>—</td><td>好</td></tr>
+</tbody>
+</table>
+</div>
+<p>输出格式单独说一句：MinerU 直接出 Markdown 表格；Camelot 原生支持 CSV、JSON、Excel、HTML、Markdown 导出，转 Markdown 就一行 <code>to_markdown()</code>；pdfplumber 抽到的结构得自己转。</p>
+<p>结论写在表里了：没有单个工具通吃。</p>
+<p>MinerU 得单独拎出来说，它是表里唯一在中文财报表格上全维度都能打的。调用本身不复杂：</p>
+<pre><code class="language-python">from magic_pdf.data.data_reader_writer import FileBasedDataReader
+from magic_pdf.data.dataset import PymuDocDataset
+from magic_pdf.pipe.UNIPipe import UNIPipe
+from magic_pdf.pipe.OCRPipe import OCRPipe
+
+reader = FileBasedDataReader("")
+pdf_bytes = reader.read("财报.pdf")
+ds = PymuDocDataset(pdf_bytes)
+
+# 文本型走 UNIPipe，扫描件走 OCRPipe
+pipe = OCRPipe(ds, None) if ds.classify() == "ocr" else UNIPipe(ds, None)
+pipe.pipe_classify()
+pipe.pipe_analyze()
+pipe.pipe_parse()
+
+content = pipe.pipe_mk_markdown("images", drop_mode="none")
+</code></pre>
+<p>（MinerU 1.x，即 magic-pdf 包。调用走 pipe 管线：classify → analyze → parse → 出 Markdown，2.x 起 API 又改了几轮——2026 年 9 月时 mineru 包已迭代到 4.x，照抄前先对一遍你装的版本。）</p>
+<p>关键在 <code>classify()</code> 和 pipe 的分工：<code>ds.classify()</code> 先判断这份 PDF 是扫描件还是文本型——扫描件走 <code>OCRPipe</code>，文本型走 <code>UNIPipe</code>；版面分析藏在 <code>pipe_analyze()</code> 里；最后 <code>pipe_mk_markdown()</code> 输出 Markdown，表格直接是 Markdown 表格，不用再自己拼结构。代价在部署侧：要装 magic-pdf 依赖、下载几 GB 的模型权重，CPU 推理慢，GPU 显著加速。</p>
+<p>所以实际跑的是组合管线：<code>pdftotext -layout</code> 管约 80% 的非表格内容，<code>pdfplumber</code> 管规则表格，MinerU 或多模态模型专啃竖向大表格和跨页表格，最后全文合并。每个工具只干自己扛得住的那一段。七个评估场景（多栏、竖向合并、跨页表、扫描件、图文混排、大文件性能、中文竖排）的逐项实测数据，留给番外 A1 的工具对比报告，本篇只给结论。</p>
+<h2 id="最难的-5-决定上限"><a class="header" href="#最难的-5-决定上限">最难的 5% 决定上限</a></h2>
+<p>最后算标题里那笔账。口径先讲清楚：5–10% 的页数占比、约 50% 的 ingestion 工程时间，这两个数字来自我单个项目（腾讯中报这条流水线）的工程估算，不是多份财报的统计结果，当经验数字看。</p>
+<p>单看账面，这笔买卖很不划算：5–10% 的页数，吃掉一半工程时间。但这笔钱该花——财报的关键数字全在这 5% 里。收入、毛利、经营现金流，用户问的都是表格里的东西。表格区域烂掉，前面 80% 的正文洗得再干净，系统也只是“能聊财报，答不了数字“。所以 ingest 预算的一半花在表格上，我不觉得是浪费。</p>
+<p>务实的落地顺序：先用第 2 篇的方法搞定 80% 正文，让系统上线可用；表格区域用多模态模型针对性处理，不追求 100% 自动化；跨页表格先上思路二，有精确表格问答的需求再回头补思路一。</p>
+<p>表格抽出来之后还有一步：标 <code>period_type</code>（年度/中期/季度）、<code>unit</code>（百万元/亿元）、<code>table_type</code>（利润表/资产负债表）这些 metadata。这一步决定数字能不能被正确检索，展开是第 5 篇的事，这里只提一句。</p>
+<p>到这里，文本和表格都抽干净了，119 页干净文本摆在面前。下一个问题自然浮出来：怎么切？按长度切会切出什么事故、“按语义切“具体又怎么改——第 4 篇《分片实战：从“按长度切“到“按语义切“的改造记录》接着讲。</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="5-种-pdf-解析工具做财报-rag-的对比报告"><a class="header" href="#5-种-pdf-解析工具做财报-rag-的对比报告">5 种 PDF 解析工具做财报 RAG 的对比报告</a></h1>
+<p>同一份腾讯 2025 年中报，119 页，我拿五个工具各跑了一遍。最快的 <code>pdftotext -layout</code>，0.5 秒跑完全文；最慢的 MinerU，3 到 5 分钟。慢出来的几百倍时间买回来的是什么、什么时候值得买，是这篇要回答的问题。【待核实：全文耗时均为旧成稿基准数字（统一口径：M1 Pro 32GB + 119 页腾讯中报），发布前以同环境重跑记录为准】</p>
+<p>先交代口径：这不是跑 benchmark，是我处理这份中报时的工程记录，每个结论背后都有真实出错案例。前提也限死：单一一份文件，港股格式、繁体横排、文本型 PDF，结论不能平移到所有财报——哪些场景我手里根本没数据，正文里会老实标出来。</p>
+<h2 id="先给尺子七个评估场景"><a class="header" href="#先给尺子七个评估场景">先给尺子：七个评估场景</a></h2>
+<p>问“哪个工具好“不成立，成立的只有“哪个工具在哪个场景好“。所以评测之前先定义场景。我用七个，每个在财报里都有真实长相：</p>
+<p><strong>多栏布局。</strong> “公司資料“页那种左右两栏、栏高还不齐的页面。抽取时按物理位置读，低栏见底之后，高栏底部的文字就和低栏文字交错进同一段文本流。</p>
+<p><strong>竖向合并单元格。</strong> 利润表里“收入“这个大类合并了 5 行，下面挂着增值服务收入、网络广告收入等子项。</p>
+<p><strong>跨页表格。</strong> 一张利润表跨三页，表头只在第一页顶部，后两页只剩数据行和一个“（续）“。</p>
+<p><strong>扫描件。</strong> 整页是图片，没有文本层，靠读文本流的工具直接出局。【待补：五个工具均无扫描件实测，素材仅有一句“扫描版要换 PaddleOCR 或多模态模型“的提示】</p>
+<p><strong>图文混排。</strong> 多层嵌套表格、图片、注释挤在同一页。【待补：仅 MinerU 有一句定性描述，缺逐工具实测数据】</p>
+<p><strong>大文件性能。</strong> 百页以上文件的耗时和资源消耗。【待补：现有耗时均来自 119 页单一文件，若按“大文件“定义需补更大体量样本】</p>
+<p><strong>中文竖排。</strong> 竖排繁体，阅读顺序从上到下、从右到左，和横排是两套坐标逻辑。【待补：素材零覆盖——腾讯中报是繁体横排，需先准备竖排测试文件再补测】</p>
+<p>这七个场景就是第三章那张矩阵的行。场景定义清楚，结论的一半就有了。</p>
+<h2 id="五个工具逐个过"><a class="header" href="#五个工具逐个过">五个工具逐个过</a></h2>
+<p>每个工具回答三件事：吃什么场景，死在哪，出错长什么样。篇幅不均分，能说的多少不一样。</p>
+<h3 id="pdftotext--layout用速度换覆盖率"><a class="header" href="#pdftotext--layout用速度换覆盖率"><code>pdftotext -layout</code>：用速度换覆盖率</a></h3>
+<pre><code class="language-bash">pdftotext -layout '腾讯 -2025-中期报告.pdf' '腾讯 -2025-中期报告.raw.txt'
+</code></pre>
+<p>关键在 <code>-layout</code>：按页面物理布局保留对齐信息，单栏页面的 reading order 接近 100%，119 页 0.5 秒跑完。全文文本抽取的首选。</p>
+<p>软肋是多栏。左右栏高度不一致时，低栏文本会和高栏底部在文本流里交错——“公司資料“页抽出来就是这个效果，左右栏交叉拼接，语义彻底乱掉。按这份中报实测，多栏页面里大约两到三成的文本流出现明显栏间交错——页面级口径：分母是这份中报里的多栏页数，分子是抽出来顺序明显不可用的页数，不是字符级准确率。对表格，它只输出文本流、不识别结构：简单表格的文本顺序通常对，合并单元格和跨页表格经常乱。</p>
+<h3 id="pypdf纯-python-退路"><a class="header" href="#pypdf纯-python-退路">pypdf：纯 Python 退路</a></h3>
+<p>全篇最短的一节，因为它能说的最少。不带 layout 模式，多栏页面文本顺序完全乱掉；数字和货币符号在高版本里有改进，但仍不可靠；中文支持尚可，可能丢部分标点。119 页约 1 秒。</p>
+<p>定位一句话：环境里装不了命令行工具时，它是纯 Python 备选。装得了 poppler 就用不上它。（名字交代一句：PyPDF2 2022 年后停更，合并回 pypdf，新代码装 <code>pypdf</code>。）</p>
+<h3 id="pdfplumber规则表格首选和它的临界点"><a class="header" href="#pdfplumber规则表格首选和它的临界点">pdfplumber：规则表格首选，和它的临界点</a></h3>
+<p>对完整边框的表格，<code>page.extract_tables()</code> 准确率很高，规则表格首选。但它的崩溃机制值得讲透，因为三类崩溃是同一个根因：它靠检测水平线和垂直线，反推单元格边界。</p>
+<p>于是：竖向合并单元格，合并区域没有线，提取出来是空值或重复值；无边框表格，财报里大量靠对齐和空白暗示结构的“隐形表格“，线条检测引擎根本看不见；跨页表格，每页独立推断，不会自动拼接。</p>
+<p>代价也在机制里：每页都要做一遍线条推理，119 页约 25 秒，比 pdftotext 慢约 50 倍。所以它在我这儿的角色很明确：不碰全文，只做规则表格的专项提取。文本抽取它也能做（<code>extract_text(layout=True)</code> 对单栏页面效果不错；多栏页面它和 pdftotext 一样会交错，矩阵里只给“一般“），但没有必要——0.5 秒能做完的事，不必花 25 秒。</p>
+<h3 id="mineru有-gpu-时的统一首选"><a class="header" href="#mineru有-gpu-时的统一首选">MinerU：有 GPU 时的统一首选</a></h3>
+<p>MinerU 走另一条路：用版面分析模型直接“看“页面，不从绘图指令反推。多栏、竖向合并、跨页表格全面优于规则方案，输出直接是 Markdown 或 JSON，跨页表能自动识别合并。核心调用就几行：</p>
+<pre><code class="language-python">from magic_pdf.data.data_reader_writer import FileBasedDataReader
+from magic_pdf.data.dataset import PymuDocDataset
+from magic_pdf.pipe.UNIPipe import UNIPipe
+from magic_pdf.pipe.OCRPipe import OCRPipe
+
+reader = FileBasedDataReader("")
+pdf_bytes = reader.read("财报.pdf")
+ds = PymuDocDataset(pdf_bytes)
+
+# 文本型走 UNIPipe，扫描件走 OCRPipe
+pipe = OCRPipe(ds, None) if ds.classify() == "ocr" else UNIPipe(ds, None)
+pipe.pipe_classify()
+pipe.pipe_analyze()
+pipe.pipe_parse()
+
+content = pipe.pipe_mk_markdown("images", drop_mode="none")
+</code></pre>
+<p><code>ds.classify()</code> 先判断 PDF 类型：扫描件走 <code>OCRPipe</code>，文本型走 <code>UNIPipe</code>，版面分析藏在 <code>pipe_analyze()</code> 里；最后 <code>pipe_mk_markdown()</code> 输出结构化文本。（MinerU 1.x，即 magic-pdf 包；2.x 起 API 又改了几轮，2026 年 9 月时 mineru 包已到 4.x，照抄前对一遍你装的版本。）</p>
+<p>边界给足：遇到极端排版——多层嵌套表格加图片加注释同页——它仍然出错，约 5–10% 的极端表格需要人工或多模态兜底。【待核实：旧成稿基准比例，发布前需交代统计方式（多少页里错几页）】依赖也重，要下载几 GB 模型权重；M1 Pro 32GB 上 119 页跑了 3–5 分钟，GPU 环境显著加速。</p>
+<h3 id="gpt-4o--qwen-vl-截图方案不是解析工具是兜底"><a class="header" href="#gpt-4o--qwen-vl-截图方案不是解析工具是兜底">GPT-4o / Qwen-VL 截图方案：不是解析工具，是兜底</a></h3>
+<p>严格说这不是 PDF 解析工具。用法是把表格所在区域截图发给多模态模型，prompt 就一句：“把这个图片里的表格输出为 JSON，每行格式 {指标名, 数值}。“它不推断线条和单元格，直接“看“表格——对最复杂的竖向大表格和跨页表格，这是我手里效果最好的方案。</p>
+<p>成本账必须算：一页表格的截图调用约 $0.01–0.05，119 页全量表格约 $1–5（多模态模型的定价几乎每月都在动，按你用时的价格重算）。Qwen-VL 本地部署能省掉 API 费，但要 GPU。它只做表格区域，不用于全文抽取——拿它抽全文，成本和延迟都不成立。</p>
+<h2 id="汇总矩阵与三档组合"><a class="header" href="#汇总矩阵与三档组合">汇总矩阵与三档组合</a></h2>
+<p>七个场景乘五个工具，一张表查结论：</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>场景</th><th>pdftotext -layout</th><th>pypdf</th><th>pdfplumber</th><th>MinerU</th><th>GPT-4o / Qwen-VL</th></tr>
+</thead>
+<tbody>
+<tr><td>多栏布局</td><td>一般</td><td>差</td><td>一般</td><td>好</td><td>最好</td></tr>
+<tr><td>竖向合并单元格</td><td>差</td><td>差</td><td>差</td><td>好</td><td>最好</td></tr>
+<tr><td>跨页表格</td><td>差</td><td>差</td><td>差</td><td>好</td><td>最好</td></tr>
+<tr><td>扫描件</td><td>待补</td><td>待补</td><td>待补</td><td>待补</td><td>待补</td></tr>
+<tr><td>图文混排</td><td>待补</td><td>待补</td><td>待补</td><td>一般（仅定性）</td><td>待补</td></tr>
+<tr><td>大文件性能</td><td>好（0.5 秒）</td><td>好（约 1 秒）</td><td>一般（约 25 秒）</td><td>差（3–5 分钟）</td><td>差（全量约 $1–5）</td></tr>
+<tr><td>中文竖排</td><td>待补</td><td>待补</td><td>待补</td><td>待补</td><td>待补</td></tr>
+</tbody>
+</table>
+</div>
+<p>说明：扫描件、中文竖排两行整行待补；图文混排仅 MinerU 有一句定性记录；“大文件性能“行是 119 页单文件口径，更大体量样本待补。“待补”不是忘了填，是没数据——这篇的发布红线就是七场景实测数据补齐，不齐宁可不发。</p>
+<p>基于矩阵，按预算分三档组合：</p>
+<p><strong>零成本纯 CPU 档：</strong> pdftotext 抽全文，pdfplumber 提取规则表格。复杂表格放弃自动化，留人工或后续补。</p>
+<p><strong>有 GPU 档：</strong> MinerU 统一处理全文和表格，pdfplumber 抽查校验规则表格。</p>
+<p><strong>追求上限档：</strong> MinerU 为主，多模态截图方案兜底最难的那 5–10%。</p>
+<p>组合逻辑很直白：全文用最快的，规则表格用准的，最难的用最贵的。反过来用，就是我踩过的两个坑——拿 MinerU 做全文是过度工程，0.5 秒的事没必要花 5 分钟；拿 pdftotext 做表格是灾难，抽出来数字和指标名分家，下游全错。【待核实：三档分档系按素材成本信息（GPU 需求、速度、API 费）的推导，发布前用重跑数据校准】</p>
+<h2 id="会过时的和不会过时的"><a class="header" href="#会过时的和不会过时的">会过时的和不会过时的</a></h2>
+<p>以上结论全部绑定具体版本：poppler-utils 24.08、pypdf 4.x（PyPDF2 已停更并入）、pdfplumber 0.11、MinerU 1.x（magic-pdf 的 pipe API）、GPT-4o（2025-06 时点）。半年后这张矩阵的格子可能要重填——MinerU 在迭代（本文实测用 1.x，2026 年 9 月时已到 4.x），多模态模型的性价比每个月都在变。再强调一次开篇的前提：结论来自一份港股文本型 PDF，不是“所有财报“的普遍规律。</p>
+<p>不会过时的是第一章那把尺子。工具会换，场景不会：多栏还在，合并单元格还在，跨页表还在。拿这七个场景去量你手里的新工具，比抄我的结论可靠。</p>
+<p>第 2 篇讲 PDF 解析和 reading order 时展开过多栏页面的清洗，第 3 篇讲竖向大表格和跨页表格时给了工程解法；那一篇第 5 节说“详细实测数据留给番外 A1“，这篇就是兑现。没有完美的工具，只有场景匹配的组合。</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="分片实战从按长度切到按语义切的改造记录"><a class="header" href="#分片实战从按长度切到按语义切的改造记录">分片实战：从“按长度切“到“按语义切“的改造记录</a></h1>
+<p>前两篇把 PDF 解析和表格还原折腾完，我手里有了一份 119 页腾讯中报的干净文本。分片的第一版配置，我抄的是教程默认值：按 512 token 切，重叠 50。这套参数在博客和 FAQ 文档上一直没出过事——段落独立成意，断在哪都不太疼。放进中报，两天之内就翻了车。</p>
+<p>翻车的句子在管理层讨论与分析里：</p>
+<blockquote>
+<p>截至 2025 年 6 月 30 日止六個月，本公司權益持有人應佔盈利為人民幣 1,150 億元，較去年同期增長 28%。增長主要由於增值服務及網絡廣告業務的收入貢獻增加。</p>
+</blockquote>
+<p>按 512 一刀切下去，边界恰好落在“1,150 億元，“后面。前半段有数值，没说增长多少；后半段有增长原因，数值没了。用户问“腾讯上半年利润增长了多少”，两个 chunk 各含一半答案，拼不拼得起来全看检索运气。【待核实：本篇腾讯中报引文数字（1,150 億元、28% 等）沿用旧成稿，发布前需与真实中报原文核对；若为示例性改写需另作说明】</p>
+<h2 id="按长度切的三种死法"><a class="header" href="#按长度切的三种死法">按长度切的三种死法</a></h2>
+<p>第一种死法就是开场这个：语义断点落在 chunk 边界上。它不是小概率事件。MD&amp;A 里“数值＋增长率＋原因“是固定句式，长度又常和 chunk 边界量级相当，切在句子中间的次数多到我没法当意外处理。</p>
+<p>第二种死法更贵：表格被切散。利润表数据块按 token 数切完，前几个 chunk 是“收入 184,504 成本 98,238 毛利 86,266“，后几个是“行政開支 18,431 研發支出 12,892 經營盈利 54,943“【待核实：利润表数字沿用旧成稿，发布前需与真实中报核对】。文本上看像两组独立数据，逻辑上是同一张利润表。用户问“经营盈利“，命中后一组，收入、成本、毛利的上下文全丢，LLM 只看到一个孤立数字——54,943 是什么科目、什么单位、什么期间，它一概不知道。</p>
+<p>第三种死法最隐蔽：定义和它的数据被分开。会计政策的定义在上一段，具体数字在下一段，切割点落在中间。检索命中的 chunk 只剩“15.3% / 22.4% / 9.7%“一串裸数字，口径、单位、期间全无。用户不管问哪一项比率，命中的都是这串没法解释的数字。从模型角度看，一段话切成两半之后，两半都失去了独立可解释性。</p>
+<p>顺带还有个体感问题：连续几页纯数据挤进一两个 chunk 时，这些 chunk 的向量表示会变“窄“——只有数字和指标名，没有分析文字去平衡。它们对任何带数字的 query 相似度都高，彼此拉不开区分度。</p>
+<p>三种死法性质不同——断句、断表、断配对——但病根是同一个：边界位置由 token 数决定，而 token 数不知道语义在哪结束。把 512 调成 800 或者 300，只是换个位置继续切错。决定 chunk 质量的不是大小，是边界。</p>
+<h2 id="先换方法不是调参textblock-中转结构"><a class="header" href="#先换方法不是调参textblock-中转结构">先换方法，不是调参：TextBlock 中转结构</a></h2>
+<p>所以第一步是否定“调 chunk_size“这条路。我真正动手做的，是在 raw text 和 chunk 之间插一个中间层：TextBlock。</p>
+<p>TextBlock 的定义是语义上不可再切的最小文本单元。它可以是一个完整段落、一个表格行组、一个章节标题加引导语、一个列表组。每个 TextBlock 带一个类型标签：paragraph、table、header、list。</p>
+<p>切出 TextBlock 靠的不是 token 数，是文档结构信号。我在这个项目里用的规则很朴素：</p>
+<ul>
+<li>双换行符 → 段落边界；</li>
+<li>连续缩进加数字、货币符号 → 可能的表格行；</li>
+<li>“第 X 节”“X、”“（X）“开头且文本很短 → 标题；</li>
+<li>上一行冒号结尾、下一行缩进 → 列表。</li>
+</ul>
+<p>走完这套规则，一份财报文本从一大段 raw text 变成大约 300 到 500 个带标签的 TextBlock 序列。这是我在 119 页中报上的实测范围，不是通用数字——文档越长块越多，别当成标准引用。</p>
+<p>这套做法在分片策略分类里属于“文档结构驱动“，对财报这类自带层级的文档是主力策略。代价也明确：依赖上游解析质量。标题层级判错——比如加粗正文被当成小标题——后面所有边界跟着错。前两篇在 PDF 解析和表格上花的功夫，其实是在这里兑现。反过来说，文档解析和分片在财报场景里几乎是同一个问题：先有一棵正确的结构树，才谈得上按结构切。</p>
+<h2 id="合并而非切割从-textblock-到-chunk"><a class="header" href="#合并而非切割从-textblock-到-chunk">合并而非切割：从 TextBlock 到 chunk</a></h2>
+<p>有了 TextBlock，分片的思路整个反过来：从“找位置切“变成“决定要不要把这个块加进来“。流程是从第一个 TextBlock 开始不断追加，直到当前 chunk 达到目标大小。</p>
+<p>目标大小不再是 512 教条。这个项目里我落在 800~1200 tokens 的区间，同样是单一项目经验，不是标准答案，也不是一次定出来的——先用 800 起跑，再按后面第五节的验证指标往两边调。太小（300 以下）丢上下文，“应收账款余额 50 亿元“单独成一个 chunk，看不出是哪家公司哪一年；太大（2000 以上）embedding 被稀释，一大块里只有一句话相关，向量却融合了整块的无关内容，相似度被拉低。</p>
+<p>追加时守三条类型规则：</p>
+<ul>
+<li>header 永远作为 chunk 开头，不在 chunk 中间插入新标题；</li>
+<li>table 尽量不切，本身超大就宁可独占一个 chunk——表格内部怎么序列化、行数太多怎么按科目拆行组，第 3 篇讲表格时展开过，这里不重复；</li>
+<li>paragraph 可以切，但切点选在句子边界（句号、分号），不是 token 刚好到线的位置。</li>
+</ul>
+<p>重叠设计也跟着变。不再是固定 50 token，而是把上一个 chunk 的最后一个完整 TextBlock 作为下一个 chunk 的开头。财报里要保住的是“上一段定义、上一行口径“，不是机械重复几十个字符，所以按语义单元做重叠比按字符数合理；默认重叠 1 个 block 就够用。</p>
+<p>还有一条财报专属规则：period_type 切换强制 flush。累积过程中，如果当前 block 的期间口径和 chunk 里已有的不一致，立刻 flush 当前 chunk、开一个新的。财报里“二零二五年第二季度“和“二零二五年上半年“的措辞模板高度相似，混在一个 chunk 里，模型回答“二季度收入“时可能拿成上半年的数——数字格式全对，错得特别隐蔽。</p>
+<p>合并策略最省事的地方是：你不需要猜“在哪切“，只需要决定“这个块要不要加进去“。决策空间从连续位置变成了离散选择。</p>
+<h2 id="一个顺序问题先标注-metadata-还是先切-chunk"><a class="header" href="#一个顺序问题先标注-metadata-还是先切-chunk">一个顺序问题：先标注 metadata 还是先切 chunk</a></h2>
+<p>改到这里，撞上一个先有鸡还是先有蛋的问题。很多系统的顺序是：抽文本 → 按 token 切 chunk → 再调 LLM 给每个 chunk 打 metadata。这个顺序在 demo 里看不出问题——FAQ 文本怎么切都语义完整；换到财报才暴露，而且暴露得很间接：切坏的 chunk 会污染下游标注。</p>
+<p>还是用开场那个例子。如果 chunk 只含“增長 28%，主要由於……“，丢掉了“截至 2025 年 6 月 30 日止六個月，本公司權益持有人應佔盈利為人民幣 1,150 億元，較去年同期“这半句，LLM 连“28% 对应什么指标、什么期间“都判不出来，标注准确率直接受损。</p>
+<p>正确顺序反过来：先在 TextBlock 层级打 metadata，再合并成 chunk，chunk 的 metadata 取其 TextBlock 的并集。TextBlock 语义完整，标注精度更高；合并时一个表格块加一个段落块，各自标了 {period: 2025H1}，chunk 就继承这个字段。</p>
+<p>至于标哪些字段、规则标注和 LLM 标注怎么分工，是第 5 篇的主菜。这里只把顺序定下来：先标注，后合并。</p>
+<h2 id="切完了怎么验证"><a class="header" href="#切完了怎么验证">切完了怎么验证</a></h2>
+<p>分片质量不能靠感觉。我分两层查：肉眼抽查是下限，指标化才能每次改规则之后横向比较。</p>
+<p>肉眼三条。随机抽 20 个 chunk 读原文，确认语义完整；看 chunk 大小分布——不是追求均匀，而是极端值都要能解释，3 token 的和 2000 token 的都得说得出为什么存在；再拿几个已知答案的 query 手动检索，看返回的 chunk 是否包含完整答案。</p>
+<p>指标五个，也是这个项目的实测口径：同一 chunk 内出现多个时间口径的占比；缺 unit metadata 的 chunk 占比；出现孤立数字（数字旁边没有指标名或单位）的占比；过短 chunk（100 tokens 以下）的占比；过长 chunk（超过 max_chunk_size 1.5 倍）的占比。五个都压低了，chunking 才算稳。每次调整规则跑一遍，改得好不好可度量、可回归，不用靠“我感觉顺了“。</p>
+<h2 id="边界对齐业务语义"><a class="header" href="#边界对齐业务语义">边界对齐业务语义</a></h2>
+<p>全篇收下来就一个判断：chunking 不是文本分段，是检索单元设计。边界应当对齐业务语义单元——一个小节、一段指标说明、一张表、一个完整口径——而不是一个固定 token 数。调 chunk_size 是表面优化。这个结论收在财报这类结构密集、口径多变的文档里；结构松散的纯叙述文本怎么切，是另一套取舍，不在本篇范围内。</p>
+<p>还有一个方向这里只点个名：检索粒度和上下文粒度其实是两件事，可以分开设计——小 chunk 负责被检索命中，大 chunk 负责给 LLM 完整上下文，也就是所谓父子分片。它直接化解“精度和完整性不可兼得“的矛盾，实现细节这篇不展开。</p>
+<p>最后一个遗留问题。到这里，每个 chunk 语义完整了，可它还不知道自己是谁：哪一年、什么口径、什么单位。切好了的 chunk 还是个“黑户“。下一篇《Metadata 设计：比模型大小更重要的东西》，给它发身份证——文档级和 chunk 级 metadata 分别标什么、规则标注和 LLM 标注怎么分工。</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="metadata-设计比模型大小更重要的东西"><a class="header" href="#metadata-设计比模型大小更重要的东西">Metadata 设计：比模型大小更重要的东西</a></h1>
+<h2 id="两个翻车现场数字对了答案照样错"><a class="header" href="#两个翻车现场数字对了答案照样错">两个翻车现场：数字对了，答案照样错</a></h2>
+<p>用户问“腾讯 2025 年上半年收入“，系统返回 184,504。数字没错——184,504 百万元，LLM 却读成“184,504 元“，差六个数量级。chunk 里有数字，没有 <code>unit</code> 字段——错不在模型，错在 metadata。</p>
+<p>模型拿到裸数字只能猜：换算一下告诉你“约 1.84 亿“，听着合理，错得隐蔽。中文财报里“百萬元““億元”“千元“常混着出现；正文写“亿元”、表格写“百万元“时，模型两头都见过，会把 184,504（百万元）和 184.5（billion）混成一类，造出“184.5 亿“这种哪儿都不存在的伪冲突数字。</p>
+<p>第二个现场更隐蔽。用户问“腾讯经营利润率的变化趋势“，系统从 2020、2022、2025 三份年报各召回一段，LLM 拼出一条看似合理的趋势。问题在于：2020 年那段是“非國際財務報告準則“口径，2022 和 2025 是“國際財務報告準則“口径。口径不同，数字不可比，趋势不成立——但生成端不知道，它只负责把话讲圆。</p>
+<p>两个现场是同一个结构：语义相似度回答“像不像“，用户问的是“哪一年、哪个期间、什么单位、什么口径“——前者 embedding 管，后者只有 metadata 管。第 4 篇讲分片时说过，chunk 切好了还是“黑户“，这两个现场就是黑户的下场。</p>
+<h2 id="先分家文档级和-chunk-级是两件事"><a class="header" href="#先分家文档级和-chunk-级是两件事">先分家：文档级和 chunk 级是两件事</a></h2>
+<p>设计 metadata 的第一步不是列字段，是分家。文档级一份 PDF 只标一次、所有 chunk 共享；chunk 级每个 chunk 单独一份，从它的 TextBlock 继承。</p>
+<p>为什么不能混？查询模式不同。文档级用于入库打标签和查询预过滤——“先把腾讯 2025 中报这一组挑出来”；chunk 级用于召回排序和展示——“这段在哪页、什么口径”。混进同一份 schema，query 解析得先猜用户说哪一层，schema 演进也容易出错。</p>
+<p>实际跑出来长这样（腾讯中报的 ChunkRecord，字段有删减）：</p>
+<pre><code class="language-python">{
+    "chunk_id": "...",
+    "source_file": "腾讯 -2025-中期报告.pdf",
+    "company": "腾讯",
+    "report_year": "2025",
+    "report_type": "interim_report",
+    "page_start": 4,
+    "page_end": 5,
+    "section": "財務表現摘要",
+    "period_type": "quarterly",
+    "unit": "人民幣百萬元",
+    "text": "..."
+}
+</code></pre>
+<p>前四个字段是文档级，随每个 chunk 冗余存一份，过滤时不用回查父文档；<code>page_start</code> 往下是 chunk 级，各管各的。</p>
+<p>两层各放什么，一张表：</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>字段</th><th>层级</th><th>示例</th><th>用途</th></tr>
+</thead>
+<tbody>
+<tr><td><code>stock_code</code></td><td>文档级</td><td>0700.HK</td><td>多股票路由</td></tr>
+<tr><td><code>report_type</code></td><td>文档级</td><td>中报 / 年报</td><td>数据粒度</td></tr>
+<tr><td><code>fiscal_year</code></td><td>文档级</td><td>2025</td><td>时间过滤</td></tr>
+<tr><td><code>market</code></td><td>文档级</td><td>HK / A 股 / US</td><td>口径来源</td></tr>
+<tr><td><code>currency</code></td><td>文档级</td><td>HKD / CNY</td><td>数值归一</td></tr>
+<tr><td><code>accounting_standard</code></td><td>文档级</td><td>HKFRS / IFRS / CAS / US GAAP</td><td>口径差异根源</td></tr>
+<tr><td><code>period_type</code></td><td>chunk 级</td><td>H1 / Q4 / FY</td><td>时间精度</td></tr>
+<tr><td><code>section</code></td><td>chunk 级</td><td>管理层讨论</td><td>叙述 / 数据区分</td></tr>
+<tr><td><code>table_type</code></td><td>chunk 级</td><td>利润表</td><td>跨文件对齐</td></tr>
+<tr><td><code>unit</code></td><td>chunk 级</td><td>million</td><td>单位标定</td></tr>
+<tr><td><code>is_audited</code></td><td>chunk 级</td><td>true / false</td><td>审计状态（有法律含义）</td></tr>
+</tbody>
+</table>
+</div>
+<p>准则的枚举值按市场分，别图省事用一个词盖过去：A 股是 CAS（中国企业会计准则；业内常随口叫“CN GAAP“，入库枚举用正式缩写）；港股是 HKFRS，和 IFRS 高度趋同但法律上是两套准则，腾讯这类公司则直接按 IFRS 编制；美股本土公司是 US GAAP，外国私人发行人可以直接用 IFRS 申报；Non-GAAP 是各市场都可能附加的调整口径。</p>
+<p><code>period_type</code> 是分错层的现成反例。同一份中报里，“截至 6 月 30 日止六個月“是 H1，“截至 12 月 31 日止年度“是 FY——不同章节对应不同期间。错标成文档级，整份 PDF 的 chunk 都继承同一个时间精度，错的那个。</p>
+<h2 id="字段清单值得标的和可以缓的"><a class="header" href="#字段清单值得标的和可以缓的">字段清单：值得标的和可以缓的</a></h2>
+<p>标注有成本。每加一个字段，我只问一句：检索阶段会不会用到它？用不到的，标得再准也是库存。</p>
+<p>按这个标准，我把字段排成三档：</p>
+<ul>
+<li><strong>T0，不做没法用</strong>：<code>fiscal_year</code>、<code>report_type</code>——没有它们，跨年混检无解；<code>market</code>、<code>stock_code</code>——多股票场景的路由前提。</li>
+<li><strong>T1，做了明显提升质量</strong>：<code>unit</code>（防住开头的数量级事故）、<code>period_type</code>（问“上半年“时不返回全年数据）、<code>section</code>。</li>
+<li><strong>T2，有余力再做</strong>：<code>table_type</code>（跨文件同表对比才用得上）、<code>is_audited</code>（合规场景有用，一般问答可不管）、<code>accounting_standard</code>（跨市场多准则才需要）。</li>
+</ul>
+<p><code>section</code> 比看起来有用。问题类型和章节有稳定对应：问风险，偏风险因素和附注；问管理层看法，偏主席报告和 MD&amp;A；问精确数字，偏财务摘要和主表。章节名本身携带检索意图，是个免费的 query 分类器。</p>
+<p>时间信息也要结构化，不能只靠文件名——“2025 中期报告“只是文件级信息，正文里“截至 6 月 30 日止三个月“和“六个月“就是两个不同期间。</p>
+<p>边界先交代：这三档是财报场景的经验排序，不是通用标准。单市场单公司的库，T0 可以直接缩水——<code>market</code> 和 <code>stock_code</code> 退化成常量，不标也罢。</p>
+<h2 id="标注手段规则优先llm-兜底"><a class="header" href="#标注手段规则优先llm-兜底">标注手段：规则优先，LLM 兜底</a></h2>
+<p>谁来标？规则优先，LLM 兜底，按字段逐个看。</p>
+<p><code>fiscal_year</code>、<code>report_type</code>、<code>market</code>，文件名和 PDF 元数据里直接拿，不需要 AI。</p>
+<p><code>unit</code> 用正则：在 chunk 附近搜“百萬元““億元”“千元”。要小心货币前缀——“人民幣百萬元“和“港幣百萬元“是两个 unit，正则得把币种一起捕获。</p>
+<p><code>table_type</code> 和 <code>section</code> 是规则开始吃力的地方。在我这份库上，规则大概 80%，LLM 能到 95%+——这是个人经验估计，不是行业数值【待补：80% / 95%+ 无实测记录，发布前需补一次小样本实测】。差距在边界情况：“流動資產“出现在正文叙述而非表格里时，规则会误判。这种边角案例写规则不划算，LLM 一眼能看出来。成本也交代清楚：几百个 chunk，中档模型打一轮，几毛到几块钱。</p>
+<p>最麻烦的是 <code>period_type</code>。中文财报没有固定的 Q1–Q4 模板，期间靠自然语言描述：“截至 6 月 30 日止六個月“是 H1，“截至 12 月 31 日止年度“是 FY。规则要解析月份范围再算跨度月数，纯正则能做，但中文日期表达花样太多，鲁棒性撑不住，我最后让 LLM 复核了一遍。</p>
+<p>分工就这么定：规则吃掉确定性的部分，LLM 只花在规则够不着的边界上。全量丢给 LLM，钱花得不疼，但那是把确定性问题交给概率性工具，不值。</p>
+<h2 id="标了不用等于白标"><a class="header" href="#标了不用等于白标">标了不用，等于白标</a></h2>
+<p>前面都在讲入库，但 metadata 的账，要到检索层才算清。</p>
+<p>第一条：metadata 只有在检索层被使用时才有意义。标了 <code>unit</code> 却不在召回和生成时读它，等于白标。自查很简单：查询代码里，你标的字段有几个真被读到了？</p>
+<p>第二条：filter 是硬约束，weight 是软约束。年份、<code>stock_code</code> 是硬的：不同年份的财报不该同现，除非用户明确要求比较。<code>section</code> 是软的：问风险因素时对应 section 排前面，但不排除其他 section——风险也可能藏在管理层讨论里。</p>
+<p>第三条：标注规则在同市场、同报告类型内可复用，跨市场别强行复用。港股和 A 股的财报结构差异显著，一套规则吃两边，大概率两边都不准。</p>
+<p>为什么先 filter？财报问题天然带强约束：问“腾讯 2025 中期报告里广告业务收入的变化“，候选集本就不该包含其他公司、年份、报告类型。先 filter 再向量召回，比“全库召回再筛“效率高一个数量级；候选集干净了，串公司串年份的事故从源头就没了。</p>
+<p>这套软硬划法也是财报场景的经验，但“硬走 filter、软走 weight“的结构通用。至于“时间字段标了为什么还召回错年份“——那是下一个问题，这里只把“硬约束“立住。</p>
+<h2 id="收尾模型是公用的metadata-是私有的"><a class="header" href="#收尾模型是公用的metadata-是私有的">收尾：模型是公用的，metadata 是私有的</a></h2>
+<p>RAG 社区讨论最多的是 embedding 选型、chunk 大小、reranker 精度。都有用，但模型层大家就那两三个选择，拉不开差距。库和库真正的差异，在 metadata 设计和 ingestion 质量——这才是私有资产。</p>
+<p>我的工程结论：财报 RAG 的上限不由模型大小决定，而由 ingestion 质量、metadata 设计、chunk 边界和 retrieval 策略决定。这来自单公司财报场景，通用文档场景各项权重未必相同，别直接搬。</p>
+<p>metadata 标好了，filter 也加了，检索就万事大吉吗？不是。最典型的一类失败，恰恰发生在“标了时间字段、却没拿它当硬约束“的时候：问 2025 Q4，召回 2020 Q4，相似度分数还很高。这是 metadata 的第一个用武之地，也是第一个错觉——第 6 篇《当向量相似度把“2020 Q4“当成“2025 Q4“》就讲这个。</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="query-理解从那句话到检索动作"><a class="header" href="#query-理解从那句话到检索动作">Query 理解：从那句话到检索动作</a></h1>
+<blockquote>
+<p><strong>待办（2026-10-14）· 待写</strong>：本篇是成册时确认的内容缺口——七步链路里唯一没有专篇的两环之一（另一环是生成层，见「从能跑到能扛」卷第 07 篇）。全系列把五篇的密度堆在检索这一环，检索前发生了什么却只在各篇里零散提过。</p>
+<p>这一篇的说服力来自「我踩过」，只能由作者写，不由整理生成。以下是待写内容清单（素材出处已标原篇号，按册内章节号互指）。</p>
+</blockquote>
+<h2 id="待写清单"><a class="header" href="#待写清单">待写清单</a></h2>
+<ol>
+<li>
+<p><strong>约束提取</strong>——从 query 里解析年份、期间、口径、电压等级这类强约束。接「检索的错觉」卷第 02 篇（原 #06）四层解法的第一层：metadata 预过滤的前提就是这里抽得出约束。抽不出时的三种降级策略（默认值 / 模糊优先 / 上下文继承）也在那一篇，本篇接住「上下文继承」的实现。</p>
+</li>
+<li>
+<p><strong>意图分类</strong>——判断用户在问数字、问原因、还是问风险，据此决定去哪个 section 检索。接第 06 篇（原 #10）的 section-aware retrieval，那一节只说了 section 有用，没说分类怎么做。</p>
+</li>
+<li>
+<p><strong>改写三件套</strong>——Multi-Query / HyDE / Step-Back，各自的适用场景和代价。原 #09 埋过一句「改写错了会把 query 带偏」，本篇展开。</p>
+</li>
+<li>
+<p><strong>改写什么时候不该上</strong>——小库、query 类型单一时，改写的增量可能抵不过一次 LLM 调用的延迟和漂移风险。</p>
+</li>
+<li>
+<p><strong>指代消解与多轮</strong>——「那个跳闸的」「毛利呢」这类 query 怎么继承上一轮约束。原 #06 提了思路，没给实现。</p>
+</li>
+<li>
+<p><strong>与生成层的分工</strong>——哪些歧义该在检索前问清楚，哪些该在生成前反问用户。原 #15 第八步（query 语义歧义）的落点在这里。</p>
+</li>
+</ol>
+<h2 id="本篇禁忌"><a class="header" href="#本篇禁忌">本篇禁忌</a></h2>
+<ul>
+<li>不写成 query 改写技术综述。</li>
+<li>每个手段必须给「什么时候不需要它」。</li>
+<li>数字、延迟代价按自有库口径标，不引用通用评测数字。</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="当向量相似度把2020-q4当成2025-q4"><a class="header" href="#当向量相似度把2020-q4当成2025-q4">当向量相似度把“2020 Q4“当成“2025 Q4“</a></h1>
+<p>问系统：“腾讯 2025 年第四季度的营收是多少？“秒回：“根据财报披露，公司第四季度营收为 1,287 亿元，同比增长 8.4%。“语气专业，格式标准，数字和增长率一应俱全。唯一的问题是：这组数字是 2020 年的【待核实：该数字是素材中的错答示例，与腾讯 2020 Q4 实际披露值（1,336.69 亿元、同比 +26%）核对不上，按大纲口径标注为示意性例子，发布前确认是替换为真实数字还是保留示意】。</p>
+<p>这是我在财报 RAG 项目里真实踩过的坑。先交代一句背景：RAG 是“先从文档库检索、再让模型基于检索结果回答“的架构。上面这种错法，是 RAG 里一类很隐蔽的失败——检索时的时间错配。更要命的一点：那条 2020 年的结果，相似度分数还很高。</p>
+<h2 id="一次答错得很流畅的检索现场"><a class="header" href="#一次答错得很流畅的检索现场">一次“答错得很流畅“的检索现场</a></h2>
+<p>为什么 2020 Q4 和 2025 Q4 在向量空间里是邻居？拆开看并不难理解。财报里管理层讨论的措辞模板，每年只换几个数字；利润表的表头格式，十年没怎么变过。embedding 读到的是“营收““第四季度”“同比增长“这些词，两段文本在语义上几乎同构，它给出的向量距离自然很近——近到在 top-k 里总是相邻。</p>
+<p>但这不是全部。更关键的是个工程失误：chunk 的 metadata 里明明有 <code>report_year</code> 字段，入库时就标好了每个 chunk 来自哪一年。问题是这个字段只被拿去做 citation 展示——生成答案时显示一句“来源：腾讯 2020 年年报“——没有参与召回，也没有参与排序。系统“知道“每个 chunk 是哪一年的，但检索时“没用上“。</p>
+<p>这种失误比我以为的普遍。我见过的几个项目里，metadata 被采集了、存了、甚至在前端展示了，唯独没进检索层。</p>
+<p>所以这类失败真正危险的地方，不在于答错，在于答错得很流畅。语气稳定、格式正确、还附带同比增长率，用户不刻意核对年份根本发现不了。“答不上来“用户一眼就看见了；“答错得很流畅“要核对到具体数字才暴露。在财报场景里，后者才是事故。</p>
+<h2 id="换个领域同样的错法1000kv-与-220kv"><a class="header" href="#换个领域同样的错法1000kv-与-220kv">换个领域，同样的错法：1000kV 与 220kV</a></h2>
+<p>这不是财报特供问题。我在电力系统的规范文档上又碰到过一次，换了一副面孔。</p>
+<p>电力文档里，1000kV 特高压和 220kV 高压的运行规程、维护手册，文字上几乎是孪生：都涉及变电站、断路器、线路保护；章节结构高度相似；还共享同一套术语表——“主变压器”“冷却方式”“差动保护”，两边都这么写。</p>
+<p>用户问“1000kV 变电站主变压器的冷却方式“，系统完全可能召回 220kV 的条目。光看文本，连模型都难判断哪一段适用于哪个电压等级——而电压等级恰恰是这个问题最关键的约束。外行看不出差别，但两个电压等级的设备规格、保护策略、维护周期完全不同。把 220kV 的规程当 1000kV 的答案用，在工程上是真会出事的。</p>
+<h2 id="共同根因向量检索找的是像不是符合条件"><a class="header" href="#共同根因向量检索找的是像不是符合条件">共同根因：向量检索找的是“像“，不是“符合条件“</a></h2>
+<p>两个场景并排摆，根因是同一个：</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>场景</th><th>强约束维度</th><th>metadata 里有没有</th><th>参与检索了吗</th></tr>
+</thead>
+<tbody>
+<tr><td>财报跨年</td><td><code>report_year</code> / <code>period_type</code> / <code>quarter</code></td><td>有</td><td>没有</td></tr>
+<tr><td>电力规范</td><td><code>voltage_level</code></td><td>看实现，经常缺</td><td>没有</td></tr>
+</tbody>
+</table>
+</div>
+<p>文档天然带强约束，约束字段在 metadata 里也明明存在，但它不参与召回和排序。两行的答案都是“有，但没用“。</p>
+<p>往深说一句：向量检索的本质是找“语义最像的“，不是找“符合约束的“。这两件事在 demo 里是一致的——测试库只有一份年报的时候，“Q4 营收“怎么搜都对。但只要库里出现“语义近似、约束不同“的孪生文档，纯向量检索就开始失灵。</p>
+<p>而在我见过的企业文档库里，这种孪生几乎躲不掉：跨年财报、跨版本规范、跨规格设备手册、跨地区合同模板。demo 里没事，生产环境一上量就显形。这不是例外，是常态——至少在我碰过的项目里是。</p>
+<h2 id="四层解法按优先级排"><a class="header" href="#四层解法按优先级排">四层解法，按优先级排</a></h2>
+<p>处理这类问题，我后来固定成一个顺序。四层不是并列清单，是按“根本性 × 实现成本“排出来的优先级，能往前做就不往后拖。</p>
+<p><strong>第一层：metadata 预过滤（根本解）</strong></p>
+<p>检索之前，先把 query 里的约束解析出来，在数据库层硬过滤，过滤完再谈语义相似：</p>
+<pre><code class="language-python">user_query = "腾讯 2025 年 Q4 的营收"
+
+# 第一步：从 query 解析约束（LLM parsing，或规则匹配高频模式）
+parsed = {
+    "query_text": "腾讯 营收",
+    "filters": {"report_year": "2025", "period_type": "quarterly", "quarter": "Q4"},
+}
+
+# 第二步：先硬过滤，再做语义检索
+results = vectorstore.search(query=parsed["query_text"], filters=parsed["filters"])
+</code></pre>
+<p>关键在顺序：<code>filters</code> 发生在向量相似度之前，2020 年的 chunk 根本进不了候选集。Chroma、Milvus、Pinecone、Qdrant、Weaviate 这些主流向量库都支持 metadata filter，改动通常只是检索调用多个参数，不换模型、不重建索引。改动最小、效果最大、最确定，这是它排第一的原因。</p>
+<p>唯一的前提：query 里抽得出约束。财报场景里，年份、季度、指标名几乎必然出现在 query 里，LLM parsing 或规则匹配都够用。抽不出的情况，后面单独说。</p>
+<p><strong>第二层：query 改写，把约束塞进文本</strong></p>
+<p>如果向量库不支持 filter（少数嵌入式场景），退而求其次：把约束显式写进检索文本和 chunk 文本。原始 query“腾讯第四季度营收“，改写成“腾讯 2025 年第四季度财报 营收 利润 业绩“，让“2025““第四季度“作为 token 参与语义匹配，把 2020 年的相似度自然压下去：</p>
+<pre><code class="language-python"># chunk 入库时，把约束写进文本前缀
+chunk.text = f"【{report_year}年{period_type}】{original_text}"
+
+# 电力文档同理
+chunk.text = f"[电压等级:1000kV] {original_chunk}"
+</code></pre>
+<p>这是软手段，不是硬过滤。代价有两笔：一是 token 浪费，每个 chunk 都多背一段前缀；二是稳定性没保证——效果取决于 embedding 对这段前缀的敏感度，它不买账的时候你一点办法都没有。能用 filter 就别用它。</p>
+<p><strong>第三层：时间衰减，排序层兜底</strong></p>
+<p>就算初筛漏了，排序阶段还能再压一次：</p>
+<pre><code class="language-python">def time_decay_score(base_score, doc_year, current_year=2025):
+    age = current_year - int(doc_year)
+    return base_score * (0.85 ** age)  # 每旧一年打八五折，2020 年的分数只剩 0.85^5 ≈ 0.44
+</code></pre>
+<p>2020 年的文档即使相似度和 2025 年一样高，final score 也只剩四成多。但它是兜底不是主力，因为它分不清“用户就是要查旧数据“——人家问“2020 年腾讯收入是多少“，衰减反而把正确答案压掉了。所以系数要温和，还要按 query 的时间意图动态调整：query 里明确带了年份，这一层就该直接跳过。</p>
+<p><strong>第四层：入库去重和版本管理</strong></p>
+<p>入库时按 <code>(company, section, period)</code> 去重只留最新版，或者保留多版本、但打上 <code>is_latest=True</code> 和 <code>supersedes</code> 标记，检索时优先命中 <code>is_latest</code>。这一招只适合“只关心最新“的场景；业务要做历史比较就禁用——会把可比对象全删掉。</p>
+<p>四层收束成一个框架，其实就三步：入库时把可能成为查询约束的字段都抽进 metadata（打约束标签）；检索时第一道筛子是 metadata filter，不是向量相似度（硬过滤）；召回之后用 reranker 兜底——cross-encoder 对约束差异确实比 bi-encoder 敏感，但它是补充不是替代。只靠 reranker，延迟高还不稳；只靠 filter，query 解析一失败链路就断；只靠改写，天花板太低。三层都得在。</p>
+<h2 id="query-里抽不出约束怎么办"><a class="header" href="#query-里抽不出约束怎么办">query 里抽不出约束怎么办</a></h2>
+<p>上面四层有个共同前提：query 里抽得出约束。但真实 query 大量是模糊的——“腾讯营收是多少”，没说哪一年；“变压器冷却方式怎么配”，没说电压等级。</p>
+<p>这种时候我的原则是别悄悄猜。三种降级策略：</p>
+<p><strong>默认值策略。</strong> 财报场景默认“最近一份报告“，但必须在答案里写清楚“以下基于 2025 年数据“，把隐式假设显性化。我自己的项目里，问最新数据的查询占大头，凭印象有八成上下【待核实：无统计来源，纯个人项目观察口径，发布前确认保留还是删除】——默认值策略在我的场景成立，在你的场景未必，先看过自家日志再定。</p>
+<p><strong>模糊优先策略。</strong> 让模型把候选列出来请用户选：“我找到了 2020、2022、2025 三个年份的相关数据，你具体想看哪一年？“适合对话型应用，代价是多一轮交互；一次性问答的场景用不上。</p>
+<p><strong>上下文继承。</strong> 用户先问“腾讯 2025 中报营收“，再问“毛利呢“——第二个问题应该自动继承上一轮的约束。这需要维护对话状态，实现复杂度高一截，但交互体验收益最大。拿复杂度换体验，值不值看产品形态。</p>
+<p>三条策略的共同点是同一个：假设可以默认，猜测必须暴露——要么告诉用户你假设了什么，要么问清楚。</p>
+<h2 id="两个边界别把消歧当混检别指望换-embedding-模型"><a class="header" href="#两个边界别把消歧当混检别指望换-embedding-模型">两个边界：别把消歧当混检，别指望换 embedding 模型</a></h2>
+<p>方法论说完，划两条边界。这两个“别“，我都见人踩过。</p>
+<p><strong>边界一：别把消歧当混检。</strong> 如果你的问题是“用户搜’苹果’，系统返回了水果苹果而不是苹果公司“——这不是混检，是消歧。这种场景下文档没有显式约束字段，用户也没说“水果“还是“公司“，metadata filter 帮不上忙。该走的是上下文消歧（对话里有没有“股票““投资“这类 hint）、query rewriting（让模型先判意图再改写）、reranker（给 cross-encoder 看完整上下文）。判断标准就一条：文档天然有没有强约束字段——年份、版本、规格。有，走 metadata filter；没有、只有隐含主题，走消歧那条路。两类问题弄混，优化方向会完全错。</p>
+<p><strong>边界二：别指望换更准的 embedding 模型。</strong> “换个更强的 embedding，是不是就能区分了？“不能。“Q4 营收 1287 亿、同比增长 8.4%“和“Q4 营收 1800 亿、同比增长 6.2%”【待核实：同篇首，错答示例数字，发布前一并处理】这两个句子，在语义上是真的高度相似——同样的概念、同样的句式、同样的上下文结构——换什么模型，向量距离都拉不开。问题不在向量检索不够准，在于向量检索的“准“和用户要的“准“不在同一个维度：一个保证语义相似，一个要求约束匹配。库里没有孪生文档时，这两者是同义词；有，就不是。</p>
+<h2 id="约束不是显示用的是检索用的"><a class="header" href="#约束不是显示用的是检索用的">约束不是显示用的，是检索用的</a></h2>
+<p>如果你的 chunk metadata 里已经有约束字段、检索时却没用上，先把这一步做了——它是我知道的所有 RAG 优化里，改动最小、收益最大的一步。</p>
+<p>这篇是《RAG 心得系列》发出的第一篇。这个系列会沿着“数据上游 → 检索的错觉 → 系统判断 → 边界与展望“这条线，把一条财报 RAG 链路逐环走完：从 PDF 解析、分片、metadata 标注这些上游环节讲起，穿过检索层的几种错觉，再到评估、运维和边界。时间错配，只是检索错觉的第一层。</p>
+<p>第二层是口径。就算时间对齐了、检索到的确实是 2025 年的文档，事情也没完——同名指标在不同报告里的口径可能不一样，同样叫“营收“，中报和年报未必是同一个数。“时间对、口径错”，是另一种答错得很流畅，第 7 篇《财报 RAG 的口径陷阱：同名指标，不同意思》专门讲它。</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="财报-rag-的口径陷阱同名指标不同意思"><a class="header" href="#财报-rag-的口径陷阱同名指标不同意思">财报 RAG 的口径陷阱：同名指标，不同意思</a></h1>
+<p>metadata 标了，年份硬过滤也做了，我以为这套财报 RAG 在数字上不会再翻低级车。直到一次对账：用户问「腾讯 2025 H1 利润多少」，系统答 1,320 亿；我拿去和财报原文核，核出来的是 1,150 亿【待核实：这两个数取自旧稿案例，发布前需对照腾讯真实披露核实，对不上就改标为示意数字】。</p>
+<p>蹊跷的是两边都没抄错。系统引用的 chunk 来自 Non-GAAP 口径的披露，白纸黑字；我核的那个来自 IFRS 口径，也在同一份报告里。两个都是正确答案——放在一起，就成了错误答案。</p>
+<h2 id="这不是数据错是业务规则"><a class="header" href="#这不是数据错是业务规则">这不是数据错，是业务规则</a></h2>
+<p>先把坑的性质定清楚。它不是解析错，也不是检索错：召回的每个 chunk，自身数字全都对，错在它们来自不同口径、互不可比。</p>
+<p>这是 RAG 失败模式里最隐蔽的一类。解析错了，文本是乱的，一眼能看穿；时间混检了，年份写在 metadata 里，还有机会拦。口径混检不一样：不报错、不告警，两个 chunk 和 query 的相似度还都很高——在向量的眼里它们本来就「很像」，都是「利润」。LLM 看不出，用户更看不出。从系统返回到用户采信，中间没有一个环节亮红灯，直到有人拿两个数字对账。</p>
+<p>这一篇就拆这件事：财报里同名的指标有多少种「不同意思」，以及我在 RAG 里怎么挡。</p>
+<h2 id="陷阱一同一个利润gaap-和-non-gaap-两个数"><a class="header" href="#陷阱一同一个利润gaap-和-non-gaap-两个数">陷阱一：同一个「利润」，GAAP 和 Non-GAAP 两个数</a></h2>
+<p>开场那两个数差在哪？腾讯这类公司披露利润时同时给两个口径：按国际财务报告准则（IFRS）的期内盈利，和按非国际财务报告准则（Non-GAAP）的调整后盈利。Non-GAAP 剔除了股权激励费用、投资公允价值变动、无形资产摊销这类项目——剔除理由各不相同：股权激励和摊销是非现金的（注意股权激励每期都发生，说它“非经常“是站不住的），公允价值变动是波动大、管理层认为不代表核心经营。两个口径同时披露，两个都是真数字。</p>
+<p>问题出在检索。用户问「利润」，系统从不同的 chunk 各召回一个口径，拼进同一个上下文给 LLM。LLM 没有被教过「这两个数不能同框」，它要么挑一个答，要么混着写。</p>
+<p>再往下挖一层：就算口径定死，同一个指标还有多套名字。财报里常见的别名至少四组：</p>
+<ul>
+<li>revenue / sales / turnover</li>
+<li>operating profit / operating income</li>
+<li>non-GAAP / adjusted</li>
+<li>本公司權益持有人應佔盈利 / net profit attributable to equity holders</li>
+</ul>
+<p>（第一组特意说明：revenue 和 net revenue 不是别名——net revenue 是扣掉销售退回、折扣、折让之后的净额，会计上是另一个科目，混为一组会把两个真数字当一个。）</p>
+<p>纯关键词匹配会漏——用户搜 “net profit”，匹配不到繁中那一行；纯语义匹配会混——“operating profit” 和 “operating income” 在向量空间里挨得很近，但在不同公司的报表里未必是同一件事。所以财报场景得做 metric alias normalization：入库或检索时把别名收敛到标准指标名上。不做这一步，跨公司、跨年份对比，对上的只是名字，不是口径——伪对齐。</p>
+<h2 id="陷阱二同一个收入统计窗口不一样长"><a class="header" href="#陷阱二同一个收入统计窗口不一样长">陷阱二：同一个「收入」，统计窗口不一样长</a></h2>
+<p>中报里的「收入」是「截至 6 月 30 日止六个月」的半年切片，年报里是全年，季报里是单季。每个 chunk 的数字都对，但检索层要是把半年数和全年数一起召回给 LLM 比较，就能算出「半年收入大于全年收入」这种笑话。</p>
+<p>这里有个容易踩空的机制。metadata 里的 <code>period_type</code>（H1/Q4/FY 这类报告期标签）标的是「这份报告对应哪个时点」，不是「这个数字统计了多长的窗口」。第 6 篇讲时间错配时做的年份硬过滤，解决的是「2020 年的数别混进 2025 年」；窗口长度是另一个维度，年份过滤管不着——同样是 2025 年，H1 的半年收入和 FY 的全年收入会一起放行。</p>
+<p>同类的还有两个更浅但常踩的坑。一是季度数和累计数：中报经常同时给「第二季度单季」和「上半年累计」两组数，chunk 和 prompt 不标明，模型很容易把单季当累计。二是单位伪冲突：同一家公司正文写「亿元」、表格写「百万元」，同一个数写出来对不上，看起来像口径冲突，其实只是单位不同。单位归一化能解，但要反防一手：别让系统把纯单位差异误报成口径冲突，否则告警会被噪声淹没。</p>
+<h2 id="陷阱三准则不同附注里的定义还会变"><a class="header" href="#陷阱三准则不同附注里的定义还会变">陷阱三：准则不同，附注里的定义还会变</a></h2>
+<p>第三个陷阱在跨市场披露时冒出来。同一家公司在港股、美股 ADR、A 股披露，遵循的准则不同：港股用香港财务报告准则（HKFRS），基本等同 IFRS；美股 ADR 可能按 IFRS 或 US GAAP；A 股是中国企业会计准则（CAS）。</p>
+<p>准则差异不是抽象名词，它落在具体科目上：收入确认时点不同；资产的计量模型不同——IFRS 允许重估模型，US GAAP 只允许成本模型；研发支出的资本化条件不同，IFRS 比 US GAAP 宽松。用户问「总资产」，检索如果混合召回港股报告和美股报告的 chunk，两个「总资产」不是一回事。至于多地报告怎么分层存、怎么做查询路由，是第 11 篇多市场架构要展开的事，这里只立住一件：同名指标不同准则，召回结果不可比。</p>
+<p>还有一层更隐蔽的：同一家公司自己也会改口径。收入确认口径变了、资产减值政策变了、合并范围变了——这些变更，主表只给变更后的结果，原因写在附注里。检索只命中主表数字、漏掉附注，答案就是「正确但过时」：数字本身没错，口径已经悄悄换了。</p>
+<h2 id="rag-里的三层应对"><a class="header" href="#rag-里的三层应对">RAG 里的三层应对</a></h2>
+<p>应对分三层，按我的取舍顺序串：首选、兜底、体验。</p>
+<p><strong>首选：口径进 metadata，检索时硬过滤。</strong> 在 <code>fiscal_year</code>（财年）、<code>period_type</code> 之外加三个字段：<code>accounting_standard</code>（IFRS / US GAAP / CAS / Non-GAAP）、<code>period_length</code>（3M / 6M / 12M，统计窗口的实际长度）、<code>metric_scope</code>（Consolidated / Segment / Adjusted）。用户问「IFRS 口径」，检索直接滤掉 Non-GAAP 的 chunk，不把难题留给下游。配套动作是口径信息随 chunk 走：财报里常常是定义在上一段、数字在下一段，分片时把口径上下文切掉了，metadata 标得再全，chunk 自己也说不清是哪个口径——所以 overlap 不只是防断句，也是保口径。代价是标注成本：三个字段都要在入库时标出来，规则盖不住的部分得靠 LLM 标。</p>
+<p><strong>兜底：生成时强制暴露口径。</strong> 用户的 query 经常不说口径，硬过滤无从滤起，只能靠 prompt 注入规则让 LLM 把关。我在用的版本大意是：</p>
+<blockquote>
+<p>以下 chunk 可能来自不同的会计口径（IFRS vs Non-GAAP）或不同统计窗口（半年 vs 全年）。回答时优先使用检索后 metadata 标注了 filter 约束的 chunk。如果你发现多个 chunk 的同类指标数值差异显著，先检查它们的口径标签是否一致。如果不一致，明确告知用户两个数字的口径差异，不要直接比较。</p>
+</blockquote>
+<p>三条规则各防一样东西：「优先用带 filter 约束的 chunk」防过滤结果和兜底结果混用；「差异显著先核对标签」防把口径差当成业务变化；「不一致就明说」防开场那种 1,150 亿对 1,320 亿的假矛盾。代价也明显：这层全靠 LLM 自觉，上下文一长、chunk 一多，规则就会失效。所以它只配当兜底，不能当主力。</p>
+<p><strong>体验：默认值策略。</strong> query 没指明口径时，默认给 IFRS/GAAP——这是审计报告的标准口径，最不容易踩雷；答案末尾固定附一行口径说明：以上数字基于 IFRS 口径，Non-GAAP 为 X，差异主要来自 Y。代价是默认值会掩盖用户真正想要的口径：习惯看 Non-GAAP 的人，拿到的永远是 IFRS，末尾那行他未必看。</p>
+<h2 id="为什么通用-benchmark-里不存在这个问题"><a class="header" href="#为什么通用-benchmark-里不存在这个问题">为什么通用 benchmark 里不存在这个问题</a></h2>
+<p>最后说一个容易被高分掩盖的事实：这个问题在通用 benchmark 里根本不存在。</p>
+<p>BEIR、MTEB、MS MARCO 这些主流评测——严格说三者性质不同：MS MARCO 是数据集，BEIR 和 MTEB 是建立在若干数据集之上的 benchmark，MTEB 评的也不止检索——它们的语料里都没有「同一指标在两种口径下数字不同」的样本。它们评的是语义匹配——query 和文档像不像；而口径不是语义问题，是业务规则。两个口径的 chunk 在语义上和 query 都高度相关，benchmark 会判它们都是好召回。</p>
+<p>所以 benchmark 高分只证明语义层合格，证明不了财报场景可用。垂直场景真正难的从来不是语义，是数据里的隐含约束——口径、窗口、准则、市场——通用评估里不存在，生产环境里无处不在。自己的评估体系怎么搭是第 14 篇的事，这里只记住结论：别拿通用榜单的分，当垂直场景的合格证。</p>
+<p>回过头看，这一篇讲的字段、规则、默认值，没有一样是检索技术本身。<code>accounting_standard</code> 是会计知识，<code>period_length</code> 是披露规则，prompt 里那条「不一致就明说」是财务对账的习惯。本质上是同一件事：把会计知识翻译成检索约束。领域知识对财报 RAG 不是锦上添花，是必须进入系统设计的那部分。</p>
+<p>就算时间和口径都对齐了，检索分数本身还有一层错觉——相似度 0.9 的 chunk，可能一点用都没有。下一篇（第 8 篇）拆这个：相似度高，为什么不等于相关。</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="为什么相似度高不等于相关度高"><a class="header" href="#为什么相似度高不等于相关度高">为什么相似度高不等于相关度高</a></h1>
+<p>我的面试题笔记里存着一段对话。候选人介绍：“我的 RAG 系统用了 Top-20 召回。“面试官追问：“相似度高等于相关度高吗？“紧接着是第二刀：“你召回 20 条，15 条是语义相近但答案无关的噪声，LLM 拿着这 15 条垃圾脑补答案——你还以为召回质量挺好？”</p>
+<p>两刀扎的是同一个地方：分数高，不等于答得对。第 7 篇讲口径陷阱，但就算时间和口径都对齐了，相似度这个指标本身还有一层错觉。这个问题我在腾讯中报上真的踩过，这篇把它拆开。</p>
+<h2 id="一两个分数相似度管长得像相关度管答得上"><a class="header" href="#一两个分数相似度管长得像相关度管答得上">一、两个分数：相似度管“长得像“，相关度管“答得上“</a></h2>
+<p>先把概念掰开。embedding 模型优化的目标是语义相似度——两段文本在语言表达上的接近程度；用户要的是信息相关度——这个 chunk 里有没有回答这个问题所需的信息。一个管“长得像“，一个管“答得上“。</p>
+<p>大多数日常问答里，两者是重合的，所以这个坑平时藏得住。问“腾讯 2025 年营收多少“，包含“2025 年营收 184,504“【待核实：单位与口径（百万元还是亿元）需按中报原文核对】的 chunk，和 query 语义最接近，同时也正好装着答案。分数排第一，答得也对，皆大欢喜。</p>
+<p>问题出在脱钩的时候。一旦两者脱钩，相似度分数就从路标变成误导——它还在诚实地告诉你哪段话长得像，但你需要的已经不是长得像了。下面三个现场，都是财报库里真实出现过的脱钩。</p>
+<h2 id="二三个脱钩现场满分相似零分信息长什么样"><a class="header" href="#二三个脱钩现场满分相似零分信息长什么样">二、三个脱钩现场：满分相似、零分信息长什么样</a></h2>
+<p><strong>现场一：目录页。</strong></p>
+<p>问“腾讯的毛利率“，召回结果里排前面的是个目录 chunk：“毛利……第 45 页”。“毛利“这个 token 在语义上稳稳命中 query，分数很高；但这个 chunk 的信息价值是零——它只告诉你答案在第 45 页，自己一个字也没有。</p>
+<p>embedding 为什么上当？它的训练任务是判断语言表达的相似性，“毛利“对“毛利率”，字面近、语义近，分数自然高；它不关心这句话里有没有数值。目录页就是这个问题最极端的样本：满分相似，零分信息。看到 0.9 的相似度打在一个目录 chunk 上，你就知道这两个分数从来不是一回事。</p>
+<p><strong>现场二：语义同构，约束不同。</strong></p>
+<p>问 2025 Q4 的营收，2020 Q4 的营收 chunk 在文字上几乎同构——都是“第四季度营收 XX 亿元，同比增长 YY%“这一句式。embedding 分不清谁是谁。这种脱钩比目录页隐蔽：chunk 本身不是垃圾，只是答错了年份。第 6 篇讲时间错配时把解法展开过，这里只登记现象，不重复展开。</p>
+<p><strong>现场三：功能性句子。</strong></p>
+<p>“如上一节所述”“下表列出了”“以下数据来自”——这类过渡句在财报里到处都是。embedding 对“如上一节所述，本集團的營收結構發生了以下變化“和“本集團營收 1,845 億元“这两句话的评分没有区分度，因为它学的是判断语言相似性，不是判断信息有效性。</p>
+<p>麻烦在于，过渡句的价值是双面的。它不是答案本身，多数时候该降权；但它是指向答案所在 chunk 的路标，有时又该保留。一刀切删掉所有过渡句，等于把路标也拆了。</p>
+<h2 id="三bi-encoder-打分高cross-encoder-打分低说明什么"><a class="header" href="#三bi-encoder-打分高cross-encoder-打分低说明什么">三、Bi-Encoder 打分高、Cross-Encoder 打分低，说明什么</a></h2>
+<p>面试对话里还有一问：“如果 Bi-Encoder 打分高，但 Cross-Encoder 打分低，说明什么问题？”</p>
+<p>两种模型的差别在输入方式。向量检索用的是 Bi-Encoder：query 和 chunk 各自编码成向量，再算相似度，编码时两者互相看不见，吃到的是整体语义相似。reranker 常用 Cross-Encoder：把 query 和 chunk 拼成一对一起过模型，输出两者的相关性分数——因为它看得见 query 里的每个词和 chunk 里每个词的逐词交互，这个分数比“像不像“更接近“答不答得上“。</p>
+<p>所以两个分数打架，不是哪个模型坏了，而是第一节那组概念的直接映射：Bi-Encoder 的分是“像不像“，Cross-Encoder 的分更接近“答不答得上“。拿目录页那个 chunk 去过 Cross-Encoder，它能看出“毛利……第 45 页“没法单独回答“毛利率是多少“——相似度和相关度的区分不是玄学，是架构差异的必然结果。</p>
+<p>笔记里面试官还有一句：“召回只是第一步，Rerank 才是决定送给 LLM 什么内容的关键。“这句我只同意一半：rerank 确实守在送给 LLM 之前的最后一道关口，但它是兜底，不是主力。为什么，下一节讲。</p>
+<h2 id="四缓解手段先过滤再提密度最后兜底"><a class="header" href="#四缓解手段先过滤再提密度最后兜底">四、缓解手段：先过滤，再提密度，最后兜底</a></h2>
+<p>三个手段按动手位置从上游到下游排，每个都有代价。</p>
+<p><strong>首选 metadata 硬过滤。</strong> 目录页、页眉页脚、纯页码这类噪声 chunk，embedding 天生会中招——不是模型的错，是数据里混进了不该参与检索的东西，那就别指望调 embedding 模型修噪声。把 <code>section=目录</code>、<code>noise_type=page_header</code> 的 chunk 在检索前滤掉，或者至少在排序时降权。字段怎么设计、怎么标，第 5 篇讲 metadata 时展开过。代价也摆在明处：噪声要在 ingest 阶段标出来，规则漏了，噪声就漏进库；规则太狠，又误杀正常 chunk。</p>
+<p><strong>第二，提升 chunk 的信息密度。</strong> 在分片阶段——TextBlock 合并为 chunk 那一步——保证每个 chunk 至少含一个实质性内容：一个数值、一个日期、一个定义、一个断论。反过来，一个 chunk 的 token 里停用词和“如下所示““表中数据“这类结构性文字占了一半以上，信息密度就高不起来，不配排在检索结果前面。这是第 4 篇分片逻辑的延伸：切得好不好，最终会反映在检索分数的质量上。代价是分片更慢，规则要跟着文档类型维护。</p>
+<p><strong>第三，reranker 兜底。</strong> 前两招漏掉的高相似低信息 chunk，Cross-Encoder 在精排阶段还能再筛一遍，上一节说的“答不答得上“就是它给的信号。但边界必须立刻说清：reranker 只能在候选集里调排序，正确答案不在候选集里，它没救。这个论点第 10 篇会展开，这里先记住结论就行。</p>
+<h2 id="五长期方向多模态-retrieval-会缓解但别指望它根除"><a class="header" href="#五长期方向多模态-retrieval-会缓解但别指望它根除">五、长期方向：多模态 retrieval 会缓解，但别指望它根除</a></h2>
+<p>还有一个更远的方向值得跟踪。ColPali、ColQwen 这类 vision-language retrieval 模型不走 OCR 文本提取，直接把 PDF 页面当图像做视觉 embedding——文本内容以字形和布局的形态被视觉编码器隐式捕获。这意味着它天然能区分目录页和正文页的排版、表格区和段落区的视觉差异——现场一那类问题，在“看图“的模型眼里不该发生。方向是对的。</p>
+<p>但这条路也有边界：财报、法律这类文档结构极复杂的场景，实测仍有距离，财报上的 fine-tune 还不足【待补：目前只有定性判断，缺具体对比实测数据】。短期更稳的，仍然是 metadata 过滤加 reranker 的组合。</p>
+<p>相似度分数只是排序的依据，不是正确的保证。看到 0.9 的分数，先问“它答得上吗“，再问“它排第几“。</p>
+<p>本篇讲的是单路向量检索本身的错觉。工程上的第一条补救不是继续打磨这一路，而是给它找个搭档：专有名词、编号、代码这些字面精确匹配的活，向量天生干不好，得让 BM25 上。第 9 篇《Hybrid Retrieval：BM25 和 Dense 到底怎么分工》就讲这个搭档怎么配。</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="hybrid-retrievalbm25-和-dense-到底怎么分工"><a class="header" href="#hybrid-retrievalbm25-和-dense-到底怎么分工">Hybrid Retrieval：BM25 和 Dense 到底怎么分工</a></h1>
+<p>前阵子一个小团队的朋友问我：库里就几百份财报 PDF，都是同一类文档，query 基本是“腾讯今年赚了多少“这类语义型问题，要不要上 Hybrid？我说先别上。</p>
+<p>第 8 篇刚说过单路向量的相似度不可靠，很多人的本能反应是“那两路一起上“。这个反应很正常，但在这个场景里是浪费：两路排序结果会高度重叠，BM25 加进来没有增量，白白多维护一套索引和一段融合逻辑。混合不是银弹，先想清楚什么时候不需要它，再谈怎么分工。</p>
+<h2 id="先说什么时候不需要-hybrid"><a class="header" href="#先说什么时候不需要-hybrid">先说什么时候不需要 Hybrid</a></h2>
+<p>我朋友那个库，恰好把“不需要 Hybrid“的三个条件占全了：</p>
+<ul>
+<li>文档库同质：几百份全是财报 PDF，结构、语言、写法高度一致；</li>
+<li>query 模式单一：基本都是事实型语义查询，“赚了多少”“毛利率多少”，没有精确编号、代码这类必须字面命中的东西；</li>
+<li>文档语言和 query 语言一致：中文问、中文答，跨语言匹配用不上。</li>
+</ul>
+<p>这三个条件凑齐时，Dense（向量检索）和 BM25（词频检索）返回的排序列表会高度重叠——语义型 query 里没什么必须字面命中的 token，BM25 的看家本领用不上，把两路融合起来自然没有增量。</p>
+<p>没有增量还不算完，成本是实打实的：向量索引之外要再维护一套倒排索引，外加一段融合逻辑。多一个部件，就多一个会坏、要调参的地方。对于一个几百份文档的小库，这笔账怎么算都不划算。</p>
+<p>那什么时候回报最大？文档类型多样（PDF、网页、PPT 混在一起）、中英混合、数字密集（财报、技术规范）、精确查询和语义查询各占一半的场景。这几条，一个正经的财报 RAG 几乎全占——所以分工这件事，还是得展开讲。</p>
+<h2 id="两路各吃哪碗饭"><a class="header" href="#两路各吃哪碗饭">两路各吃哪碗饭</a></h2>
+<p>先交代一句背景：BM25 按词频、IDF（词的区分度）和文档长度归一化打分，Dense 基于语义向量，社区的主流叙事是“Dense 更强，全用 Dense“。生产环境不是这么回事，两路各有各的优势区。</p>
+<p>BM25 吃三摊：</p>
+<ul>
+<li>精确术语。用户搜“所得税费用“，要的就是包含这五个字的 chunk，不是“tax expense“，也不是“税收支出“。Dense 会把这几种说法映射到相近的向量，语义上它没错，但用户查的是那个确切的科目名。这类词在财报里一抓一把：资本开支、毛利率、非国际财务报告准则、回购、股息。</li>
+<li>数字和编号。embedding 模型不是为数值型 token 优化的，“184,504“对它来说是个弱信号；产品型号、条文编号这类东西同理。BM25 直接做字符串匹配，数字不会被弱化。</li>
+<li>领域术语。“递延所得税资产”“商誉减值测试“这种词，出现本身就是强信号——它们在通用语料里出现频率低，恰恰因为稀缺才有区分度。硬要做语义扩展，反而可能把噪音引进来。</li>
+</ul>
+<p>Dense 吃另外三摊：</p>
+<ul>
+<li>同义改写。用户问“腾讯赚了多少钱“，chunk 里写的是“本公司权益持有人应佔盈利“——两边词表零重合，BM25 一个 token 都匹配不上，Dense 能对上。财报里“换说法不换意思“是常态，这正是 Dense 的主场。</li>
+<li>跨语言。中文 query 配英文 chunk，multilingual 的 embedding 能匹配，BM25 完全做不到。</li>
+<li>长 query 配短 chunk。问题拖到 20 多个词时，BM25 容易在短 chunk 上过度匹配其中几个高频词——撞上不代表相关；Dense 的语义编码对长短文本的组合更均衡。</li>
+</ul>
+<p>所以这不是谁强谁弱的问题，是匹配机制不同：一个数词频，一个算语义。</p>
+<h2 id="纯-dense-翻车的两个现场"><a class="header" href="#纯-dense-翻车的两个现场">纯 Dense 翻车的两个现场</a></h2>
+<p>光列优势区有点干，讲两个翻车现场，都是“现象 → 为什么“的路子。</p>
+<p>第一个，数字查询。问“腾讯 2025 H1 经营盈利是多少“，正确的 chunk 里写着“經營盈利 54,943 百萬元“。但 Dense 很可能把另一条排在前面：“經營盈利較去年同期增長 32%，達到近年來新高”。</p>
+<p>为什么会这样？query 问“是多少“，“增長 32%、達到新高“这种描述性语句，措辞上和 query 天然更接近，文字也更丰富；而“54,943“对 embedding 是弱信号——模型对数值的理解远不如对自然语言，干巴巴的数字陈述在语义空间里没什么可抓的。真正有答案的那条 chunk，反而被挤下去了。BM25 不吃这个亏：在它眼里“經營盈利”“54,943”“百萬元“是平等的 token，直接匹配，数字不被弱化。类似的还有：不同年份的管理层讨论都在讲“增长、投入、挑战”，Dense 会把语气相似的段落拉得很近——不过年份误召回是第 6 篇的地盘，这里只提一句。</p>
+<p>第二个，目录污染。目录页把“收入、毛利、现金流、风险因素“全抄了一遍。Dense 会认为它和任何包含这些关键词的查询都高度相关——目录的语义覆盖了整个 PDF，而 embedding 是整段语义的压缩，“什么都有“压缩出来的结果，自然和谁都像。BM25 反而能看出差别：目录页全是孤立的名词性短语，没有完整句子，没有实质数值；正文讲“收入“的段落是带数字、有动词的长句。两种文本的词频分布完全不同。</p>
+<p>两个现场说的是一回事，和第 8 篇呼应：相似度看不见“哪条 chunk 真有答案“。要说明的是，这两个案例都是定性复盘，我没有在自有库上做过“纯 Dense vs Hybrid 召回率“的对照实测【待补：自有库上纯 Dense 与 Hybrid 的召回率对比实测数据，目前只有定性结论】，所以这里只给方向，不给百分点。</p>
+<h2 id="三种混合实现和各自的代价"><a class="header" href="#三种混合实现和各自的代价">三种混合实现，和各自的代价</a></h2>
+<p>真要上混合，有三种做法，按我个人的推荐程度从低到高排。</p>
+<p>方式一，分数线性加权，最简单：</p>
+<pre><code class="language-python">final_score = alpha * dense_score + (1 - alpha) * bm25_score
+</code></pre>
+<p>alpha 的经验区间是 0.6–0.8——注意这是经验起点，不是标准值，得按自己的场景调。代价在于两个分数的量纲不同：余弦相似度理论区间是 [-1, 1]（现代模型的向量实际多为非负，分数集中在正区间），BM25 的分数没有固定上界——k1 参数让单个词的词频贡献饱和收敛，但总分仍随命中词数和文档长度漂移。所以线性加权有个前提经常被略过：两路分数必须先各自归一化（min-max 或 z-score 都行），不归一化，alpha 的经验值没有任何参考意义。就算归一化了，换个 embedding 模型、换个文档库，alpha 可能也都得重调。</p>
+<p>方式二，RRF（倒数排名融合）：</p>
+<pre><code class="language-python">rrf_score = 1/(k + rank_dense) + 1/(k + rank_bm25)
+</code></pre>
+<p>思路是扔掉原始分数，只按两路各自的排名融合，k 常取 60（同样是经验起点）。量纲问题直接消失，alpha 也不用调了，而且天然对异常排名不敏感：某一路失手把一条无关 chunk 打到第 1 名，它的贡献也会被排名衰减按住——k 控制的就是这个衰减速度，第 1 名和第 2 名的贡献差距明显，第 59 名和第 60 名几乎没差。代价是排名把分数里的信息量一起扔了：两路都信心十足，和两路都勉强及格，在 RRF 眼里长得一样。</p>
+<p>方式三，合并去重 + 精排收口，也是我最推荐的：两路各取 top-k，合并去重后交给 reranker 精排。流程用伪代码表示：</p>
+<pre><code class="language-python">dense_hits = dense_search(query, top_k=100)
+bm25_hits  = bm25_search(query, top_k=100)
+candidates = merge_dedupe(dense_hits, bm25_hits)
+final      = rerank(query, candidates)   # top-100 同样是经验起点
+</code></pre>
+<p>前两种方式是在分数层面融合，绕不开“两路分数可比“这个前提；方式三干脆不比分数，在候选集层面融合——两路各自把自家最好的 top-100 交上来，合并去重（重叠的条目正好说明两路都认可它），排序的事整个推给精排。这个定位下，BM25 是 Dense 的“补充“而不是“竞争对手“：BM25 抓到的可能是 Dense 漏掉的精确匹配，Dense 抓到的可能是 BM25 漏掉的语义改写。</p>
+<p>代价有两笔：一是两套索引都得维护，向量库加倒排，构建和存储成本翻倍；二是合并之后必须靠 reranker 收口——两堆分数不可比的结果混在一起，总得有人把它们排成一个顺序。我的全流程笔记里记过一个估数：不加 reranker 的检索结果通常有 30–50% 不相关（这是笔记里的估计，不是本篇的实测）。</p>
+<p>另外提一句变体：也有人做“先一路粗筛、再另一路精排“的级联，比如先 BM25 筛出候选再用 Dense 排。这是另一种思路，别和上面这种并行合并混为一谈。</p>
+<h2 id="收尾分工的依据是-query-类型不是信仰"><a class="header" href="#收尾分工的依据是-query-类型不是信仰">收尾：分工的依据是 query 类型，不是信仰</a></h2>
+<p>带走一个判断顺序就够。先看自己的 query 分布：精确术语、数字、编号占比高，BM25 必须上桌；同义改写、跨语言的多，Dense 为主；两头都多，上混合——优先 RRF 或“合并 + 精排“，别费心调 alpha。要是文档同质、query 单一、语言一致，回到第 1 节，纯 Dense 就够了。</p>
+<p>BM25 和 Dense 各管一摊，按 query 类型分工，不按社区热度站队。</p>
+<p>最后留个引子。混合检索做到最后你会发现，它只是把问题往后推了一层：合并去重之后，两堆结果总得排成一个顺序，这个活天然落在精排层。很多人看到合并后效果一般，第一反应是换个更强的 reranker——且慢，先看看你喂给它的是什么。这是下一篇《Rerank 不是瓶颈，前面的脏数据才是》要聊的。</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="rerank-不是瓶颈前面的脏数据才是"><a class="header" href="#rerank-不是瓶颈前面的脏数据才是">Rerank 不是瓶颈，前面的脏数据才是</a></h1>
+<p>系统上线之后，团队做了件“标准动作“：向量检索后面接一个 reranker。接完一测，端到端延迟多了几百毫秒，答对率却几乎没动。第一反应很一致：要么换个更快的 reranker，要么干脆把它砍了。</p>
+<p>先摆两个数字定调，都是经验口径，不是 benchmark 实测：rerank 这一步通常带来 200~500ms 的额外延迟；而初轮召回的 top-k 里，通常有 30%~50% 的候选本来就不相关——token 看起来像，跟用户的问题没有真正对应。这两个数字放在一起，判断其实已经出来了：瓶颈不在 reranker，在它面前的候选集。</p>
+<h2 id="reranker-值多少钱成本从哪来"><a class="header" href="#reranker-值多少钱成本从哪来">reranker 值多少钱，成本从哪来</a></h2>
+<p>先把话说公道：这篇不是来否定 rerank 的。在 RAG 链路里，rerank 是回报最高的单步操作。原因在机制上：向量检索是双塔结构（bi-encoder），query 和 passage 各自独立编码、互不见面，打分天然粗糙；reranker 是 cross-encoder，把 query 和候选同时喂进模型，让两者在注意力里充分交互，判断精度高一截。所以“粗排之后加精排“这笔钱，值得花。</p>
+<p>成本的来源同样清楚。cross-encoder 每判一对 (query, chunk) 就是一次完整推理，成本跟候选数基本线性相关：给它 50 个候选，它做 50 次推理；给它 100 个，就做 100 次。这就是为什么生产链路里几乎没人拿它当第一道筛子——一旦铺到大量候选上，延迟立刻失控。回报最高和最容易变慢，本质是同一件事：它干的是高语义计算密度的活儿，每多一个候选就多一次重型 forward。</p>
+<p>财报场景把这个矛盾又放大了三层。</p>
+<p>一是跨年份文本极度相似。同一家公司 2024 Q2 和 2025 Q2 的管理层讨论、风险因素、经营回顾，常常只换了几个数字，embedding 看谁都像，初轮召回把它们成批拉出来，reranker 面对的是一堆“看起来都对“的候选，工作量天然偏大。</p>
+<p>二是 hybrid 的副作用。财报适合混合检索，但混合的直接后果是候选池更大；不收敛的话，rerank 的负担继续往上涨。</p>
+<p>三是财报 chunk 天然密集。一页摘要里可能同时出现收入、毛利、经营利润、每股盈利、同比、环比——一个 chunk 混着 5 个指标、2 个时间口径是常态。这种 chunk 对初轮检索很“友好“，什么关键词都带一点；对 reranker 极不友好，它得替你判断用户真正关心的是哪个指标，判别难度显著上升。</p>
+<p>又贵又值。这个张力先立在这儿。接下来的问题是：贵的真正原因，到底是模型，还是它面前的世界。</p>
+<h2 id="它救不了什么三个候选集层面的病"><a class="header" href="#它救不了什么三个候选集层面的病">它救不了什么：三个候选集层面的病</a></h2>
+<p>reranker 的工作范围有一条硬边界：它只在候选集里挑。正确答案没进 top-N，精排再好也排不出来。我在财报链路里碰到的三种病，全都病在这条边界之外。</p>
+<p><strong>年份错配。</strong> 用户问 2025 Q4 营收，正确 chunk 排在第 137 位——这个数字是举例，意思是它根本没进 top-100。reranker 看不见它，自然也救不了它。解法不在精排，在检索前的 metadata 硬过滤：<code>report_year != 2025</code> 的 chunk 全部排除，候选集从 10,000 窄到 200（同样是示意量级），正确答案自然进候选。第 6 篇讲时间错配时把这条路展开过，这里只补一句：这是过滤的病，不是排序的病。</p>
+<p><strong>单位缺失。</strong> “营收 184,504（百万元）“和“营收 1,845（亿元）“是同一个数字，差 100 倍。reranker 看到两个 chunk 都有“营收“和数字，但它不认识“百万元“和“亿元“之间的换算关系。这是 chunk 的 metadata 层标 <code>unit</code>、在检索或生成阶段做数值归化的事，精排插不上手。</p>
+<p><strong>口径不同。</strong> “期內盈利 1,150 亿（IFRS）“和“1,320 亿（Non-GAAP）”，语义高度相似，口径完全不同。reranker 只看语义，不会按口径做区分——第 7 篇专讲口径陷阱，这里不展开。</p>
+<p>三个病的共同点：都发生在候选集进入 reranker 之前。</p>
+<h2 id="它面前的世界五层上游优化"><a class="header" href="#它面前的世界五层上游优化">它面前的世界：五层上游优化</a></h2>
+<p>核心思路一句话给掉：输入 200 条低质量候选，reranker 再快也是浪费——200 次推理全是白烧；把候选压到 20 条高质量的，就算每次推理慢一点，总延迟反而可控，精度还更高，因为它不再被低质量样本拖票。</p>
+<p>我在白板上画的处理顺序是：先减少噪声 → 再缩小检索范围 → 再提高首轮候选质量 → 最后才交给 reranker 做精排。对应五层，逐层说。</p>
+<p><strong>第一层，ingest 清洗。</strong> 先看噪声从哪来。目录页如果不单独处理，会把“收入、毛利、现金流、风险因素“这些高频词完整抄一遍，任何营收类查询都先命中目录——第 8 篇讲相似度错觉时，拿目录页当过“满分相似、零分信息“的典型。页脚里的公司全名是另一种污染：它出现在每一页，让所有 chunk 被同一段噪声“拉近“，embedding 空间里区分度整体下降。这些结构噪声混进召回，reranker 就被迫处理一批本不该进来的候选。我的 <code>process_pdf_for_rag.py</code> 里已经做进去了三件事：过滤页脚和纯页码、跳过目录页、用清洗后的正文层数据构建 chunk。解析和 reading order 的细节第 2 篇写过，这里只强调一句：清洗本身不是 rerank，但它直接决定 rerank 的候选分布。</p>
+<p><strong>第二层，metadata 预过滤。</strong> 财报问题天然带强约束：公司、年份、报告类型、期别，常常直接写在用户的问题里。既然检索范围本来就不该是全库，最合理的做法是先过滤、再检索。chunk schema 里通常已经有这些字段：</p>
+<pre><code>company / report_year / report_type / language /
+section / period_type / unit / page_start / page_end
+</code></pre>
+<p>它们的价值不只是生成答案时贴 citation，更重要的是让检索一开始就缩圈。“先 filter 再 retrieve“在财报场景又准又快，因为它直接砍掉了 Dense 检索和 rerank 需要面对的 chunk 总量。代价得认：这个策略依赖 query parsing 足够稳定，问题太模糊、约束抽不出来时，过早过滤可能把正确答案一起挡在门外。第 6 篇的四层解法里它排第一，理由是同一个——财报场景通常满足“问题自带约束“这个前提，所以它在这里特别有效。</p>
+<p><strong>第三层，structure-aware chunking。</strong> 很多“reranker 慢“的表象，根子是 chunk 设计把活儿留给了 reranker。一个 chunk 里同时有 2025H1 和 2024H1、混着表头、正文解释和几个不同指标，reranker 就得先替系统做一遍“语义拆包“，再判断相关性——候选一多，这笔额外认知开销非常贵。我的处理脚本不按固定 token 长度暴力切，而是：识别 heading，让 chunk 继承 <code>section</code>；抽取 <code>period_type</code> 和 <code>unit</code>；period 变化时主动 flush，不让两个时间粒度住进同一个 chunk；长段落再做二次切分，保留少量 overlap。实测数字：腾讯 2025 中报——就是第 1 篇开场进系统的那份——清洗后 119 页，最终产出 345 个 chunk。代价摆在明处：chunk 变多、首轮索引变大。但只要 pre-filter 和 hybrid 跟上，这笔代价通常比让 reranker 处理“大而脏“的候选划算。切分的完整改造记录在第 4 篇。</p>
+<p><strong>第四层，hybrid 提高首轮 precision。</strong> 先说一个我见过的错误操作：怕漏召回，就把 top-k 一路往上加。多出来的候选大多是低质量假阳性，rerank 不会因此更准，只会更慢。正确的方向是让首轮候选本身更像“值得精排的候选“。财报里有两类相关性：lexical 的——术语、指标名、缩写、数字口径，比如资本开支、股份回购、non-GAAP；semantic 的——管理层解释、风险描述、经营表述。只用 Dense，会把各年份“语气相似“的管理层讨论一起拉进来；只用 BM25，又扛不住表达变体。混合召回的目的不是让候选更多，而是让真正有希望进入最终答案的候选更早出现。代价也明码标价：两套索引，加一套融合逻辑。第 9 篇讲过 BM25 和 Dense 怎么分工，这里从 rerank 视角补一句：hybrid 减少的是精排阶段的无效工作量。</p>
+<p><strong>第五层，section-aware retrieval。</strong> section 信息比多数人以为的更有用：问风险，答案更可能在风险因素和附注；问管理层判断，更可能在主席报告和 MD&amp;A；问精确数字，更可能在财务摘要、主表和附注。系统如果能先判断用户在问“数字“、“原因“还是“风险”，就优先去对应 section 里检索，reranker 就不用在完全异质的 section 之间做全量比较，延迟和误判都会下降。这一层的关键句我直接给：不是让模型更聪明，是让模型面对的比较任务更单纯。</p>
+<p>五层之外，还有一类查询要单拎出来：跨期对比。“对比腾讯 2024 和 2025 中期报告里的广告业务变化”——如果当成一个 query 走单跳检索，会把两个时期的高相似 chunk 一次性全塞进候选池，rerank 压力巨大，还很容易出现“语义对、年份错“。更稳的做法是 multi-retrieval + synthesis：2024 检一遍、2025 检一遍，各自精排，最后在生成阶段汇总比较。链路变长了，但每次面对的候选集更小、语义更单纯。对财报这种跨期文本高度相似的数据，分而治之比一次性大上下文硬拼更稳。</p>
+<h2 id="复杂度该花在哪一层"><a class="header" href="#复杂度该花在哪一层">复杂度该花在哪一层</a></h2>
+<p>五层收拢成一本账，其实是同一个取舍。</p>
+<p>我的优化顺序固定为四步：metadata 硬过滤 → 向量检索 + query 改写 → reranker 精排 → LLM prompt 约束。从第一步到第四步，边际收益递减；经验上第一步能解决六成上下的问题——这是我在自己项目里的估算口径，不是统计结论——但不做第一步，后面三步全做也救不回来。</p>
+<p>两种方案并排看更直观：</p>
+<pre><code>方案 A：PDF 转文本 → 固定长度切块 → 全库 dense → 放大 top-K → rerank 兜底
+方案 B：清洗结构噪声 → structure-aware 分片 → 挂 metadata
+        → pre-filter / section-aware → hybrid → 小候选集 rerank
+</code></pre>
+<p>方案 A 实现快，demo 容易跑起来；但随着文档量增大，rerank 越来越慢，而且慢得不值——它精排的大量候选，本来就不该进入精排阶段。方案 B 工程复杂度更高、调试点更多，但 rerank 的成本被控制在真正接近答案的候选上。财报这种强约束、高相似、数字敏感的场景，我几乎只选 B。</p>
+<p>边界也必须划：换成知识库 FAQ 这类场景，chunk 数量小、文档之间差异大，方案 A 完全够用——reranker 处理 200 个候选，按经验也就 200ms 上下。别把财报场景的取舍，直接套到所有 RAG 系统上。</p>
+<h2 id="什么时候才轮到-reranker用武之地与选型"><a class="header" href="#什么时候才轮到-reranker用武之地与选型">什么时候才轮到 reranker：用武之地与选型</a></h2>
+<p>上游五层做完，reranker 不是没用了，是终于轮到它干正事了。三类场景它不可替代：</p>
+<ul>
+<li>语义相近但细节不同的排序。问“腾讯的游戏业务策略“，候选里增值服务、国际游戏、国内游戏、电竞都在，谁排前面需要精细区分，向量检索的排序粒度不够。</li>
+<li>跨语言匹配。中文提问、chunk 中英混合，“revenue“和“收入“在 embedding 空间里有距离，在 cross-encoder 的交互编码里会被连起来。</li>
+<li>短 query 长 chunk。问“腾讯利润“，答案埋在 800 token 的管理层讨论里，短 query 对长 chunk 的 embedding 匹配天然吃亏。</li>
+</ul>
+<p>三类的共同点：正确答案已经在候选集里，只是排名不够高。reranker 干的是把第 15 名提到第 1 名的活儿——这是它的用武之地，也是它的全部边界。</p>
+<p>反过来，什么时候可以不开？我能给的判断只有一半：chunk 少、文档差异大的场景（比如上一节的 FAQ），候选集天然干净，精排的边际收益小。这个结论目前只有延迟一侧的估算撑着，我没做过开/不开 reranker 的答对率对照实测【待补：缺一组开/不开 reranker 的延迟与答对率实测数据，素材中没有，发布前如能补测可替换此句】，所以这条边界按保守口径写：候选集小且干净时可以不开，拿不准就开。</p>
+<p>真要上 reranker，选型看三个指标，都是工程口径。一是推理延迟：cross-encoder 单次推理大约 10-100ms，逐对串行跑 top-100 就是 1-10 秒——但批处理（batching）能把 top-100 压进几百毫秒到 2 秒以内，交互式场景优先选支持 batch 的方案。二是语言支持：bge-reranker-v2-m3（基于 bge-m3 的轻量多语言 reranker）对中文支持好，Cohere 的 rerank 系列多语言好但 API 成本高。三是和 embedding 模型的互补性：向量检索已经用了 multilingual-e5-large，reranker 就不必配同系列，补短板比叠长板值。</p>
+<h2 id="放大器不是净化器"><a class="header" href="#放大器不是净化器">放大器，不是净化器</a></h2>
+<p>收束本篇，两句话。reranker 最合理的位置，不是大规模粗筛，而是小候选集上的精排器；跳过上游直接加 reranker，就像给一座地基不稳的房子装更好的窗户——窗户是真的好，房子还是会歪。它是放大器，你给它什么它就放大什么，包括脏数据；它不是净化器。</p>
+<p>篇章二到这里走完一圈：第 6 篇的时间、第 7 篇的口径、第 8 篇的相似度、第 9 篇的单路、本篇的精排。五个错觉摆在一起，共同点不是“最后的模型不行“，而是检索链路的每个环节都藏着没检验过的假设。</p>
+<p>单市场的检索链路到此讲完了。把镜头拉远一步：A 股、港股、美股的财报一起进系统，格式、准则、货币全不一样，一套向量库还扛得住吗？下一篇《A 股、港股、美股，不能只用一套向量库》讲这个。</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="a-股港股美股不能只用一套向量库"><a class="header" href="#a-股港股美股不能只用一套向量库">A 股、港股、美股，不能只用一套向量库</a></h1>
+<p>第 10 篇聊 Rerank 时，结尾把镜头拉远问过：单市场能跑，三个市场呢？我当时的答案来得很快——港股的财报 RAG 跑通之后，我做的第一件事，就是把 A 股年报、美股 10-K 也塞进去，同一条管道，同一个向量库。demo 阶段看起来成了：前 20 个测试问题，答对约 18 个。</p>
+<p>真实使用的第一周，连出三件事。</p>
+<p>有人问“比亚迪的收入“。比亚迪 A 股、H 股两地上市：A 股年报，人民币、CAS 口径；H 股年报，港币、IFRS 口径。两份文件两个口径，同名“收入“后面的数字对不上；系统检索到哪份就答哪份，答案里既不说币种，也不说口径。</p>
+<p>第二件，表格被按文本切散。模型读到“流动资产 200 应收账款 80 存货 60“——数字是读到了，哪一年、哪个币种、哪个口径，全丢在 chunk 边界外面。</p>
+<p>第三件最难看。“对比 50 家半导体公司过去 3 年的资本开支”，这本质是条 SQL，被逼着用 RAG 答，产出一段流畅的、错的、且无法验证的总结。</p>
+<p>三件事，三个病根：口径与 Schema、存储分层、查询路由——这一篇就按这三条，把重建架构时的判断摊开讲。</p>
+<h2 id="一先把三地的差异摊在桌上"><a class="header" href="#一先把三地的差异摊在桌上">一、先把三地的差异摊在桌上</a></h2>
+<p>三地的差异不是“语言不同“一句话能概括的。把六个维度列出来，每一行都对应一个工程决策：</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>维度</th><th>A 股</th><th>港股</th><th>美股</th></tr>
+</thead>
+<tbody>
+<tr><td>语言</td><td>简体中文</td><td>中英双语</td><td>英文</td></tr>
+<tr><td>会计准则</td><td>CAS</td><td>HKFRS / IFRS</td><td>US GAAP</td></tr>
+<tr><td>币种</td><td>CNY</td><td>HKD</td><td>USD</td></tr>
+<tr><td>报告类型</td><td>年报、半年报、季报</td><td>年报、中期报告</td><td>10-K、10-Q、8-K、20-F</td></tr>
+<tr><td>主流格式</td><td>PDF（证监会统一格式）</td><td>PDF（公司自定排版）</td><td>HTML（SEC filing）+ XBRL + PDF</td></tr>
+<tr><td>数字单位</td><td>千元 / 万元 / 亿元</td><td>百万元</td><td>millions / billions</td></tr>
+</tbody>
+</table>
+</div>
+<p>（港股报告类型以“年报 + 中期报告“为准——主板季报并非强制披露，GEM 另有季报要求。美股那栏顺带说一句：10-K 和 20-F 不会同时出现在一家公司身上，10-K 是美国本土公司的年报，20-F 是外国私人发行人的年报；而且外国发行人可以直接按 IFRS 申报 20-F，不强制转 US GAAP。另外，只在 OTC 市场挂 ADR 的公司（比如腾讯的 TCEHY）不是 SEC 申报主体，10-K、20-F 都不用交。）</p>
+<p>逐行说后果。</p>
+<p>语言决定 embedding 必须中英都盖得住，候选是多语言模型（BGE-M3、multilingual-e5 一类）。具体怎么选是第 12 篇的事，这里只把约束立住。</p>
+<p>准则决定同名指标要建映射表。“营业收入“在 A 股、“Revenue“在美股、“Turnover“在港股——三个词文本完全不同，金融语义是同一个指标。反过来，“净利润“和“归属于母公司股东的净利润“文本上很像，口径却是两回事。纯向量检索对文本相似敏感、对会计语义无感，这两类它都分不开。</p>
+<p>币种决定要不要统一换算，以及原币种必须进 metadata。报告类型决定 metadata 字段怎么设计，保证跨市场查询不串库。主流格式决定解析路径——这是最关键的一行，下一节展开。</p>
+<p>表之外还有一层更要命的判断：同一个 embedding 模型，对繁中、简中、英文的编码质量不可能一致。用 multilingual-e5-large 这类多语言模型，中文段落和英文段落的向量分布天然存在偏移——在同一个向量空间里，英文文档的同类 query 会系统性地排在中文文档前面或后面【待补：同库混检的偏序幅度缺实测量化，此处保持定性表述】。这意味着“一个库 + filter 区分市场“在检索质量这层就不成立，不只是工程洁癖。</p>
+<p>回头把开场三件事对进表里：第一件对应币种、准则、报告类型三行；第二件对应主流格式——表格解析的欠账；第三件不在表里，它是问题类型的问题，第五节讲。</p>
+<h2 id="二四步管线和存储必须分层的具体含义"><a class="header" href="#二四步管线和存储必须分层的具体含义">二、四步管线，和“存储必须分层“的具体含义</a></h2>
+<p>重建后的架构一句话：统一的是 Schema 和查询路由，分层的是存储。管线分四步，每步负责一种“对齐“：</p>
+<pre><code>原始文件（A 股 PDF / 港股 PDF / 美股 HTML + XBRL + PDF）
+        │
+        ▼
+┌───────────────┐
+│ 1. 识别分类    │  市场 + 报告类型 + 年份
+└──────┬────────┘
+       ▼
+┌───────────────┐
+│ 2. 解析抽取    │  按市场走不同解析路径
+└──────┬────────┘
+       ▼
+┌───────────────┐
+│ 3. 统一标准化  │  映射到统一 Schema
+└──────┬────────┘
+       ▼
+┌───────────────┐
+│ 4. 分层存储    │  结构化指标库 + 向量库
+└───────────────┘
+</code></pre>
+<p>识别分类搞清楚“这是什么“，解析抽取搞清楚“里面有什么“，统一标准化搞清楚“它和别的报告怎么对得上“，分层存储搞清楚“它该住在哪里、由谁查询“。跳过任何一步，后面的查询都会出现“看起来对、其实错“的回答——财报系统最不能容忍的失败模式。</p>
+<p><strong>识别分类</strong>只讲思路，不贴代码：规则加启发式。内容里出现“深圳证券交易所““证监会“判 A 股，“香港交易所“判港股，“SECURITIES AND EXCHANGE COMMISSION”“Form 10-K“判美股；内容判不出的，用文件名模式兜底（六位数字代码、<code>0700.HK</code>、<code>10-K</code> 字样）。覆盖率通常在 95% 以上，但港股格式公司自定，判不准的一定存在，必须留人工校验的口子。</p>
+<p><strong>解析抽取</strong>是收益分化点。美股优先 XBRL，不是 PDF——SEC 强制所有上市公司提交 XBRL 数据，等于有人替你把表格结构化做好了。一个标签直接对应一条财务事实：</p>
+<pre><code class="language-json">{
+  "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax": {
+    "value": 97625,
+    "unit": "USD millions",
+    "period": "2025-Q2",
+    "company": "AAPL"
+  }
+}
+</code></pre>
+<p>（这是结构示例值，看个形式——一个标签、一条带单位和期间的事实。腾讯这种只在 OTC 挂 ADR 的公司不是 SEC 申报主体，吃不到 XBRL 这个红利；能吃到的公司，这条路比解析 PDF 省事太多。）</p>
+<p>能直接拿到结构化事实，就不要走 PDF → OCR → 文本 → 表格抽取这条弯路。A 股和港股没有这个红利，老老实实走 PDF 解析（unstructured 的 hi_res 策略加表格结构推断）——那段血泪史第 2、3 篇讲过，不重复。</p>
+<p><strong>分层存储</strong>是四步里的核心决策。具体含义是：结构化指标进 DuckDB 一类列式库：</p>
+<pre><code class="language-sql">CREATE TABLE financial_metrics (
+    stock_code     VARCHAR,   -- '002594', '1211.HK', 'BYDDF'
+    market         VARCHAR,   -- 'A', 'HK', 'US'
+    fiscal_year    INTEGER,
+    report_type    VARCHAR,   -- 'annual', 'interim', 'quarterly'
+    metric_name    VARCHAR,   -- 统一后的字段名
+    metric_value   DOUBLE,
+    currency       VARCHAR,
+    accounting_std VARCHAR,   -- 'CAS', 'IFRS', 'US_GAAP'
+    PRIMARY KEY (stock_code, fiscal_year, report_type, metric_name)
+);
+</code></pre>
+<p>这个主键本身就是一句声明：一家公司、一个财年、一个报告期、一个指标，只许有一行。</p>
+<p>叙述性文本——管理层讨论、风险因素、业务描述——进向量库，配 hybrid 检索（向量 + BM25 + metadata 过滤），payload 里带上公司、股票代码、市场、财年、报告类型、section、语言这些字段。</p>
+<p>代价也要说在前面：两套存储就是两条写入路径，每次入库要维护一致性，解析和映射的工程量都前置了。这笔账划不划算，收尾统一算。</p>
+<p>还有一条当时立下的规矩，原话照抄：不要把表格数字放进向量库，让它做算术。</p>
+<h2 id="三统一-schema共同字段做锚点市场字段各自扩展"><a class="header" href="#三统一-schema共同字段做锚点市场字段各自扩展">三、统一 Schema：共同字段做锚点，市场字段各自扩展</a></h2>
+<p>Schema 分两层，别混。</p>
+<p>指标层，一张映射表把同一指标的三地别名和 XBRL tag 收到统一字段下。贴 revenue 一条就够：</p>
+<pre><code class="language-python">UNIFIED_SCHEMA = {
+    "revenue": {
+        "A":  ["营业收入", "营业总收入"],
+        "HK": ["Revenue", "Turnover", "收入"],
+        "US": ["Revenues", "Total Revenue", "Sales"],
+        "xbrl_tag": "us-gaap:Revenues",
+        "unit": "currency",
+    },
+    "gross_margin": {
+        "formula": "(revenue - cost_of_revenue) / revenue",
+        "unit": "percentage",
+    },
+}
+</code></pre>
+<p>映射时的做法是按市场取候选别名逐个试，命中之后除了存统一字段名和值，还要把 <code>original_label</code>（命中的是哪个别名）和 <code>original_currency</code> 一起留痕——将来对不上账，全靠这两个字段往回查。</p>
+<p>注意 <code>gross_margin</code> 这类比率指标不存原始值、存公式，用到时再算。比率要是在入库时算死，将来换一个口径就得重刷全库。还有一个坑顺手提一句：表里的“净利润“不要图省事直接并进 net_income，“归属于母公司股东的净利润“是另一个口径，这类陷阱第 7 篇专门讲过，映射表建的时候就要分开。</p>
+<p>metadata 层，公共字段是跨市场对比的锚点，所有市场必须标齐：</p>
+<pre><code class="language-json">{
+  "stock_code": "0700.HK",
+  "stock_name": "腾讯控股",
+  "fiscal_year": 2025,
+  "period_type": "FY",
+  "currency": "HKD",
+  "accounting_standard": "IFRS"
+}
+</code></pre>
+<p>市场专属字段保证单市场查询的过滤粒度：港股标 <code>is_audited</code>（中期报告未必经审计），A 股标 <code>disclosure_type</code>（业绩预告和正式年报不是一类东西）。原则就这么定：公共字段求齐，专属字段求全。</p>
+<h2 id="四货币和单位归一化琐碎但它是可比性的地基"><a class="header" href="#四货币和单位归一化琐碎但它是可比性的地基">四、货币和单位归一化：琐碎，但它是可比性的地基</a></h2>
+<p>港股百万元港币，A 股亿元人民币，美股 millions 美元。三个数字摆在一起，不能直接比。不显式记录的话，LLM 不知道 200 后面跟的是百万还是亿，它会默认输出一个“看起来合理但实际错误“的答案——这比答不上来更糟。</p>
+<p>做法三句话：</p>
+<ul>
+<li>原始币种和单位进 metadata，原值永远保留；</li>
+<li>归一化发生在返回 LLM 做比较之前，不在入库时抹掉原值；</li>
+<li>归一到 query 指定的币种；query 没指定，就归一到该市场最常用的币种。</li>
+</ul>
+<p>补一句边界：归一化解决的是“能比“，解决不了“该比“。CAS 和 IFRS 下同一个“营业利润“口径并不完全一样，这种差异汇率换算抹不掉——那是第 7 篇讲口径陷阱时展开过的事，这里不重复。</p>
+<h2 id="五查询路由问题类型决定查询路径"><a class="header" href="#五查询路由问题类型决定查询路径">五、查询路由：问题类型决定查询路径</a></h2>
+<p>存的时候分开了，查的时候必须知道去哪查。路由层拿到 query 先解析四样要素：股票代码（“700”“腾讯”“0700.HK“要归一到同一个主体）、市场、时间、指标名，然后按问题类型分路。三类问题，三条路：</p>
+<ul>
+<li>精确指标：“比亚迪 2024 年营收” → SQL 直查结构化层，数字连同币种、口径一起返回；</li>
+<li>跨公司对比：“比亚迪和特斯拉的毛利率对比” → SQL 取数，LLM 只负责组织对比的语言，不让它背数字；</li>
+<li>叙述性检索：“比亚迪的风险因素有哪些” → hybrid 检索 + metadata 过滤，走向量层。</li>
+</ul>
+<p>query 没指明市场的情况也得有个默认行为：优先返回用户常关注的市场，同时告知其他市场的数据可用——不要替用户做沉默的选择。</p>
+<p>路由的核心就一层判断：问题类型决定查询路径，不是数据源决定用户能问什么。开场那件“50 家半导体公司“的事，病根就在路径错了——拿向量检索去干 SQL 的活，答案当然流畅、错误、不可验证。</p>
+<p>还有一层本篇不展开：SQL 查到的数字怎么回向量层的原文段落验证，向量命中的段落怎么对上结构化事实。这层互相回查值得单独一篇，先标记在这。</p>
+<h2 id="收尾复杂度花在哪"><a class="header" href="#收尾复杂度花在哪">收尾：复杂度花在哪</a></h2>
+<p>一套暴力向量库，把复杂度省在建设期、全部摊到查询期——每次回答都可能错得很难看，而且错得没法查。一套 Schema 多个库，把复杂度花在建库期：映射表、归一化、路由，样样都是 upfront 的活；换来的是查询期的可验证——每个数字有出处、有币种、有口径。</p>
+<p>落地顺序压成一句：先做 metadata 层和解析路径，再建统一事实表（先映射约 50 个核心指标），然后 hybrid RAG 管叙述段落，agent 最后再说。最终判断不变：先做“结构化财务库 + Hybrid RAG“，不要先做纯向量库。</p>
+<p>架构定了，被一路推迟的问题也浮了上来：三地三种语言，embedding 不能只用“默认的那个“。第一节只点了多语言编码偏移的现象，怎么选模型、怎么在自己的财报数据上验证选型，是下一篇《Embedding 模型选型：从 ada-002 到 Qwen3-Embedding》的事。</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="embedding-模型选型从-ada-002-到-qwen3-embedding"><a class="header" href="#embedding-模型选型从-ada-002-到-qwen3-embedding">Embedding 模型选型：从 ada-002 到 Qwen3-Embedding</a></h1>
+<p>2026 年 4 月，三地市场的分层架构刚定完（那是第 11 篇的事），我回头补一个一直将就的环节：embedding 模型。库最早是用 ada-002 建的——2023 年那阵子它就是约定俗成的默认选项，能跑就没动过。我打开 MTEB 榜单和几篇选型帖，两小时后人更糊涂了：每篇帖子推荐的“最佳模型“都不一样。</p>
+<p>后来想明白了，问题不在帖子，在我——别人测的不是我的数据。这篇就讲一件事：我怎么把候选圈从“全网都在讨论的模型“，收敛到“我这台机器、这个库能用的模型“。</p>
+<h2 id="一先划候选圈三个硬指标"><a class="header" href="#一先划候选圈三个硬指标">一、先划候选圈：三个硬指标</a></h2>
+<p>选型帖最大的误导，是让你以为目标是选出“最好“的模型。我的顺序相反：先用硬约束把候选圈砍小，剩下的再谈好坏。筛子有三个，按使用顺序排。</p>
+<p>第一个是语言矩阵。你的文档和 query 是什么语言组合——纯中文、中英混合、还是多语言？不在这个矩阵里的模型直接排除，不用看分数。它排第一是因为最省事：一个主打英文的模型，榜单名次再高，对中文财报也没有意义。</p>
+<p>第二个是最大序列长度。先数一遍自己 chunk 的实际长度分布，再对照模型上限。多数模型的上限是 512 token；chunk 普遍更长（财报段落很容易超），就得挑支持长序列的，bge-m3、jina-embeddings-v3 这类能到 8192 token。这个指标不决定好坏，只决定能不能用——chunk 被截断，编出来的向量天生缺一块。</p>
+<p>第三个才是检索精度。放最后不是不重要，而是它最贵：前两个翻文档就能查，精度只能实测。这里我给自己立了条规矩：MTEB 是通用 benchmark，跟领域表现可能不一致，所以只配做初筛，不配做判决。这条规矩的用处在第三节。</p>
+<h2 id="二当前候选盘点按场景分组不按榜单排队"><a class="header" href="#二当前候选盘点按场景分组不按榜单排队">二、当前候选盘点：按场景分组，不按榜单排队</a></h2>
+<p>先交代口径：这份盘点写于 2026 年 5 月，里面的型号和版本我当时逐一核对过。embedding 这行的名单半年就换一轮，你读到的时候请按当月情况复核。</p>
+<p>组织方式我没按榜单名次往下抄，而是按自己的场景——中文财报为主、中英混合、本地优先——分组：</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>模型</th><th>维度</th><th>最大长度</th><th>在我场景里的定位</th><th>代价</th></tr>
+</thead>
+<tbody>
+<tr><td>multilingual-e5-large-instruct</td><td>1024</td><td>512 token</td><td>中英混合文档的默认项；instruct 版支持任务指令</td><td>512 上限，长 chunk 受限</td></tr>
+<tr><td>Qwen3-Embedding</td><td>—</td><td>32K</td><td>中文为主、chunk 偏长时的重点评估对象</td><td>参数量大，本地跑要挑尺寸（见第四节）</td></tr>
+<tr><td>bge-m3</td><td>1024</td><td>8192 token</td><td>一个模型同时出 dense + sparse 权重</td><td>sparse 通道用不上，就不必为它付部署成本</td></tr>
+<tr><td>Cohere Embed v4 / text-embedding-3-large</td><td>—</td><td>—</td><td>不想管基础设施时的省事项</td><td>调用费 + 数据过第三方</td></tr>
+<tr><td>all-MiniLM-L6-v2</td><td>384</td><td>—</td><td>原型期先验证管道</td><td>精度有限，验证完要换强模型</td></tr>
+</tbody>
+</table>
+</div>
+<p>multilingual-e5-large-instruct 是 2024 年初发的 instruct 版本，支持给检索和聚类下不同的任务指令，query 改写场景比基础版好；512 token 的上限对长 chunk 偏紧。Qwen3-Embedding 是 2025 年 6 月发布的，0.6B / 4B / 8B 三个尺寸，8B 以 70.58 分登上 MTEB 多语言榜第一，中文表现是它的主打——我的文档以中文为主、chunk 偏长（它支持 32K 序列），所以它是我的重点评估对象。bge-m3 的卖点是一个模型同时出 dense 向量和 sparse 权重，不想分别维护 embedding 模型和 BM25 索引时，这是个省事选项。</p>
+<p>商业 API 那行单独说代价：每百万输入 token，text-embedding-3-large 约 $0.13、3-small 约 $0.02、Cohere Embed v4 约 $0.12、gemini-embedding-001 约 $0.15（2026 年中的公开定价，这类价格变得快，用前再查一次）。精度接近开源 top 模型，但文档内容要经过第三方 API——财报这种数据，这一条的权重自己掂量。</p>
+<p>最后补一句笔记里的判断：老的 bge-large-zh 不建议作为新项目首选；要用 BGE 的中文模型，至少是 bge-large-zh-v1.5。</p>
+<h2 id="三分水岭在自有财报数据上评估"><a class="header" href="#三分水岭在自有财报数据上评估">三、分水岭：在自有财报数据上评估</a></h2>
+<p>回应一下开场。榜单越看越糊涂，解法不是再看一份榜单，而是花两小时跑一轮自己的评估。我的流程四步：</p>
+<ol>
+<li>从自己的文档库里挑 30–50 个典型 query，人工标注每个 query 的“正确 chunk“。30–50 是我工作流里够用的量，不是标准。GPT 可以辅助标注，但必须人工复核——标注错了，后面所有结论都是反的。</li>
+<li>每个候选模型把全部 chunk 编码一遍，对每个 query 检索 top-10。</li>
+<li>算两个指标：Recall@5 和 MRR。白话说，Recall@5 看“正确答案有没有进前 5“，MRR 看“正确答案平均排第几“。</li>
+<li>重点比较各模型在“困难 query“上的差异。</li>
+</ol>
+<p>第四步是整轮评估的关键，单独说透。简单 query——“腾讯 2025 年营收多少“这种——几乎所有模型都能召回正确 chunk，分数漂亮，但拉不开差距。真正拉开差距的是这几类：“为什么腾讯游戏毛利下降了”（问原因，不是问数字）、“跟去年同期比较”（带相对时间关系）、“Non-GAAP 口径下”（带专业口径约束）。模型之间的真实差距、值得你为之付费的差距，都藏在这种 query 里。评估集如果全是简单 query，等于白测：大家都是 90 分，闭着眼选都对。</p>
+<p>说句诚实的话：这套流程我有，但到写这篇为止，还没攒下一整轮能拿出来的自有财报库实测数字——素材里没有 Recall@5/MRR 的结果，我不编。方法在前，数字后补【待补：自有财报库上的实测 Recall@5/MRR 数字；发布前若能补一轮小规模实测，本节可升级为方法 + 结果】。</p>
+<h2 id="四本地约束再砍一刀m1-pro-32gb-的现实"><a class="header" href="#四本地约束再砍一刀m1-pro-32gb-的现实">四、本地约束再砍一刀：M1 Pro 32GB 的现实</a></h2>
+<p>评估解决“哪个好“，部署约束解决“哪个能用“。我把它们并列成分水岭的两半，是因为在我这儿，部署约束不是选定之后的优化项——它直接决定候选集。</p>
+<p>我的机器是 M1 Pro、32GB 统一内存。注意“统一内存“四个字：这 32GB 不是全给模型的，macOS 本身、浏览器、IDE、向量库、脚本进程都在里面分。所以判断标准从来不是“能不能加载“，而是“能不能舒服地长期用“。按这个标准，Qwen3-Embedding 系列在我机器上分三档：</p>
+<ul>
+<li><strong>4B 是本地主力。</strong> 走 MLX + 4-bit 量化，模型直接用 <code>mlx-community/Qwen3-Embedding-4B-4bit-DWQ</code>。MLX 对 Apple Silicon 更原生，比 transformers + MPS 那条路省心，资源占用也可控，日常常驻没问题。</li>
+<li><strong>0.6B 是轻量稳妥的起步项。</strong> 先把管线跑通、验证流程时用它。</li>
+<li><strong>8B 只配当实验对照。</strong> 量化后也能跑，但长文本前向慢、批量建库重、跟其他程序抢内存。想看理论上限就小规模跑一轮，不常驻。</li>
+</ul>
+<p>强调一遍：这是“我这台机器“的分档，不是普遍排名。换台 64GB 的机器结论就会变；不在 Apple Silicon 上的读者，MLX 这条路本身就不成立。</p>
+<p>落地还有三个最容易错的细节。</p>
+<p>一是 query 和 document 分开处理。Qwen3-Embedding 是 instruction-aware 的：query 侧加任务指令，document 侧直接编码原文。我用的财报指令长这样：</p>
+<pre><code class="language-text">Instruct: Given a financial-report question, retrieve relevant passages from Chinese annual or quarterly reports.
+Query: 宁德时代2024年经营活动现金流怎么样？
+</code></pre>
+<p>二是取向量的方式。Qwen3-Embedding 的官方做法是 last-token pooling——取序列最后一个 token 的 hidden state 当向量——再做 L2 normalize，检索时算 cosine similarity（归一化后等价于点积）。decoder-only 架构的 embedding 模型不都是这一种取法，mean pooling 也常见，换模型时以官方模型卡为准，别把 A 模型的取法套到 B 模型上。pooling 搞错不会报错，只会让向量悄悄变差，这类坑最难排查。</p>
+<p>三是别被 32K 上限诱惑。那是理论上限，不是本地稳定高效工作的默认输入长度。文本越长，前向越慢、峰值内存越高。我的口径：单段输入先控制在 2K–4K tokens，切块每块 600–1000 中文字、overlap 100–150，Dense 检索 top_k 取 10–20。这是我工作流里定的参数，不是通用推荐。</p>
+<p>最后提醒一句：embedding 不是检索链路上唯一的变量。财报这种数字、指标名、年份密集的场景，BM25 + Dense + reranker 的组合，通常比把 4B 换成 8B 更划算。两路怎么分工是第 9 篇的事，reranker 怎么排是第 10 篇的事，本篇不展开。</p>
+<h2 id="五选定之后换模型的成本账"><a class="header" href="#五选定之后换模型的成本账">五、选定之后：换模型的成本账</a></h2>
+<p>选定不代表结束。换 embedding 模型意味着所有 chunk 重新编码、向量索引整个重建——一次性操作，但成本不低，库越大越疼。所以选型时我就多问两句：这个模型一年后还有人维护吗？下次再换，重建成本我接不接受？</p>
+<p>第二个问题有架构上的预留手段：把向量库和“chunk 原始文本 + metadata“分开存储。重编码时拿原始文本重新过一遍模型就行，不用重走整个 ingestion 管线。这跟第 5 篇讲的 metadata 设计是配套的——原始文本和 metadata 本来就是该留下的资产，顺手多了一层保险。</p>
+<h2 id="六收尾"><a class="header" href="#六收尾">六、收尾</a></h2>
+<p>本篇所有推荐都带一个前提：我的场景是中文财报、M1 Pro 32GB、本地优先。换场景，请重跑第三节那套评估流程，别抄我的结论。</p>
+<p>结论会过期，方法不会。第二节的名单半年后就是旧闻，第三节那套两小时的评估流程可以一直用——这才是本篇真正想留下的东西。</p>
+<p>模型选定，系统还可能烂在一堆没人动过的默认参数上。第四节里的 chunk 600–1000 字、overlap 100–150、top_k 10–20，是我在自己场景里定的值，不是默认值。下一篇——第 13 篇《RAG 的七个“默认参数陷阱“》——就讲 chunk_size、top_k 这些默认值为什么都只是别人 demo 的终点。</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="rag-的七个默认参数陷阱"><a class="header" href="#rag-的七个默认参数陷阱">RAG 的七个“默认参数陷阱“</a></h1>
+<p>我照着一篇教程把 RAG demo 跑通了：LangChain 一把梭，chunk_size、top_k 全用示例里的值，示例问答对答如流。然后我把自己的财报 PDF 灌进去，问“毛利率同比变了多少“，答案开始离谱——一会儿引用错年份，一会儿干脆编数。我把代码逐行过了一遍，没有 bug。坏的是那一排从教程里原样抄下来、一个都没动过的参数。</p>
+<h2 id="一默认值是一组隐形假设"><a class="header" href="#一默认值是一组隐形假设">一、默认值是一组隐形假设</a></h2>
+<p>教程的默认值不是随便拍的，它是按教程的 demo 数据调出来的：短、干净、英文、单一文档。512、50、5 这一串数字背后，是一组关于“你的数据长什么样“的隐形假设。demo 数据遵守这些假设，所以能跑；我的财报 PDF 不遵守，所以翻车。</p>
+<p>我自己整理全流程笔记时记过一句旁证：向量库的索引参数也一样，“默认参数往往是通用场景的折中”。折中的意思是——对谁都不算错，对谁都不算对。</p>
+<p>所以下面七个陷阱，我按同一副骨架讲：这个默认值是哪来的、它在我的场景里为什么错、怎么定我自己的值。骨架只说这一次，后面直接上事故。</p>
+<h2 id="二陷阱一chunk_size--512"><a class="header" href="#二陷阱一chunk_size--512">二、陷阱一：chunk_size = 512</a></h2>
+<p>事故先讲。我在库里灌了一份年报，问“营业利润是多少“，系统答得斩钉截铁，数字却是错的。查到最后不是模型的锅：一张利润表被 512 token 的切分拦腰截断，表头在 chunk A，数字在 chunk B，分属两个 chunk，检索回哪一半都拼不出完整的行列对应。</p>
+<p>512 这个数从哪来？一大批 LangChain 风格教程的示例代码——固定分块，每 512 token 一刀。它不是哪个框架强制的官方默认，更不是业界标准，只是被抄得足够多。它假设的是“通用文本段落远小于 512“：博客、FAQ 这类数据，一段几十到一两百 token，怎么切都安全。财报表格不遵守这个假设，一张三行表头的完整利润表轻松超过 512。</p>
+<p>这里还埋着一个更细的坑：很多人嘴里的“512 token“，在代码里其实不是 token。LangChain 的 <code>CharacterTextSplitter</code> 和 <code>RecursiveCharacterTextSplitter</code> 默认按字符数算 <code>chunk_size</code>，只有用 <code>from_tiktoken_encoder()</code> 创建的 splitter 才真的按 token 计。抄教程时以为是 512 token，实际切的是 512 个字符——中文一个字一个字符，两者差出快一倍，切出来的东西和你想的根本不是一回事。</p>
+<p>我的改法是不再全局设 chunk_size，按语义边界切：段落归段落，表格归表格，章节归章节。切完是一个 200 到 1500 token 的不均匀分布——一张 900 token 的完整表格就让它独占一个 chunk。关键指标不是“平均大小“，是“语义完整“：每个 chunk 单独拿出来，人能看懂它在说什么。</p>
+<p>反过来也得防一手。既然 512 会切烂，那往大了切总行吧？也不行。一个 1000 token 的 chunk 里如果只有一句话跟 query 相关，embedding 会被大量无关内容稀释，相似度反而掉下来。检索粒度和上下文粒度是两回事：检索要的是小且准，上下文要的是完整，这两个目标没法靠一个全局数字同时满足。</p>
+<h2 id="三陷阱二chunk_overlap--50"><a class="header" href="#三陷阱二chunk_overlap--50">三、陷阱二：chunk_overlap = 50</a></h2>
+<p>和 512 同根的问题，所以这一节故意短。</p>
+<p>固定重叠 50 token 的本意是好的：让跨边界的语义有个缓冲。问题在于 50 是按 token 数硬数出来的，重叠区的起止位置纯靠运气——可能从一句话的中间开始，到另一句话的中间结束。你以为重叠上了，其实重叠了个寂寞，两边都是残句。</p>
+<p>改法：把上一个 chunk 的最后一个完整句子（如果做过结构化解析，就是最后一个 TextBlock）作为下一个 chunk 的开头。跨边界的语义承接用完整句子做，不用 token 数做。说完即走。</p>
+<h2 id="四陷阱三top_k--5"><a class="header" href="#四陷阱三top_k--5">四、陷阱三：top_k = 5</a></h2>
+<p>先看一个我库里的真实现象。库里有同一家公司多个年份的财报，问“研发投入占比“，top-5 回来的 chunk 全是同一年的。不是那一年最相关，是这五个 chunk 彼此最相似——同一模板、同一段话术，只有年份数字不同。相似度排出来的 top-5，是“最像的一簇“，不是“信息最多元的五条“。</p>
+<p>top_k = 5 出自各处 demo 里 similarity_search 的默认写法，它隐含假设“库里相关文档少而分散“。所以 top_k 不该是常数，应该是库规模的函数。我在自己库上的起步值：小于 1000 个 chunk 的小库，5 到 10；上万个 chunk 的大库，10 到 20。说清楚，这是我摸出来的起步值，不是标准，你的库分布不同就得重调。</p>
+<p>对时间敏感的库还有第二层问题：光调大 k 没用，得加多样性约束。MMR（最大边际相关性）或者带 diversity 的重排，专门防 top-k 被同一簇相似内容挤满。</p>
+<p>代价也得摆出来：k 太小会遗漏关键信息，k 太大引入噪声、浪费 token、白花钱。这个度只能在检索质量评估里找，拍脑袋定不下来。</p>
+<h2 id="五陷阱四embedding-直接用默认模型"><a class="header" href="#五陷阱四embedding-直接用默认模型">五、陷阱四：embedding 直接用默认模型</a></h2>
+<p>反问一句：你的文档是中文财报，为什么用一个主要为英文语料调出来的模型？</p>
+<p>很多教程的默认 embedding 是 OpenAI 的 ada-002——不是因为它差，而是教程写的时候它调起来最省事。放到今天还要补一刀：ada-002 已经是 OpenAI 官方标注的 legacy 模型，现行推荐是 text-embedding-3-small / 3-large，照着老教程抄配置前先意识到这一点。坑不在“差“，在“它假设了你的数据语言分布“。我的文档几乎全是中文，这个假设从一开始就不成立。我在自己的中文财报库上换用中文/多语言模型后，召回率提升了 5–15%【待核实：该数字出自旧稿，无测量口径；发布前若补不出“在什么库、什么评估方式下测的“，此处降级为“可感知的召回差距“】。</p>
+<p>改法分两步。第一步，去 MTEB 的中文/多语言榜单上筛候选，比如 Qwen3-Embedding、multilingual-e5-large、bge-m3（名单有时效，和第 12 篇是同一份盘点，2026 年 5 月口径）。第二步，也是不能省的一步：在自己的库上跑一个小评估——50 个真实 query，人工标注哪些 chunk 该被召回，用召回率定案。榜单只负责给候选池，不负责给结论。</p>
+<p>反向的迷信也得破：不是越新越大越好。通用语料上的 SOTA，在金融这种专业领域可能打不过一个领域微调过的小模型。候选模型的横向盘点是第 12 篇《Embedding 模型选型：从 ada-002 到 Qwen3-Embedding》的内容，那里展开过，本篇只留方法：先榜单筛，再自库测。</p>
+<h2 id="六陷阱五没有-metadata-filter"><a class="header" href="#六陷阱五没有-metadata-filter">六、陷阱五：没有 metadata filter</a></h2>
+<p>这个严格说不算“默认值“，是“默认缺失“：向量检索开箱不带任何约束，只靠相似度排序。</p>
+<p>后果很直白：问“2025 Q4 的毛利“，系统返回 2020 Q4 的数字，相似度分数还挺高——年份错配、口径混合，全从这个“默认缺失“里长出来。向量相似度看不见时间这类强约束，这是它的能力边界，不是 bug。</p>
+<p>但这是七个陷阱里改动最小、收益最大的一个：花一天把你领域的强约束维度列出来——财报场景就是公司、年份、季度、报表类型——每个维度加一个 metadata filter。怎么列、怎么加、query 里没写年份怎么办，第 6 篇《当向量相似度把“2020 Q4“当成“2025 Q4“》完整展开过，这里不重复。</p>
+<h2 id="七陷阱六把检索到的-chunk-全塞给-llm"><a class="header" href="#七陷阱六把检索到的-chunk-全塞给-llm">七、陷阱六：把检索到的 chunk 全塞给 LLM</a></h2>
+<p>top_k 调好了，下一步的默认动作是：把 top-k 全部拼进 prompt。我翻过自己的 top-5 成分——里面混着一个目录页、一个页脚。它们因为关键词命中，相似度分数很高；信息量却是零。白占 prompt 的 token 是小事，误导模型是大事：模型看到目录里出现“毛利率“三个字，会以为真找到了相关上下文。</p>
+<p>改法有两层。第一层是发送前做一次信息价值过滤：小于 30 token 的短 chunk，可能只是标题或页码，降权或不发；纯数字和标点占比过高的，可能是噪声，降权。30 这个阈值是我在自己数据上试出来的起步值，启发式，不是定律，换库要重新校准。</p>
+<p>第二层更根本：破除“上下文越多越好“。Lost in the Middle 是实测过的效应——LLM 对中间位置的内容注意力最弱，塞 20 条泛泛的上下文，通常不如给 5 条以内精准的。我在生成端的做法是宁可少给，不给杂的。</p>
+<h2 id="八陷阱七迷信-reranker-总能提升"><a class="header" href="#八陷阱七迷信-reranker-总能提升">八、陷阱七：迷信 reranker 总能提升</a></h2>
+<p>最后一个陷阱，先把一个看似矛盾的说法摆上桌。我的全流程笔记里记着一条：“不加 reranker 的检索结果，通常有 30–50% 不相关”，所以 reranker 是 ROI 最高的组件——注意这是笔记里的经验估计，没有统一测量口径。而这一节我又要说“默认加 reranker“是陷阱。矛盾吗？不矛盾，分歧在前提。</p>
+<p>reranker 的能力边界是：只能在候选集里重排，不能引入候选集外的正确答案。候选集好，它锦上添花；候选集烂，它无能为力。</p>
+<p>所以开不开 reranker，取决于一个可验证的事实：你的向量检索 top-20 里，是否稳定包含正确答案。稳定包含——开，reranker 能把它提到 top-3，值得；top-20 里都不稳定——别急着开，先修上游：metadata filter、chunk 策略、query 改写，哪环烂修哪环。这时候加 reranker，是白付 200–500ms 的延迟（同样是我笔记里的经验数），换一个排得更精致的错误结果。</p>
+<p>第 10 篇《Rerank 不是瓶颈，前面的脏数据才是》把“先上游后精排“这个顺序完整展开过。这里的结论带个边界：不是“reranker 没用“，是“先验证候选集，再决定开不开“。验证方法很朴素：抽一批 query，看 top-20 命中率，够了再谈精排。</p>
+<h2 id="九收尾默认值不是起点是别人-demo-的终点"><a class="header" href="#九收尾默认值不是起点是别人-demo-的终点">九、收尾：默认值不是起点，是别人 demo 的终点</a></h2>
+<p>七个默认值，在各自的 demo 里都合理。坑不在值本身，在“默认“两个字——那是别人按别人的数据调出来的终点，不该是你的起点。</p>
+<p>而且这里面有一顿免费午餐：</p>
+<ul>
+<li>chunk 按语义边界切；</li>
+<li>overlap 用完整句子承接；</li>
+<li>top_k 按库规模定，加多样性约束；</li>
+<li>embedding 在自库上小评估后定案；</li>
+<li>每个强约束维度加 metadata filter。</li>
+</ul>
+<p>这五件事，不改模型、不加 GPU、不引入新组件，纯参数和策略调整。先吃这些，再谈 reranker 和 Agent。</p>
+<p>但参数全调完之后，还有一个问题没解决：凭什么说系统真的行了？“感觉变好了“不算数——今天换个值，明天换个模型，没有评估基准，你分不清自己在优化还是在掷骰子。调参解决的是“哪里烂”，评估回答的是“凭什么说行“。下一篇《RAG 评估体系：为什么 benchmark 85%，真实问题只有 62%》，就讲这套凭据怎么建——以及为什么连 RAGAS 分数高都不算数。</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="rag-评估体系为什么-benchmark-85真实问题只有-62"><a class="header" href="#rag-评估体系为什么-benchmark-85真实问题只有-62">RAG 评估体系：为什么 benchmark 85%，真实问题只有 62%</a></h1>
+<p>一个做电力 RAG 的朋友给我看过一组数字：他的系统在通用 benchmark 上跑到 85% 准确率，然后拉了两个老值班员，对着从检索日志里抽出来的 300 个真实用户问题逐条人工标注，答对率只有 62%。23 个点的差距不在模型上，全落在用户提问不规范、多文档冲突、上下文缺失这些地方——全是 benchmark 里不存在的东西。</p>
+<p>把 chunk、filter、embedding 的参数全调完之后，拿什么证明系统真的行？这篇文章就是我的答案：先把那 23 个点拆开看清楚，再搭一套信得过的评估基准。</p>
+<h2 id="先把口径说清85-和-62-各自是怎么测出来的"><a class="header" href="#先把口径说清85-和-62-各自是怎么测出来的">先把口径说清：85% 和 62% 各自是怎么测出来的</a></h2>
+<p>这两组数字经常被放在一起引用，但它们的测量条件完全不同，不说清楚后面的讨论都是空的。</p>
+<p>85% 那侧：现成的公开数据集，query 是构造好的干净句子，文档库是题库式的同质语料，每道题有唯一一个标注正确的答案。62% 那侧：300 条 query 全部来自线上检索日志（脱敏后），两个在电力系统干了多年的老值班员逐条判断“这个回答放到值班现场算不算答对了“，允许答案来自多段文档。</p>
+<p>所以这不是 benchmark 在骗你，是两场考试用的根本不是同一张卷子。问题在于，太多团队只考了第一场，就把分数当成了系统的真实水平。</p>
+<h2 id="通用-benchmark-的三个盲区"><a class="header" href="#通用-benchmark-的三个盲区">通用 benchmark 的三个盲区</a></h2>
+<h3 id="盲区一query-太干净"><a class="header" href="#盲区一query-太干净">盲区一：query 太干净</a></h3>
+<p>先把三个名字掰开，它们经常被一锅端：MS MARCO 是数据集，BEIR 是检索 benchmark，MTEB 是 embedding 综合评测（检索只是它 8 类任务之一）。作为检索评测用的时候，它们的 query 比真实工作场景干净得多——但“干净“在哪，得说准。</p>
+<p>说准的第一步是承认：这些 query 并不都是精心构造的。MS MARCO 的 query 来自 Bing 的真实搜索日志，短、关键词化、带口语——“define extreme”、“what fruit is native to australia” 这种；BEIR 里 NQ 来自 Google 真实搜索、Quora 来自社区提问，TREC-COVID、BioASQ 才是专家写的，ArguAna 的 query 平均近 200 词。BEIR 的设计初衷恰恰是覆盖从关键词到长段落的多样性。</p>
+<p>后续的评测换过一轮名字——MMTEB 把 MTEB 扩成多语言版，BRIGHT 专测需要推理才能找到答案的 query，BrowseComp 测 agent 式的多轮浏览检索——但对本篇要讨论的问题，它们和三个前辈是同一类东西：query 自含、答案唯一、和你线上日志里的提问不是一个物种。</p>
+<p>但即便是这些“真实搜索日志“，和企业里的真实提问仍有一层本质差别：它们是自含的。“What is the revenue of Microsoft in 2023 Q4?“这种格式完好的句子是 benchmark 里的理想形态——公司名、指标名、时间约束全在句子里；就算 query 再短再口语，它也把意图说全了，检索系统要做的只是语义匹配。</p>
+<p>真实用户问的是“昨天那个跳闸的怎么处理““3 号主变那个告警”“上次那个操作票”。没有设备全名，没有告警类型，没有时间，没有上下文，指代全靠对话双方心照不宣。系统在自含 query 上能拿 85%，在这类 query 上可能不到 50%——注意这是推测，不是实测数，因为通用 benchmark 根本不测这种 query，你拿不到对照分数。</p>
+<h3 id="盲区二文档库太单一"><a class="header" href="#盲区二文档库太单一">盲区二：文档库太单一</a></h3>
+<p>benchmark 的文档库是同质的：全是维基百科，或者全是新闻，或者全是论文。检索难度只来自一个维度——语义相似度，候选 chunk 之间比的是谁跟 query 更像。</p>
+<p>真实的文档库是异质的：调度规程、设备说明书、操作票模板、检修记录堆在一起。难点有两个，而且 benchmark 一个都测不到。一是同类文档内部是孪生的，所有规程的章节结构一模一样，“总则”“职责”“操作流程“随处都是，靠语义相似度根本分不开；二是异类文档之间几乎零共同词汇，规程的术语体系和检修记录的写法完全是两套语言，跨类检索时 embedding 的区分度会塌掉。这是另一种难度，不在 benchmark 的题库里。</p>
+<h3 id="盲区三正确答案只有一种"><a class="header" href="#盲区三正确答案只有一种">盲区三：正确答案只有一种</a></h3>
+<p>这是三个盲区里最容易被忽视、水分最大的一个。</p>
+<p>benchmark 的每条 query 只有一个标注为正确的 chunk，评估就是判断“系统返回的是不是那一条“。真实场景里，同一个问题往往有多段文字都能答，但质量天差地别：一段是官方规程原文，一段是值长手写的操作笔记，一段是三年前的经验总结。三段都能把问题答上，权威性、时效性、细节程度完全不同。</p>
+<p>benchmark 判不了“哪个答案更好“，只判“是不是标注答案“。于是系统返回了值长的手写笔记——对，但不权威——benchmark 照样记为正确。85% 里有一部分就是这么来的：系统答“对“了，但放到值班现场，老值班员会告诉你这个答案不能作为操作依据。口径不同的考试，分数自然对不上。</p>
+<p>这个盲区有个流传挺广的极端版表述。一个做开发的同行聊起 RAG 时把话说得很绝：事实准不准、过没过期、完不完整都保证不了，与其从多源召回再排序，不如认准一个事实标准。这话偏激——多数场景根本没有唯一的“事实标准”可认——但它点中了盲区三的实质：评估缺的那一格不是相关性，是权威性。召回排得再靠前，排的也是“像不像”，从来不是“该不该信”。</p>
+<h2 id="自有评估基准的三层结构"><a class="header" href="#自有评估基准的三层结构">自有评估基准的三层结构</a></h2>
+<p>benchmark 指望不上，就得自己建。我用的是三层结构，按成本和运行频率分开，各管一件事：第一层兜住“别退化“，第二层量出“真实水平“，第三层负责“发现新问题“。</p>
+<h3 id="第一层基础能力测试成本最低持续跑"><a class="header" href="#第一层基础能力测试成本最低持续跑">第一层：基础能力测试（成本最低，持续跑）</a></h3>
+<p>评估项就三样。Recall@5 / Recall@10：正确答案是否稳定落在 top-5/10 里，用 30–50 条干净 query 就能跑。MRR：正确答案的平均排名，越接近 1 越好。检索延迟：盯 P50/P90/P99，确认没退化到用户能感知的程度。</p>
+<p>这一层的定位是 CI 里的冒烟测试，不是水平考试。每次改 chunk 策略、换 embedding 模型、调 filter 之后跑一遍，作用只有一个：确认这次改动没把系统搞砸。它回答不了“系统好不好“，只回答“系统坏没坏“。</p>
+<h3 id="第二层真实问题基准成本中等每月迭代"><a class="header" href="#第二层真实问题基准成本中等每月迭代">第二层：真实问题基准（成本中等，每月迭代）</a></h3>
+<p>这是整个评估体系的核心资产，也是唯一能反映真实水平的一层。做法分四步：</p>
+<ol>
+<li>从检索日志里抽真实 query，脱敏。这些 query 带着用户所有的坏习惯——指代不明、缺时间、缺主语，这正是它们的价值。</li>
+<li>人工标注每条的“理想 chunk“。定义要写准：是“包含回答该问题所需全部信息的那段文字“，不是“最相似的 chunk“。最相似的往往答不了题，两者经常不是同一段。必要时从文档库外手动找——找不到本身就说明库有缺口，这也是评估结果。</li>
+<li>初始标 100 条，之后每轮迭代追加 30–50 条，专门覆盖新发现的 failure case。基准集不追大，追覆盖。</li>
+<li>标注分三个维度，不只是对/错：准确性（数字和时间对不对）、完整性（有没有遗漏关键信息）、权威性（来源是不是最权威的那篇文档）。</li>
+</ol>
+<p>第三个维度正好接住前面说的盲区三：只有把“权威性“单列出来，“对但不权威“的答案才会在评估里现形，而不是被记成一分正确。</p>
+<h3 id="第三层线上反馈闭环成本最低自动运行"><a class="header" href="#第三层线上反馈闭环成本最低自动运行">第三层：线上反馈闭环（成本最低，自动运行）</a></h3>
+<p>每个回答下面加“有用/没用“按钮，检索日志全量记录：用户搜了什么、点了哪条、停留多久。日志字段怎么设计这类运维细节，第 16 篇会展开，这里只说它在评估里的角色。</p>
+<p>先把边界划清：这一层不是用来算准确率的。用户不总能判断答案对不对，“有用“按钮按下去的也不都是认真判断过的。它的用途是发现 failure case——哪些 query 的“没用“比例异常高，哪些时间段检索延迟突然上去了。它报警，第二层定性，第一层防回退，三层是这么咬合的。</p>
+<h2 id="ragas-能干什么不能干什么"><a class="header" href="#ragas-能干什么不能干什么">RAGAs 能干什么、不能干什么</a></h2>
+<p>RAGAs 这类自动评估框架的思路是用 LLM 评分代替人工标注，评估维度有 faithfulness、answer_relevancy、context_relevancy 等。问题出在 scorer 也是 LLM：LLM 评分和人工评分的相关性，在 faithfulness 这类维度上不错——“答案是否被上下文支持“是个相对客观的判断；在 answer_relevancy 上很差，因为 LLM 不知道用户的真实意图。用户问“那个跳闸的”，scorer 不可能知道“那个“指代什么，这条 query 的 relevancy 评分没有参考价值。</p>
+<p>所以我的用法是划边界，不是一棍子打死：RAGAs 当第一层的自动化版本用，挂在 CI 上每次跑完自动算 faithfulness，省掉人工盯冒烟测试的功夫。但它替代不了第二层——对真实 query 的判断必须来自懂业务的人。好在人工标注不需要每条都标，100–300 条核心 query 就够撑起一个基准。</p>
+<h2 id="标注的效率技巧"><a class="header" href="#标注的效率技巧">标注的效率技巧</a></h2>
+<p>300 条逐条标很花时间，三个省力的做法：</p>
+<ul>
+<li><strong>标注分层。</strong> 第一遍用 GPT-4 自动标：给定文档库，让它判断 top-3 chunk 是否包含正确答案。第二遍人工只复核两类——GPT 标“不确定“的（大约 50–60 条），和标“没有答案“的（需要人确认库里是真没有，还是 GPT 没找到）。人的精力花在机器拿不准的地方。</li>
+<li><strong>标注聚焦 failure case。</strong> 统计完“多少条正确“之后，更有价值的是“错的那些有什么共同特征“。全是指代不明的“那个 X“式 query？全是跨年份的？全是两本规程冲突的？分类统计比总体准确率更有诊断价值——准确率告诉你考了多少分，failure case 的分类告诉你该补哪门课。</li>
+<li><strong>把“够用“和“完美“分开。</strong> 不只标对/错，区分“答案对但权威性低““答案对但不完整”“答案错但理由合理”。这三类 failure case 的解法完全不同：第一类要调文档优先级，第二类要改 chunk 粒度或召回数量，第三类可能只需要换 prompt。混在一起统计，就只剩一个没法行动的总分。</li>
+</ul>
+<h2 id="收尾不是-benchmark-骗你是你在拿别人的考卷考自己的学生"><a class="header" href="#收尾不是-benchmark-骗你是你在拿别人的考卷考自己的学生">收尾：不是 benchmark 骗你，是你在拿别人的考卷考自己的学生</a></h2>
+<p>85% 掉到 62%，说明的不是你的 RAG 不行，是你的评估基准不对。别人的考卷再标准，考的也是别人的学生。三层体系里真正值得投入的是真实问题基准——100–300 条标注 query，维护得当能跑一两年，这是你对自己的用户和文档库的理解，沉淀下来的谁也拿不走。</p>
+<p>有个前提要说清：这套体系要求你已经有真实流量，有检索日志可抽。冷启动阶段没有真实 query，只能先用第一层加 RAGAs 顶着——这是过渡方案，自己心里要清楚它的分数打了几折。</p>
+<p>评估体系告诉你的是“坏了“和“坏在哪一层“，但它不告诉你具体怎么一层层查下去。下一篇《检索不到时，我的排查清单》，我按真实排查顺序给一份八步清单——从评估发现症状，到排查定位病因。</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="检索不到时我的排查清单"><a class="header" href="#检索不到时我的排查清单">检索不到时，我的排查清单</a></h1>
+<p>用户问的问题是对的，系统却答不上来。打开日志，top-5 的 chunk 没有一个包含正确答案。【待补：发布时可补一条真实 query 让现场更实，目前维持概括写法，不编造日志内容】这种时候我的建议是：不要调参数，先排查。这份清单是我做财报 RAG 之后攒下来的排查顺序——从最可能出问题的地方，查到最不可能的地方。按顺序走，不跳步。</p>
+<h2 id="检索不到是症状不是病因"><a class="header" href="#检索不到是症状不是病因">“检索不到“是症状，不是病因</a></h2>
+<p>排查难在哪？难在 RAG 的检索链路是一条多环节串联的管道：文档处理、向量化、检索召回、结果过滤。任何一环坏了，最终表现都一模一样——用户问了，系统答不上来。你看到的只是管道出口没水，漏点可能在任何一段。</p>
+<p>所以“top-5 里没有答案“这句话本身什么都说明不了，它只告诉你该去查。第 14 篇讲评估体系，回答的是“坏没坏、坏在哪一层“；这一篇接的是下一步：评估说坏了，具体怎么一环一环查出来。这个顺序本身就是结论：先把便宜的、高频的嫌疑排掉，再去动贵的。</p>
+<h2 id="排查的前提系统得先可查"><a class="header" href="#排查的前提系统得先可查">排查的前提：系统得先“可查“</a></h2>
+<p>清单能跑通有个前提：系统里得留得下证据。三个习惯，都是被教训出来的。</p>
+<p>第一，raw / cleaned / chunked 三层数据都留底。出问题时能定位是 PDF 提取错了、清洗错了，还是 chunking 错了，而不是对着最终 chunk 猜。</p>
+<p>第二，清洗规则保持 deterministic，可重复、可追溯。别一开始就把 parsing 交给 LLM 黑盒——黑盒出问题，你没法回答“这条文本为什么长这样“。</p>
+<p>第三，每个 chunk 给固定 id。追踪引用、人工标注、做缓存都靠它。没有稳定 id，连“这个 chunk 上次还在“这种话都验证不了。</p>
+<p>监控上有个对应做法：parsing quality 和 retrieval quality 分开监控。这相当于“把症状拆到层“的监控版——指标分开，报警响起来你才知道是哪一层的事。运维本身这里不展开，是第 16 篇的地盘。</p>
+<h2 id="八步清单上先确认答案在不在库里"><a class="header" href="#八步清单上先确认答案在不在库里">八步清单（上）：先确认答案在不在库里</a></h2>
+<p>头两步都在 ingest 层，回答同一个问题：答案到底在不在库里。</p>
+<p><strong>第 1 步：基础健康检查（5 分钟）。</strong> 怀疑 embedding 模型或向量库层面就有问题。验证手段：拿一个已知包含答案的 chunk，把它的原文当 query 去检索。它自己都进不了 top-3 → 链路最底层有毛病；能排进 top-1 → 往下走。这是最便宜的一票否决测试。</p>
+<p><strong>第 2 步：答案在 chunk 里还活着吗（15 分钟）。</strong> 怀疑答案在 ingest 阶段就死了。翻出原始 PDF 那一页，对照 ingestion 后的 clean text 和 chunk——那个数字还在吗？那段话完整吗？这就是三层留底的用处：三层一对照，哪层丢的一目了然。常见死法两种：被当成页脚、页码误删；被分片从中间切断。误删 → 回上游修清洗和分片，别在检索层找补；答案在但没被检索到 → 继续往下。</p>
+<h2 id="八步清单中数据在就查链路"><a class="header" href="#八步清单中数据在就查链路">八步清单（中）：数据在，就查链路</a></h2>
+<p>数据确认活着，接下来是链路上的四个嫌疑。每步都给一个能直接抄走的验证手段。</p>
+<p><strong>第 3 步：metadata filter 太严（5 分钟）。</strong> 真实案例：filter 设了 <code>filter={"report_year": 2025}</code>，正确答案躺在 2024 年的文档里——用户根本没说年份。metadata 硬过滤的本意是留下“正确且相关“的 chunk，可条件一旦设错，正确 chunk 第一个被挡在门外。验证：临时去掉全部 filter，纯向量跑一次。答案出现 → filter 过严，回去改条件，或者让 query 解析别那么自作主张。</p>
+<p><strong>第 4 步：query 和 chunk 的语言风格对不上（10 分钟）。</strong> 用户问的是口语，“腾讯赚了多少”；chunk 里写的是书面语，“本公司权益持有人应佔盈利”。同一个意思，词汇零重叠。纯 BM25 在这个 case 上必败，Dense 能不能救，取决于 embedding 模型在这两种表述风格上的泛化够不够。解法两条：query 改写，把口语扩展成更正式的表述再检索；或者上 hybrid，BM25 + Dense 融合，两路各吃各的。代价要清楚：改写多一次 LLM 调用，改写错了会把 query 带偏；hybrid 多一路索引和融合逻辑。小库、问题类型单一时，未必值得。</p>
+<p><strong>第 5 步：top_k 不够大（5 分钟）。</strong> 库一大，这个问题就出来了。我自己的库过了 1 万 chunk 这个量级（经验数字，不是通用阈值），相似 chunk 非常多，正确答案可能排在 top-25，而 top_k 只设了 5。验证：top_k 翻倍，5 → 10 或 20，跑一轮。出现在 top-10 但不在 top-5 → 调大 top_k，或者加 reranker 把后排的捞上来。翻倍后仍然不在 top-20 → 不是 top_k 的事，往下。</p>
+<p><strong>第 6 步：chunk 信息密度不够（15 分钟）。</strong> 有的 chunk 只剩“184,504““收入“几个孤立词，语义太薄弱，embedding 产不出强信号。同一个数字，周围如果有“截至 2025 年 6 月 30 日，本集團……“这样一两段上下文，编码质量完全不同。检查检索不到的那个 chunk 的文本长度和密度，太短太干 → 分片时合并更多上下文。</p>
+<h2 id="八步清单下最后才轮到模型和-query"><a class="header" href="#八步清单下最后才轮到模型和-query">八步清单（下）：最后才轮到模型和 query</a></h2>
+<p><strong>第 7 步：embedding 模型领域不适配（1–2 小时）。</strong> 前 6 步都排除了还不行，才轮到怀疑模型。方法：用同样的 query 和文档库，跑 2–3 个候选模型，比 Recall@20。这是清单里最贵的一步——要搭一轮小评估——所以排最后。为什么贵：换模型意味着整个库重建索引，评估集也得真的能代表你的 bad case，随便凑几条 query 测出来的结论不算数。候选名单怎么定、评估集怎么构造，第 12 篇展开过，这里只给方法。</p>
+<p><strong>第 8 步（终极）：query 本身有语义歧义（人工判断）。</strong> “腾讯的投资回报率”——是 ROIC，是 portfolio return，还是 TSR？三个概念混在一句话里，检索层无解：你按哪个检索都算对，也都算错。解法在生成层：让 LLM 回答前先反问用户指的是哪一个。点到为止，澄清机制展开讲是后面篇目的事。</p>
+<p>第 8 步的落点要记住：有些“检索不到“，根本不是检索的错。</p>
+<h2 id="优先级原则先-ingest后-retrieval"><a class="header" href="#优先级原则先-ingest后-retrieval">优先级原则：先 ingest，后 retrieval</a></h2>
+<p>把八步的耗时摆出来。注意，这是定位病因的耗时，不含修复：</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>步骤</th><th>检查内容</th><th>大约耗时</th></tr>
+</thead>
+<tbody>
+<tr><td>1</td><td>答案在向量库中吗（基础健康检查）</td><td>5 分钟</td></tr>
+<tr><td>2</td><td>答案在 chunk 中吗（是否被误删）</td><td>15 分钟</td></tr>
+<tr><td>3</td><td>metadata filter 是否过严</td><td>5 分钟</td></tr>
+<tr><td>4</td><td>query 和 chunk 的语言差异</td><td>10 分钟</td></tr>
+<tr><td>5</td><td>top_k 是否不够大</td><td>5 分钟</td></tr>
+<tr><td>6</td><td>chunk 信息密度</td><td>15 分钟</td></tr>
+<tr><td>7</td><td>embedding 模型是否不适合</td><td>1–2 小时</td></tr>
+<tr><td>8</td><td>query 本身是否有歧义</td><td>人工判断</td></tr>
+</tbody>
+</table>
+</div>
+<p>全程走一遍约 1–2 小时。注意一个不对称：前 6 步加起来不到一小时，第 7 步一步就要 1–2 小时。耗时本身就是排序的依据之一。而命中率也是斜的——我的经验是，绝大多数问题（毛估八成）在步骤 1–4 就会现形，很少需要走到步骤 7。这是我个人项目上的经验估计，不是统计口径。落到行动上就是一句话：先排除数据问题，再怀疑模型。顺序反过来的代价很具体——你可能花一下午换 embedding 模型，最后发现答案是清洗时被当成页脚删了。</p>
+<h2 id="这份清单是前-14-篇的逆向索引"><a class="header" href="#这份清单是前-14-篇的逆向索引">这份清单，是前 14 篇的逆向索引</a></h2>
+<p>八步不是孤立的。每一步背后的病因，前面都展开讲过。换句话说，这张清单也可以倒过来用：带着一次真实的事故反查前面的篇目，比从第 1 篇顺着读一遍记得牢。映射关系如下：</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>步骤</th><th>病因</th><th>对应篇目</th></tr>
+</thead>
+<tbody>
+<tr><td>1、7</td><td>embedding 模型不对</td><td>#12</td></tr>
+<tr><td>2</td><td>清洗误删、表格抽崩、分片切断</td><td>#02、#03、#04</td></tr>
+<tr><td>3</td><td>metadata 设计与预过滤</td><td>#05、#06</td></tr>
+<tr><td>4</td><td>BM25 与 Dense 的分工</td><td>#09</td></tr>
+<tr><td>5</td><td>top_k 默认值、reranker 收尾</td><td>#13、#10</td></tr>
+<tr><td>6</td><td>TextBlock 合并、信息密度</td><td>#04、#08</td></tr>
+<tr><td>8</td><td>口径陷阱在 query 侧的镜像</td><td>#07</td></tr>
+</tbody>
+</table>
+</div>
+<p>几行点评。步骤 1、7 和第 12 篇是一体两面：模型不对，健康检查就过不了；换模型也必须在自有数据上比 Recall@20，不看榜单。步骤 2 对应的三篇各有分工——第 2 篇讲清洗的原则是“宁可漏删，不要误删“，第 3 篇讲表格抽崩导致数字丢失，第 4 篇讲分片切断语义。步骤 3 回第 5、6 篇：预过滤是强约束利器，设错条件就成了硬杀伤。步骤 4 正是第 9 篇说的分工场景：BM25 吃字面，Dense 吃语义。步骤 5 连着第 13 篇那句“top_k=5 是 demo 的默认值，不是你的“，和第 10 篇的“top_k 放大之后靠 reranker 收尾“。步骤 6 回第 4 篇的 TextBlock 合并法，也回第 8 篇：相似度高不等于答得上。步骤 8 是第 7 篇口径陷阱的镜像——口径那篇讲的是同名指标不同意思，这里讲的是同一句话三种指标。</p>
+<h2 id="结尾清单治不了活着的问题"><a class="header" href="#结尾清单治不了活着的问题">结尾：清单治不了“活着“的问题</a></h2>
+<p>清单再长，也只能查“此刻的库“。今天修好了步骤 2，明天新财报一发，又可能坏在同一个地方——ingest 这条路，每次库更新都要重走一遍。</p>
+<p>所以这份清单解决的是“出事了怎么查“，解决不了“怎么少出事、出了事早知道“。后者是运维的事：增量更新怎么做、旧文档删还是留、怎么从查询日志里知道用户搜没搜到。下一篇《上线后的运维与迭代：知识库不是做一次就完了》，就讲这个。</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="上线后的运维与迭代知识库不是做一次就完了"><a class="header" href="#上线后的运维与迭代知识库不是做一次就完了">上线后的运维与迭代：知识库不是做一次就完了</a></h1>
+<p>上线那天是系统最好的状态：管线跑通了，检索质量不错，用户开始用了。半年后再看——新财报发了，新规程也发了；旧准则废止了一批；现场有设备改了名；还有人没搜到答案，关掉页面走了，而你不知道他不满意。库还是原来那个库，世界已经不是原来那个世界。</p>
+<p>我体会最深的一句话：建设是一次性的，运维是持续性的。这篇讲上线后最让我头疼的五个运维问题，每个给一个“够用就行“的解法，也把每个解法的边界摆出来。</p>
+<h2 id="一增量更新加一份-30-页-pdf要不要重建-5000-份"><a class="header" href="#一增量更新加一份-30-页-pdf要不要重建-5000-份">一、增量更新：加一份 30 页 PDF，要不要重建 5000 份？</a></h2>
+<p>先给一个本能答案：扔进管线，全量重跑，干净彻底。这个答案错在成本——5000 份文档重新解析、重新切、重新编码，只是为了一份 30 页的新文件。</p>
+<p>正确做法不复杂：新文档单独走一遍完整管线，PDF → clean text → TextBlock → chunk → embedding → 入库。流程和老文档一模一样，只是范围只有这一份。</p>
+<p>真正的坑不在流程，在分布。新 chunk 和老 chunk 待在同一个向量空间里，但分布未必一致，两种情况会让它们错开：一是 embedding 模型中途升过版本，新旧向量根本不是一个模型算出来的；二是新文档的语言风格和老文档差得远，比如老库全是规程条文，新来的是口语化的问答汇编。结果是新 chunk 在检索时被系统性地排在老 chunk 前面或后面。这不是检索策略的问题，调 top_k 救不回来——是新增数据改变了向量空间的分布。</p>
+<p>怎么发现？新文档入库后跑一轮基础能力测试，看 Recall@5 有没有退化——它是第 14 篇评估体系里那套自有基础能力测试集上的召回指标，这里不展开。退化了，说明分布偏了，再考虑重编码全库或者调整 embedding。【待补：分布漂移的真实运维时间线数据（如“上线 X 个月后 Recall@5 从 a 掉到 b“），素材只有定性描述，若手头有实测记录可补在这里】</p>
+<h2 id="二旧文档废止删还是留"><a class="header" href="#二旧文档废止删还是留">二、旧文档废止：删还是留</a></h2>
+<p>先别看方案，先看一个后果。旧规程废止，第一反应是“从库里删掉“。删之前先想一件事：上个月有用户问过“跳闸后怎么处理“，系统引用了旧规程第 3.2 条给出回答——这个回答现在还有效吗？</p>
+<p>分两种。新规程改了处置流程，旧回答就是过时信息，留着误导人；新规程只是改了编号、内容没动，旧回答仍然成立。也就是说，“废止“不是二元开关，它和“旧回答还有没有效“之间隔着一层判断，而这层判断要求你能回头查到旧回答引用的是哪一条。</p>
+<p>所以我的做法是不做“删 chunk“，做“标记废止“：给废止的 chunk 加两个 metadata 字段，<code>status=deprecated</code> 和 <code>superseded_by=new_version_chunk_id</code>。检索时默认过滤 deprecated 的 chunk，除非用户明确要查历史版本；生成回答时如果引用了废止 chunk，在引用处标注“（该条款已被 XX 年版本替代）“，把最后的判断权交给看回答的人。</p>
+<p>边界摆在明处：废止关系靠人工标记，而人总是会忘的。但它还是比直接删好——删了就是毁尸灭迹，chunk 永远找不回来，你也永远不知道哪些旧回答引用过它。这不是完美方案，是两害相权。</p>
+<h2 id="三你不知道用户在搜什么搜没搜到"><a class="header" href="#三你不知道用户在搜什么搜没搜到">三、你不知道用户在搜什么、搜没搜到</a></h2>
+<p>用户在搜索框打了一句话，系统返回了答案。用户扫一眼，觉得不对，关掉了。整个过程你的日志里只有一条记录：“query 已处理，耗时 320ms”。</p>
+<p>这是上线后最大的盲区：你不知道哪个 query 答得不好。建设期盯着评估集，上线后真正值钱的数据从用户手里流过，你没接住。我按采集成本从低到高分三层接住。</p>
+<p>第一层，检索日志全量记录。别只记 query 和耗时，记完整链路：原始 query → 改写后的 query → 检索出的 top-10 chunk ID → reranker 重排后的 top-5 → 最终发给 LLM 的 prompt → LLM 的输出。这套数据平时没人看，也不该有人天天看——它是出问题后复盘用的。用户说“答错了“，你能一层层回放：检索就没捞到，还是捞到了 rerank 排丢了，还是 prompt 里有但 LLM 没用上。没有全量日志，这类问题只能靠猜。</p>
+<p>第二层，点击行为。回答下面挂着几条引用链接，用户点了哪条、停留多久，都是信号。用户点开第三条引用、停留 20 秒——他在自己对照原文，这通常意味着 LLM 的回答不够直接，用户不放心，要亲自核实。这是用户不开口的质量反馈。</p>
+<p>第三层，反馈按钮。每个回答下面放“有用 / 没用“。一定有人说：用户懒得点，数据量不够。我的看法是，哪怕一天只有 5 个人点了，也能看出哪些 query 的“没用“率异常高。5 个数据比 0 个好无数倍——盲调不如有方向地调。</p>
+<p>三层分工不同：日志负责复盘单个事故，点击和反馈负责找出哪些 query 值得复盘。缺了哪一层，运维都是在黑灯瞎火里做。</p>
+<h2 id="四设备改名术语变化公司名变更"><a class="header" href="#四设备改名术语变化公司名变更">四、设备改名、术语变化、公司名变更</a></h2>
+<p>电力系统里，设备是会改名的。“1 号主变“改成“城北站 1 号主变”，“220kV 城东变“变成“220kV 城东智能变”。财报世界里同样的事是公司更名、准则修订——名字换了，旧文档还在。</p>
+<p>第一条原则反直觉：不要改旧文档。旧文档里的名称是当时的历史记录，改了就是篡改原文件——今年把“城东变“全替换成“城东智能变“，明年再改一次名，没人说得清原文件长什么样。</p>
+<p>名称差异放在两处消化。一处在 metadata 层，加别名映射：</p>
+<pre><code class="language-json">{
+  "equipment_name": "城北站 1 号主变",
+  "aliases": ["1 号主变", "城北 1 号变", "老 1 号变"],
+  "name_effective_date": "2025-03-01"
+}
+</code></pre>
+<p><code>equipment_name</code> 是当前正式名，<code>aliases</code> 收罗历史叫法和现场口头叫法，<code>name_effective_date</code> 记改名生效时间。另一处在 query 层：检索时做改写，把用户 query 里的旧名映射到新名后，新名和别名表两个方向同时搜，结果合并去重。</p>
+<p>绕这一圈，是因为用户不知道设备改名了，他还在用旧名字问。这不是用户的错——不是让用户适应系统，是让系统适应用户的表达习惯。第 6 篇讲时间错配时的 query 改写是同一个模式，只不过那里消化的是时间表达，这里消化的是名称漂移。</p>
+<h2 id="五版本管理不等有人来更新让管线自己发现"><a class="header" href="#五版本管理不等有人来更新让管线自己发现">五、版本管理：不等有人来更新，让管线自己发现</a></h2>
+<p>一份规程半年更新一次。半年后知识库里躺着两份文件：<code>2025版调度规程.pdf</code> 和 <code>2025版调度规程-新版.pdf</code>。哪个是当前版本？问一圈没人说得清——发布流程里根本没有“更新知识库“这一步，新文件是某次顺手传上去的。</p>
+<p>根因在人，解法别押在人身上。“发新规程时请同步更新知识库”，这种约定写下来容易，守住难。现实解法是让 ingestion 管线自己发现版本关系：新文档入库时，查文档级 metadata 的 <code>regulation_title</code> 和 <code>effective_date</code>；库里已有同 title 的老文档，就把老文档标成 <code>superseded_by=新文档ID</code>，新文档标成 <code>current</code>。同时维护一张文档版本表——一个简单的 SQLite 表就够，记录每个 title 的最新 effective 版本，检索时优先返回 <code>current</code>。人不用自己判断“哪个是最新的“，管线按 effective_date 自动标。</p>
+<p>边界也得认：有些规程没有明确的 effective_date，PDF 上就没写，只能人工指定。但混着人工也比什么都不做强——老值班员离职之后，没人知道库里两份规程到底哪个是对的。</p>
+<p>五个问题串一遍：增量入库不破坏向量分布，新文档单独走管线；旧文档废止不删只标 deprecated；用户行为靠日志全量加反馈按钮；改名不改旧文档，靠别名映射消化；版本不等人来更新，管线按 effective_date 自动标 current。</p>
+<p>这些不是锦上添花。不做的话，三个月后系统悄悄退化——检索照常返回，回答照常生成，只是错的越来越多，而你连退化了多少都不知道。</p>
+<p>所以我的判断是：知识库的预算应该按“年“算，不是按“项目“算。按项目算，验收那天预算就花完了；按年算，才留得出增量、废止、日志这些钱和人力。</p>
+<p>到这里，这个系列从解析、分片、metadata，一路讲到检索、评估、排查、运维，系统算是能跑、能扛、能查了。还剩最后一个边界问题没碰：是不是所有 query 都该走这套固定管线？什么时候该放开手，让 AI 自己决定怎么搜？下一篇聊这个。</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="生成层从证据到答案"><a class="header" href="#生成层从证据到答案">生成层：从证据到答案</a></h1>
+<blockquote>
+<p><strong>待办（2026-10-14）· 待写</strong>：本篇是成册时确认的第二个内容缺口——七步链路的最后一环，全系列零专篇。检索给了五篇，把证据变成答案这一步散落在各篇里（原 #01、#07、#10、#13），没有一篇系统讲。</p>
+<p>补上这一篇，链路才真的闭合：它是评估（原 #14）的上游，也是 agentic 评估（候选章 rag24）的下游。</p>
+<p>这一篇的说服力同样来自「我踩过」，只能由作者写。以下是待写内容清单。</p>
+</blockquote>
+<h2 id="待写清单-1"><a class="header" href="#待写清单-1">待写清单</a></h2>
+<ol>
+<li>
+<p><strong>prompt 里的约束显性化</strong>——口径、单位、时间必须写进 prompt，不能指望模型自己从 chunk 里看出来。原 #07 给过一条完整的 prompt 原文（IFRS vs Non-GAAP 那条），本篇接住并展开「这层全靠 LLM 自觉」的边界——上下文一长规则就失效。</p>
+</li>
+<li>
+<p><strong>引用与溯源</strong>——原 #02 在清洗阶段保留的 <code>===== PAGE n =====</code> 标记，在这一篇兑现：页码直接当 citation，前端能跳回 PDF 原页核对。</p>
+</li>
+<li>
+<p><strong>Lost-in-the-Middle 与「宁可少给，不给杂」</strong>——原 #01 和 #13 各讲过一次（5 条精准优于 20 条泛泛），本篇给出可操作的过滤规则：过短 chunk 降权、纯数字符号占比过高的降权（阈值标自有库口径）。</p>
+</li>
+<li>
+<p><strong>数字问答拆两步</strong>——先找证据、再生成回答，不要一步「找 + 算 + 总结」。原 #01 提过，没展开。</p>
+</li>
+<li>
+<p><strong>该说「不知道」的时候说不说</strong>——这是全系列真正的空白。目前只有评估（原 #14）里把「完整性」列为标注维度，生成侧没有任何落点。本篇要回答：候选集里就是没有答案时，系统该输出什么。这一格同时是 agentic RAG 里「该弃权就弃权」那类测试的地基。</p>
+</li>
+<li>
+<p><strong>跨期对比走 multi-retrieval + synthesis</strong>——原 #10 给过结论（分而治之比一次性大上下文硬拼更稳），本篇给实现。</p>
+</li>
+</ol>
+<h2 id="本篇禁忌-1"><a class="header" href="#本篇禁忌-1">本篇禁忌</a></h2>
+<ul>
+<li>不写成 prompt engineering 技巧清单。</li>
+<li>「该说不知道」那一节必须给真实翻车现场，不能只给原则。</li>
+<li>不承诺「加了这个规则就不出错」——原 #07 已经交代过这层兜底的失效条件，本篇要说得更狠。</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="rag-与-agent-的边界什么时候让-ai-自己决定怎么搜"><a class="header" href="#rag-与-agent-的边界什么时候让-ai-自己决定怎么搜">RAG 与 Agent 的边界：什么时候让 AI 自己决定怎么搜</a></h1>
+<p>团队里有人照着 LangGraph 的教程做改造，把“腾讯 2025 年营收多少“这种单跳问答也升级成了 multi-hop Agent。原来一次检索、一次生成就能答的问题，现在跑 3 轮检索、3 次生成，用户多等了好几秒——答案还是原来那个数字。</p>
+<p>这就是本篇要聊的问题：固定管道和 Agent loop 的边界到底在哪。前面十几篇都在系统内部打转——解析、分片、检索、评估、运维——这篇是篇章四的第一篇，把镜头从系统内部抬到系统边界：同一条检索链路，哪些步骤该写死，哪些该交给模型临场决定。</p>
+<h2 id="一先把两个东西摆清楚管道和-loop"><a class="header" href="#一先把两个东西摆清楚管道和-loop">一、先把两个东西摆清楚：管道和 loop</a></h2>
+<p>RAG 的经典架构是固定管道：用户 query → embedding → 检索 → rerank → 生成。步骤写死，每个 query 走同一条路，差别只在每步内部的参数。</p>
+<p>Agent 的架构是一个 loop：LLM 决定下一步做什么 → 执行工具 → 观察结果 → 再决定。检索在 loop 里不再是流程的一环，而是模型手里的一件工具——调不调、调几次、调哪个，模型说了算。</p>
+<p>所以“RAG 还是 Agent“这个问法本身有点偏。不是谁替代谁，是同一条链路上的控制权分配：哪些步骤写死，哪些步骤交给模型。写死换来可预测——延迟、成本、行为都稳定在预期内；交出去换来灵活——模型能走你事先没画出来的路径。后面所有的取舍，说到底都是这两样东西的互换。</p>
+<h2 id="二判断框架两个维度"><a class="header" href="#二判断框架两个维度">二、判断框架：两个维度</a></h2>
+<p>我的判断框架就两个维度，都来自财报场景的真实 query。</p>
+<p><strong>维度一：query 的开放度。</strong> 对比两个极端。“腾讯 2025 年营收多少“是确定性 query：公司、年份、指标三要素齐全，检索目标明确，一次检索大概率命中，拿到数字就能答。“为什么腾讯的游戏业务毛利在 2023–2024 年下降了“是另一种：得先查毛利数据，再查游戏业务策略，再查行业背景，检索方向有好几个，而且用户没说他想从哪个角度切入——切入角度本身就要有人来定。前者写死在固定管道里绰绰有余，后者写死就难受了。</p>
+<p><strong>维度二：容错的成本，工程上体现为需不需要自我评估。</strong> 还是这两类 query。查营收，模型看到数字和年份对上，直接答，不需要回头看。答毛利下降的原因，生成完最好多问一句：我引用的行业背景 chunk 是 2023 年还是 2024 年的？要不要再补搜一份 2024 年的行业报告？需要这层自检的原因很直接——数字答错的代价高，模型得自己当自己的质检。第 7 篇讲口径陷阱时展开过类似的逻辑：数字类答案，错一个口径就是错一个结论，这里不重复。</p>
+<p>两个维度都高——query 开放、答错代价大——Agentic 值得上。都低，固定管道在延迟和成本上全面占优，没有悬念。费脑子的是一高一低的中间地带，我的习惯是先卡住容错成本这一头：答错越贵，越值得为自检和重搜付延迟。</p>
+<h2 id="三三种模式从轻到重"><a class="header" href="#三三种模式从轻到重">三、三种模式，从轻到重</a></h2>
+<p>决定要 Agentic 之后，还有“上多重“的问题。按实现代价从轻到重，三种模式。</p>
+<p><strong>自我反思检索（self-reflection prompting）。</strong> 检索一次 → 生成答案 → 让模型对答案做一次批判性评估：答案基于哪些 chunk？这些 chunk 覆盖了 query 的全部维度吗？有没有互相矛盾？评估不通过，改写 query 再搜一次。它最大的吸引力是便宜：只在 prompt 层加一段 assess → retry 逻辑，检索架构一行不动。</p>
+<p>名字得交代清楚，这个模式经常被叫成“Self-RAG“，但它和论文里的 Self-RAG（Asai et al., 2023）是两个东西。论文的 Self-RAG 不是 prompt 方案：它专门训练模型生成一组 reflection token（<code>Retrieve</code>、<code>ISREL</code>、<code>ISSUP</code>、<code>ISUSE</code>），让模型在生成过程中逐段自己决定“要不要检索、检索结果相不相关、答案有没有被证据支持“——按需检索和自评都内化在模型参数里，不是外挂一段提示词。这里说的是工程上常见的 prompt 层同名模式，两者别混。</p>
+<p>代价也明白——评估不通过时多一轮检索加生成，延迟和 token 都翻倍；但这是按次发生的，不是每次必付，多数 query 一次就过。</p>
+<p><strong>多步推理检索（Multi-hop）。</strong> Agent 把复杂 query 拆成子问题逐步搜。“腾讯游戏毛利为什么下降“会被拆成：先搜游戏业务收入结构，拿到结果后再搜 2023–2024 年游戏行业政策变化，最后比较两个时期的毛利数据、找出下降原因。每一步可能用不同的工具——第一步查向量库，第二步上 Web，第三步翻内部报告——由 Agent 决定。这是能力上限最高的一种，代价是延迟随步数累加，而且每一步都是一次出错机会：链条越长，歪的概率越大。</p>
+<p><strong>路由型。</strong> 系统里摆着多个检索后端——向量库、SQL、知识图谱、Web 搜索——Agent 按 query 动态选择走哪个。“腾讯和茅台毛利率对比“这种问题，会被路由到两个向量库（港股库和 A 股库）各查一轮，再调 SQL 把两家公司历史毛利率的时间序列拉出来。放到财报系统里，它的真实形态通常是一个分析代理层：负责拆问题，先查结构化指标，再查叙述性章节，最后汇总并附上引用。代价是三种里最重的：后端每多一个，路由出错的面就多一块，调试时你还得同时摸清每个后端的脾气。</p>
+<h2 id="四什么时候不要上-agent"><a class="header" href="#四什么时候不要上-agent">四、什么时候不要上 Agent</a></h2>
+<p>比“怎么用“更重要的是“什么时候别用“。Agentic RAG 有四项隐含成本，教程里一般不写。</p>
+<ul>
+<li><strong>延迟。</strong> 多轮检索加多轮生成，等待时间翻倍起步。固定管道是 1 次检索 1 次生成，Agentic 跑到 3 次检索加 3 次生成不稀奇。</li>
+<li><strong>成本。</strong> 每轮 loop 都是 token。3 轮下来，量级上就是 ×3。</li>
+<li><strong>不稳定性。</strong> loop 可能卡在“搜了 → 不满意 → 重搜 → 还是不满意“的循环里，把 token budget 耗光。固定管道没有“不满意“这个状态，永远不会这样。</li>
+<li><strong>引入错误。</strong> 每一步检索都可能带进新噪音。某一步里一个关键数据被错误 chunk 替换掉，后面整条推理链就歪了——而且歪得很有条理，最难发现。</li>
+</ul>
+<p>“3 轮”“×3“都是量级估计，不是实测数字，实际轮数看 query 和模型。但方向不会变：轮数上去，四项成本一起上去。</p>
+<p>我自己的落地规则有两条。先声明，“3 秒“和“80%“都是经验阈值，不是测量结论，在财报问答场景里够用，换场景要重新校准。</p>
+<p>第一，用户在等答案，还是离线跑分析？用户在等——经验上意味着总延迟要压到 3 秒以内——就别上多步 Agent，多一轮都是拿体验冒险。反过来，离线跑研报、跑批量分析，屏幕前没人等，多跑几轮无所谓。“比较 50 家半导体公司的资本开支和库存变化，再结合管理层措辞解释原因”，这种题本来就不是人在聊天框里等的活，拆成多步让 Agent 慢慢跑，才是正道。</p>
+<p>第二，query 里 80% 以上能靠 metadata 过滤直接搞定吗？能，就不需要 Agent。这条其实是篇章二的老结论：公司、年份、报告期这类强约束，本来就该走 metadata 预过滤，第 6 篇到第 8 篇反复讲的就是这件事。能写死的约束甩给 Agent 临场发挥，是最不划算的一种灵活性。</p>
+<p>两条里有一条指向“别上“，就先不上。</p>
+<h2 id="五边界在融合但工程决策看约束"><a class="header" href="#五边界在融合但工程决策看约束">五、边界在融合，但工程决策看约束</a></h2>
+<p>得承认，Agentic RAG 是真实趋势，不是泡沫。大厂产品里“模型自己去搜“的形态越来越多，但拆开看，实质仍然是 retrieval + rerank + grounding，只是产品层不再让用户感知到“RAG“。被淘汰的不是 RAG，是机械 top-k 拼接式的低配 RAG；模型越强，越需要更智能的检索编排。演进这条线这里不展开，留给第 20 篇。</p>
+<p>趋势归趋势，工程决策看约束。我的经验判断：多数财报问答场景，把 metadata 设计好、chunk 设计好、固定管道调好，已经能覆盖 90% 上下的需求；剩下的 10%——复杂多跳、对比分析、探索性研究——才是 Agentic 的用武之地。这个 90/10 是财报问答场景的经验比例，不是定律。客服闲聊、开放研究类场景，比例会明显不同，别直接搬。</p>
+<p>回到开头那个反例。把“搜 2025 年营收“做成 multi-hop Agent，问题不在工具——LangGraph 本身没毛病——在于这笔买卖做反了：拿确定性的约束去换用不上的灵活性，延迟和成本翻倍，换回来一个和原来一样的答案。</p>
+<p>所以本篇的结论收到这里：要不要 Agentic，看 query 的开放度和容错的成本，不看热度。</p>
+<p>另一个同样热门的升级方向是 GraphRAG。我的结论比本篇更直接：大多数财报场景先别上。建图、更新、查询、适用面，四笔账算完再说话——下一篇《Graph RAG 的边界：我为什么不建议你先上它》专门算这笔账。</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="graph-rag-的边界我为什么不建议你先上它"><a class="header" href="#graph-rag-的边界我为什么不建议你先上它">Graph RAG 的边界：我为什么不建议你先上它</a></h1>
+<p>2024 年微软发布 GraphRAG 的时候，我上头过一次。demo 里它能答“腾讯投资了哪些公司“这种多跳问题——这正是纯向量检索答不好的那类。我把 119 页的腾讯中报喂进去建图，先等来的不是答案，是几十上百次 LLM 调用的账单，和一条“腾讯投资了微信“的错误关系。</p>
+<p>冷静下来，判断就一句话：它解决的问题是真的，问题是你付不付得起。第 17 篇聊 RAG 与 Agent 的边界，结尾我放了一句“另一个热门方向，先别上“——这篇把这句话摊开，一笔一笔算账。</p>
+<p>开算之前，先把一个概念争论搁置。GraphRAG 到底算不算 RAG？有人说算：伞概念之下，凡是 retrieval 服务于 generation 的实现都归 RAG，流传很广的那篇综述（arXiv:2312.10997）就是把图谱类方法归进 Modular RAG 的；也有人说不算：KG 是独立方向，不服务生成的任务它照样能干，只是被 RAG 调用时才临时充当组件。两种说法都自洽。我的态度是归属之争不影响选型——影响选型的是成本和甜蜜点，这篇只算这两笔账。</p>
+<h2 id="一先把话说公道它解决的问题是真的"><a class="header" href="#一先把话说公道它解决的问题是真的">一、先把话说公道：它解决的问题是真的</a></h2>
+<p>GraphRAG 的思路是不直接对原文做向量检索：先用 LLM 把文本抽成实体和关系建成图，检索时把向量、图遍历和社区摘要融合起来。有三类问题，它确实碾压纯向量检索：</p>
+<ul>
+<li>“腾讯投资了哪些公司？”——实体关系查询。向量检索只能找到“长得像“的段落，而投资关系分散在二十年的公告和附注里，语义匹配拼不出一张完整清单。</li>
+<li>“游戏毛利下降和行业政策收紧有因果吗？”——跨段落的多跳推理。证据散在管理层讨论、行业动态、财务附注三处，要跳着串起来。</li>
+<li>“跟腾讯业务最类似的公司有哪些？”——基于关系结构的相似，不是语义相似。两家公司文本描述可能毫不相像，但在图上是邻居。</li>
+</ul>
+<p>还有一个容易被忽略的能力：全局摘要。社区检测把图分成簇，预先给每簇生成摘要，“这批公司整体的战略重心在哪“这种宏观问题，不用遍历全部 chunk 就能答。</p>
+<p>所以我的立场不是“GraphRAG 不行“。是它的甜蜜点比宣传窄，门票比宣传贵。</p>
+<h2 id="二四本账建图更新查询出错"><a class="header" href="#二四本账建图更新查询出错">二、四本账：建图、更新、查询、出错</a></h2>
+<p>门票多少钱，拆成四笔算。</p>
+<p><strong>第一笔，建图账。</strong> 从财报抽实体和关系，听起来是 LLM 的强项，做起来到处是坑。一份 100 页的财报，按微软 GraphRAG 的标准流程，抽实体关系要几十到上百次 LLM 调用。调用量还只是问题的一半，准确率是另一半：“腾讯投资了微信“不是偶然口误，“投资“和“拥有“在 LLM 的关系抽取里经常混淆。实体消歧更要命——同一份港股中报里，“騰訊”“Tencent”“本公司”“集團“指的是同一个东西，LLM 不保证每次都认出来；认不出来，图就裂成几个互不相通的碎片。这些都要额外的规则、人工和调用去补。【待补：若有自己跑微软 GraphRAG 全流程的真实耗时/费用记录，补在此处替换估算口径】</p>
+<p><strong>第二笔，更新账。</strong> 第 16 篇讲运维时说过，知识库是活的。向量库更新很简单：新文档单独走一遍管线入库。图不是这么回事——图谱里的关系高度互联，新财报一发，不是一个实体加几条边的事，是一个实体变了牵连一片：持股比例变了、并表范围变了、高管换了，每个变动都要沿边扩散检查。500 家公司 10 年的年报就是 5000 份 PDF，建出来几十万实体、上百万条关系，每个财报季都是一次图手术。</p>
+<p><strong>第三笔，查询账。</strong> GraphRAG 的一次查询是向量检索加图遍历取邻居再加融合，延迟通常是纯向量检索的 3–5 倍。批量分析无所谓，但交互式问答有硬约束——我自己用的场景，超过 2 秒就能明显感到等待。为八成不需要图的问题付 3–5 倍延迟，怎么算都不划算。</p>
+<p><strong>第四笔，出错账。</strong> 这笔最容易被低估。向量检索错了，大不了是“没帮助“，LLM 拿到不相关的 chunk，最多答得空泛。图谱抽错了是另一回事：系统会拿着一条错误的边理直气壮地推理。“腾讯投资了微信“进图之后，所有沿这条边走出来的答案都带着这个错误。在错的图上推理，比不推理更糟——错得还特别像那么回事。</p>
+<h2 id="三拿自己的数据算一遍500-家为什么不成立"><a class="header" href="#三拿自己的数据算一遍500-家为什么不成立">三、拿自己的数据算一遍：500 家为什么不成立</a></h2>
+<p>四本账还是抽象的，落到我自己的场景算一遍。我的目标库是 500 家上市公司、20 年财报：</p>
+<ul>
+<li>500 家 × 20 年 × 每年 2 份（年报加中报）× 约 150 页 ≈ 2 万份 PDF、300 万页；</li>
+<li>按每页 500 tokens 估，原始文本约 15 亿 tokens。</li>
+</ul>
+<p>再按微软 GraphRAG 的完整流程（实体抽取、关系抽取、社区摘要）分项估建图成本：</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>阶段</th><th>每页成本</th><th>300 万页合计</th></tr>
+</thead>
+<tbody>
+<tr><td>实体抽取</td><td>~$0.01</td><td>~$30,000</td></tr>
+<tr><td>关系抽取</td><td>~$0.02</td><td>~$60,000</td></tr>
+<tr><td>社区摘要</td><td>~$0.05</td><td>~$150,000</td></tr>
+<tr><td>总计</td><td></td><td>~$240,000</td></tr>
+</tbody>
+</table>
+</div>
+<p>前提必须交代清楚：这是按 GPT-4 级别模型的单价、每页 500 tokens、含社区摘要的完整流程算出来的量级，是会过期的单价估算，不是报价【待核实：发布前按当时模型定价复核】。其实哪怕砍一个数量级，结论也不变——因为真正不成立的不是钱，是两个结构性错配。</p>
+<p>错配一，实体爆炸。500 家公司叠加，每家有历史更名（Facebook 改 Meta 那种）、时间化实体（“腾讯 2024 年收入“算属性还是独立实体？）、业务线、高管、供应商、客户、关联方，实体总量千万级起步。更要命的是 schema 不统一：500 家公司的财报格式、术语、会计政策全不一样，而知识图谱最怕的就是这个。</p>
+<p>错配二，时间在图里没有好位置。这是图数据库的经典难题，三种方案各有死法：</p>
+<pre><code class="language-text">方案 A：时间当属性  腾讯 {收入: 3200亿, 时间: 2024H1}
+  → 查"近5年收入趋势"要逐节点扫属性，图遍历的优势没了
+方案 B：时间当节点  (腾讯)-[2024年收入]-&gt;(3200亿)
+  → 每个指标每年都是独立边，边数爆炸
+方案 C：按时间切片，每年一个子图
+  → 跨时间查询要 join N 个子图
+</code></pre>
+<p>而财报查询的主力恰恰是时序——“近五年收入趋势”“毛利率哪年开始降”。图擅长关系网络，不擅长时序演变。所以这笔账算下来，我的结论很直接：500 家 × 20 年是时序 OLAP 问题，不是图问题。这类数据的正经归宿是结构化数据库加 SQL，外面再套一层向量检索处理非结构化论述——第 11 篇讲多市场分层存储时就是这个思路，分层混合架构这里只提一句，不展开。</p>
+<h2 id="四镜头拉近单家公司-20-年成立了吗"><a class="header" href="#四镜头拉近单家公司-20-年成立了吗">四、镜头拉近：单家公司 20 年，成立了吗</a></h2>
+<p>不做 500 家，只做腾讯一家 20 年呢？</p>
+<p>先算规模：2004 年上市到现在约 40 份 PDF、8000 页上下、400 万 tokens。这个量级建图成本完全可以接受，“能不能“的问题解决了。但“值不值“没有。</p>
+<p>把单公司财报的查询按类型过一遍，我的估算是大约八成落在两类：时序趋势（“近十年收入走势”）和精确数值（“2024 年游戏占比多少”）。这两类都是 SQL 和结构化数据的强项，GraphRAG 不但没优势，反而更慢。八成是估算口径，不同用户的查询分布会不一样，但方向我很有把握。刨掉这些，GraphRAG 真正占优的子集只剩三块：</p>
+<ul>
+<li>投资并购版图。腾讯的投资轨迹本身就有网络结构：早期投游戏（Riot、Supercell），中期投电商和本地生活（京东、拼多多、美团），近期转向 AI（Moonshot、MiniMax）。“投资风格经历了什么转变“这种问题，图答得比向量好。</li>
+<li>关联交易与并表范围。哪些子公司并表、哪些按联营合营处理、并表策略变化对报表有什么影响。</li>
+<li>业务重组历史。业务分部从“互联网增值服务/网络广告“到“游戏/社交网络/广告/金融科技“的划分变迁，背后是战略调整。</li>
+</ul>
+<p>所以单公司的结论是：可做，但不建议全量做。结构化数据为主，覆盖那八成查询；只在投资、并购、关联交易这些真有网络结构的子集上，局部用图。</p>
+<h2 id="五如果那-20-真的成立三条路和一条-mvp-路径"><a class="header" href="#五如果那-20-真的成立三条路和一条-mvp-路径">五、如果那 20% 真的成立：三条路和一条 MVP 路径</a></h2>
+<p>劝退不是堵死。如果你把自己的查询分布盘过一遍，发现关系类问题真的成立、真的高频，有三条路，按工程务实度排：</p>
+<p><strong>第一条，轻量实体层，我最推荐。</strong> 不建完整知识图谱，用规则加 metadata 抽一张实体关系表——谁投了谁、比例多少、什么时候投的。检索时这张表只做精确查询，复杂推理交给 LLM。工程成本最低，和现有向量库是加法关系，不是重构。</p>
+<p><strong>第二条，按需建子图。</strong> 不建全图，查询来了只对涉及的实体现场抽关系、建局部子图。省掉全图的构建和维护，代价是每次查询多花几次 LLM 调用、延迟上升。适合关系查询占比低但不能没有的场景。</p>
+<p><strong>第三条，全量 GraphRAG。</strong> 微软全家桶开箱即用，实体抽取、社区检测、分层摘要全包。它适合快速实验、验证想法，不适合当生产默认项：资源消耗大，中文支持也一般【待核实：“中文支持一般“基于 2024–2025 年的版本状态，发布前复核现状】。</p>
+<p>如果只是想先验证价值，我给一条 10 美元以内的 MVP 路径，拿“腾讯投资版图“这个单一主题切入：</p>
+<ol>
+<li>数据获取：从 IT桔子、Crunchbase 这类结构化数据源拿投资事件（时间、标的、轮次、金额），IT桔子有免费额度但有限【待核实：免费额度的具体政策，发布前核实】；不够用就手工整理 50–100 个重点事件。</li>
+<li>LLM 清洗标准化：统一成 {date, target, amount, round, sector} 的结构，几美元的事。</li>
+<li>建图：Python 加 networkx，或者 Neo4j Desktop 免费版，零成本。</li>
+<li>分析：把子图和问题一起丢给 LLM，按次计费。</li>
+</ol>
+<p>注意这条路是半自动的：结构化数据打底，LLM 只做清洗和补充。它的准确率反而高于让 LLM 从财报原文里猜——“腾讯 2014 年投资京东“在 IT桔子里是一条现成记录，在财报里是要 LLM 赌概率的一段文字。</p>
+<p>最后两句实话。第一，这个流程里成本大头不是 API 费，是你的时间，方案该按自己的时间预算选。第二，领域先验大约能替掉 80% 的 LLM 调用：股票代码是天然唯一 ID，会计科目是天然 schema，披露格式是天然解析规则。这些先验是财报场景白送的，不用白不用。</p>
+<h2 id="收尾"><a class="header" href="#收尾">收尾</a></h2>
+<p>回到开头那次上头。我不是要说 GraphRAG 不好——关系密集、多跳推理、全局摘要，这三个甜蜜点都是真的。是它的甜蜜点比宣传窄得多：至少在我的财报场景里，八成的问题做好分片、metadata 和检索优化就够了，第 4 到第 10 篇讲的全是这件事；剩下的，再谈图。</p>
+<p>这个判断有三个前提：个人或小团队、财报场景、当前的建图成本。有专门图谱团队的、业务本身关系密集的（供应链、反欺诈、社交关系），不在此列。</p>
+<p>第 17 篇聊 Agent，这篇聊 GraphRAG，两个边界判断用的是同一把尺子：不看热度，看约束。下一篇把这把尺子本身抽出来——从财报和电力两个完全不同的领域，归纳五个跨领域通用的设计模式。</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="领域特异性-rag-的通用设计模式"><a class="header" href="#领域特异性-rag-的通用设计模式">领域特异性 RAG 的通用设计模式</a></h1>
+<p>电力系统的运维人员问“220kV 线路保护配置“，系统返回的是 1000kV 特高压规程的段落——措辞专业、结构工整，外行人根本审不出错。这种“看起来正确的错误“，比答不上来危险得多。</p>
+<p>同样的病，我在财报系统里也犯过：问 2025 Q4 的数据，返回 2020 Q4，相似度分数还很高。第 6 篇讲时间错配时展开过，这里不重复。两个行业隔着十万八千里，bug 长得一模一样，根因也是同一个——embedding 分不清“语义相似“和“条件等价“（“条件等价“是我自己的叫法，不是学界术语，指的是“满足同一份约束条件”）。</p>
+<p>第 17、18 两篇分别划了 Agent 和 GraphRAG 的边界，主题都是“什么时候别急着上“。边界划完，该往回收一层：这些判断背后，有没有跨领域通用的东西？我在财报和电力两个领域各踩了一遍坑，最后收敛出五个模式。不敢说它们是普遍规律，但至少在两个相距很远的领域，指向了同一套设计。这篇一个一个拆。</p>
+<h2 id="模式一强约束-metadata-优先"><a class="header" href="#模式一强约束-metadata-优先">模式一：强约束 metadata 优先</a></h2>
+<p>垂直领域的文档天然带强约束维度：财报有年份和口径，电力有电压等级和设备型号。这些维度恰恰是 embedding 的盲区。1000kV 和 220kV 的文档，用词、结构高度重叠，都在讲变电站、线路保护、断路器，向量化之后几乎是孪生。语义相似不等于条件等价——指望向量自己把它们分开，不现实。</p>
+<p>我的做法很固定：花一天时间，把这个领域的强约束维度全部列出来，逐一定成 metadata 字段，检索时做硬过滤。财报那边是年份、口径字段，第 6 篇讲过；电力这边直接看代码：</p>
+<pre><code class="language-python"># 入库：每条 chunk 打上电压等级标签
+doc.metadata["voltage_level"] = "1000kV"
+
+# 检索：先提取 query 里的电压等级，再作为硬约束
+voltage = extract_voltage(user_query)  # 规则或轻量 LLM 均可
+retriever = vectorstore.as_retriever(
+    search_kwargs={"filter": {"voltage_level": voltage}}
+)
+</code></pre>
+<p>关键在 <code>filter</code> 这一层。把电压等级注入 chunk 文本、召回后加 reranker，都是软信号：只能提高正确文档排在前面的概率，不能保证错误文档不出现。硬过滤是在向量库层面把另一个电压等级的文档直接排除——它们连参与排序的资格都没有。Milvus、Pinecone、Weaviate、Qdrant 这些主流向量库都支持 metadata filter，实现上没有门槛。</p>
+<p>代价也要讲清楚：硬过滤把信任押在两处，标注质量和 query 约束提取。标签标错，过滤会把正确答案也一起滤掉；query 里没带电压等级时，提取逻辑还得有兜底。第一个问题，模式四回来讲。</p>
+<p>这是我做垂直领域 RAG 雷打不动的第一步，先做掉它再谈别的。</p>
+<h2 id="模式二分片由文档结构驱动不由-token-数驱动"><a class="header" href="#模式二分片由文档结构驱动不由-token-数驱动">模式二：分片由文档结构驱动，不由 token 数驱动</a></h2>
+<p>通用 RAG 按 token 数切 chunk，垂直领域按文档的语义结构切。</p>
+<p>财报里，管理层讨论是段落，财务数据是表格。表格得当原子块处理：表头、口径、数值行留在同一个 chunk 里，切散了，模型就只看得见数字、不知道数字是谁的。这套先识别 TextBlock 再合并的做法第 4 篇写过，不展开。</p>
+<p>电力这边的对应动作是入库前的结构化预处理：每条 chunk 继承文档级上下文，比如它出自《1000kV 变电站运行规程》的哪一节。按同一逻辑反推，设备规范应该跟着“技术参数 / 运行条件 / 保护配置“这种参数组切，而不是跟着 512 个 token 切。再类推开去，法律文档大概按“条“切，药品说明书大概按 section 切——这两个领域我没实操过，只是类比；但结构驱动这个思路，我判断是通的。</p>
+<p>原则值得单独一行：</p>
+<p><strong>识别文档的语义结构边界，在边界内分片，永不在边界中间切。</strong></p>
+<p>边界长什么样因领域而异，找边界、守住边界的动作是同一个。</p>
+<h2 id="模式三下游问题驱动上游-ingestion-设计"><a class="header" href="#模式三下游问题驱动上游-ingestion-设计">模式三：下游问题驱动上游 ingestion 设计</a></h2>
+<p>常见的顺序是先建一套管线，再问它能答什么。我反过来：先列出系统要回答的 20 个最典型 query，逐个反推答案需要的信息在原文的什么位置、什么格式，ingestion 从“怎么准确抽出这些信息“开始设计。</p>
+<p>财报就是这么推出来的。用户问收入、利润、现金流——数字在表格里，所以表格抽取的优先级高于段落。用户问“为什么变了“——主表只给结果，附注才解释口径变化和拆分原因，所以附注的召回权重被我调高。管线最后长什么样，是 query 分布决定的，不是审美决定的。</p>
+<p>电力按同一逻辑反推：典型 query 带着电压等级和设备名进来，所以 ingestion 阶段，电压等级和设备型号的结构化优先级最高——模式一那两个 metadata 字段，就是这么来的。【待补：电力侧典型 query 的具体列表，现有素材未覆盖】</p>
+<p>说白了：不建完美的通用管线，建对你的 query 最优的管线。</p>
+<h2 id="模式四关键页面的人工审查永远可靠"><a class="header" href="#模式四关键页面的人工审查永远可靠">模式四：关键页面的人工审查永远可靠</a></h2>
+<p>垂直领域的错误成本，比通用场景高一个量级。通用 RAG 答错一条 FAQ，用户翻个白眼；财报把 2020 年的数字当 2025 年答，电力把电压等级张冠李戴，那是决策级错误。</p>
+<p>所以有些人工成本不能省。先定义关键页面：用户最常问的 10 个问题涉及的源文档区域。在这些页面上花 30 分钟逐页检查 ingestion 质量，比花 3 天调 embedding 参数划算。财报里这大约是 15 到 20 页，具体怎么审，第 2 篇写过。</p>
+<p>电力侧的人工审查有个更具体的对象：metadata 标签本身。模式一说过，硬过滤的可靠性取决于标注质量——一个电压等级标签标错，过滤当场打穿，reranker 顶多兜底漏标注的情况。自动化检查能覆盖大多数页面，但关键页面上那双眼睛，目前没有被替代。</p>
+<h2 id="模式五优化顺序先把免费的花完"><a class="header" href="#模式五优化顺序先把免费的花完">模式五：优化顺序——先把免费的花完</a></h2>
+<p>领域 RAG 的优化有优先级。我的清单分八级：</p>
+<ol>
+<li>metadata 强约束过滤（免费）</li>
+<li>chunk 策略（免费）</li>
+<li>query 改写 + BM25 补充（少量成本）</li>
+<li>噪声清洗（免费）</li>
+<li>reranker（少量 API 成本）</li>
+<li>更强的 embedding（fine-tune 或 API 成本）</li>
+<li>GraphRAG（构建和维护成本高，第 18 篇算过这笔账）</li>
+<li>Agentic RAG（延迟和成本翻倍，第 17 篇划的边界）</li>
+</ol>
+<p>第 1、2、4 级是免费午餐：不要额外推理成本，不要 GPU，不要调模型。第 3 级我原来也归在免费里，后来把它降了半档：query 改写要调 LLM，按次计费；BM25 要一套倒排索引设施——Elasticsearch、OpenSearch 或者向量库自带的稀疏通道，FAISS、Chroma 这类纯向量库并不原生支持。成本不大，但不是零。这里的“免费“和“贵“是定性分档——按要不要新增模型和基础设施来划，不是精确账单。前四级没做完就跳去五到八，等于轮子还没装好，就先买赛车胎。</p>
+<p>这个排序在两个领域独立验证过。财报侧，时间错配是靠免费的 metadata 过滤解决的，不需要换 embedding——第 6 篇专门讲过，为什么不建议只靠换模型。电力侧的结论更直接：“最关键的一步是 metadata filter”，reranker 只是兜底。两个互不相干的领域，得出了同一个排序。</p>
+<h2 id="收尾-1"><a class="header" href="#收尾-1">收尾</a></h2>
+<p>五个模式可以当检查表用。新接一个垂直领域，按一到五过一遍：列强约束维度，找文档结构边界，用 query 反推 ingestion，盯住关键页面，按免费到贵的顺序优化。前两步通常就解决八成问题。</p>
+<p>领域知识决定下限——不懂电压等级和口径，连 metadata 字段都列不出来；通用模式决定上限。</p>
+<p>这五个模式不是一天想出来的，是三年里一个接一个踩出来的。下一篇拉长时间轴：第 20 篇《RAG 技术演进 2023→2026：从外挂到操作系统》，看这些模式是怎么在三年里长出来的。</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="rag-技术演进-20232026从外挂到操作系统"><a class="header" href="#rag-技术演进-20232026从外挂到操作系统">RAG 技术演进 2023→2026：从外挂到操作系统</a></h1>
+<p>2023 年搭一个 RAG 只要五步：分片、过 embedding、写向量库、top-k 检索、拼进 prompt。一个看完 LangChain 入门教程的工程师，周末两天就能搭出能跑的 demo。今天再画同一个系统的架构图，上面有调度器、路由器、降级兜底和生成后验证——中间隔了整整三年的工程化。</p>
+<p>这一篇只做事实性对比：什么变了、怎么变的、什么没变。至于“RAG 会不会死、形态往哪迁“，那是下一篇的事。上一篇讲的五个通用模式不是谁某天想出来的，是这三年磨出来的——要理解那些模式为什么长那样，得先看这三年发生了什么。</p>
+<h2 id="两张架构图从食谱到系统"><a class="header" href="#两张架构图从食谱到系统">两张架构图：从食谱到系统</a></h2>
+<p>先把差距摆出来，再谈细节。2023 年的链路干净得像一份食谱：</p>
+<pre><code>文档 → 切块(固定 token)
+     → Embedding 模型(text-embedding-ada-002 或 bge-large)
+     → 写入向量数据库(Pinecone / Qdrant / FAISS)
+
+用户提问 → 同样过 Embedding
+         → top-k 相似度检索
+         → 召回的几个 chunk 拼进 prompt
+         → 送进 LLM 生成回答
+</code></pre>
+<p>五步，没有 reranker，没有 query 改写，没有混合检索，没有 metadata filter。2026 年再画，几乎认不出来：</p>
+<pre><code>用户提问
+  ↓
+Query 改写 / 扩展 / HyDE
+  ↓
+多路并行检索
+  ├─ 向量检索
+  ├─ BM25 关键词检索
+  ├─ 知识图谱遍历（可选通路，见下注）
+  └─ SQL / 结构化查询
+  ↓
+合并 + 去重 + Reranking(Cross-Encoder)
+  ↓
+上下文压缩 / 过滤
+  ↓
+组装 Prompt
+  ↓
+LLM 生成 + 自我验证
+  ↓
+不确定?再检索一轮(Agentic RAG)
+</code></pre>
+<p>注：知识图谱那一路不是标配。构建和维护图谱的成本摆在那里，只在实体关系本身就是问题核心的场景（投并购版图、供应链、反欺诈）值得开；多数生产系统的实际标配是向量 + BM25 + metadata filter。这笔账第 18 篇算过，这里只在图上标个边界。</p>
+<p>每个环节都从单一动作变成了一组策略。检索不再单路，Embedding 不再单模型，Query 不再是用户原文，生成完不一定就结束。更要紧的是位置变了：RAG 不再是装在应用层的外挂，而是一个 system——有调度器决定查几次、查哪里，有路由器决定用哪种检索，有兜底（向量召回失败降级到关键词），有验证（生成后再 ground 一遍）。</p>
+<p>变的不是核心思想，是它在 LLM 栈里的位置。代价也得说清楚：一个生产级 RAG 系统，从代码量到运维难度，跟 2023 年的 demo 完全不是一个量级。能力涨了，复杂度也涨了，两者是同一件事的两面。</p>
+<h2 id="三年三段每年各自解决了什么"><a class="header" href="#三年三段每年各自解决了什么">三年三段：每年各自解决了什么</a></h2>
+<h3 id="2023-元年验证可行性外挂形态确立"><a class="header" href="#2023-元年验证可行性外挂形态确立">2023 元年：验证可行性，“外挂“形态确立</a></h3>
+<p>2023 年的 RAG 之所以长那样，是四个锚点事件定的：</p>
+<ul>
+<li>LlamaIndex 和 LangChain 把 RAG 变成了一个 <code>pip install</code> 的事。在此之前，搭一套要自己写 PDF 解析、自己调 FAISS、自己拼上下文。</li>
+<li>ada-002 成了事实标准，“选什么 embedding 模型“这道选择题被直接跳过，选型成本接近零。</li>
+<li>chunk 策略只有一个选项：按 512 token 切。不是这个选项多好，是还没人系统踩过“一刀切在复杂文档里崩盘“的坑。</li>
+<li>上下文窗口只有 4K（GPT-3.5）和 8K（GPT-4）。这条约束决定了 RAG 当时的地位：它不是优化项，是必需品——不检索，私有知识根本塞不进 prompt。</li>
+</ul>
+<p>这一年解决的问题是“能不能用“。答案是能，但边界清楚：FAQ、博客搜索、简单文档问答表现不错；多跳推理、跨文档比较、长文档摘要，几乎立刻崩盘。没解决的也列得出来：PDF 解析质量参差不齐、chunk 一刀切、metadata 几乎不存在、多轮对话状态靠手动管。这份“未解清单“不是点缀，它是 2024 年所有修补的源头。</p>
+<h3 id="2024-垂直化从能用到管用"><a class="header" href="#2024-垂直化从能用到管用">2024 垂直化：从“能用“到“管用“</a></h3>
+<p>2024 年场景从通用走向垂直——财报、法律、医疗、电力——通用 RAG 的假设在这些场景里逐一崩溃。崩溃逼出了四条修补线。</p>
+<p>Ingestion 工程化。PDF 解析不再是“调个库就行“，reading order、表格结构、多栏布局，每一个都能让下游全废。MinerU 这类专门对付复杂 PDF 的工具就是被这些坑逼出来的。</p>
+<p>Metadata 成为一等公民。跨年财报混检是最典型的翻车现场：问 2025 Q4，召回 2020 Q4——两份文档长得像孪生，纯向量检索在这种场景下系统性失效，没有 metadata 硬过滤就是不行。时间错配这一类问题，第 6 篇展开过，这里只说结论：metadata 从“附带的标签“变成了检索链路的核心组件。</p>
+<p>Chunk 策略分化。语义边界切分、父子分片、sentence window，不同文档类型配不同切法，“512 token 打天下“正式退场。分片怎么选，第 4 篇有完整讨论。</p>
+<p>Agentic RAG 露头。LLM 开始参与“要不要检索、检索什么、结果不好怎么改 query“的决策。这是 RAG 从被动检索走向主动信息获取的第一步，当时还是苗头，两年后成了主线。</p>
+<p>2024 年解决了“管用“，没解决的是成本：这套工程管线要真金白银的投入，RAG 不再是“调 API + 拼 prompt“的周末项目。</p>
+<h3 id="20252026从管道到系统"><a class="header" href="#20252026从管道到系统">2025–2026：从管道到系统</a></h3>
+<p>这两年是四条线同时推进。</p>
+<p>Agent 框架（LangGraph、CrewAI、AutoGen）把检索嵌进 agent loop，由 LLM 动态决定检索时机和策略。RAG 从一段固定管道变成可被编排的能力——这是“外挂→系统“迁移里最关键的一步。</p>
+<p>GraphRAG 从热议走向务实评估。微软 2024 年中发布时讨论很热，到 2026 年共识冷静了：多跳推理、实体关系查询适用，单跳查询、FAQ 型问答不适用。它是补充者，不是替代者。GraphRAG 的适用边界和成本，第 18 篇专门谈过。</p>
+<p>Embedding 性能接近瓶颈。MTEB 榜单 top-10 模型的平均分差距只有 1–2 分（成稿时的观察，榜单本身滚动更新），纯拼“更准“不再是竞争点，竞争转向多语言、领域微调和推理效率。</p>
+<p>长上下文动摇了 RAG 的定位，但没有消灭它。窗口从 8K 涨到百万级，“全塞进去“技术上可行了——这里只陈述动摇这个事实；它会不会杀死 RAG，留到终篇再辩。</p>
+<h2 id="七个环节逐项对照一张表加三处点拨"><a class="header" href="#七个环节逐项对照一张表加三处点拨">七个环节逐项对照：一张表加三处点拨</a></h2>
+<p>把三年收拢成一张表。名单里的模型和工具以成稿当月（2026 年中）为准，这个领域的名单半年一轮，读的时候按当月复核：</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>环节</th><th>2023 怎么做</th><th>2026 怎么做</th></tr>
+</thead>
+<tbody>
+<tr><td>分片</td><td>固定 token / 递归字符切分</td><td>结构感知分片；Late Chunking</td></tr>
+<tr><td>Embedding</td><td>ada-002 / bge-large，512 token</td><td>Qwen3-Embedding-0.6B（32K）/ gemini-embedding-001；Matryoshka 截断</td></tr>
+<tr><td>检索</td><td>单路向量检索</td><td>向量 + BM25 + SQL 多路混合（知识图谱按需加入）</td></tr>
+<tr><td>Reranking</td><td>几乎没有，向量库顺序即最终顺序</td><td>两阶段：向量 Top-50 → Cross-Encoder 精排 Top-5</td></tr>
+<tr><td>Query 处理</td><td>用户原文直接检索</td><td>HyDE / Multi-Query / Step-Back 三件套</td></tr>
+<tr><td>Agent 化</td><td>一次检索 → 生成 → 结束</td><td>Agent 自主决定怎么搜、何时停、何时换数据源</td></tr>
+<tr><td>上下文窗口</td><td>GPT-3.5 4K / GPT-4 8K</td><td>Claude 200K / Gemini 1M / GPT-4o 128K</td></tr>
+</tbody>
+</table>
+</div>
+<p>表格承载信息量，正文只挑三个“不只是升级、是位置或性质变了“的点。</p>
+<p>第一个，分片的 Late Chunking。思路是把整篇文档先过一次长上下文 embedding 模型，让每个 token 的向量都带上全文上下文，然后再按事先在文本层定好的分片边界（句子、段落）对 token 向量做池化，得到各个 chunk 的向量。注意：分片边界仍然在文本空间确定，并不是“在向量空间里切分“；变的是每个 chunk 的向量不再只看自己那几百个 token——“先切后嵌“造成的上下文缺失被绕开了。embedding 从“切完之后对每个块做的事”，变成了“切之前对全文做的事“，位置变了，性质也变了。</p>
+<p>第二个，检索从可选到必选。混合检索成为标配，原因不是向量检索变差了，是问题本身变复杂了。拿伯克希尔当示意用例（素材自带的例子，不是实测结论）：“伯克希尔投资了哪些有护城河的公司”，向量检索够用；“1985 年浮存金是多少”，要向量和 BM25 分工，靠 BM25 字面匹配“1985“和“浮存金“；“巴菲特的投资理念经历了哪些变化”，得靠知识图谱跨年份关联。单一检索方式永远有盲区，这才是混合检索的真正理由。</p>
+<p>第三个，Reranking 从无到有。2023 年几乎没有生产系统用 reranker，2026 年两阶段是标配：向量检索粗排 Top-50（快但粗糙），Cross-Encoder 精排 Top-5（慢但精准）。Cross-Encoder 相对双塔模型的精度提升通常在 15~40%——这里说的是 NDCG 这类排序指标的相对提升，经验口径，具体数字取决于领域和文档类型，不是到处都成立的常量。</p>
+<h2 id="演进沉淀出的选型框架什么时候该用什么"><a class="header" href="#演进沉淀出的选型框架什么时候该用什么">演进沉淀出的选型框架：什么时候该用什么</a></h2>
+<p>三年演进的一个事实性产出，是分层选型的共识基本成型：</p>
+<ul>
+<li>直接靠 LLM：不需要最新信息、不需要私有知识、不需要引用和审计。写作润色、代码解释、头脑风暴都在这层。</li>
+<li>增强版传统 RAG：关键词 + 向量 + metadata filter + reranker + citation。适合 1~3 段证据就能回答、文档结构清晰的场景——企业知识库、产品文档、内部 SOP。</li>
+<li>Agentic RAG：一次检索不够、问题模糊需要拆解、证据分散在多个数据源。多跳、跨源、需要先规划再检索的问题归这层。</li>
+</ul>
+<p>检验流程压缩成四问：需要最新信息吗？需要私有知识吗？需要引用或审计吗？——有一个“是“就该检索。再问第四问：一次检索够吗？够，传统 RAG；不够，Agentic RAG。</p>
+<p>这是当下的事实陈述，不是对未来的判断。这个框架明年还成不成立，同样是终篇的问题。</p>
+<h2 id="三年没变的东西"><a class="header" href="#三年没变的东西">三年没变的东西</a></h2>
+<p>变的说完，翻面。有一件事从始至终没变：**“找证据 → 给模型看 → 让它生成“这条骨架，从未改变。**变的只是找证据的方式、给模型的路径、以及模型看完之后做什么。</p>
+<p>工程层面，四条没变：</p>
+<ul>
+<li>核心价值没变——给 LLM 提供它训练数据里没有的、事实性的、可追溯的信息。</li>
+<li>向量检索 + metadata 过滤 + reranker 精排，这三件套的结构没有动摇。每一环都升级过，组合方式没变。</li>
+<li>ingestion 质量决定系统上限，模型只决定下限。这条原理 2023 年成立，2026 年依然成立。</li>
+<li>做垂直场景 RAG，大约 80% 的工程时间花在数据上，20% 花在模型上。这是经验估计，不是统计结论，但方向和量级我没见过反例。</li>
+</ul>
+<p>注意这四条的位置：它们全在“没变“这一侧。这个系列前 19 篇讲的脏数据、metadata、口径、评估，没有一篇讲的是“哪个新模型又涨了多少分“——不是模型不重要，是决定系统生死的问题，三年里始终是同一批。垃圾进，垃圾出，这句话 2023 年成立，今天一个字都不用改。</p>
+<h2 id="收尾事实到此判断下篇"><a class="header" href="#收尾事实到此判断下篇">收尾：事实到此，判断下篇</a></h2>
+<p>一句话收束全篇：2023 年 RAG 是外挂，2026 年 RAG 更像底层操作系统的一部分。被取代的只是低配 RAG——2023 年那种机械 top-k 拼接；而“找证据“这套思想没有消失，反而被内化成了更强的检索工具链。这是事实陈述，不是胜利宣言。</p>
+<p>成熟度对比到此为止。三年里变的是每个环节的成熟度，不变的是骨架和那条最朴素的原理。但还有最后一个问题本篇故意没碰：长上下文和 Agent 还在进化，这套操作系统会消亡还是变形？下一篇，终篇《RAG 的未来：形态迁移，而非死亡》，给出我的判断。</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="rag-的未来形态迁移而非死亡"><a class="header" href="#rag-的未来形态迁移而非死亡">RAG 的未来：形态迁移，而非死亡</a></h1>
+<p>第 1 篇里我画过一条七步链路：抽取 → 清洗 → 分片 → 标注 → 索引 → 检索 → 生成。过去一年有种流传很广的判断：这条链路会整体消失——LLM 自己决定看什么，不再需要外部向量库。我做了近两年财报 RAG，这个系列写的就是这条链路上的坑；最后一篇，正面回答它。</p>
+<p>答案先放在这里：链路不会消失，会迁移——Embedding 不会死，只是你看不到它了。但在下结论之前，得先把反方讲到最强。</p>
+<h2 id="一先把现在的-rag固定下来"><a class="header" href="#一先把现在的-rag固定下来">一、先把“现在的 RAG”固定下来</a></h2>
+<p>讨论“会不会死”之前，得先锚定今天 production 级的 RAG 长什么样，否则各说各话。</p>
+<p>对照第 1 篇那条链路看今天的系统：每个环节都还活着，但每个环节内部都叠上了策略层。摄取预处理不再是 <code>pdfplumber</code> 抽一遍完事，而是按文档类型分派解析策略；分片从按 token 均分进化到语义分片、结构感知切分；索引普遍是向量加 BM25 双写；查询召回早就是多路的——LLM 先生成几个查询变体，向量和全文并行跑，再融合；召回之后还有 cross-encoder 重排过滤，最后才组装进 prompt 生成。</p>
+<p>环节没变，内容变复杂了。在“RAG 将死”的论战里，最容易被演化替代的不是“索引”这个动作本身，而是 <code>embedding distance → top-k → 拼 prompt</code> 那条由外部固定策略决定证据的线性路径。靶子先立准，后面才不浪费弹药。</p>
+<p>顺带把外延也立住：RAG 这个词比“向量库 + embedding”宽得多。留存 markdown 让模型自己翻文件也好，建 DB 也好，DB 之上再建 graph 也好，只要是通过 retrieval 改变 LLM 的 generation，就是这把伞下的一种具体实现。把外延划宽，后面谈的“迁移”才有落点：迁移的不是某一种工具的生死，是 retrieval 这件事在系统里的位置。</p>
+<h2 id="二那个rag-将死的论点逻辑上是自洽的"><a class="header" href="#二那个rag-将死的论点逻辑上是自洽的">二、那个“RAG 将死”的论点，逻辑上是自洽的</a></h2>
+<p>不竖稻草人。流行的论据主要两个：长上下文让“把所有文档直接塞进 context”变得可行；Agent 能自己搜索、自己翻文件，不需要事先建好向量库。论据背后是一条完整的推理链。</p>
+<p>上下文窗口从 8K 一路拉到百万级——Gemini 2M、GPT-5.5 1M、Claude 200K，幻觉率比 8K 时代低了一个量级，Tool Call 的理解和执行越来越可靠。既然如此，为什么要由外部系统替模型决定它该看哪几段？模型完全可以像人翻文件夹一样，自己决定打开哪个文件、看完这段想起另一个文件、再回头核对那张表。被判定相关的文件全量进上下文，Attention 在 token 间的路由就是最好的相关性计算——本身就是一种“软检索”。在这个图景里，“先做向量匹配再注入 prompt”的外部回路消失了，模型自己准备自己的 prompt。</p>
+<p>这个论点还有个激进版本，连 Embedding 都绕过去：多模态数据进入模型时以 KV Cache 形式存下压缩表示，推理时直接从 KV Cache 继续 decode。你问“我昨天晚上吃了什么”，模型看过昨天所有照片的 KV 表示，直接出答案；照片太多装不下，就开 subagent 分批过，分类器先筛一遍 yes/no，所有 yes 合并进上下文二次推理。</p>
+<p>这套设想我挑过工程毛病——KV Cache 怎么管理、怎么复用、显存怎么扛。但我得承认：它逻辑上自洽，终局意义上方向也对。问题不在逻辑，在时间尺度和工程现实。</p>
+<h2 id="三工程现实embedding-更可能变形而不是死亡"><a class="header" href="#三工程现实embedding-更可能变形而不是死亡">三、工程现实：Embedding 更可能变形，而不是死亡</a></h2>
+<p>“逻辑自洽”不等于“马上可规模化”。进了真实生产环境，有五笔账绕不过去。前三笔是旧账新算，后两笔常被忽略。</p>
+<p>第一笔，成本。一份完整财报 PDF 转成文本大约 15–30 万 token——这个系列反复用的那份 119 页腾讯中报就在这个量级【待核实：与第 1、2 篇 119 页腾讯中报的 token 换算口径对齐】。每次查询都把 30 万 token 塞进 context，按 Claude Opus 的输入定价（$15 / 百万 token）算约 $4.5 一次；走检索只取 top-5 chunk（约 3000 token）加生成，约 $0.05–0.10，单次差 50–100 倍。延迟也随之差出 2–5 秒，交互场景可感知。</p>
+<p>第二笔，长上下文不等于稳定有效上下文。Lost in the Middle 验证过：模型对长 context 中间位置的 recall 显著低于开头和结尾。整份财报塞进去，中间第 7 节的关键数字就是比开头第 1 节更容易被漏。“看到了”不等于“稳定利用了”。</p>
+<p>第三笔，多模态需要统一可比较的空间，这是 Tool Call 最硬的盲区。一张 4096×4096 的照片、一段微信语音、一段三分钟视频，想找“上周二和谁在哪儿吃了什么”——线索在像素、音频、视频时序里，不在任何文件的 metadata 里。Tool Call 的输入输出是函数签名，给不出“该 load 哪个文件”的先验。让模型事先“看过”十亿级文件？筛选本身就需要距离度量——距离度量就是 Embedding。</p>
+<p>第四笔，检索是权限和治理问题，不只是相关性问题。ACL、审计、合规、可追溯是硬要求，“模型自由探索全部数据”第一步就过不了合规。</p>
+<p>第五笔，线上系统要稳定的退化路径。模型失误、Tool 失败、上下文预算耗尽时，系统得有可预测的 fallback，向量和关键词索引常年承担的就是这层兜底。</p>
+<p>五笔账合在一起：十亿级多模态数据全量进 context，经济上大概率不可行——这是判断性估算，不是实测定律，但成本结构的方向很清楚。全量不可行，“先压缩，再定向加载”的机制就一定存在，变的只是它住在哪一层。</p>
+<h2 id="四形态迁移的三个去向"><a class="header" href="#四形态迁移的三个去向">四、形态迁移的三个去向</a></h2>
+<p>这是全篇的题眼。把 RAG 看成“把信息从存储层搬运到推理层的机制集合”，正在发生的事不是消亡，是位置迁移：从外部插件，迁进模型和基础设施内部。至少三个去向已经能看到。</p>
+<p>一是迁进 KV Cache 管理。MemGPT（以及它的后继项目 Letta）这类系统在用 Embedding 管理虚拟上下文：哪些历史信息留在缓存、哪些淘汰、哪些回填，不按时间顺序也不按 token 位置，按语义相关度——本质是把向量检索用在 Attention 的缓存策略上。</p>
+<p>二是迁进 Tool Call 的路由决策。模型决定“调哪个工具、抓哪批文件、要不要继续深挖”时，内部做的仍然是相似性判断和相关性估计——只是你不再直接操作向量库接口，看不到这次“检索”了。</p>
+<p>三是迁进硬件执行层。Attention 算子本身也在做“选择性计算”：FlashAttention-3 靠 warp 专门化、pingpong 调度和 FP8 把有效注意力的计算效率推到 H100 理论峰值的 75%，块稀疏类算子更进一步，直接跳过不需要参与的 Query-Key block。要把话说准：这和 embedding 检索是两套机制——算子层跳过哪些 block，依据的是注意力掩码和数值分布，不是语义相似度。但方向是同一个：选择性地访问信息这件事，正被一层层压进用户态代码完全感知不到的地方。</p>
+<p>有个不太精确但有用的类比：文件系统之于操作系统。早期的文件系统是用户态工具，用户自己管 inode 和扇区；后来它沉进内核，你通过 open/read/write 用它，却不再需要知道它的存在。没人说“文件系统死了”，它只是从可见变成了不可见。RAG 走的是同一条路。</p>
+<h2 id="五分时间尺度的判断"><a class="header" href="#五分时间尺度的判断">五、分时间尺度的判断</a></h2>
+<p>我不给无条件的预言，判断全部带时间前提。</p>
+<p>1–3 年：纯 Vector Database、纯 Embedding API 公司确实承压，差异化在被模型能力快速填平——卖点只是“语义搜索”的话，窗口大到能装下用户全部相关数据时，这个品类的价值会迅速稀释。注意这和上一节“检索+注入仍是最省钱的方案”不矛盾：承压的是把向量检索当单品卖的公司，不是检索这个机制本身。做动态索引、Hybrid 编排、模型内检索优化的系统有过渡期红利：数据安全、延迟、成本、存量基础设施的惯性，决定了 Hybrid 架构这几年仍是企业部署的现实选项。市场奖励的是“检索操作系统”，不是“单点向量能力”。</p>
+<p>3–5 年：最大变数是模型训练方向。DeepSeek 公开讲过的方向之一就是 1M context + 更好的 Tool Call 理解 + Computer Use【待核实：此为 DeepSeek 公开讲过的训练方向，发布前按其最新公开表述复核，不写成内部消息】。如果 1M 下的幻觉和 Context Decay 像 8K→256K 那次一样被解决——当时也没人相信 256K 能稳定工作——“把尽量多的相关数据直接交给模型”会优于“帮它筛选”，因为筛选本身会丢信息。但有一关模型能力解决不了：企业级十亿级多模态数据，全量进上下文的推理成本是指数级的，压缩表示这层预处理与索引不可或缺。</p>
+<p>长期看，形态大概率分化。一端是低端本地小模型的 RAG——成本敏感、延迟要求高、数据不出本地，用 Embedding 做轻量语义索引，模型兜底不精确匹配。另一端是巨型纯 LLM 系统——上下文装得下的数据和任务，模型端到端自己完成检索推理，不经过外部组件。中间地带，也就是“经典 Embedding 检索 + LLM 生成”这一段，会被上下文软检索慢慢吞掉。</p>
+<h2 id="六如果你现在在做-rag-系统"><a class="header" href="#六如果你现在在做-rag-系统">六、如果你现在在做 RAG 系统</a></h2>
+<p>判断落到选择上，我给框架，不给标准答案。</p>
+<p>两条直接的建议。第一，保留“LLM 主导检索”这个认知方向，同时继续投压缩表示的基础设施——两者不矛盾：前者是方向，后者是成本结构决定的现实。第二，关注模型内检索：MemGPT、Letta、virtual context management 这一脉工作，跟传统 RAG 的关系是“吸收”不是“替换”。理解模型怎么处理内部上下文，会告诉你外部检索层哪些值得留、哪些可以放手。</p>
+<p>然后是三个选型问题：你的数据规模和模态，允不允许高比例全量上下文？你的业务偏质量上限，还是偏成本与可治理性？你的系统有没有失败可退化的能力？三问答完，路线自然浮现：小规模高价值任务可以激进地走 LLM 主导检索；大规模企业场景优先 Hybrid，逐步提高模型自治比例；多模态长期资产，重点投表示学习和索引更新，而不是押注单一范式。</p>
+<h2 id="七终篇收束形态会迁移链路不会消失"><a class="header" href="#七终篇收束形态会迁移链路不会消失">七、终篇收束：形态会迁移，链路不会消失</a></h2>
+<p>从 2023 年到现在，“找证据 → 给模型看 → 让它生成”这条骨架没变过，变的是找证据的方式和给模型的路径。这个系列前 20 篇讲的东西——上游 PDF 里的脏数据、相似度的时间和口径错觉、运维期的术语漂移——没有一件会因为检索下沉到模型内核而自动消失，它们只会换一层重新出现。</p>
+<p>收尾留两句回环。一句给第 1 篇：七步链路每一步的坑，会在新形态里换名字回来——reading order 换成“多模态预处理的信息丢失”，metadata 过滤换成“Tool Call 的访问边界”。一句给第 6 篇：那一篇讲时间错配，问“2025 Q4 的营收”，系统流利地背出 2020 Q4 的数字，相似度分数还很高——这是“相似度有盲区”这条主线最早的案例；无论相似度将来算在向量库里还是 Attention 里，这个教训都成立。</p>
+<p>Embedding 不会消失，只是你看不到它了。</p>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="附录-a--metadata-字段全清单"><a class="header" href="#附录-a--metadata-字段全清单">附录 A · metadata 字段全清单</a></h1>
+<blockquote>
+<p><strong>待办（2026-10-14）· 待写</strong>：可从正文直接收编，无需新经验——「数据上游」卷第 06 篇（原 #05）给了 T0/T1/T2 三档和字段表，「检索的错觉」卷第 03 篇（原 #07）补了 <code>accounting_standard</code> / <code>period_length</code> / <code>metric_scope</code> 三个口径字段，「从能跑到能扛」卷第 01 篇（原 #11）给了跨市场公共字段。三处散着，册子里该合成一张表。</p>
+</blockquote>
+<h2 id="待收编内容"><a class="header" href="#待收编内容">待收编内容</a></h2>
+<ul>
+<li>文档级 / chunk 级分层表（原 #05 第二节的表，11 个字段）</li>
+<li>三档优先级：T0 不做没法用、T1 做了明显提升、T2 有余力再做</li>
+<li>口径三字段（原 #07）：<code>accounting_standard</code>、<code>period_length</code>、<code>metric_scope</code></li>
+<li>跨市场公共字段锚点（原 #11）：<code>stock_code</code> / <code>stock_name</code> / <code>fiscal_year</code> / <code>period_type</code> / <code>currency</code> / <code>accounting_standard</code></li>
+<li>市场专属字段：港股 <code>is_audited</code>、A 股 <code>disclosure_type</code></li>
+<li>准则枚举值按市场分（HKFRS / IFRS / CAS / US GAAP / Non-GAAP），原 #05 已交代 HKFRS 与 IFRS 法律上是两套</li>
+</ul>
+<h2 id="建议加的两列"><a class="header" href="#建议加的两列">建议加的两列</a></h2>
+<p>正文各处的字段表没有这两列，册子附录里补上：</p>
+<ul>
+<li><strong>怎么标</strong>：规则 / 正则 / LLM 兜底（原 #05 第四节给过分工）</li>
+<li><strong>在哪用</strong>：硬过滤 / 软加权 / 仅展示——直接对应「标了不用等于白标」那节的自查</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="附录-b--术语表"><a class="header" href="#附录-b--术语表">附录 B · 术语表</a></h1>
+<blockquote>
+<p><strong>待办（2026-10-14）· 待写</strong>：垂直领域册子尤其需要，正文里术语密度高且跨两个领域（财报 + 电力）。可全部从正文收编，无需新经验。</p>
+</blockquote>
+<h2 id="待收编范围"><a class="header" href="#待收编范围">待收编范围</a></h2>
+<p><strong>会计与披露</strong>：CAS / HKFRS / IFRS / US GAAP / Non-GAAP、XBRL、10-K / 20-F / 10-Q、ADR、外国私人发行人（FPI）、并表范围、权益持有人应佔盈利、报告期（H1 / Q4 / FY）、统计窗口（3M / 6M / 12M）</p>
+<p><strong>检索</strong>：bi-encoder / cross-encoder、BM25、IDF、RRF、MMR、MRR、Recall@k、HyDE、Multi-Query、Step-Back、Late Chunking、Matryoshka、ColBERT、last-token pooling / mean pooling</p>
+<p><strong>工程</strong>：TextBlock、父子分片、section-aware retrieval、multi-retrieval + synthesis、Lost-in-the-Middle</p>
+<p><strong>电力</strong>：电压等级（1000kV / 220kV）、主变压器、差动保护</p>
+<h2 id="两条编写纪律"><a class="header" href="#两条编写纪律">两条编写纪律</a></h2>
+<ol>
+<li>只收正文里出现过且没解释透的，不收通用术语。</li>
+<li>「条件等价」这类作者自创的说法要标注是个人叫法，不是学界术语——原 #19 已经这么做过，附录沿用。</li>
+</ol>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="附录-c--2026-10-快照"><a class="header" href="#附录-c--2026-10-快照">附录 C · 2026-10 快照</a></h1>
+<blockquote>
+<p><strong>待办（2026-10-14）· 待写</strong>：把会过期的东西全部沉到这一篇，正文只写方法。原 #12 自己立过这条纪律——「结论会过期，方法不会」——册子里该推广到全册。</p>
+</blockquote>
+<h2 id="待收编内容-1"><a class="header" href="#待收编内容-1">待收编内容</a></h2>
+<ul>
+<li><strong>embedding 模型候选名单与定价</strong>（原 #12 第二节，写作时口径 2026-05）：multilingual-e5-large-instruct、Qwen3-Embedding、bge-m3、Cohere Embed v4 / text-embedding-3-large / gemini-embedding-001、all-MiniLM-L6-v2</li>
+<li><strong>PDF 工具版本</strong>：poppler-utils、pypdf 4.x、pdfplumber 0.11、MinerU（正文实测用 1.x，2026-09 时已到 4.x）</li>
+<li><strong>reranker 选型</strong>（原 #10）：bge-reranker-v2-m3 等，延迟与语言支持</li>
+<li><strong>上下文窗口</strong>：Claude 200K / Gemini 1M–2M / GPT 系列（原 #20、#21）</li>
+<li><strong>延迟与成本经验值</strong>：rerank 200–500ms、cross-encoder 单对 10–100ms、多模态截图 $0.01–0.05/页</li>
+</ul>
+<h2 id="硬性要求"><a class="header" href="#硬性要求">硬性要求</a></h2>
+<p>每一项必须标<strong>测量口径与记录日期</strong>，凡是从正文搬过来的经验值，一律保留原文里的「经验口径，不是实测」标注。附录的价值在可复核，不在全面。</p>
+<h2 id="两条待核实成册前必须钉死"><a class="header" href="#两条待核实成册前必须钉死">两条待核实（成册前必须钉死）</a></h2>
+<ul>
+<li><code>bge-reranker-v2-m3</code> 这个命名是否真实存在（技术审查报告 2026-07-18 列为存疑）</li>
+<li>Qwen3-Embedding 的发布状态与 MTEB 榜单数字（原 #12、#20 均引用）</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="附录-d--一条完整管线腾讯中报端到端"><a class="header" href="#附录-d--一条完整管线腾讯中报端到端">附录 D · 一条完整管线：腾讯中报端到端</a></h1>
+<blockquote>
+<p><strong>待办（2026-10-14）· 待写</strong>：这是册子相对连载的真正增量——博客是分篇的，册子可以承载一条从头到尾的连续案例。需要作者从自己的流水线里导出，不由整理生成。</p>
+</blockquote>
+<h2 id="待收编内容-2"><a class="header" href="#待收编内容-2">待收编内容</a></h2>
+<p>从 119 页腾讯 2025 中报到最终答案，一条能跑的链路：</p>
+<ol>
+<li><code>pdftotext -layout</code> 出 raw.txt（正文约 80%）</li>
+<li>清洗：页眉页脚 / 目录页 / 纯页码 / 分页断句 → cleaned.txt，保留 <code>===== PAGE n =====</code> 标记</li>
+<li>pdfplumber 提取规则表格；MinerU 或多模态截图啃竖向合并与跨页表格</li>
+<li>结构识别 → TextBlock（paragraph / table / header / list）</li>
+<li>TextBlock 层打 metadata → 合并为 chunk（period_type 切换强制 flush）</li>
+<li>建索引：向量 + BM25 双写</li>
+<li>在线：约束提取 → metadata 硬过滤 → hybrid 召回 → rerank → prompt 组装 → 生成</li>
+</ol>
+<h2 id="建议附的三样"><a class="header" href="#建议附的三样">建议附的三样</a></h2>
+<ul>
+<li>四层产物的实际数字（正文各篇给过 282KB / 190KB / 327KB / 345 个 chunk，标注为待核实）</li>
+<li>一份可复制的配置文件或脚本骨架</li>
+<li>一条「换一份新报告要改哪些地方」的清单——这是读者真正会用的东西</li>
+</ul>
+<h2 id="备注"><a class="header" href="#备注">备注</a></h2>
+<p>正文里这条管线的每一段都已分别讲过（原 #02–#05、#09、#10），本篇不重复讲原理，只把它们拼成一条能跑的线。</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr-ef4e11c1.min.js"></script>
+        <script src="mark-09e88c2c.min.js"></script>
+        <script src="searcher-09f2665d.js"></script>
+
+        <script src="clipboard-1626706a.min.js"></script>
+        <script src="highlight-abc7f01d.js"></script>
+        <script src="book-609e4cb8.js"></script>
+
+        <!-- Custom JS scripts -->
+
+        <script>
+        window.addEventListener('load', function() {
+            window.setTimeout(window.print, 100);
+        });
+        </script>
+
+
+    </div>
+    </body>
+</html>
