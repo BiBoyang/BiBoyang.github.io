@@ -191,7 +191,7 @@
 <p>先交代我自己的一笔糊涂账。第 4 篇那个截断检出矩阵，每格跑三次，108 格格格都是真金白银的会话；给 skill 建门禁时为了把置信区间压窄，采样模式一开就是好几轮。这些钱当时花得都对——但「花得对」的判断从来没被写进任何裁决规则，全靠手感。我的 harness 记了每一个 token 的去向，却从没回答过一个问题：<strong>这个通过率是多少钱买的？</strong></p>
 <p>然后我读到了一个把这个问题回答到底的裁决。我持续在看的一个开源 agent 内核项目（单人维护；为保持小册独立叫它 M 项目，出处登记在写作简报里），它的评测台账里有一次配对实验：对照组和实验组各 18 个 rollout，<strong>两组 18/18 全成功</strong>。质量打平，实验组还多一套机制。按「通过率说话」的习惯，这个实验该判实验组赢。裁决却是<strong>拒绝</strong>——实验组每个 rollout 多花 0.0648 美元，而实验合同里预注册的成本门槛是 0.02 美元。</p>
 <p>两组全成功，仍然被否决。我第一次读到时停了一下：它逼出的正是我一直在回避的事——<strong>只按质量裁决，等于给「花钱买通过率」开后门。</strong></p>
-<!-- 配图 eval08-quality-cost-frontier.svg：质量-成本散点 + Pareto 前沿，标注「18/18 但被否决」的点 -->
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/eval08-quality-cost-frontier.svg" alt="质量-成本散点 + Pareto 前沿，标注「18/18 但被否决」的点"><span class="img-wrapper"><img src="assets/eval08-quality-cost-frontier.svg" alt="质量-成本散点 + Pareto 前沿，标注「18/18 但被否决」的点"></span></label></p>
 <h2 id="二通过率是可以花钱买的"><a class="header" href="#二通过率是可以花钱买的">二、通过率是可以花钱买的</a></h2>
 <p>这不是比喻，至少有四条明码标价的通道：</p>
 <ol>
@@ -213,11 +213,11 @@
 <p>最隐蔽的成本失真是静默重试。请求超时，SDK 默认帮你重试两次；provider 返回 503，代理层悄悄换个节点再发。账面上你看到的是「这次成功了、花了这些 token」，实际买到的是「三次尝试里有一次成功」——而对照组可能没有同样的重试配置，只试了一次。</p>
 <p>M 项目的付费 runner 直接把这个口子焊死：自动重试次数钉死为零，每次请求单独授权，撞上 503 也写一条「已授权但失败」回执，永不自动重试。理由有两层：重试既<strong>通胀成本</strong>（一个样本实际花了三份钱记一份），又<strong>抹平差异</strong>（鲁棒性本来就是两臂差异之一，重试把它偷偷消掉了）。</p>
 <p>我在自己的 harness 里踩过它的镜像面：失败重跑会被上一次尝试的残留文件污染，甚至残留 git history 能被 agent 翻出来获利（第 3 篇）。<strong>重试污染的从来不只是状态，还有账本。</strong></p>
-<!-- 配图 eval08-cost-ledger.svg：预算→逐请求授权→调用→receipt 链条，静默重试画成带叉的分叉 -->
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/eval08-cost-ledger.svg" alt="预算→逐请求授权→调用→receipt 链条，静默重试画成带叉的分叉"><span class="img-wrapper"><img src="assets/eval08-cost-ledger.svg" alt="预算→逐请求授权→调用→receipt 链条，静默重试画成带叉的分叉"></span></label></p>
 <h3 id="缓存是长上下文实验最大的隐性变量"><a class="header" href="#缓存是长上下文实验最大的隐性变量">缓存是长上下文实验最大的隐性变量</a></h3>
 <p>第二个失真源是 prompt cache。长上下文会话里，前缀的几万 token 走缓存命中和走全价，成本差一个数量级。这制造了一种很难察觉的耦合：<strong>你对干预的任何改动，都可能顺手打穿缓存。</strong></p>
 <p>M 项目在设计停滞熔断时否掉过一个方案——「检测到空转就限制下一轮的 tool_choice」——否掉的理由里有一条纯经济学的：改 tool_choice 会让 provider 侧的消息缓存失效，在 400K–850K 上下文的场景里，那是全场最贵的一次 cache miss，而这个方案只是为了发一个模型大概率无视的信号（其自家长上下文实验里，76% 的文本型进度提醒被模型无视——第 10 篇汇总过这类干预的失效证据）。<strong>一次干预的成本不只是它自己的 token，还有它顺手作废的那截缓存。</strong></p>
-<!-- 配图 eval08-cache-miss.svg：长请求条上缓存命中段 vs tool_choice 改动后全段全价重算 -->
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/eval08-cache-miss.svg" alt="长请求条上缓存命中段 vs tool_choice 改动后全段全价重算"><span class="img-wrapper"><img src="assets/eval08-cache-miss.svg" alt="长请求条上缓存命中段 vs tool_choice 改动后全段全价重算"></span></label></p>
 <p>记账时 usage 必须分项：input、output、cache read、cache creation，只报一个 total 等于瞒账。口径还要和漂移检测分开：我的 trace 提取层为门禁定的总量口径排除缓存命中（那是为漂移检测服务的）；算成本账时反过来，缓存读按折扣价如实计入。两个口径各管各的，混用就是假账。</p>
 <h2 id="五两臂的计费路径必须逐字节对齐"><a class="header" href="#五两臂的计费路径必须逐字节对齐">五、两臂的计费路径必须逐字节对齐</a></h2>
 <p>配对纪律（第 9 篇展开）在成本侧有一个值得单独点破的应用：<strong>两臂除 treatment 外，计费路径必须一致。</strong> 同一个模型版本、同样的温度采样、同样的重试策略（最稳妥是两臂都零重试）、同样的缓存条件（前缀一样长、内容一样，否则 cache miss 率的差异会被误记成 treatment 的成本效应）。</p>

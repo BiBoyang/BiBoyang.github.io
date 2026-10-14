@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="620" viewBox="0 0 960 620">
+<defs>
+<marker id="mk-8b949e" markerWidth="9" markerHeight="9" refX="7.4" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L9,4.5 L0,9 z" fill="#8b949e"/></marker>
+</defs>
+<rect x="0" y="0" width="960" height="620" rx="12" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
+<text x="28" y="38" font-size="15.5" fill="#e6edf3" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="700">A/B 平衡：把时间漂移均摊到两臂，Δ 才可归因</text>
+<line x1="28" y1="52" x2="932" y2="52" stroke="#30363d" stroke-width="1"/>
+
+<!-- 上轴：正确做法 -->
+<text x="60" y="108" font-size="11.5" fill="#3fb950" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="700">正确：任务对半切，A→B 与 B→A 交错</text>
+<path d="M120,138 q20,-14 40,0 t40,0 t40,0 t40,0 t40,0 t40,0 t40,0 t40,0 t40,0 t40,0 t40,0 t40,0 t40,0 t40,0 t40,0 t40,0 t40,0 t40,0" fill="none" stroke="#8b949e" stroke-width="1.2" stroke-dasharray="2 3" opacity="0.8"/>
+<text x="490" y="130" font-size="10" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="400">时间漂移（负载 / 热更新 / 判官漂移）均匀落在两臂</text>
+
+<rect x="120" y="160" width="95" height="44" rx="6" fill="#58a6ff" fill-opacity="0.16" stroke="#58a6ff" stroke-width="1.2"/>
+<text x="167" y="186" font-size="11.5" fill="#58a6ff" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" text-anchor="middle" font-weight="700">A</text>
+<rect x="215" y="160" width="95" height="44" rx="6" fill="#d29922" fill-opacity="0.16" stroke="#d29922" stroke-width="1.2"/>
+<text x="262" y="186" font-size="11.5" fill="#d29922" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" text-anchor="middle" font-weight="700">B</text>
+<rect x="310" y="160" width="95" height="44" rx="6" fill="#d29922" fill-opacity="0.16" stroke="#d29922" stroke-width="1.2"/>
+<text x="357" y="186" font-size="11.5" fill="#d29922" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" text-anchor="middle" font-weight="700">B</text>
+<rect x="405" y="160" width="95" height="44" rx="6" fill="#58a6ff" fill-opacity="0.16" stroke="#58a6ff" stroke-width="1.2"/>
+<text x="452" y="186" font-size="11.5" fill="#58a6ff" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" text-anchor="middle" font-weight="700">A</text>
+<rect x="500" y="160" width="95" height="44" rx="6" fill="#58a6ff" fill-opacity="0.16" stroke="#58a6ff" stroke-width="1.2"/>
+<text x="547" y="186" font-size="11.5" fill="#58a6ff" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" text-anchor="middle" font-weight="700">A</text>
+<rect x="595" y="160" width="95" height="44" rx="6" fill="#d29922" fill-opacity="0.16" stroke="#d29922" stroke-width="1.2"/>
+<text x="642" y="186" font-size="11.5" fill="#d29922" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" text-anchor="middle" font-weight="700">B</text>
+<rect x="690" y="160" width="95" height="44" rx="6" fill="#d29922" fill-opacity="0.16" stroke="#d29922" stroke-width="1.2"/>
+<text x="737" y="186" font-size="11.5" fill="#d29922" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" text-anchor="middle" font-weight="700">B</text>
+<rect x="785" y="160" width="95" height="44" rx="6" fill="#58a6ff" fill-opacity="0.16" stroke="#58a6ff" stroke-width="1.2"/>
+<text x="832" y="186" font-size="11.5" fill="#58a6ff" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" text-anchor="middle" font-weight="700">A</text>
+<line x1="120" y1="216" x2="880" y2="216" stroke="#8b949e" stroke-width="1" marker-end="url(#mk-8b949e)" opacity="0.5"/>
+<rect x="712" y="236" width="180" height="34" rx="17" fill="#3fb950" fill-opacity="0.1" stroke="#3fb950" stroke-width="1.2"/>
+<text x="802" y="258" font-size="11.5" fill="#3fb950" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="700">末端 Δ 干净，可归因</text>
+
+<line x1="60" y1="300" x2="900" y2="300" stroke="#30363d" stroke-width="1" stroke-dasharray="3 5"/>
+
+<!-- 下轴：反例 -->
+<text x="60" y="338" font-size="11.5" fill="#f85149" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="700">⚠ 反例：全部 A 跑完再跑 B</text>
+<rect x="120" y="358" width="95" height="44" rx="6" fill="#58a6ff" fill-opacity="0.16" stroke="#58a6ff" stroke-width="1.2"/>
+<text x="167" y="384" font-size="11.5" fill="#58a6ff" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" text-anchor="middle" font-weight="700">A</text>
+<rect x="215" y="358" width="95" height="44" rx="6" fill="#58a6ff" fill-opacity="0.16" stroke="#58a6ff" stroke-width="1.2"/>
+<text x="262" y="384" font-size="11.5" fill="#58a6ff" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" text-anchor="middle" font-weight="700">A</text>
+<rect x="310" y="358" width="95" height="44" rx="6" fill="#58a6ff" fill-opacity="0.16" stroke="#58a6ff" stroke-width="1.2"/>
+<text x="357" y="384" font-size="11.5" fill="#58a6ff" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" text-anchor="middle" font-weight="700">A</text>
+<rect x="405" y="358" width="95" height="44" rx="6" fill="#58a6ff" fill-opacity="0.16" stroke="#58a6ff" stroke-width="1.2"/>
+<text x="452" y="384" font-size="11.5" fill="#58a6ff" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" text-anchor="middle" font-weight="700">A</text>
+<rect x="500" y="358" width="95" height="44" rx="6" fill="#d29922" fill-opacity="0.16" stroke="#d29922" stroke-width="1.2"/>
+<text x="547" y="384" font-size="11.5" fill="#d29922" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" text-anchor="middle" font-weight="700">B</text>
+<rect x="595" y="358" width="95" height="44" rx="6" fill="#d29922" fill-opacity="0.16" stroke="#d29922" stroke-width="1.2"/>
+<text x="642" y="384" font-size="11.5" fill="#d29922" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" text-anchor="middle" font-weight="700">B</text>
+<rect x="690" y="358" width="95" height="44" rx="6" fill="#d29922" fill-opacity="0.16" stroke="#d29922" stroke-width="1.2"/>
+<text x="737" y="384" font-size="11.5" fill="#d29922" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" text-anchor="middle" font-weight="700">B</text>
+<rect x="785" y="358" width="95" height="44" rx="6" fill="#d29922" fill-opacity="0.16" stroke="#d29922" stroke-width="1.2"/>
+<text x="832" y="384" font-size="11.5" fill="#d29922" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" text-anchor="middle" font-weight="700">B</text>
+<line x1="120" y1="414" x2="880" y2="414" stroke="#8b949e" stroke-width="1" marker-end="url(#mk-8b949e)" opacity="0.5"/>
+
+<!-- 漂移波纹只染 B 臂 -->
+<rect x="498" y="346" width="384" height="68" rx="6" fill="#f85149" fill-opacity="0.09" stroke="none"/>
+<path d="M500,344 q24,-16 48,0 t48,0 t48,0 t48,0 t48,0 t48,0 t48,0 t48,0" fill="none" stroke="#f85149" stroke-width="1.4" opacity="0.9"/>
+<text x="692" y="336" font-size="10" fill="#f85149" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="700">漂移波纹只染 B 臂</text>
+<rect x="700" y="436" width="200" height="34" rx="17" fill="#f85149" fill-opacity="0.1" stroke="#f85149" stroke-width="1.2"/>
+<text x="800" y="458" font-size="11.5" fill="#f85149" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="700">末端冒出无法归因的 Δ</text>
+
+<text x="40" y="592" font-size="10" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="400">交错排布让同一阵漂移同时打湿 A 和 B；顺序排布则把漂移全部记进其中一臂。</text>
+</svg>

@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="620" viewBox="0 0 960 620">
+<defs>
+<marker id="mk-58a6ff" markerWidth="9" markerHeight="9" refX="7.4" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L9,4.5 L0,9 z" fill="#58a6ff"/></marker>
+<marker id="mk-3fb950" markerWidth="9" markerHeight="9" refX="7.4" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L9,4.5 L0,9 z" fill="#3fb950"/></marker>
+</defs>
+<rect x="0" y="0" width="960" height="620" rx="12" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
+<text x="28" y="38" font-size="15.5" fill="#e6edf3" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="700">蜕变关系：整段渲染与三种切分，四路输出必须收敛相等</text>
+<line x1="28" y1="52" x2="932" y2="52" stroke="#30363d" stroke-width="1"/>
+
+<!-- 预期输出缺位空框 -->
+<rect x="700" y="70" width="220" height="56" rx="8" fill="none" stroke="#6e7681" stroke-width="1.2" stroke-dasharray="6 4"/>
+<text x="810" y="94" font-size="10.5" fill="#6e7681" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="400">预期输出 y：写不出，也不需要</text>
+<line x1="700" y1="70" x2="920" y2="126" stroke="#f85149" stroke-width="1.6" opacity="0.85"/>
+<line x1="920" y1="70" x2="700" y2="126" stroke="#f85149" stroke-width="1.6" opacity="0.85"/>
+
+<!-- 源用例 -->
+<rect x="50" y="250" width="160" height="90" rx="8" fill="#161b22" stroke="#30363d" stroke-width="1.2"/>
+<text x="130" y="278" font-size="12.5" fill="#e6edf3" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="700">源用例</text>
+<text x="130" y="300" font-size="9.5" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="400">同一段模型输出</text>
+<text x="130" y="316" font-size="9.5" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="400">整段一次性渲染</text>
+
+<!-- 整段渲染 → 输出 A -->
+<line x1="212" y1="295" x2="252" y2="295" stroke="#58a6ff" stroke-width="1.6" marker-end="url(#mk-58a6ff)"/>
+<rect x="258" y="265" width="90" height="60" rx="8" fill="#161b22" stroke="#58a6ff" stroke-width="1.2"/>
+<text x="303" y="301" font-size="13" fill="#58a6ff" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="700">输出 A</text>
+
+<!-- 变换 g 组框 -->
+<rect x="392" y="88" width="212" height="416" rx="10" fill="none" stroke="#8b949e" stroke-width="1" stroke-dasharray="5 4" opacity="0.6"/>
+<text x="498" y="76" font-size="10.5" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="700">变换 g</text>
+<rect x="404" y="100" width="188" height="64" rx="8" fill="#161b22" stroke="#30363d" stroke-width="1.2"/>
+<text x="498" y="128" font-size="11.5" fill="#e6edf3" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="700">按 token 切</text>
+<text x="498" y="148" font-size="9.5" fill="#6e7681" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="400">流式渲染</text>
+<rect x="404" y="262" width="188" height="64" rx="8" fill="#161b22" stroke="#30363d" stroke-width="1.2"/>
+<text x="498" y="290" font-size="11.5" fill="#e6edf3" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="700">按行切</text>
+<text x="498" y="310" font-size="9.5" fill="#6e7681" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="400">流式渲染</text>
+<rect x="404" y="424" width="188" height="64" rx="8" fill="#161b22" stroke="#30363d" stroke-width="1.2"/>
+<text x="498" y="452" font-size="11.5" fill="#e6edf3" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="700">按随机字节切</text>
+<text x="498" y="472" font-size="9.5" fill="#6e7681" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="400">流式渲染</text>
+
+<!-- 源用例分叉到三个变换 -->
+<path d="M180,250 C180,132 300,132 398,132" fill="none" stroke="#58a6ff" stroke-width="1.4" marker-end="url(#mk-58a6ff)"/>
+<path d="M210,262 C280,250 320,268 398,286" fill="none" stroke="#58a6ff" stroke-width="1.4" marker-end="url(#mk-58a6ff)" opacity="0.85"/>
+<path d="M180,340 C180,456 300,456 398,456" fill="none" stroke="#58a6ff" stroke-width="1.4" marker-end="url(#mk-58a6ff)"/>
+
+<!-- 后继输出 -->
+<line x1="594" y1="132" x2="640" y2="132" stroke="#58a6ff" stroke-width="1.4" marker-end="url(#mk-58a6ff)"/>
+<rect x="646" y="102" width="80" height="60" rx="8" fill="#161b22" stroke="#58a6ff" stroke-width="1.2"/>
+<text x="686" y="138" font-size="13" fill="#58a6ff" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="700">A′</text>
+<line x1="594" y1="294" x2="640" y2="294" stroke="#58a6ff" stroke-width="1.4" marker-end="url(#mk-58a6ff)"/>
+<rect x="646" y="264" width="80" height="60" rx="8" fill="#161b22" stroke="#58a6ff" stroke-width="1.2"/>
+<text x="686" y="300" font-size="13" fill="#58a6ff" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="700">A″</text>
+<line x1="594" y1="456" x2="640" y2="456" stroke="#58a6ff" stroke-width="1.4" marker-end="url(#mk-58a6ff)"/>
+<rect x="646" y="426" width="80" height="60" rx="8" fill="#161b22" stroke="#58a6ff" stroke-width="1.2"/>
+<text x="686" y="462" font-size="13" fill="#58a6ff" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="700">A‴</text>
+
+<!-- ≡ 闸门 -->
+<path d="M303,325 L303,372 C420,372 600,378 760,364" fill="none" stroke="#3fb950" stroke-width="1.6" marker-end="url(#mk-3fb950)"/>
+<path d="M726,132 C760,150 762,180 766,200" fill="none" stroke="#3fb950" stroke-width="1.6" marker-end="url(#mk-3fb950)"/>
+<line x1="726" y1="294" x2="760" y2="294" stroke="#3fb950" stroke-width="1.6" marker-end="url(#mk-3fb950)"/>
+<path d="M726,456 C762,420 762,400 766,388" fill="none" stroke="#3fb950" stroke-width="1.6" marker-end="url(#mk-3fb950)"/>
+<rect x="766" y="196" width="156" height="196" rx="10" fill="#3fb950" fill-opacity="0.1" stroke="#3fb950" stroke-width="2"/>
+<text x="844" y="286" font-size="40" fill="#3fb950" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="700">≡</text>
+<text x="844" y="328" font-size="11.5" fill="#3fb950" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="700">关系 R：收敛相等</text>
+<text x="844" y="352" font-size="10" fill="#3fb950" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="400">闸门通过</text>
+
+<text x="40" y="592" font-size="10" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="400">写不出预期输出时，就断言「怎么切都相等」——断言关系，而不是断言值。</text>
+</svg>

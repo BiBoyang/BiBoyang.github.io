@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="620" viewBox="0 0 960 620">
+<defs>
+<marker id="mk-58a6ff" markerWidth="9" markerHeight="9" refX="7.4" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L9,4.5 L0,9 z" fill="#58a6ff"/></marker>
+<marker id="mk-3fb950" markerWidth="9" markerHeight="9" refX="7.4" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L9,4.5 L0,9 z" fill="#3fb950"/></marker>
+<marker id="mk-f85149" markerWidth="9" markerHeight="9" refX="7.4" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L9,4.5 L0,9 z" fill="#f85149"/></marker>
+</defs>
+<rect x="0" y="0" width="960" height="620" rx="12" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
+<text x="28" y="38" font-size="15.5" fill="#e6edf3" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="700">切分旋钮：同一个动作，既是测试也是注入</text>
+<line x1="28" y1="52" x2="932" y2="52" stroke="#30363d" stroke-width="1"/>
+
+<!-- 旋钮刻度盘 -->
+<circle cx="200" cy="262" r="66" fill="#161b22" stroke="#30363d" stroke-width="1.4"/>
+<circle cx="200" cy="262" r="50" fill="none" stroke="#30363d" stroke-width="1"/>
+<line x1="200" y1="262" x2="236" y2="224" stroke="#d29922" stroke-width="3" stroke-linecap="round"/>
+<circle cx="200" cy="262" r="7" fill="#d29922"/>
+<line x1="141" y1="233" x2="152" y2="239" stroke="#8b949e" stroke-width="2"/>
+<line x1="169" y1="202" x2="176" y2="213" stroke="#8b949e" stroke-width="2"/>
+<line x1="231" y1="202" x2="224" y2="213" stroke="#8b949e" stroke-width="2"/>
+<line x1="259" y1="233" x2="248" y2="239" stroke="#8b949e" stroke-width="2"/>
+<line x1="262" y1="276" x2="250" y2="273" stroke="#8b949e" stroke-width="2"/>
+<text x="86" y="222" font-size="10" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="end" font-weight="400">按 token 切</text>
+<text x="158" y="172" font-size="10" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="400">按行切</text>
+<text x="238" y="172" font-size="10" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="400">按随机字节切</text>
+<text x="286" y="226" font-size="10" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="400">UTF-8 字符中间</text>
+<text x="286" y="296" font-size="10" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="400">表格分隔行中间</text>
+<text x="200" y="356" font-size="10.5" fill="#d29922" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="700">切分旋钮</text>
+
+<!-- 接线到管线 -->
+<path d="M268,262 C330,262 340,246 396,246" fill="none" stroke="#d29922" stroke-width="1.6" stroke-dasharray="2 3" marker-end="url(#mk-58a6ff)"/>
+<rect x="400" y="212" width="180" height="68" rx="8" fill="#161b22" stroke="#30363d" stroke-width="1.2"/>
+<text x="490" y="242" font-size="12.5" fill="#e6edf3" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="700">流式渲染管线</text>
+<text x="490" y="262" font-size="9.5" fill="#6e7681" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="400">被测对象</text>
+
+<!-- 上岔：作为测试 -->
+<path d="M490,212 L490,160 L640,160 L640,138" fill="none" stroke="#3fb950" stroke-width="1.6" marker-end="url(#mk-3fb950)"/>
+<text x="566" y="150" font-size="10.5" fill="#3fb950" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="700">作为测试</text>
+<rect x="580" y="76" width="220" height="60" rx="8" fill="#3fb950" fill-opacity="0.1" stroke="#3fb950" stroke-width="1.6"/>
+<text x="690" y="102" font-size="15" fill="#3fb950" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="700">≡ 闸门</text>
+<text x="690" y="122" font-size="10" fill="#3fb950" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="400">断言不变量：怎么切都相等</text>
+
+<!-- 下岔：作为注入 -->
+<path d="M490,280 L490,330 L640,330 L640,352" fill="none" stroke="#f85149" stroke-width="1.6" marker-end="url(#mk-f85149)"/>
+<text x="566" y="322" font-size="10.5" fill="#f85149" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="700">作为注入</text>
+<circle cx="690" cy="398" r="26" fill="#f85149" fill-opacity="0.16" stroke="#f85149" stroke-width="1.8"/>
+<path d="M706,378 q10,-12 22,-8" fill="none" stroke="#f85149" stroke-width="1.8"/>
+<path d="M724,366 l4,-6 m-4,6 l7,-1 m-7,1 l2,-7" stroke="#d29922" stroke-width="1.6"/>
+<text x="690" y="440" font-size="10.5" fill="#f85149" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="700">切分炸弹</text>
+<text x="740" y="388" font-size="10" fill="#f85149" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="400">承诺越硬，</text>
+<text x="740" y="404" font-size="10" fill="#f85149" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="400">破坏承诺的注入越毒</text>
+
+<!-- 汇入结论框 -->
+<path d="M580,106 C420,106 380,300 380,470" fill="none" stroke="#3fb950" stroke-width="1.2" stroke-dasharray="5 4" marker-end="url(#mk-3fb950)"/>
+<path d="M690,424 C690,470 620,482 596,488" fill="none" stroke="#f85149" stroke-width="1.2" stroke-dasharray="5 4" marker-end="url(#mk-f85149)"/>
+<rect x="300" y="488" width="290" height="46" rx="8" fill="#161b22" stroke="#d29922" stroke-width="1.4"/>
+<text x="445" y="516" font-size="13" fill="#e6edf3" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="700">同一件事的两面</text>
+
+<text x="40" y="592" font-size="10" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="400">内容炸弹测「察觉」，切分炸弹测「承诺」。</text>
+</svg>

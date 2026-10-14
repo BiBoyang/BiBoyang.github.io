@@ -191,7 +191,7 @@
 <p>传统 RAG 评测的链条很短：检索到、生成对，判分结束。我在 RAG 书里建的整套纪律——holdout 封存、金标标注、按位置计的召回指标——迁到 agent 记忆场景，<strong>仍然必要，但远远不够</strong>。</p>
 <p>因为 agent 和检索框之间隔着两个自主决策：检索回来 8 条候选，<strong>宿主</strong>决定把哪几条注入这一轮上下文；注入了 3 条，<strong>模型</strong>决定打开哪一条、信不信它、据此答不答题。金标还是同一个金标，链路多了两环，而多出来的两环恰恰是断裂高发区——这是传统 RAG 评测没有的。</p>
 <p>借谁的病例立框架？M 项目（那个单人维护的开源 agent 内核项目，第 8 篇首次出场）在记忆面上做了两个月付费实验，四个决策面最后只活下来一个，还把一个离线 p=0.0005 的方案在端到端判了死刑。病例用它的，框架从我的 RAG 书和前面九篇长出来。</p>
-<!-- 配图 eval10-three-layer-funnel.svg：写入→检索→采信三层漏斗，每层挂独立指标与折返归因箭头 -->
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/eval10-three-layer-funnel.svg" alt="写入→检索→采信三层漏斗，每层挂独立指标与折返归因箭头"><span class="img-wrapper"><img src="assets/eval10-three-layer-funnel.svg" alt="写入→检索→采信三层漏斗，每层挂独立指标与折返归因箭头"></span></label></p>
 <h2 id="二三层乘法链写入--检索--采信"><a class="header" href="#二三层乘法链写入--检索--采信">二、三层乘法链：写入 × 检索 × 采信</a></h2>
 <p>第 5 篇的乘法模型（检出率 = 读到 × 愿报 × 挡路）在记忆域原样重演。记忆系统是一条三层乘法链，任何一层断裂，下游失败都不能归因给上游：</p>
 <div class="table-wrapper">
@@ -220,12 +220,12 @@
 <p>死因清楚：判官读的是每条记忆 480 字节的聚焦窗口，看不到全文；而「有没有」这个判断需要全局视野。大量「措辞迂回但确实相关」的记忆被整片枪毙。判官擅长的是在几条候选之间比较「哪条更贴」，不擅长回答「这堆东西里到底有没有答案」。</p>
 <p>定稿方案把两个判断分给两个机制：<strong>词法检索（BM25）当地板，判「缺席」</strong>——top 分低于阈值时认定答案不在库，不注入也不咨询判官；召回是全文视野的活，交给读全文的词法信号。<strong>判官只在「带」内排序</strong>——候选分数达到 top 的一半（band）才允许判官参与，融合分 = 判官相关概率 + 0.5 × 归一化 BM25 分。弱语义信号和词法信号互补，谁也不许单飞。</p>
 <p>band 还有个自适应的妙处：分数分布陡的池子（程序性记忆，谁该上场一目了然），band 自动收没、退回基线，判官无权置喙；分数平的池子（事实型记忆，一堆差不多相关），band 全盖，判官尽情发挥。<strong>机制按数据的形状自动决定让不让智能插手。</strong></p>
-<!-- 配图 eval10-recall-rank-split.svg：BM25 地板 + band + 判官带内排序，480 字节窗口的 v1 误杀区画阴影 -->
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/eval10-recall-rank-split.svg" alt="BM25 地板 + band + 判官带内排序，480 字节窗口的 v1 误杀区画阴影"><span class="img-wrapper"><img src="assets/eval10-recall-rank-split.svg" alt="BM25 地板 + band + 判官带内排序，480 字节窗口的 v1 误杀区画阴影"></span></label></p>
 <h2 id="五shadow-的字节级同一性"><a class="header" href="#五shadow-的字节级同一性">五、shadow 的字节级同一性</a></h2>
 <p>记忆实验有个其他实验少有的便利：记忆干预通常可以在宿主内部完成，不改 provider 可见的字节。这给因果归因一块硬地基——<strong>shadow 模式</strong>：判官照咨询、判断照记账，但注入结果与不开功能时<strong>逐字节相同</strong>，模型什么都不知道；再往上才是 advisory（判断真正生效）；判官故障、超时、返回「都行」时，输出必须保持原始顺序——不许有半生效状态。</p>
 <p>shadow 不是「先观察观察」的客气说法，它要过一个硬测试：<strong>同一输入跑两遍（shadow 开 / 关），diff 必须为空。</strong> 这和第 3 篇的在场与送达证明是同一种纪律：宣称自己没介入，就要拿出逐字节的证据，而不是「应该没影响吧」。</p>
 <p>对照组侧的配套动作第 8 篇讲过：实验环境默认导出「判官关闭」，需要的臂再显式换回端点。记忆系统是默认值污染的重灾区——记忆功能一旦成为产品默认，对照组不做显式清除就必然被污染。</p>
-<!-- 配图 eval10-shadow-identity.svg：shadow/advisory 两轨，diff 为空的同一性闸门 -->
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/eval10-shadow-identity.svg" alt="shadow/advisory 两轨，diff 为空的同一性闸门"><span class="img-wrapper"><img src="assets/eval10-shadow-identity.svg" alt="shadow/advisory 两轨，diff 为空的同一性闸门"></span></label></p>
 <h2 id="六写路径先造题再开功能"><a class="header" href="#六写路径先造题再开功能">六、写路径：先造题，再开功能</a></h2>
 <p>检索面热闹了两个月，写路径（判官判断新记忆与旧记忆是同义还是矛盾）在整个试点期<strong>一次都没被触发</strong>；另一个决策面（判断用户是不是在要求多方案枚举）咨询了 55 次，0 次越过 80% 的启用阈值。</p>
 <p>这两个功能因此处在一个尴尬状态：不是被证伪，是<strong>未测</strong>。未测和证伪必须严格区分——证伪可以下线，未测只能挂着，而挂着的功能不许进默认配置。</p>
