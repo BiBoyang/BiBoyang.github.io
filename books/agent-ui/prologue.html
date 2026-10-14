@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-349847f8.js";
+            window.path_to_searchindex_js = "searchindex-103cdeda.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-bfafaba3.js"></script>
@@ -245,7 +245,7 @@ complete               以上全部排除，才轮到我
 <p>把尺子正式放上去，三个项目是三个数据点：</p>
 <p><strong>kimi-cli（Python，已归档）——零个检查。</strong> <code>finish_reason</code> 全库生产代码零处读取。SSE 解析整个委托给 SDK，而 SDK 的默认行为恰恰是最差的那种：<code>[DONE]</code> 只是提前退出，服务端直接关连接时循环自然耗尽，不抛任何错，“收到 <code>[DONE]</code>“和“连接被悄悄关了“对上层完全不可区分；半个事件没有空行分隔则被静默丢弃。它仅有的防线是看“收到了什么内容“的形状启发式——空响应报错、纯思考无正文报错——但只要流出过任何一段正文，半截回答就被无条件收下。讽刺的是它每次请求都主动设 <code>max_completion_tokens</code>，token 截断是常态风险。上个月它发了 1.52.0，最终版，仓库归档。这个漏洞<strong>永远定格了</strong>——库默认值照单全收的代价是永久的。</p>
 <p><strong>kimi-code（TypeScript，继任者）——装了一个点，还是对的点。</strong> 它修了前者的可观测性：统一的 finish reason 体系（OpenAI <code>length</code>、Anthropic <code>max_tokens</code>、Gemini <code>MAX_TOKENS</code> 归一化），信号一路透传到事件和错误文案。截断的硬检查也确实存在——在子 agent 的 final summary 边界上：summary 被截断，整个 run 失败。这个点的位置选得很有水平，因为 summary 是给 parent 的机器消费的契约，半截契约比没有契约更糟。<strong>但主 agent 自己的回答，就是上面反转二的那一幕</strong>——同一个故障模式，在一个边界上硬检查，在另一个边界上静默加写错对象的提示。</p>
-<p><strong>codex（Rust）——四层检查，做成了协议层不变量。</strong> 它走的协议不同，等价信号是 <code>response.completed</code> 事件。这个检查它不是做了一层，是四层：SSE 层、WebSocket 层、事件映射层、turn 主循环，各自独立校验“流关了但终止事件没见过“，任何一层命中就显式注入错误，默认重试数次，重试期间 TUI 显示重连计数且<strong>不写入聊天历史</strong>。底层 SSE 库对流关闭但无终止标记的情况什么都不做——所以这四层是手工固化的。在 codex 里，“流断了、回合却看似正常结束“这条路径不存在。</p>
+<p><strong>codex（Rust）——四层检查，做成了协议层不变量。</strong> 它走的协议不同，等价信号是 <code>response.completed</code> 事件。这个检查它不是做了一层，是四层：SSE 层、WebSocket 层、turn 主循环、事件映射层，各自独立校验“流关了但终止事件没见过“——前三层命中就显式注入错误；事件映射层不拦截，但把这个失败单独记进 inference trace，连“这种事发生过几次“都要留下记录。compaction 的两条流式路径也各自复制了同一个检查。注入的错误默认重试数次，重试期间 TUI 显示重连计数且<strong>不写入聊天历史</strong>。底层 SSE 库对流关闭但无终止标记的情况什么都不做——所以这四层是手工固化的。在 codex 里，“流断了、回合却看似正常结束“这条路径不存在。</p>
 <p>吐槽一句,codex 不愧是成熟的优秀产品,在进行其他方面的对比研究的时候,codex 明显在各种边界处理上更加优秀.</p>
 <p>三个数据点放在一起，规律很清楚了：<strong>完整性判定不是“有或没有“的问题，是“在多少个边界上装了多少个检查“的问题。</strong> 而比数量更难得的是质量——装在正确的边界上，写给正确的读者看。装检查不难，这才是难的部分。</p>
 <p>我把 kimi-code 那个不对称整理成了 <a href="https://github.com/MoonshotAI/kimi-code/issues/4012">一个 issue</a> 提给官方，附了复现和修法建议，等 approve 后提 PR。</p>
