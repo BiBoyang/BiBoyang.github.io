@@ -35,10 +35,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-d11408d0.js";
+            window.path_to_searchindex_js = "searchindex-4135f8a6.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-9fefb157.js"></script>
+        <script src="toc-369bb13c.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -179,7 +179,7 @@
                     <main>
                         <h1 id="什么代价质量与成本的联合裁决"><a class="header" href="#什么代价质量与成本的联合裁决">什么代价——质量与成本的联合裁决</a></h1>
 <blockquote>
-<p>第 1 篇的四问里，「什么代价」一直只有一句话：成本是一等约束。这一篇把这句话展开——不是讲怎么省钱，是讲<strong>成本怎么进入 go/no-go 决策，以及成本账怎么记才不污染归因</strong>。</p>
+<p>本卷卷首语的四问里，「什么代价」一直只有一句话：成本是一等约束。这一篇把这句话展开——不是讲怎么省钱，是讲<strong>成本怎么进入 go/no-go 决策，以及成本账怎么记才不污染归因</strong>。</p>
 </blockquote>
 <h2 id="本章将讲"><a class="header" href="#本章将讲">本章将讲</a></h2>
 <ul>
@@ -224,9 +224,9 @@
 <p>最容易漏的是默认功能开关。M 项目的记忆实验出过一个真实事故：对照组忘了关默认开启的内置判官，结果对照组悄悄用上了和实验组同源的能力，A/B 直接报废。他们的修法值得抄：评测环境每一步默认把判官接入地址导出为关闭态，需要的臂再显式换回。<strong>默认值永远站在污染那一边，对照组的「无」必须是强制出来的</strong>——第 6 篇立过这条原则，成本记账是它的又一个适用面。</p>
 <h2 id="六美元门槛要在花钱之前写死"><a class="header" href="#六美元门槛要在花钱之前写死">六、美元门槛要在花钱之前写死</a></h2>
 <p>最后一块拼图：预算和停止规则必须<strong>预注册</strong>——看到任何数据之前写进实验合同。至少五个字段：累计授权金额（花完即停，不许边跑边追加）；单样本成本上限；超支样本的归属（记 invalid 还是计入分母，二选一事前定）；成本门槛（每成功结果多少钱以内算「不更贵」）；到达预算后的动作（停止并按已有数据判，还是挂起等下次授权）。</p>
-<p>M 项目的记忆排序试点合同里，累计授权就是 15 美元、shard 顺序执行；开场那个 0.02 美元门槛也是实验开始前写死的——所以 18/18 打平时裁决毫无尴尬：**规则先于结果，执行规则不需要勇气。**这套纪律和第 7 篇的预注册停止规则是一体两面：停止规则防「偷看数据决定要不要继续跑」，美元门槛防「效果不显著就加钱硬买」。事后追加的预算和事后追加的样本一样，都会把探索性分析伪装成确认性结论。</p>
+<p>M 项目的记忆排序试点合同里，累计授权就是 15 美元、shard 顺序执行；开场那个 0.02 美元门槛也是实验开始前写死的——所以 18/18 打平时裁决毫无尴尬：**规则先于结果，执行规则不需要勇气。**这套纪律和第 9 篇的预注册合同是一体两面：停止规则防「偷看数据决定要不要继续跑」，美元门槛防「效果不显著就加钱硬买」。事后追加的预算和事后追加的样本一样，都会把探索性分析伪装成确认性结论。</p>
 <h2 id="七四问的闭环"><a class="header" href="#七四问的闭环">七、四问的闭环</a></h2>
-<p>第 1 篇的四问到此全部有主：能不能做对（第 2–5 篇）、坏了会不会察觉（第 3–5 篇）、是不是它的功劳（第 6、9 篇）、什么代价（本篇）。</p>
+<p>卷首语的四问到此全部有主：能不能做对（第 2–5 篇）、坏了会不会察觉（第 3–5 篇）、是不是它的功劳（第 6、9 篇）、什么代价（本篇）。</p>
 <p>刻意留一条缝：本篇讲的是裁决与记账——钱花了多少、买到了什么、该不该继续花。但「花掉的上下文有多少真正有效」是另一个问题：800K 上下文里模型认真在读的可能只有一小段，有效窗口随长度衰减。那条线是价格之外的质量问题，两个账本分开记；它暂列未来选题、不占编号，等实验数据齐了再独立成章。</p>
 <p><em>本章外部病例来自我持续在看的一个单人维护开源 agent 内核项目的公开评测文档与变更记录（观察窗口 2026-10 上半月，含其评测规范、停滞熔断设计文档与记忆试点合同；项目名从略，链接与原文出处登记在写作简报，成书前由我凭链接复核全部数字）；JevBench 为独立的第三方公开榜单（其四轴计价口径见其公开 METHOD 文档）。自家病例出自 dsh-eval-harness 与截断检出矩阵（2026-09）。</em></p>
 
@@ -234,7 +234,7 @@
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="eval07.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="eval06.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
@@ -248,7 +248,7 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="eval07.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="eval06.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 

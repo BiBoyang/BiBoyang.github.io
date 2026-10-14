@@ -35,10 +35,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-d11408d0.js";
+            window.path_to_searchindex_js = "searchindex-4135f8a6.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-9fefb157.js"></script>
+        <script src="toc-369bb13c.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -214,7 +214,7 @@
 <li><strong>whole-session 会话库</strong>：记忆是整段会话，金标散在好几段里，判分要看 top-3 而不是 at-1。</li>
 </ul>
 <p>同一个方案在两个库上的成绩可以差出十个百分点——其迭代表里，弱判官方案在原子库命中 0.495 时整段库 0.450，而基线在整段库有 0.725。<strong>把两个库平均成一个「记忆准确率」，等于让两种任务的失败互相抵消着藏起来。</strong> 按切片分层看，不许只报聚合。</p>
-<p>金标纪律没有新东西：dev 集调参、holdout 在读题面前冻结、校准集与验证集分开（第 7 篇同此口径）。记忆题库唯一额外的要求是<strong>写入侧也要有金标</strong>：给定一段对话，「应该沉淀出哪几条事实」需要人工标注，否则写入层永远是一笔糊涂账。</p>
+<p>金标纪律没有新东西：dev 集调参、holdout 在读题面前冻结、校准集与验证集分开（第 11 篇同此口径）。记忆题库唯一额外的要求是<strong>写入侧也要有金标</strong>：给定一段对话，「应该沉淀出哪几条事实」需要人工标注，否则写入层永远是一笔糊涂账。</p>
 <h2 id="四召回与精排必须分家"><a class="header" href="#四召回与精排必须分家">四、召回与精排必须分家</a></h2>
 <p>两个月迭代里最贵的一课，先看伤亡数字。第一版方案让一个 4B 判官独自决定「有没有相关记忆 + 注入哪几条」：turn 级命中从基线 0.620 掉到 0.495（p=0.001），整段库从 0.720 掉到 0.450——<strong>加了智能，显著退步。</strong></p>
 <p>死因清楚：判官读的是每条记忆 480 字节的聚焦窗口，看不到全文；而「有没有」这个判断需要全局视野。大量「措辞迂回但确实相关」的记忆被整片枪毙。判官擅长的是在几条候选之间比较「哪条更贴」，不擅长回答「这堆东西里到底有没有答案」。</p>
