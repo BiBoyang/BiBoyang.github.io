@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-ec60b01a.js";
+            window.path_to_searchindex_js = "searchindex-1852586b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-63496813.js"></script>
@@ -179,12 +179,12 @@
                     <main>
                         <h1 id="把-ansi-变成可断言的tui-回归测试基建"><a class="header" href="#把-ansi-变成可断言的tui-回归测试基建">把 ANSI 变成可断言的——TUI 回归测试基建</a></h1>
 <blockquote>
-<p>系列第十六篇，接着第 15 篇。前面二十几篇讲了 TUI 渲染的各种机制：增量 diff、流式 Markdown、holdback、防闪烁。这一篇回答一个一直悬着的问题：这些东西怎么测？TUI 的输出不是返回值，是一串带状态的字节——断言它的正确性，需要的不是技巧，是一整套分层基建。2026 年 10 月读 Codex 的 TUI 测试代码，我看到的与其说是一批测试，不如说是一套方法论：把“带状态的字节流“逐层翻译成可以断言的东西。</p>
+<p>前面讲了 TUI 渲染的各种机制：增量 diff、流式 Markdown、holdback、防闪烁，这一篇回答一直悬着的问题：这些东西怎么测？TUI 的输出不是返回值，是一串带状态的字节。2026 年 10 月读 Codex 的 TUI 测试代码，我看到的与其说是一批测试，不如说是一套方法论：把“带状态的字节流”逐层翻译成可以断言的东西。</p>
 </blockquote>
 <hr>
 <h2 id="一难在哪输出是带状态的字节流"><a class="header" href="#一难在哪输出是带状态的字节流">一、难在哪：输出是带状态的字节流</a></h2>
 <p>普通函数的测试断言输入输出。TUI 渲染的“输出“是写到终端的字节序列，它的含义依赖于终端的当前状态：光标在哪、哪些模式开着、scrollback 里有什么。同一个字节序列，光标位置不同，结果完全不同。第 2 篇讲过帧状态记忆的脆弱性——8 个字段任何一个算错，整帧偏位——这类 bug 的特征是：<strong>单看任何一帧的字节都对，连起来就错。</strong></p>
-<p>所以 TUI 测试的第一性问题不是“断言什么“，是“把输出变成什么形态才可断言“。Codex 的实践可以分成四层，从字节到纪律，一层比一层抽象，一层比一层便宜。</p>
+<p>所以 TUI 测试的第一性问题不是“断言什么“，是“把输出变成什么形态才可断言“。这里我推荐参考Codex。Codex的实践可以分成四层，从字节到纪律，一层比一层抽象，一层比一层便宜。</p>
 <hr>
 <h2 id="二四层断言"><a class="header" href="#二四层断言">二、四层断言</a></h2>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch24-ansi-assertable.svg" alt="把带状态的字节流逐层翻译成可断言的"><span class="img-wrapper"><img src="assets/ch24-ansi-assertable.svg" alt="把带状态的字节流逐层翻译成可断言的"></span></label></p>

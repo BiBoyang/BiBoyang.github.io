@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-ec60b01a.js";
+            window.path_to_searchindex_js = "searchindex-1852586b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-63496813.js"></script>
@@ -179,7 +179,7 @@
                     <main>
                         <h1 id="双模渲染同一引擎里的两种所有权"><a class="header" href="#双模渲染同一引擎里的两种所有权">双模渲染——同一引擎里的两种所有权</a></h1>
 <blockquote>
-<p>系列第十四篇。第 13 篇讲了 TUI 渲染的两条路线（全屏自管派与 inline viewport 派），以及一个新事实：头部 Agent TUI 没有一家押注单边，分界线在每家内部都成了开关（默认形态 2:2）。月之暗面 2026 年把 Kimi Code 的源码放了出来（MoonshotAI/kimi-code，MIT，TypeScript monorepo），它是这条线上最适合解剖的样本：<strong>它的渲染引擎同时实现了两种所有权模型，用同一个接口、同一棵组件树，运行时二选一</strong>，而且代码里处处留着两派交锋过的事故记录。这篇是这个案例的解剖。</p>
+<p>第 13 篇讲了 TUI 渲染的两条路线，以及头部 Agent TUI 没有一家押注单边。这一篇解剖一个样本：月之暗面 2026 年开源的 Kimi Code（MIT）——它的渲染引擎在同一个接口、同一棵组件树后面同时实现两种所有权模型，运行时二选一，代码里处处留着两派交锋的事故记录。</p>
 </blockquote>
 <hr>
 <h2 id="一基本面一个-vendored-fork两个渲染器"><a class="header" href="#一基本面一个-vendored-fork两个渲染器">一、基本面：一个 vendored fork，两个渲染器</a></h2>

@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-ec60b01a.js";
+            window.path_to_searchindex_js = "searchindex-1852586b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-63496813.js"></script>
@@ -179,7 +179,7 @@
                     <main>
                         <h1 id="记忆怎么测从被注入到被采信"><a class="header" href="#记忆怎么测从被注入到被采信">记忆怎么测——从「被注入」到「被采信」</a></h1>
 <blockquote>
-<p>这是我另一本小册《自顶向下拆 RAG》和这本之间欠了很久的一座桥。那本书讲检索系统本身的评测——金标、召回、重排；界面第 22 篇讲记忆的产品形态与「生效配置不可见」的黑箱。但 agent 的长期记忆比传统 RAG 多出来两层东西：宿主决定注入哪几条、模型决定真的去读哪几条。这一篇讲这两层怎么测，以及为什么「被注入」根本不是终点。</p>
+<p>这是我另一本小册《自顶向下拆 RAG》和这本之间欠了很久的一座桥：那本讲检索系统本身的评测，界面第 22 篇讲记忆的产品形态，但 agent 的长期记忆比传统 RAG 多出两层——宿主决定注入哪几条、模型决定真的去读哪几条。这一篇讲这两层怎么测，以及为什么「被注入」根本不是终点。</p>
 </blockquote>
 <h2 id="一开场同一个金标在-agent-身上多了两环"><a class="header" href="#一开场同一个金标在-agent-身上多了两环">一、开场：同一个金标，在 agent 身上多了两环</a></h2>
 <p>传统 RAG 评测的链条很短：检索到、生成对，判分结束。我在 RAG 书里建立的整套纪律——holdout 封存、gold 标注、按位置计的召回指标——在 agent 记忆场景里<strong>仍然必要，但远远不够</strong>。</p>

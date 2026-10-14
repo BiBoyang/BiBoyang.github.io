@@ -36,7 +36,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-ec60b01a.js";
+            window.path_to_searchindex_js = "searchindex-1852586b.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-63496813.js"></script>
@@ -191,8 +191,7 @@
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="为什么-agent-从-clitui-开始兼论程序员的信任模型"><a class="header" href="#为什么-agent-从-clitui-开始兼论程序员的信任模型">为什么 Agent 从 CLI/TUI 开始——兼论程序员的信任模型</a></h1>
 <blockquote>
-<p>系列定位：从做过移动端、桌面端、TUI 和全栈的视角，重新理解 AI Agent 时代的人机界面与开发者工作流。
-本文是系列第一篇，建立对 Agent 为什么优先走终端路线的完整认知。</p>
+<p>从做过移动端、桌面端、TUI 和全栈的视角，重新理解 AI Agent 时代的人机界面与开发者工作流。第一篇建立对 Agent 为什么优先走终端路线的完整认知。</p>
 </blockquote>
 <hr>
 <h2 id="一一个场景"><a class="header" href="#一一个场景">一、一个场景</a></h2>
@@ -375,7 +374,7 @@ agent 的工作流是动态的、不确定的、会中断和恢复的。CLI 用�
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="tui-不是低配-gui字符网格里的渲染引擎"><a class="header" href="#tui-不是低配-gui字符网格里的渲染引擎">TUI 不是低配 GUI——字符网格里的渲染引擎</a></h1>
 <blockquote>
-<p>系列第二篇。上一篇讲了 Agent 为什么从 CLI/TUI 开始——工作对象、状态模型、环境继承、信任基线。这一篇沉到技术底层：TUI 到底是怎么渲染的？那个在终端里看似简单的界面，底下是一套什么样的引擎？</p>
+<p>上一篇讲了 Agent 为什么从 CLI/TUI 开始，这一篇沉到技术底层：TUI 到底是怎么渲染的？那个在终端里看似简单的界面，底下是一套什么样的引擎？</p>
 </blockquote>
 <hr>
 <h2 id="一从一个常见的错觉说起"><a class="header" href="#一从一个常见的错觉说起">一、从一个常见的错觉说起</a></h2>
@@ -641,7 +640,7 @@ while settleCount &lt; maxSettle, remaining &gt; budget {
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="markdown-在-tui-上的流式地狱"><a class="header" href="#markdown-在-tui-上的流式地狱">Markdown 在 TUI 上的流式地狱</a></h1>
 <blockquote>
-<p>系列第三篇。上一篇拆解了 TUI 渲染引擎的底层：ANSI 序列、字符网格、物理行、增量 diff。这一篇聚焦 Agent 场景里最让人头疼的问题之一：在只有字符的终端里，把流式输出的 Markdown 渲染成可读的样子。</p>
+<p>上一篇拆解了 TUI 渲染引擎的底层，这一篇聚焦 Agent 场景最让人头疼的问题之一：在只有字符的终端里，把流式输出的 Markdown 渲染成可读的样子。</p>
 </blockquote>
 <hr>
 <h2 id="一markdown-天生反感流式"><a class="header" href="#一markdown-天生反感流式">一、Markdown 天生反感流式</a></h2>
@@ -895,7 +894,7 @@ if stableSource.count &gt; maxStableSourceChars { reset() }
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="agent-tui当事件树撞上线性终端"><a class="header" href="#agent-tui当事件树撞上线性终端">Agent TUI——当事件树撞上线性终端</a></h1>
 <blockquote>
-<p>系列第四篇，TUI 三部曲的最后一篇。第 2 篇建立了渲染引擎的基础，第 3 篇拆解了 Markdown 在终端里的流式难题。这一篇聚焦 Agent 场景独有的一组问题：流式输出、工具调用、thinking 展开、用户输入四件事同时在终端里发生，渲染系统面对的问题从“画得好看“变成了“能不能不崩“。</p>
+<p>TUI 三部曲的最后一篇。流式输出、工具调用、thinking 展开、用户输入四件事同时在终端里发生，渲染系统面对的问题从“画得好看”变成了“能不能不崩”。</p>
 </blockquote>
 <hr>
 <h2 id="一回到那个直觉1d--1d"><a class="header" href="#一回到那个直觉1d--1d">一、回到那个直觉：“1D → 1D”</a></h2>
@@ -1109,7 +1108,7 @@ private func appendNotification(_ line: String) {
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="输入框agent-tui-最被低估的组件"><a class="header" href="#输入框agent-tui-最被低估的组件">输入框——agent TUI 最被低估的组件</a></h1>
 <blockquote>
-<p>系列第五篇，接第 4 篇。第 2 到第 4 篇把输出侧讲完了——怎么把内容画对、画快、画不崩。这两篇（05、06）翻过来讲输入侧。输出侧的难点是“画得对“，输入侧的难点是另一句话：<strong>多层交互状态，要在同一条键盘事件流上不打架。</strong></p>
+<p>第 2 到第 4 篇把输出侧讲完了——怎么把内容画对、画快、画不崩；这两篇（05、06）翻过来讲输入侧。输入侧的难点是另一句话：<strong>多层交互状态，要在同一条键盘事件流上不打架。</strong></p>
 </blockquote>
 <hr>
 <h2 id="一最大的单文件"><a class="header" href="#一最大的单文件">一、最大的单文件</a></h2>
@@ -1219,7 +1218,7 @@ kitty 键盘协议的完整三件套一次发出：推入目标标志位、查�
 <hr><div style="break-before: page; page-break-before: always;"></div>
 <h1 id="中场event-sourcingagent-ui-的底层模型"><a class="header" href="#中场event-sourcingagent-ui-的底层模型">中场——Event Sourcing，Agent UI 的底层模型</a></h1>
 <blockquote>
-<p>系列第七篇，正篇的中场。前五篇（02–06）完成了 TUI 侧的完整深潜：输出侧的渲染引擎、Markdown 流式、事件树展平，输入侧的键盘事件流与终端能力探测。这一篇先不继续往前冲，往上走一层：输出侧三篇暴露的所有麻烦，到底有没有一个统一的理论解释？如果有，它是什么？</p>
+<p>正篇的中场。前五篇完成了 TUI 侧的完整深潜，这一篇先不往前冲，往上走一层：输出侧三篇暴露的所有麻烦，到底有没有一个统一的理论解释？</p>
 </blockquote>
 <hr>
 <h2 id="一中场为什么有必要"><a class="header" href="#一中场为什么有必要">一、中场为什么有必要</a></h2>
@@ -1339,7 +1338,7 @@ case operationEnd(id: "A", isError: false, result: "...")
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="为什么做一个不错的-agent-gui-这么难"><a class="header" href="#为什么做一个不错的-agent-gui-这么难">为什么做一个“不错“的 Agent GUI 这么难</a></h1>
 <blockquote>
-<p>系列第八篇，第三幕开篇。前七篇完成了 TUI 侧的完整深潜和 Event Sourcing 的理论框架。从这一篇开始，同一个 Agent 场景进入像素世界：拥有原生控件、滚动视图和 GPU 合成器之后，技术问题完全不同。</p>
+<p>第三幕开篇。TUI 侧深潜完毕，从这一篇开始，同一个 Agent 场景进入像素世界：拥有原生控件、滚动视图和 GPU 合成器之后，技术问题完全不同。</p>
 </blockquote>
 <hr>
 <h2 id="一不错的标准不在同一基线"><a class="header" href="#一不错的标准不在同一基线">一、“不错“的标准不在同一基线</a></h2>
@@ -1465,7 +1464,7 @@ error    → 红色叉 + 错误信息（可重试按钮）
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="gui-上的-markdown-流式渲染全量重建与工程折中"><a class="header" href="#gui-上的-markdown-流式渲染全量重建与工程折中">GUI 上的 Markdown 流式渲染——全量重建与工程折中</a></h1>
 <blockquote>
-<p>系列第九篇。第 3 篇拆解了 TUI 上的 Markdown 流式渲染：降级映射、Stable Prefix Cache、表格 retreat、代码块盲区。这一篇是同一面问题的镜像：在拥有像素、字体引擎和 GPU 合成器的 GUI 世界里，Markdown 流式渲染为什么仍然是一个“打字机效果“就吃掉 60% CPU 的难题。</p>
+<p>第 3 篇拆了 TUI 上的 Markdown 流式渲染，这一篇是同一面问题的镜像：在拥有像素、字体引擎和 GPU 合成器的 GUI 世界里，它为什么仍然是一个“打字机效果”就吃掉 60% CPU 的难题。</p>
 </blockquote>
 <hr>
 <h2 id="一打字机效果--增量渲染"><a class="header" href="#一打字机效果--增量渲染">一、打字机效果 ≠ 增量渲染</a></h2>
@@ -1687,7 +1686,7 @@ tick 90: parse(3000字)+ build(3000字)+ layout(3000字)
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="权限-ux-与-diff-uxagent-真正的主界面"><a class="header" href="#权限-ux-与-diff-uxagent-真正的主界面">权限 UX 与 Diff UX——Agent 真正的“主界面“</a></h1>
 <blockquote>
-<p>系列第十篇。前九篇的大部分篇幅花在了“怎么渲染“上：ANSI 序列、Markdown 降级、事件树展平、CoreText 管线。这一篇换一个问题：在 Agent 产出的所有内容里，什么最值得精心设计界面？答案不是聊天框。</p>
+<p>前九篇都在讲“怎么渲染”，这一篇换一个问题：在 Agent 产出的所有内容里，什么最值得精心设计界面？答案不是聊天框。</p>
 </blockquote>
 <hr>
 <h2 id="一聊天框是-agent-的命令行不是它的主界面"><a class="header" href="#一聊天框是-agent-的命令行不是它的主界面">一、聊天框是 Agent 的“命令行“，不是它的“主界面“</a></h2>
@@ -1815,7 +1814,7 @@ tick 90: parse(3000字)+ build(3000字)+ layout(3000字)
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="多端-agent-架构clituiidedesktopwebmobile"><a class="header" href="#多端-agent-架构clituiidedesktopwebmobile">多端 Agent 架构——CLI、TUI、IDE、Desktop、Web、Mobile</a></h1>
 <blockquote>
-<p>系列第十一篇。第 7 篇提出了 Event Sourcing 框架：Agent 的执行是一条事件流，不同 UI 是同一事件流的不同投影。这一篇把这个框架展开到六个具体的端，外加 API 这个没有界面的入口，讲清楚每个端各自适合承载什么、不适合什么，以及它们怎么共存。</p>
+<p>第 7 篇提出了 Event Sourcing 框架：Agent 的执行是一条事件流，不同 UI 是同一事件流的不同投影。这一篇把它展开到六个具体的端，外加 API 这个没有界面的入口。</p>
 </blockquote>
 <hr>
 <h2 id="一不是多端适配是多端投影"><a class="header" href="#一不是多端适配是多端投影">一、不是多端适配，是多端投影</a></h2>
@@ -1936,7 +1935,7 @@ tick 90: parse(3000字)+ build(3000字)+ layout(3000字)
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="移动端的位置--从大前端到-agent-workflow-engineer"><a class="header" href="#移动端的位置--从大前端到-agent-workflow-engineer">移动端的位置 + 从大前端到 Agent Workflow Engineer</a></h1>
 <blockquote>
-<p>系列第十二篇，写作时的第一次收束——后来没收住，在这本书里它是「界面」卷的中场（二十四篇，这是第十二篇）。前十一篇从第 2 篇的 ANSI 序列一路讲到多端架构，完整的技术和设计全景。这一篇收束到个人：做移动端、桌面端、TUI、全栈这些经验，在 Agent 时代到底意味着什么。</p>
+<p>「界面」卷的中场——写作时本想在这里收束，后来没收住。前十一篇从 ANSI 序列一路讲到多端架构，这一篇收束到个人：做移动端、桌面端、TUI、全栈这些经验，在 Agent 时代到底意味着什么。</p>
 </blockquote>
 <hr>
 <h2 id="一移动端在-agent-产品中的位置"><a class="header" href="#一移动端在-agent-产品中的位置">一、移动端在 Agent 产品中的位置</a></h2>
@@ -2162,7 +2161,7 @@ print(history);                  // 内存里的全部历史按新宽度重新�
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="双模渲染同一引擎里的两种所有权"><a class="header" href="#双模渲染同一引擎里的两种所有权">双模渲染——同一引擎里的两种所有权</a></h1>
 <blockquote>
-<p>系列第十四篇。第 13 篇讲了 TUI 渲染的两条路线（全屏自管派与 inline viewport 派），以及一个新事实：头部 Agent TUI 没有一家押注单边，分界线在每家内部都成了开关（默认形态 2:2）。月之暗面 2026 年把 Kimi Code 的源码放了出来（MoonshotAI/kimi-code，MIT，TypeScript monorepo），它是这条线上最适合解剖的样本：<strong>它的渲染引擎同时实现了两种所有权模型，用同一个接口、同一棵组件树，运行时二选一</strong>，而且代码里处处留着两派交锋过的事故记录。这篇是这个案例的解剖。</p>
+<p>第 13 篇讲了 TUI 渲染的两条路线，以及头部 Agent TUI 没有一家押注单边。这一篇解剖一个样本：月之暗面 2026 年开源的 Kimi Code（MIT）——它的渲染引擎在同一个接口、同一棵组件树后面同时实现两种所有权模型，运行时二选一，代码里处处留着两派交锋的事故记录。</p>
 </blockquote>
 <hr>
 <h2 id="一基本面一个-vendored-fork两个渲染器"><a class="header" href="#一基本面一个-vendored-fork两个渲染器">一、基本面：一个 vendored fork，两个渲染器</a></h2>
@@ -2284,6 +2283,9 @@ block 不到 committed frontier 不发射，发射即归终端，从架构上保
 </ul>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="一行状态文字的状态机"><a class="header" href="#一行状态文字的状态机">一行状态文字的状态机</a></h1>
+<blockquote>
+<p>前面各篇讲的都是“大”问题：渲染所有权、双模、事件树展平。这一篇讲一个“小”东西——状态行。每个人都写过 spinner，没人写过“什么时候显示什么、什么时候必须消失”。它的难点不在动画，在防闪烁。</p>
+</blockquote>
 <h2 id="一状态行的两种所有权"><a class="header" href="#一状态行的两种所有权">一、状态行的两种所有权</a></h2>
 <p>第 4 篇讲过 ForgeLoopTUI 的 <code>operationStart/operationEnd</code>：工具开始时追加一行“⎿ running…“，工具结束时用结果行<strong>替换</strong>它。状态行的所有权属于那个工具——它因事件而生、因事件而灭，生命周期和一次工具调用对齐。</p>
 <p>Codex 的状态指示器是另一个物种。它的所有权属于<strong>整个 turn</strong>：从回车到 turn 收敛，不管中间经过几次工具调用、几段流式输出，底部都是同一个指示器实例，显示的内容在变（“Thinking”/“Working“加一行细节），实例不变。它从不被“结果“替换，只会被流式内容<strong>压制</strong>，然后再被<strong>恢复</strong>。</p>
@@ -2297,12 +2299,9 @@ block 不到 committed frontier 不发射，发射即归终端，从架构上保
 <hr>
 <h2 id="三防闪烁三闸门"><a class="header" href="#三防闪烁三闸门">三、防闪烁三闸门</a></h2>
 <p>现在到了正题。状态行和流式内容共享同一块屏幕底部区域，两者共存会闪——一帧里既有新放行的内容又有“正在工作“，视觉上就是抽搐。Codex 的解法是三道保守得近乎偏执的闸门。</p>
-<p><strong>闸门一：放行即隐藏。</strong>
-commit tick 每向 transcript 放行一批行，第一件事就是隐藏状态指示器。流式内容与状态行互斥，没有例外路径。</p>
-<p><strong>闸门二：恢复看空闲。</strong>
-一段 commentary（前言性输出）结束时，不立刻把状态行放回来。先置一个“待恢复“标记，然后等三个条件同时成立：turn 还在运行、两个流式队列（回答流与计划流）全部 idle、标记置位——才恢复。缺任何一个条件就继续压着。没有这个闸门，“前言结束→工具即将开始“的间隙里状态行会闪现一下又被压掉，形成“显示→隐藏→显示“的三连闪。</p>
-<p><strong>闸门三：收尾看队列。</strong>
-最终回答完成时，状态行是否恢复，取决于输入队列里有没有用户插进来的 steer 消息。如果用户已经插了话，turn 马上又要忙起来，恢复那一帧就是多余的闪烁——不恢复了，直接保持隐藏等下一波。</p>
+<p><strong>闸门一：放行即隐藏。</strong><br>commit tick 每向 transcript 放行一批行，第一件事就是隐藏状态指示器。流式内容与状态行互斥，没有例外路径。</p>
+<p><strong>闸门二：恢复看空闲。</strong><br>一段 commentary（前言性输出）结束时，不立刻把状态行放回来。先置一个“待恢复“标记，然后等三个条件同时成立：turn 还在运行、两个流式队列（回答流与计划流）全部 idle、标记置位——才恢复。缺任何一个条件就继续压着。没有这个闸门，“前言结束→工具即将开始“的间隙里状态行会闪现一下又被压掉，形成“显示→隐藏→显示“的三连闪。</p>
+<p><strong>闸门三：收尾看队列。</strong><br>最终回答完成时，状态行是否恢复，取决于输入队列里有没有用户插进来的 steer 消息。如果用户已经插了话，turn 马上又要忙起来，恢复那一帧就是多余的闪烁——不恢复了，直接保持隐藏等下一波。</p>
 <p>三道闸门串起来的判断标准是同一个：<strong>状态行的每一次显隐都必须对应用户心智模型里的一次真实状态切换</strong>，任何“技术上正确但感知上是噪声“的显隐都要被闸门吃掉。</p>
 <hr>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch23-status-gates.svg" alt="状态行的防闪烁三闸门"><span class="img-wrapper"><img src="assets/ch23-status-gates.svg" alt="状态行的防闪烁三闸门"></span></label></p>
@@ -2328,12 +2327,12 @@ commit tick 每向 transcript 放行一批行，第一件事就是隐藏状态�
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="把-ansi-变成可断言的tui-回归测试基建"><a class="header" href="#把-ansi-变成可断言的tui-回归测试基建">把 ANSI 变成可断言的——TUI 回归测试基建</a></h1>
 <blockquote>
-<p>系列第十六篇，接着第 15 篇。前面二十几篇讲了 TUI 渲染的各种机制：增量 diff、流式 Markdown、holdback、防闪烁。这一篇回答一个一直悬着的问题：这些东西怎么测？TUI 的输出不是返回值，是一串带状态的字节——断言它的正确性，需要的不是技巧，是一整套分层基建。2026 年 10 月读 Codex 的 TUI 测试代码，我看到的与其说是一批测试，不如说是一套方法论：把“带状态的字节流“逐层翻译成可以断言的东西。</p>
+<p>前面讲了 TUI 渲染的各种机制：增量 diff、流式 Markdown、holdback、防闪烁，这一篇回答一直悬着的问题：这些东西怎么测？TUI 的输出不是返回值，是一串带状态的字节。2026 年 10 月读 Codex 的 TUI 测试代码，我看到的与其说是一批测试，不如说是一套方法论：把“带状态的字节流”逐层翻译成可以断言的东西。</p>
 </blockquote>
 <hr>
 <h2 id="一难在哪输出是带状态的字节流"><a class="header" href="#一难在哪输出是带状态的字节流">一、难在哪：输出是带状态的字节流</a></h2>
 <p>普通函数的测试断言输入输出。TUI 渲染的“输出“是写到终端的字节序列，它的含义依赖于终端的当前状态：光标在哪、哪些模式开着、scrollback 里有什么。同一个字节序列，光标位置不同，结果完全不同。第 2 篇讲过帧状态记忆的脆弱性——8 个字段任何一个算错，整帧偏位——这类 bug 的特征是：<strong>单看任何一帧的字节都对，连起来就错。</strong></p>
-<p>所以 TUI 测试的第一性问题不是“断言什么“，是“把输出变成什么形态才可断言“。Codex 的实践可以分成四层，从字节到纪律，一层比一层抽象，一层比一层便宜。</p>
+<p>所以 TUI 测试的第一性问题不是“断言什么“，是“把输出变成什么形态才可断言“。这里我推荐参考Codex。Codex的实践可以分成四层，从字节到纪律，一层比一层抽象，一层比一层便宜。</p>
 <hr>
 <h2 id="二四层断言"><a class="header" href="#二四层断言">二、四层断言</a></h2>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch24-ansi-assertable.svg" alt="把带状态的字节流逐层翻译成可断言的"><span class="img-wrapper"><img src="assets/ch24-ansi-assertable.svg" alt="把带状态的字节流逐层翻译成可断言的"></span></label></p>
@@ -2378,7 +2377,7 @@ commit tick 每向 transcript 放行一批行，第一件事就是隐藏状态�
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="收敛的另一面pi-mono-暗线与生态同源"><a class="header" href="#收敛的另一面pi-mono-暗线与生态同源">收敛的另一面——pi-mono 暗线与生态同源</a></h1>
 <blockquote>
-<p>系列第十七篇，第 13、14 篇的直接续篇。第 13 篇发现渲染所有权的分界线在四家头部产品里都成了开关，我把它当作“行业收敛“的证据写了下来。这一篇补另一半：我去取证 MiniMax 的 mcode，本想给对照表加第六个样本，结果在它的发布产物里 grep 出一串不属于 MiniMax 的名字。顺着查下去才知道，2026 年中这批看起来“各自收敛“的 Agent TUI，有相当一部分的相似另有来历——它们是同一个上游的下游。</p>
+<p>第 13 篇把四家头部产品的双模开关当作“行业收敛”的证据写了下来，这一篇补另一半：我去取证 MiniMax 的 mcode，结果在它的发布产物里 grep 出一串不属于 MiniMax 的名字——2026 年中这批看起来各自收敛的 Agent TUI，相当一部分是同一个上游的下游。</p>
 </blockquote>
 <hr>
 <h2 id="一第六个样本里长着别人的名字"><a class="header" href="#一第六个样本里长着别人的名字">一、第六个样本里，长着别人的名字</a></h2>
@@ -2472,7 +2471,7 @@ commit tick 每向 transcript 放行一批行，第一件事就是隐藏状态�
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="回到自己的引擎forgelooptui-改造实录"><a class="header" href="#回到自己的引擎forgelooptui-改造实录">回到自己的引擎——ForgeLoopTUI 改造实录</a></h1>
 <blockquote>
-<p>系列第十八篇。第 13、14、17 篇拆完了别人的引擎：两派所有权、Kimi 的双模实现、pi-mono 血缘暗线。八月中的审计给 ForgeLoopTUI 开过一张七件套的“吸收清单“，把 kwwk 和 inline 派已经验证过的工程件搬过来。这一篇是两个月后的清点报告。先说结论：清单的执行情况说出来有点难堪，但清单外发生的一件事比整张清单都重要：为了修第 3 篇的“弹入“问题，我的引擎在默认应用路径上，往对面阵营走了一半。</p>
+<p>拆完别人的引擎，这一篇回到自己的：八月中的审计给 ForgeLoopTUI 开过一张七件套的“吸收清单”，这是两个月后的清点报告。先说结论：执行情况有点难堪，但清单外发生的一件事比整张清单都重要——为了修第 3 篇的“弹入”问题，我的引擎在默认应用路径上，往对面阵营走了一半。</p>
 </blockquote>
 <hr>
 <h2 id="一先清点七件清单落地零件半"><a class="header" href="#一先清点七件清单落地零件半">一、先清点：七件清单，落地零件半</a></h2>
@@ -2550,7 +2549,7 @@ commit tick 每向 transcript 放行一批行，第一件事就是隐藏状态�
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="终端之外渲染所有权模型在-gui-与移动端的映射"><a class="header" href="#终端之外渲染所有权模型在-gui-与移动端的映射">终端之外——渲染所有权模型在 GUI 与移动端的映射</a></h1>
 <blockquote>
-<p>系列第十九篇，“所有权“四部曲的收官。第 13 篇划出全屏自管与 inline 两条路线，第 14 篇讲双模实现，第 18 篇讲我自己的引擎半程跨界；这一篇把模型带出终端。终端之外的世界（macOS 的窗口、iPhone 的屏幕）没有 scrollback 这回事。这篇讲：当介质不再提供任何免费的历史基础设施时，第 13 篇那套账本怎么记。样本是 FlowDown，一个原生 iOS Agent 客户端。</p>
+<p>“所有权”四部曲的收官，这一篇把模型带出终端：macOS 的窗口、iPhone 的屏幕没有 scrollback 这回事。当介质不再提供免费的历史基础设施，第 13 篇那套账本怎么记？样本是 FlowDown，一个原生 iOS Agent 客户端。</p>
 </blockquote>
 <hr>
 <h2 id="一gui-世界里inline-派不存在"><a class="header" href="#一gui-世界里inline-派不存在">一、GUI 世界里，inline 派不存在</a></h2>
@@ -2642,7 +2641,7 @@ commit tick 每向 transcript 放行一批行，第一件事就是隐藏状态�
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="渲染的信任边界agent-ui-没有同源策略"><a class="header" href="#渲染的信任边界agent-ui-没有同源策略">渲染的信任边界——Agent UI 没有同源策略</a></h1>
 <blockquote>
-<p>系列第二十篇。第 10 篇讲权限 UX，回答的是“要不要批准“；这一篇讲它全部设计的前提——<strong>你看到的那个批准请求，是真的吗</strong>。写作动机有二。其一，过去两年针对 Agent 界面的注入攻击从研究演示变成了真实供应链事件，扎成了一个 pattern。其二，为了写这篇，我把三家引擎的源码和我自己的都翻了一遍，专门找“内容清洗“这道防线，结果是零。这篇讲攻击为什么长这样、防线为什么缺席、以及它应该长在哪一层。</p>
+<p>第 10 篇讲权限 UX，回答“要不要批准”；这一篇讲它全部设计的前提——<strong>你看到的那个批准请求，是真的吗</strong>。过去两年针对 Agent 界面的注入攻击从研究演示变成了真实供应链事件，而我把三家引擎的源码连同自己的翻了一遍，专门找“内容清洗”这道防线，结果是零。</p>
 </blockquote>
 <hr>
 <h2 id="一这些漏洞不姓模型"><a class="header" href="#一这些漏洞不姓模型">一、这些漏洞不姓“模型“</a></h2>
@@ -2707,7 +2706,7 @@ commit tick 每向 transcript 放行一批行，第一件事就是隐藏状态�
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="上下文账本agent-唯一的内存和它的-gc"><a class="header" href="#上下文账本agent-唯一的内存和它的-gc">上下文账本——Agent 唯一的内存，和它的 GC</a></h1>
 <blockquote>
-<p>系列第二十一篇，“所有权“线的收尾。13/14 讲像素的账（渲染所有权），19 讲数据的账（GUI 端必须自己持久化），20 讲像素的真（信任边界）；这一篇记最后一本账：<strong>状态的所有权</strong>。上下文窗口是 Agent 唯一的内存，而它的垃圾回收（自动压缩）是无提示、有损、事后不可申诉的。这篇先看用户看到的遗忘，再下到引擎层看各家怎么记账，最后回答一个问题：这笔账，用户有没有权利查。</p>
+<p>“所有权”线的收尾，记最后一本账：<strong>状态的所有权</strong>。上下文窗口是 Agent 唯一的内存，它的垃圾回收（自动压缩）无提示、有损、事后不可申诉。先看用户看到的遗忘，再下到引擎层看各家怎么记账，最后回答一个问题：这笔账，用户有没有权利查。</p>
 </blockquote>
 <hr>
 <h2 id="一一次没有对话框的遗忘"><a class="header" href="#一一次没有对话框的遗忘">一、一次没有对话框的遗忘</a></h2>
@@ -2767,7 +2766,7 @@ commit tick 每向 transcript 放行一批行，第一件事就是隐藏状态�
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="规则与记忆agent-的长期状态文件还是黑箱"><a class="header" href="#规则与记忆agent-的长期状态文件还是黑箱">规则与记忆——Agent 的长期状态，文件还是黑箱</a></h1>
 <blockquote>
-<p>系列第二十二篇，回到界面本体轨。第 21 篇讲 agent 的短期记忆（上下文窗口，忘了就没了），这一篇讲长期状态：跨会话活着、每次交互都随身携带的那些东西。2026 年这个领域分成了两条路线：进 git 的规则文件，和服务端数据库里的托管记忆。两条路都在快速生长，而它们共同缺一块界面：<strong>生效配置的预览</strong>。你永远看不到“这一次对话，agent 实际带着哪些规则和记忆上场“。</p>
+<p>第 21 篇讲 agent 的短期记忆，这一篇讲长期状态：跨会话活着、每次交互随身携带的东西。2026 年这个领域分成两条路线——进 git 的规则文件，和服务端数据库里的托管记忆——而它们共同缺一块界面：<strong>生效配置的预览</strong>。你永远看不到“这一次对话，agent 实际带着哪些规则和记忆上场”。</p>
 </blockquote>
 <hr>
 <h2 id="一正在塑造这个会话的那份文件"><a class="header" href="#一正在塑造这个会话的那份文件">一、正在塑造这个会话的那份文件</a></h2>
@@ -2834,7 +2833,7 @@ commit tick 每向 transcript 放行一批行，第一件事就是隐藏状态�
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="计划即界面checklist-正在成为-agent-时代的-diff"><a class="header" href="#计划即界面checklist-正在成为-agent-时代的-diff">计划即界面——checklist 正在成为 Agent 时代的 diff</a></h1>
 <blockquote>
-<p>系列第二十三篇，界面本体轨，控制三部曲之首。第 10 篇讲事中控制（逐条审批），这一篇讲事前（计划），下一篇讲事后（回滚）。论点一句话：逐条审批的粒度撑不起长任务，第 14 次弹窗时你已经不读内容了。真正可扩展的控制，是事前批准一份可编辑的计划，执行中看着它被逐项勾掉。checklist 正在成为 agent 时代的 diff：你最终审的还是“改了什么“，但你先审的是“打算改什么“。</p>
+<p>控制三部曲之首：第 10 篇讲事中（审批），这一篇讲事前（计划），下一篇讲事后（回滚）。论点一句话：逐条审批的粒度撑不起长任务，第 14 次弹窗时你已经不读内容了。真正可扩展的控制，是事前批准一份可编辑的计划，执行中看着它被逐项勾掉——checklist 正在成为 agent 时代的 diff。</p>
 </blockquote>
 <hr>
 <h2 id="一你批准过最贵的一次同意"><a class="header" href="#一你批准过最贵的一次同意">一、你批准过最贵的一次“同意“</a></h2>
@@ -2871,7 +2870,7 @@ commit tick 每向 transcript 放行一批行，第一件事就是隐藏状态�
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="checkpoint-的谎言回滚按钮能兑现多少"><a class="header" href="#checkpoint-的谎言回滚按钮能兑现多少">Checkpoint 的谎言——回滚按钮能兑现多少</a></h1>
 <blockquote>
-<p>系列第二十四篇，界面本体轨，控制三部曲终章。事前的计划（23）、事中的审批（10）、事后的回滚（本篇），是同一根信任链条的三节。这一节的病情最隐蔽：回滚按钮长得像“世界可以重来“，实际的语义是“文件可以重来，就这些“。这篇拆它到底能兑现什么、假装能兑现什么，以及虚假的可撤销感如何让真正不可逆的操作变得更危险。</p>
+<p>控制三部曲终章。事前的计划（23）、事中的审批（10）、事后的回滚（本篇），是同一根信任链条的三节，这一节的病情最隐蔽：回滚按钮长得像“世界可以重来”，实际的语义是“文件可以重来，就这些”。这篇拆它能兑现什么、假装能兑现什么，以及虚假的可撤销感如何让真正不可逆的操作变得更危险。</p>
 </blockquote>
 <hr>
 <h2 id="一按下-rewind-的那一秒"><a class="header" href="#一按下-rewind-的那一秒">一、按下 rewind 的那一秒</a></h2>
@@ -2911,7 +2910,7 @@ commit tick 每向 transcript 放行一批行，第一件事就是隐藏状态�
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="第四条边界当主语是引擎"><a class="header" href="#第四条边界当主语是引擎">第四条边界——当主语是引擎</a></h1>
 <blockquote>
-<p>胶水层系列第一篇。前面二十四篇拆的是界面的本体：像素、投影与账本；从这里开始往下走一层，到界面与引擎之间的那条缝。这条缝上，行业已经给三类对话者各造了一套协议，主语各不相同；这一篇从内侧读 Codex，看一个自己养界面的引擎怎么回答同一个问题——它的答案方向性和那三套都不一样：<strong>主语是引擎</strong>。而方向性一旦反过来，界面承诺的兑现方式全部跟着改写：审批怎么问、历史归谁管、版本怎么握手、同进程走不走捷径、拓扑变了要不要告诉你。本卷的准入线：只写这条缝上决定某个界面承诺真假的机制。</p>
+<p>从这里开始往下走一层，到界面与引擎之间的那条缝。这条缝上，行业已经给三类对话者各造了一套协议，主语各不相同；这一篇从内侧读 Codex，看一个自己养界面的引擎怎么回答同一个问题——它的答案方向性和那三套都不一样：<strong>主语是引擎</strong>。本卷的准入线：只写这条缝上决定某个界面承诺真假的机制。</p>
 </blockquote>
 <hr>
 <h2 id="一三条国境线都没有覆盖的那个对话者"><a class="header" href="#一三条国境线都没有覆盖的那个对话者">一、三条国境线都没有覆盖的那个对话者</a></h2>
@@ -2977,7 +2976,7 @@ commit tick 每向 transcript 放行一批行，第一件事就是隐藏状态�
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="把协议变成可断言的承诺需要证人"><a class="header" href="#把协议变成可断言的承诺需要证人">把协议变成可断言的——承诺需要证人</a></h1>
 <blockquote>
-<p>胶水层系列第二篇。上一篇拆开了界面与引擎之间那道缝：主语是引擎，审批是反向 request，历史归引擎持久，同进程也过协议。但上一篇的结尾留下了一处撕口——一个静默的降级分支，把“你连的是谁，你会知道“这句没人写下来的承诺撕毁了，而界面一切正常。这一篇问的是后半句：<strong>这些承诺，怎么变成每天都要过的一道关</strong>。评测卷的四问地图上标着六层被测对象，“协议“那一层，在这里领走它的断言清单。</p>
+<p>上一篇的结尾留下一处撕口：一个静默的降级分支，把“你连的是谁，你会知道”这句没人写下来的承诺撕毁了，而界面一切正常。这一篇问后半句：<strong>这些承诺，怎么变成每天都要过的一道关</strong>——评测卷四问地图上的“协议”层，在这里领走它的断言清单。</p>
 </blockquote>
 <hr>
 <h2 id="一承诺需要证人"><a class="header" href="#一承诺需要证人">一、承诺需要证人</a></h2>
@@ -3151,7 +3150,7 @@ complete               以上全部排除，才轮到我
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="连接与会话断线之后谁还记得它讲到哪了"><a class="header" href="#连接与会话断线之后谁还记得它讲到哪了">连接与会话——断线之后，谁还记得它讲到哪了</a></h1>
 <blockquote>
-<p>基建系列第一篇。上半部「界面本体」拆的是像素层：界面怎么画、账怎么记、信什么。这个系列拆另一半，<strong>信用层：那些画面凭什么信、承诺凭什么兑现</strong>。两块地基是共享的：《没报错，就代表输出没问题吗》教会我们怀疑“没报错就等于没问题“，这次怀疑的对象从模型输出换到整条管道；07 确立了“Agent 是一条事件流，UI 是投影“，这次讲投影怎么穿过一根会断的线。本系列的准入线也只有一条：只写决定某个界面承诺真假的基建。第一篇的题目，来自我在写作期间被自己问住的第一个问题：SSE 流断了怎么办？换一台服务器重连呢？</p>
+<p>「界面」卷拆的是像素层：界面怎么画、账怎么记、信什么。这个系列拆另一半，<strong>信用层：那些画面凭什么信、承诺凭什么兑现</strong>。准入线只有一条：只写决定某个界面承诺真假的基建。第一篇的题目，来自我写作期间被自己问住的第一个问题：SSE 流断了怎么办？换一台服务器重连呢？</p>
 </blockquote>
 <hr>
 <h2 id="一停在半行字上的界面"><a class="header" href="#一停在半行字上的界面">一、停在半行字上的界面</a></h2>
@@ -3232,7 +3231,7 @@ complete               以上全部排除，才轮到我
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="一条消息的生命线移动端会话的六个断点"><a class="header" href="#一条消息的生命线移动端会话的六个断点">一条消息的生命线——移动端会话的六个断点</a></h1>
 <blockquote>
-<p>基建系列第二篇之上。上一篇讲连接的两端，这一篇讲拿在手里的一端。移动端 agent 有一个所有桌面讨论都会漏掉的前提：<strong>用户会在任意时刻离开</strong>——不是可能，是必然，而且不挑时间。打字打到一半微信来了；按下发送的瞬间锁屏了；流式输出到一半进电梯了。本篇沿一条消息的生命线设六个站点，每个站点都问同一个问题：用户在这里断掉，会话还能不能既流畅又完整地活下来。一手样本是 FlowDown，旁证是本机的 Claude Code 会话文件。</p>
+<p>上一篇讲连接的两端，这一篇讲拿在手里的一端。移动端 agent 有一个所有桌面讨论都会漏掉的前提：<strong>用户会在任意时刻离开</strong>——打字打到一半微信来了，按下发送的瞬间锁屏了，流式输出到一半进电梯了。本篇沿一条消息的生命线设六个站点，每个站点都问同一个问题：用户在这里断掉，会话还能不能既流畅又完整地活下来。</p>
 </blockquote>
 <hr>
 <h2 id="零先立一个不对称"><a class="header" href="#零先立一个不对称">零、先立一个不对称</a></h2>
@@ -3284,7 +3283,7 @@ complete               以上全部排除，才轮到我
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="移动端的架构代价推送工作区与一条第一原则"><a class="header" href="#移动端的架构代价推送工作区与一条第一原则">移动端的架构代价——推送、工作区与一条第一原则</a></h1>
 <blockquote>
-<p>基建系列第二篇之下。上篇沿一条消息的生命线走了六个站点，每个站点的答案都是“把事实搬进比连接活得久的东西“。下篇摊开这张账单的背面：那些搬运工程背后，移动端被迫接受的架构条款，被操作系统禁止的长连接、只肯当信号用的推送通道、被应用商店放大的版本漂移、替 agent 跑工具的服务端工作区。最后把它们收进一句第一原则。</p>
+<p>上篇沿一条消息的生命线走了六个站点，每个站点的答案都是“把事实搬进比连接活得久的东西”。下篇摊开这张账单的背面：被操作系统禁止的长连接、只肯当信号用的推送通道、被应用商店放大的版本漂移、替 agent 跑工具的服务端工作区——移动端被迫接受的架构条款，最后收进一句第一原则。</p>
 </blockquote>
 <hr>
 <h2 id="一第-4-秒的审批卡片"><a class="header" href="#一第-4-秒的审批卡片">一、第 4 秒的审批卡片</a></h2>
@@ -3327,7 +3326,7 @@ complete               以上全部排除，才轮到我
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="协议三边界mcpacpag-ui各欠谁的债"><a class="header" href="#协议三边界mcpacpag-ui各欠谁的债">协议三边界——MCP、ACP、AG-UI，各欠谁的债</a></h1>
 <blockquote>
-<p>基建系列第三篇。前两篇讲一根连接的两端（断线重连）和其中一端（手机）。这一篇讲“界面“这个词的复数化：同一个 agent，要同时面对三类对话者，工具、编辑器、浏览器前端，行业为这三条边界各造了一套协议，MCP、ACP、AG-UI。它们不是竞争关系，是同一张地图上的三条国境线。这篇讲每条线怎么划的、为什么必须这么划，以及一个有意思的规律：<strong>协议要不要有会话，取决于边界对面那位有没有状态。</strong></p>
+<p>这一篇讲“界面”这个词的复数化：同一个 agent 要同时面对三类对话者——工具、编辑器、浏览器前端——行业为这三条边界各造了一套协议：MCP、ACP、AG-UI。它们不是竞争关系，是同一张地图上的三条国境线。这篇讲每条线怎么划的、为什么必须这么划，以及一个有意思的规律：<strong>协议要不要有会话，取决于边界对面那位有没有状态。</strong></p>
 </blockquote>
 <hr>
 <h2 id="一一次换壳背后"><a class="header" href="#一一次换壳背后">一、一次“换壳“背后</a></h2>
@@ -3384,7 +3383,7 @@ complete               以上全部排除，才轮到我
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="没报错只是开始行为的可断言性"><a class="header" href="#没报错只是开始行为的可断言性">没报错只是开始——行为的可断言性</a></h1>
 <blockquote>
-<p>全书开篇问过一个问题：没报错，就代表输出没问题吗？界面部分第 16 篇把 ANSI 变成可断言的，回答了这个问题的一半——渲染层。但 agent 不只是会说话，它会做事：行为层的可断言性是另一个量级的难题。这一篇是本卷的地图：把“agent 评测“这团乱麻收拢成四个问题，后面每章认领一问。</p>
+<p>全书开篇问过：没报错，就代表输出没问题吗？界面部分第 16 篇回答了这个问题的一半——渲染层。但 agent 不只是会说话，它会做事：行为层的可断言性是另一个量级的难题。这一篇是本卷的地图：把“agent 评测”这团乱麻收拢成四个问题，后面每章认领一问。</p>
 </blockquote>
 <blockquote>
 <p><strong>待办（2026-10-07）· 执笔中</strong>：本章为全卷框架章，无对应博客篇，正文新写中；骨架与配图已定，先立章节地图于此。</p>
@@ -3415,7 +3414,7 @@ complete               以上全部排除，才轮到我
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="绿灯的两种谎言实验真的发生过吗"><a class="header" href="#绿灯的两种谎言实验真的发生过吗">绿灯的两种谎言——实验真的发生过吗</a></h1>
 <blockquote>
-<p>全书开篇问过一个问题：没报错，就代表输出没问题吗？界面部分第 16 篇把渲染变成了可断言的，这一部分把同样的怀疑推向行为层。而这一篇先讲失败里最便宜也最致命的一类：不是检查问错了，就是检查看着的那件事根本没发生——两种情况里，绿灯都是全绿的。</p>
+<p>全书开篇问过：没报错，就代表输出没问题吗？这一篇把同样的怀疑推向行为层，先讲失败里最便宜也最致命的一类：不是检查问错了，就是检查看着的那件事根本没发生——两种情况里，绿灯都是全绿的。</p>
 </blockquote>
 <blockquote>
 <p><strong>待办（2026-10-07）· 底稿已定、扩写中</strong>：本章主体为定稿底稿；成章时将按简报收编博客《从 trace 到 eval》（2026-08-23）、《给流式协议造故障》（2026-09-25）作病例段，六条绕行通道逐条展开，章首病例优先换成作者自己的病例。</p>
@@ -3506,7 +3505,7 @@ complete               以上全部排除，才轮到我
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="什么代价质量与成本的联合裁决"><a class="header" href="#什么代价质量与成本的联合裁决">什么代价——质量与成本的联合裁决</a></h1>
 <blockquote>
-<p>评测第 1 篇立了四问：能不能做对、坏了会不会察觉、是不是它的功劳、什么代价。前三问各有章节认领，第四问一直只有一句话：成本是一等约束。这一篇把这句话展开——不是讲怎么省钱，是讲<strong>成本怎么进入 go/no-go 决策，以及成本账怎么记才不污染归因</strong>。</p>
+<p>评测第 1 篇的四问里，“什么代价”一直只有一句话：成本是一等约束。这一篇把这句话展开——不是讲怎么省钱，是讲<strong>成本怎么进入 go/no-go 决策，以及成本账怎么记才不污染归因</strong>。</p>
 </blockquote>
 <h2 id="一开场十八比十八为什么仍然被否决"><a class="header" href="#一开场十八比十八为什么仍然被否决">一、开场：十八比十八，为什么仍然被否决</a></h2>
 <p>我持续在看的一个开源 agent 内核项目（单人维护；为保持小册独立，下面称它 M 项目，不点项目名，出处登记在写作简报里），它的评测台账里有一个反直觉的裁决。</p>
@@ -3568,7 +3567,7 @@ complete               以上全部排除，才轮到我
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="配对实验手册让同一道题回答两次"><a class="header" href="#配对实验手册让同一道题回答两次">配对实验手册——让同一道题回答两次</a></h1>
 <blockquote>
-<p>评测第 6 篇立了「归因靠对照」：双臂是最低配置，裸基线缺位时「全绿」和「没测到」同貌，pass@k 与 pass^k 讲相反的故事。那一篇回答的是「为什么必须对照」，这一篇回答「具体怎么跑」——从 fixture 冻结、顺序平衡、分歧对统计，到无效台账和预注册合同，目标是读完能照着开出一次配对实验。</p>
+<p>评测第 6 篇回答了「为什么必须对照」，这一篇回答「具体怎么跑」——从 fixture 冻结、顺序平衡、分歧对统计，到无效台账和预注册合同，目标是读完能照着开出一次配对实验。</p>
 </blockquote>
 <h2 id="一为什么独立两组经常不够用"><a class="header" href="#一为什么独立两组经常不够用">一、为什么独立两组经常不够用</a></h2>
 <p>agent 任务有两个讨厌的性质。</p>
@@ -3687,7 +3686,7 @@ preregistered_at: &lt;开跑前的日期与合同 commit&gt;
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="记忆怎么测从被注入到被采信"><a class="header" href="#记忆怎么测从被注入到被采信">记忆怎么测——从「被注入」到「被采信」</a></h1>
 <blockquote>
-<p>这是我另一本小册《自顶向下拆 RAG》和这本之间欠了很久的一座桥。那本书讲检索系统本身的评测——金标、召回、重排；界面第 22 篇讲记忆的产品形态与「生效配置不可见」的黑箱。但 agent 的长期记忆比传统 RAG 多出来两层东西：宿主决定注入哪几条、模型决定真的去读哪几条。这一篇讲这两层怎么测，以及为什么「被注入」根本不是终点。</p>
+<p>这是我另一本小册《自顶向下拆 RAG》和这本之间欠了很久的一座桥：那本讲检索系统本身的评测，界面第 22 篇讲记忆的产品形态，但 agent 的长期记忆比传统 RAG 多出两层——宿主决定注入哪几条、模型决定真的去读哪几条。这一篇讲这两层怎么测，以及为什么「被注入」根本不是终点。</p>
 </blockquote>
 <h2 id="一开场同一个金标在-agent-身上多了两环"><a class="header" href="#一开场同一个金标在-agent-身上多了两环">一、开场：同一个金标，在 agent 身上多了两环</a></h2>
 <p>传统 RAG 评测的链条很短：检索到、生成对，判分结束。我在 RAG 书里建立的整套纪律——holdout 封存、gold 标注、按位置计的召回指标——在 agent 记忆场景里<strong>仍然必要，但远远不够</strong>。</p>
