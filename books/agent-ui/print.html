@@ -36,7 +36,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-14ff11d1.js";
+            window.path_to_searchindex_js = "searchindex-ec60b01a.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-63496813.js"></script>
@@ -2284,26 +2284,25 @@ block 不到 committed frontier 不发射，发射即归终端，从架构上保
 </ul>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="一行状态文字的状态机"><a class="header" href="#一行状态文字的状态机">一行状态文字的状态机</a></h1>
-<blockquote>
-<p>系列第十五篇。前面各篇讲的都是“大“问题：渲染所有权、双模、事件树展平。这一篇讲一个“小“东西——状态行，就是那行“正在工作“的提示：一个 spinner、一行 shimmer 文字、一句“Working (0s · esc to interrupt)“。每个人都写过 spinner，没人写过“什么时候显示什么、什么时候必须消失”。2026 年 10 月我逐行读完 Codex 的状态指示代码，发现这行文字背后是我在这个系列里见过的最密集的微观决策集合——它的难点不在动画，在防闪烁。</p>
-</blockquote>
-<hr>
 <h2 id="一状态行的两种所有权"><a class="header" href="#一状态行的两种所有权">一、状态行的两种所有权</a></h2>
-<p>先把我自己的坐标摆出来。第 4 篇讲过 ForgeLoopTUI 的 <code>operationStart/operationEnd</code>：工具开始时追加一行“⎿ running…“，工具结束时用结果行<strong>替换</strong>它。状态行的所有权属于那个工具——它因事件而生、因事件而灭，生命周期和一次工具调用对齐。</p>
+<p>第 4 篇讲过 ForgeLoopTUI 的 <code>operationStart/operationEnd</code>：工具开始时追加一行“⎿ running…“，工具结束时用结果行<strong>替换</strong>它。状态行的所有权属于那个工具——它因事件而生、因事件而灭，生命周期和一次工具调用对齐。</p>
 <p>Codex 的状态指示器是另一个物种。它的所有权属于<strong>整个 turn</strong>：从回车到 turn 收敛，不管中间经过几次工具调用、几段流式输出，底部都是同一个指示器实例，显示的内容在变（“Thinking”/“Working“加一行细节），实例不变。它从不被“结果“替换，只会被流式内容<strong>压制</strong>，然后再被<strong>恢复</strong>。</p>
 <p>这个区别决定了后面一切。被替换的状态行不需要状态机——它的生灭就是事件本身；被压制和恢复的指示器需要——压制和恢复的时机全是边界条件。</p>
 <hr>
 <h2 id="二reasoning-不进-transcript"><a class="header" href="#二reasoning-不进-transcript">二、reasoning 不进 transcript</a></h2>
-<p>第一个反直觉的设计：reasoning（模型的推理流）<strong>不进历史区</strong>。</p>
+<p>第一个反直觉的设计：reasoning（模型的推理流）<strong>不进 transcript</strong>。</p>
 <p>Codex 的 ChatWidget 收到 reasoning delta 时只往一个 buffer 里累积，然后从 buffer 里提取第一个 <code>**加粗**</code> 片段，作为状态行的标题显示。模型在推理块里写的“我先分析用户的需求“这类句子，只有被加粗的那一句能登上状态行；整个推理过程在 transcript 里不留痕迹（推理块结束时只落一条摘要记录）。</p>
 <p>配套的降级同样是静默的：如果 buffer 里还没有出现加粗片段，就保持现有标题不动——不显示“正在提取标题“之类的中间态。还有一条优先级细则：如果正在等一个 unified exec 的结果，执行等待的状态优先于推理标题，后者直接让位。</p>
 <p>这套“从内容里蒸馏状态“的做法，把状态行从“系统播报“变成了“内容摘要“。它还顺带决定了终端窗口标题：Thinking 和 Working 两种状态会映射到窗口标题上，用户在 Dock 或窗口列表里就能分辨 agent 是在想还是在动手。状态行的信息层次因此是：窗口标题 &lt; 状态行标题 &lt; 状态行细节，同一状态的三档投影。</p>
 <hr>
 <h2 id="三防闪烁三闸门"><a class="header" href="#三防闪烁三闸门">三、防闪烁三闸门</a></h2>
-<p>现在到了正题。状态行和流式内容共享同一块屏幕底部区域，两者共存会闪——一帧里既有新放行的内容又有“正在工作“，视觉上就是抽搐。Codex 的解法是三道理性得近乎偏执的闸门。</p>
-<p><strong>闸门一：放行即隐藏。</strong> commit tick（第 9 篇补记讲的两档变速箱）每放行一批行进历史区，第一件事就是隐藏状态指示器。流式内容与状态行互斥，没有例外路径。</p>
-<p><strong>闸门二：恢复看空闲。</strong> 一段 commentary（前言性输出）结束时，不立刻把状态行放回来。先置一个“待恢复“标记，然后等三个条件同时成立：turn 还在运行、两个流式队列（回答流与计划流）全部 idle、标记置位——才恢复。缺任何一个条件就继续压着。没有这个闸门，“前言结束→工具即将开始“的间隙里状态行会闪现一下又被压掉，形成“显示→隐藏→显示“的三连闪。</p>
-<p><strong>闸门三：收尾看队列。</strong> 最终回答完成时，状态行是否恢复，取决于输入队列里有没有用户插进来的 steer 消息。如果用户已经插了话，turn 马上又要忙起来，恢复那一帧就是多余的闪烁——不恢复了，直接保持隐藏等下一波。</p>
+<p>现在到了正题。状态行和流式内容共享同一块屏幕底部区域，两者共存会闪——一帧里既有新放行的内容又有“正在工作“，视觉上就是抽搐。Codex 的解法是三道保守得近乎偏执的闸门。</p>
+<p><strong>闸门一：放行即隐藏。</strong>
+commit tick 每向 transcript 放行一批行，第一件事就是隐藏状态指示器。流式内容与状态行互斥，没有例外路径。</p>
+<p><strong>闸门二：恢复看空闲。</strong>
+一段 commentary（前言性输出）结束时，不立刻把状态行放回来。先置一个“待恢复“标记，然后等三个条件同时成立：turn 还在运行、两个流式队列（回答流与计划流）全部 idle、标记置位——才恢复。缺任何一个条件就继续压着。没有这个闸门，“前言结束→工具即将开始“的间隙里状态行会闪现一下又被压掉，形成“显示→隐藏→显示“的三连闪。</p>
+<p><strong>闸门三：收尾看队列。</strong>
+最终回答完成时，状态行是否恢复，取决于输入队列里有没有用户插进来的 steer 消息。如果用户已经插了话，turn 马上又要忙起来，恢复那一帧就是多余的闪烁——不恢复了，直接保持隐藏等下一波。</p>
 <p>三道闸门串起来的判断标准是同一个：<strong>状态行的每一次显隐都必须对应用户心智模型里的一次真实状态切换</strong>，任何“技术上正确但感知上是噪声“的显隐都要被闸门吃掉。</p>
 <hr>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch23-status-gates.svg" alt="状态行的防闪烁三闸门"><span class="img-wrapper"><img src="assets/ch23-status-gates.svg" alt="状态行的防闪烁三闸门"></span></label></p>
