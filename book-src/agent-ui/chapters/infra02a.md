@@ -78,4 +78,7 @@ ack 落账之后，这一站的完整性责任就整体移交给服务端了。�
 
 ## 参考与延伸
 
-*一手取证：FlowDown `b2cecfd6`（`ConversationManager.swift` 的 `temporaryEditorObjects` 防抖持久化、`ConversationSessionManager.swift` 的 `countIncomingTokens`/Live Activity、`Pipeline/` 的流式与结算路径）；Claude Code 本机会话 JSONL（`type: "queue-operation"`/`"operation": "enqueue"`，2026-09-28 取证）。平台行为（iOS 后台宽限为数十秒量级、挂起与杀死可能无回调、网络切换导致 TCP 半开）为移动端工程常识，按量级表述未引具体数字。快照+尾部增量与游标机制的工程细节引自基01 的核查（kimi-code `1e553fc`）。*
+- *一手取证：FlowDown `b2cecfd6`（`ConversationManager.swift` 的 `temporaryEditorObjects` 防抖持久化、`ConversationSessionManager.swift` 的 `countIncomingTokens`/Live Activity、`Pipeline/` 的流式与结算路径）。*
+- *Claude Code 本机会话 JSONL（`type: "queue-operation"`/`"operation": "enqueue"`，2026-09-28 取证）。*
+- *平台行为（iOS 后台宽限为数十秒量级、挂起与杀死可能无回调、网络切换导致 TCP 半开）为移动端工程常识，按量级表述未引具体数字。*
+- *快照+尾部增量与游标机制的工程细节引自基01 的核查（kimi-code `1e553fc`）。*

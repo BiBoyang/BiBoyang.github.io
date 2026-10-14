@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-a258432d.js";
+            window.path_to_searchindex_js = "searchindex-14ff11d1.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-63496813.js"></script>
@@ -222,7 +222,12 @@
 <p>流畅和完整这对冤家也是这么和解的：完整性靠事实外置（搬到磁盘和服务端），流畅性靠降级自由（画面可以随时扔，因为事实扔不掉）。下一篇（二·下）把这六个站点背后的架构账单一次摊开：被操作系统禁止的长连接、只肯当信号用的推送通道、替 agent 跑工具的服务端工作区，以及那句话作为第一原则的完整含义：agent loop 不能拥有 socket。</p>
 <hr>
 <h2 id="参考与延伸"><a class="header" href="#参考与延伸">参考与延伸</a></h2>
-<p><em>一手取证：FlowDown <code>b2cecfd6</code>（<code>ConversationManager.swift</code> 的 <code>temporaryEditorObjects</code> 防抖持久化、<code>ConversationSessionManager.swift</code> 的 <code>countIncomingTokens</code>/Live Activity、<code>Pipeline/</code> 的流式与结算路径）；Claude Code 本机会话 JSONL（<code>type: "queue-operation"</code>/<code>"operation": "enqueue"</code>，2026-09-28 取证）。平台行为（iOS 后台宽限为数十秒量级、挂起与杀死可能无回调、网络切换导致 TCP 半开）为移动端工程常识，按量级表述未引具体数字。快照+尾部增量与游标机制的工程细节引自基01 的核查（kimi-code <code>1e553fc</code>）。</em></p>
+<ul>
+<li><em>一手取证：FlowDown <code>b2cecfd6</code>（<code>ConversationManager.swift</code> 的 <code>temporaryEditorObjects</code> 防抖持久化、<code>ConversationSessionManager.swift</code> 的 <code>countIncomingTokens</code>/Live Activity、<code>Pipeline/</code> 的流式与结算路径）。</em></li>
+<li><em>Claude Code 本机会话 JSONL（<code>type: "queue-operation"</code>/<code>"operation": "enqueue"</code>，2026-09-28 取证）。</em></li>
+<li><em>平台行为（iOS 后台宽限为数十秒量级、挂起与杀死可能无回调、网络切换导致 TCP 半开）为移动端工程常识，按量级表述未引具体数字。</em></li>
+<li><em>快照+尾部增量与游标机制的工程细节引自基01 的核查（kimi-code <code>1e553fc</code>）。</em></li>
+</ul>
 
                     </main>
 

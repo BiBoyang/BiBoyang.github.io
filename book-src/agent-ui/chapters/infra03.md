@@ -66,4 +66,8 @@ AG-UI（CopilotKit 出品）管 agent 和浏览器前端的对话：SSE 传输�
 
 ## 参考与延伸
 
-*核查分层（截至 2026-09-28）：ACP Registry 名单与接入方式基于 Zed 官方博客与文档、JetBrains 官方博客（2026-01）及 agentclientprotocol.com 目录，多源交叉；AG-UI 事件分组基于 CopilotKit 官方资料与第三方教程（事件计数 16–17 存在版本差异，按量级表述）；MCP 无状态化修订引自基01 轮核查的官方 changelog；kimi-code 一手（`1e553fc`：`packages/acp-adapter`、`@agentclientprotocol/sdk@0.23.0`、测试文件名）；zacp 为系列既有引用（helloxz/zacp）。*
+- *核查分层（截至 2026-09-28）：ACP Registry 名单与接入方式基于 Zed 官方博客与文档、JetBrains 官方博客（2026-01）及 agentclientprotocol.com 目录，多源交叉。*
+- *AG-UI 事件分组基于 CopilotKit 官方资料与第三方教程（事件计数 16–17 存在版本差异，按量级表述）。*
+- *MCP 无状态化修订引自基01 轮核查的官方 changelog。*
+- *kimi-code 一手（`1e553fc`：`packages/acp-adapter`、`@agentclientprotocol/sdk@0.23.0`、测试文件名）。*
+- *zacp 为系列既有引用（helloxz/zacp）。*

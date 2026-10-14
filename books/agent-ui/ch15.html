@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-a258432d.js";
+            window.path_to_searchindex_js = "searchindex-14ff11d1.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-63496813.js"></script>
@@ -263,7 +263,11 @@
 <p>这也是本系列正文在这个系列里的终点站：界面的账本记完了，下一程换轨：事件流离开本地之后的命运：断线、重连、多服务器，以及一条 SSE 中断之后，谁还记得它讲到哪了。</p>
 <hr>
 <h2 id="参考与延伸"><a class="header" href="#参考与延伸">参考与延伸</a></h2>
-<p><em>本文基于 <a href="https://github.com/Lakr233/FlowDown">FlowDown</a> 本地源码副本的实际阅读（commit <code>b2cecfd6</code>，2026-05-15）：<code>Frameworks/Storage/Package.swift</code>（WCDB 与 MarkdownParser 依赖）、<code>FlowDown/Backend/Conversation/Pipeline/ConversationSession.swift</code>（save/update/discard）、<code>Pipeline/Execute/ConversationSession+ExecuteOnce.swift</code>（流式修补序列）、<code>Pipeline/ConversationSessionManager.swift</code>（countIncomingTokens 与 Live Activity）、<code>FlowDown/Interface/MessageListView/MessageListView.swift</code>（ListViewKit 接线）。数据模型部分参照作者本人的既有分析笔记《FlowDown 对话上下文保存机制分析》并与源码核对。流式热路径“每 chunk 不写库“的表述基于调用链阅读，未做逐帧取证，以此口径为准。</em></p>
+<ul>
+<li><em>本文基于 <a href="https://github.com/Lakr233/FlowDown">FlowDown</a> 本地源码副本的实际阅读（commit <code>b2cecfd6</code>，2026-05-15）：<code>Frameworks/Storage/Package.swift</code>（WCDB 与 MarkdownParser 依赖）、<code>FlowDown/Backend/Conversation/Pipeline/ConversationSession.swift</code>（save/update/discard）、<code>Pipeline/Execute/ConversationSession+ExecuteOnce.swift</code>（流式修补序列）、<code>Pipeline/ConversationSessionManager.swift</code>（countIncomingTokens 与 Live Activity）、<code>FlowDown/Interface/MessageListView/MessageListView.swift</code>（ListViewKit 接线）。</em></li>
+<li><em>数据模型部分参照作者本人的既有分析笔记《FlowDown 对话上下文保存机制分析》并与源码核对。</em></li>
+<li><em>流式热路径“每 chunk 不写库“的表述基于调用链阅读，未做逐帧取证，以此口径为准。</em></li>
+</ul>
 
                     </main>
 

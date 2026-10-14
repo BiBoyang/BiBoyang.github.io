@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-a258432d.js";
+            window.path_to_searchindex_js = "searchindex-14ff11d1.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-63496813.js"></script>
@@ -224,7 +224,12 @@
 <p>如果你觉得这篇内容讲得东西已经很黑暗了，那么你先别感叹，下一篇继续往下进入更加黑暗的地方：这一篇的所有机制都假设键盘事件流是可靠的——按键是什么、粘贴有没有标记、模式开没开。然而一旦真的做过就会发现一个事实——假设在真实终端世界里有多脆弱，我们将要面对的是输入侧真正的黑暗。</p>
 <hr>
 <h2 id="参考与延伸"><a class="header" href="#参考与延伸">参考与延伸</a></h2>
-<p><em>本文基于 2026-10-01 对以下源码的实际阅读：<a href="https://github.com/openai/codex">Codex</a> 本地快照 main <code>6b9826e3</code>（2026-09-09）：<code>codex-rs/tui/src/bottom_pane/chat_composer.rs</code>（弹窗优先级链、<code>InputResult</code>）、<code>bottom_pane/paste_burst.rs</code>、<code>clipboard_paste.rs</code>、<code>external_editor.rs</code>、<code>keymap.rs</code>、<code>chatwidget/slash_dispatch.rs</code>；<a href="https://github.com/MoonshotAI/kimi-code">kimi-code</a> 本地源码 <code>54117a6b</code>（2026-09-24）：<code>packages/pi-tui/src/editor-component.ts</code>、<code>keybindings.ts</code>、<code>paste-burst.ts</code>；Claude Code 发布产物中的源码（2026-03-31 经 npm source map 外泄的公开快照）：<code>src/components/PromptInput/inputPaste.ts</code>、<code>src/hooks/useTextInput.ts</code>。对照部分基于 <a href="https://github.com/BiBoyang/ForgeLoopTUI">ForgeLoopTUI</a> v1.2.1 源码（<code>Input/InputPipeline.swift</code>、<code>Input/KeyParser.swift</code>）。</em></p>
+<ul>
+<li><em>本文基于 2026-10-01 对以下源码的实际阅读：<a href="https://github.com/openai/codex">Codex</a> 本地快照 main <code>6b9826e3</code>（2026-09-09）：<code>codex-rs/tui/src/bottom_pane/chat_composer.rs</code>（弹窗优先级链、<code>InputResult</code>）、<code>bottom_pane/paste_burst.rs</code>、<code>clipboard_paste.rs</code>、<code>external_editor.rs</code>、<code>keymap.rs</code>、<code>chatwidget/slash_dispatch.rs</code>。</em></li>
+<li><em><a href="https://github.com/MoonshotAI/kimi-code">kimi-code</a> 本地源码 <code>54117a6b</code>（2026-09-24）：<code>packages/pi-tui/src/editor-component.ts</code>、<code>keybindings.ts</code>、<code>paste-burst.ts</code>。</em></li>
+<li><em>Claude Code 发布产物中的源码（2026-03-31 经 npm source map 外泄的公开快照）：<code>src/components/PromptInput/inputPaste.ts</code>、<code>src/hooks/useTextInput.ts</code>。</em></li>
+<li><em>对照部分基于 <a href="https://github.com/BiBoyang/ForgeLoopTUI">ForgeLoopTUI</a> v1.2.1 源码（<code>Input/InputPipeline.swift</code>、<code>Input/KeyParser.swift</code>）。</em></li>
+</ul>
 
                     </main>
 

@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-a258432d.js";
+            window.path_to_searchindex_js = "searchindex-14ff11d1.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-63496813.js"></script>
@@ -438,7 +438,10 @@ while settleCount &lt; maxSettle, remaining &gt; budget {
 <p>下一篇讲 Markdown 在 TUI 上的流式渲染——降级映射、Stable Prefix Cache、表格 retreat 机制，以及为什么“流式期间要不要渲染 Markdown“是一个真正的工程难题。</p>
 <hr>
 <h2 id="参考与延伸"><a class="header" href="#参考与延伸">参考与延伸</a></h2>
-<p><em>本文所有技术细节基于 <a href="https://github.com/BiBoyang/ForgeLoopTUI">ForgeLoopTUI</a> v1.2.0 的实际源码。Agent TUI 的另一条实现路径可参考 <a href="https://github.tiankonguse.com/blog/2026/05/19/agent-tui.html">tiankonguse 的 Bubble Tea + Lipgloss 方案</a>。两条路线的差别值得说透：组合框架（Bubble Tea + Lipgloss）给你 widget 树和声明式布局，渲染细节由框架代劳；手写 ANSI 状态机则要自己做物理行计算、增量 diff、合帧调度——也就是本篇从头到尾展示的这套东西。前者上手快，但上限由框架定义；后者代码量上去了，换来对每一帧每一个 ANSI 字节的精确控制。两条路线的深度差一个数量级。</em></p>
+<ul>
+<li><em>本文所有技术细节基于 <a href="https://github.com/BiBoyang/ForgeLoopTUI">ForgeLoopTUI</a> v1.2.0 的实际源码。</em></li>
+<li><em>Agent TUI 的另一条实现路径可参考 <a href="https://github.tiankonguse.com/blog/2026/05/19/agent-tui.html">tiankonguse 的 Bubble Tea + Lipgloss 方案</a>。两条路线的差别值得说透：组合框架（Bubble Tea + Lipgloss）给你 widget 树和声明式布局，渲染细节由框架代劳；手写 ANSI 状态机则要自己做物理行计算、增量 diff、合帧调度——也就是本篇从头到尾展示的这套东西。前者上手快，但上限由框架定义；后者代码量上去了，换来对每一帧每一个 ANSI 字节的精确控制。两条路线的深度差一个数量级。</em></li>
+</ul>
 
                     </main>
 

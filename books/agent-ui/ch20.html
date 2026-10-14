@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-a258432d.js";
+            window.path_to_searchindex_js = "searchindex-14ff11d1.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-63496813.js"></script>
@@ -209,7 +209,13 @@
 <p>而比边界更深的那个问题，三部曲也只能触到边：模型说“做完了“，勾选框打了勾，回滚也用不上——<strong>声明不等于证据</strong>。计划可以被批准，操作可以被允许，错误可以被回滚，唯独“完成“本身还没有被验证。这是系列后面“回放与验收“要拆的最后一道缝：让“做完了“三个字带上证据。</p>
 <hr>
 <h2 id="参考与延伸"><a class="header" href="#参考与延伸">参考与延伸</a></h2>
-<p><em>核查分层（截至 2026-09-28）：Claude Code checkpointing 基于官方文档（追踪 Write/Edit/NotebookEdit、三向回滚菜单、每 prompt 一快照、最近 100 个）与第三方实测（30 天上限、跳过子 agent 编辑与软链、bash 删除不可恢复、“surgical recovery tool“的定位建议）交叉；kwwk 为本地一手（<code>ae0771d</code>：<code>SessionStore.swift</code> 的 <code>.rewind</code> 操作类型、<code>AgentLoop.swift</code> 的 <code>.streamRewind</code> 事件）；风险补偿为 HCI 常识性论述。“三向回滚菜单“的第三项（code-only）以官方文档为准。Cursor 的 checkpoint 机制未核实，不引用。</em></p>
+<ul>
+<li><em>核查分层（截至 2026-09-28）：Claude Code checkpointing 基于官方文档（追踪 Write/Edit/NotebookEdit、三向回滚菜单、每 prompt 一快照、最近 100 个）与第三方实测（30 天上限、跳过子 agent 编辑与软链、bash 删除不可恢复、“surgical recovery tool“的定位建议）交叉。</em></li>
+<li><em>kwwk 为本地一手（<code>ae0771d</code>：<code>SessionStore.swift</code> 的 <code>.rewind</code> 操作类型、<code>AgentLoop.swift</code> 的 <code>.streamRewind</code> 事件）。</em></li>
+<li><em>风险补偿为 HCI 常识性论述。</em></li>
+<li><em>“三向回滚菜单“的第三项（code-only）以官方文档为准。</em></li>
+<li><em>Cursor 的 checkpoint 机制未核实，不引用。</em></li>
+</ul>
 
                     </main>
 

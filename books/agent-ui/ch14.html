@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-a258432d.js";
+            window.path_to_searchindex_js = "searchindex-14ff11d1.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-63496813.js"></script>
@@ -250,7 +250,10 @@
 <p>下一篇（第 19 篇）把这套账本带出终端：GUI 和移动端没有 scrollback 这回事，没有免费的历史基础设施，每一行从诞生起就必须有人管。FlowDown 是那边的样本。</p>
 <hr>
 <h2 id="参考与延伸"><a class="header" href="#参考与延伸">参考与延伸</a></h2>
-<p><em>本文基于 <a href="https://github.com/BiBoyang/ForgeLoopTUI">ForgeLoopTUI</a> 本地仓库的实际阅读：HEAD <code>f99367b</code>（2026-09-01），覆盖 2026-08-28 至 09-01 的 61 个提交；关键证据为 <code>Examples/MinimalAIApp/Sources/MinimalAIApp/main.swift</code>（render() 的预览切片与三步结算）、<code>Sources/ForgeLoopTUI/Transcript/StreamingTranscriptAppendState.swift</code>、<code>Tests/ForgeLoopTUITests/Runtime/CommittedPreviewAnchorTests.swift</code>（ScrollbackTerminal 预言机与 S1–S6）、<code>Sources/ForgeLoopTUI/Runtime/TUIRuntime.swift</code>（TASK-37 的 unretainedAppendedRows 与底窗回退）、<code>Sources/ForgeLoopTUI/Runtime/RenderLoop.swift</code>（2026-05-07 引入的 16ms 调度器）。性能类实测数据（帧字节数、resize 耗用对比）尚未采集，本篇以行为学证据（oracle 断言）替代，数据缺口留待补记。</em></p>
+<ul>
+<li><em>本文基于 <a href="https://github.com/BiBoyang/ForgeLoopTUI">ForgeLoopTUI</a> 本地仓库的实际阅读：HEAD <code>f99367b</code>（2026-09-01），覆盖 2026-08-28 至 09-01 的 61 个提交；关键证据为 <code>Examples/MinimalAIApp/Sources/MinimalAIApp/main.swift</code>（render() 的预览切片与三步结算）、<code>Sources/ForgeLoopTUI/Transcript/StreamingTranscriptAppendState.swift</code>、<code>Tests/ForgeLoopTUITests/Runtime/CommittedPreviewAnchorTests.swift</code>（ScrollbackTerminal 预言机与 S1–S6）、<code>Sources/ForgeLoopTUI/Runtime/TUIRuntime.swift</code>（TASK-37 的 unretainedAppendedRows 与底窗回退）、<code>Sources/ForgeLoopTUI/Runtime/RenderLoop.swift</code>（2026-05-07 引入的 16ms 调度器）。</em></li>
+<li><em>性能类实测数据（帧字节数、resize 耗用对比）尚未采集，本篇以行为学证据（oracle 断言）替代，数据缺口留待补记。</em></li>
+</ul>
 
                     </main>
 

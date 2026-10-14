@@ -99,4 +99,9 @@ Claude Code 把每个会话写成本地文件：`~/.claude/projects/<工作目�
 
 ## 参考与延伸
 
-*事实核查分层（截至 2026-09-28）：MCP 部分引自官方 changelog（[modelcontextprotocol.io/specification/2026-07-28/changelog](https://modelcontextprotocol.io/specification/2026-07-28/changelog)，"Remove SSE stream resumability and message redelivery…"为原文引用）及多家第三方解读交叉；Vercel 部分基于 AI SDK 官方文档（Chatbot Resume Streams，`resumable-stream` + Redis）与第三方边界测评；Cloudflare 部分基于官方 Agents 文档（Agent class internals：DO 单写者、WebSocket 休眠）与仓库 issue #1837；kimi-code 部分为本地一手阅读（`1e553fc`：`packages/transcript/AGENTS.md` 的 op-batch sequencing contract、`packages/kap-server/AGENTS.md` 的 journal/`transcript_since`/冷重建描述）；Claude Code 会话文件为本机取证（2026-09-28，类型分布为单样本）。SSE 协议行为（id/Last-Event-ID/EventSource 限制）为标准协议常识。*
+- *事实核查分层（截至 2026-09-28）：MCP 部分引自官方 changelog（[modelcontextprotocol.io/specification/2026-07-28/changelog](https://modelcontextprotocol.io/specification/2026-07-28/changelog)，"Remove SSE stream resumability and message redelivery…"为原文引用）及多家第三方解读交叉。*
+- *Vercel 部分基于 AI SDK 官方文档（Chatbot Resume Streams，`resumable-stream` + Redis）与第三方边界测评。*
+- *Cloudflare 部分基于官方 Agents 文档（Agent class internals：DO 单写者、WebSocket 休眠）与仓库 issue #1837。*
+- *kimi-code 部分为本地一手阅读（`1e553fc`：`packages/transcript/AGENTS.md` 的 op-batch sequencing contract、`packages/kap-server/AGENTS.md` 的 journal/`transcript_since`/冷重建描述）。*
+- *Claude Code 会话文件为本机取证（2026-09-28，类型分布为单样本）。*
+- *SSE 协议行为（id/Last-Event-ID/EventSource 限制）为标准协议常识。*

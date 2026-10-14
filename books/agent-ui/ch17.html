@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-a258432d.js";
+            window.path_to_searchindex_js = "searchindex-14ff11d1.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-63496813.js"></script>
@@ -230,7 +230,12 @@
 <p>下一篇换轨。事件流离开本机：断线、重连、多服务器，以及那条中断的 SSE 流，谁还记得它讲到哪了。基建系列，从“账本“开始。</p>
 <hr>
 <h2 id="参考与延伸"><a class="header" href="#参考与延伸">参考与延伸</a></h2>
-<p><em>Claude Code 部分基于泄露源码的多家交叉分析（知乎“Claude Code 代码分析“系列、GitHub 上下文压缩深度解析、腾讯云分析报告；熔断注释数字“1,279 会话/50+ 次连续失败/日 25 万次调用“出自 CSDN 源码分析引注，二手转述）与公开 issue（“Auto compact does not trigger at 100% context”，2026-06）；33K/45K 缓冲与提前触发的量化来自 claudefa.st 与 hyperdev 的第三方分析。泄露源码分析中提及的 25K 附件重注入预算、Session Memory 快路径、effectiveWindow−13K 三个数字未能独立核实，本文不引用。本地一手取证：kwwk <code>ae0771d</code>（<code>Sources/KWWKAgent/AgentContextCompactor.swift</code>、<code>CompactionRecapRenderer.swift</code>、<code>CompactionFactsExtractor.swift</code>）、grok-build <code>9fabade</code>（<code>crates/codegen/xai-compaction-transcript/src/lib.rs</code>）、FlowDown <code>b2cecfd6</code>（<code>ConversationManager+Compress.swift</code>）。</em></p>
+<ul>
+<li><em>Claude Code 部分基于泄露源码的多家交叉分析（知乎“Claude Code 代码分析“系列、GitHub 上下文压缩深度解析、腾讯云分析报告；熔断注释数字“1,279 会话/50+ 次连续失败/日 25 万次调用“出自 CSDN 源码分析引注，二手转述）与公开 issue（“Auto compact does not trigger at 100% context”，2026-06）。</em></li>
+<li><em>33K/45K 缓冲与提前触发的量化来自 claudefa.st 与 hyperdev 的第三方分析。</em></li>
+<li><em>泄露源码分析中提及的 25K 附件重注入预算、Session Memory 快路径、effectiveWindow−13K 三个数字未能独立核实，本文不引用。</em></li>
+<li><em>本地一手取证：kwwk <code>ae0771d</code>（<code>Sources/KWWKAgent/AgentContextCompactor.swift</code>、<code>CompactionRecapRenderer.swift</code>、<code>CompactionFactsExtractor.swift</code>）、grok-build <code>9fabade</code>（<code>crates/codegen/xai-compaction-transcript/src/lib.rs</code>）、FlowDown <code>b2cecfd6</code>（<code>ConversationManager+Compress.swift</code>）。</em></li>
+</ul>
 
                     </main>
 

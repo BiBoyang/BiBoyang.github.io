@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-a258432d.js";
+            window.path_to_searchindex_js = "searchindex-14ff11d1.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-63496813.js"></script>
@@ -341,7 +341,10 @@ print(history);                  // 内存里的全部历史按新宽度重新�
 <p>下一篇（第 14 篇）把这个问题推进到工程细节：既然双模已成事实，那“同一引擎里两种所有权共存“到底怎么实现？Kimi Code 在四家里给出了接口最干净的一个样本，包括一个前无古人的设计：退出时把历史归还给终端。</p>
 <hr>
 <h2 id="参考与延伸"><a class="header" href="#参考与延伸">参考与延伸</a></h2>
-<p><em>本文基于 <a href="https://github.com/xai-org/grok-build">Grok Build</a>（commit <code>9fabade</code>，2026-08-16；<code>xai-ratatui-inline</code>、<code>xai-grok-pager</code>、<code>xai-grok-pager-minimal</code>）、<a href="https://github.com/openai/codex">Codex</a>（<code>codex-rs/tui/src/insert_history.rs</code>、<code>tests/suite/vt100_live_commit.rs</code>；<code>tui.alternate_screen</code> 的 Zellij 特判已于 2026-05-13 在 #22214 中移除，官方配置文档至今仍写旧行为，本文初稿按文档口径转述，2026-09-29 依本地源码（main <code>6b9826e3</code>，2026-09-09）补正，见第七节第 7 条）与 Claude Code 发布产物中的源码（<code>src/components/Messages.tsx</code> 的 <code>shouldRenderStatically</code>、<code>src/utils/staticRender.tsx</code>、<code>src/ink/</code> 内置 fork）的实际阅读。对照部分基于 <a href="https://github.com/BiBoyang/ForgeLoopTUI">ForgeLoopTUI</a> v1.2.0。</em></p>
+<ul>
+<li><em>本文基于 <a href="https://github.com/xai-org/grok-build">Grok Build</a>（commit <code>9fabade</code>，2026-08-16；<code>xai-ratatui-inline</code>、<code>xai-grok-pager</code>、<code>xai-grok-pager-minimal</code>）、<a href="https://github.com/openai/codex">Codex</a>（<code>codex-rs/tui/src/insert_history.rs</code>、<code>tests/suite/vt100_live_commit.rs</code>；<code>tui.alternate_screen</code> 的 Zellij 特判已于 2026-05-13 在 #22214 中移除，官方配置文档至今仍写旧行为，本文初稿按文档口径转述，2026-09-29 依本地源码（main <code>6b9826e3</code>，2026-09-09）补正，见第七节第 7 条）与 Claude Code 发布产物中的源码（<code>src/components/Messages.tsx</code> 的 <code>shouldRenderStatically</code>、<code>src/utils/staticRender.tsx</code>、<code>src/ink/</code> 内置 fork）的实际阅读。</em></li>
+<li><em>对照部分基于 <a href="https://github.com/BiBoyang/ForgeLoopTUI">ForgeLoopTUI</a> v1.2.0。</em></li>
+</ul>
 
                     </main>
 

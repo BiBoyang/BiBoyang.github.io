@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-a258432d.js";
+            window.path_to_searchindex_js = "searchindex-14ff11d1.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-63496813.js"></script>
@@ -280,7 +280,7 @@ block 不到 committed frontier 不发射，发射即归终端，从架构上保
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch12-return-scrollback.svg" alt="生前归自己，死后归终端：退出时把历史归还给终端"><span class="img-wrapper"><img src="assets/ch12-return-scrollback.svg" alt="生前归自己，死后归终端：退出时把历史归还给终端"></span></label></p>
 <hr>
 <h2 id="四这个案例对本系列意味着什么"><a class="header" href="#四这个案例对本系列意味着什么">四、这个案例对本系列意味着什么</a></h2>
-<p><strong>1. 第 13 篇的分界线被复用了，但没有被推翻。</strong>
+<p><strong>1. 上一篇的分界线被复用了，但没有被推翻。</strong>
 那条分界是真实的结构，真实到四家的开关都压在同一条线上，而 Kimi Code 是在同一个接口后面把两边都实现得最完整的一个。默认主屏（inline 派）说明：对一个要集成进用户日常终端的 CLI，“历史归终端“仍是默认正确答案；实验性全屏说明：会话内体验（滚动、搜索、选择、resize）的诉求强到值得再养一套引擎。</p>
 <p><strong>2. inline 派内部要分两档。</strong>
 第 13 篇把 inline 派写成一种做法（发射即定型），Kimi 主屏的差分变种给出了第二种：全量渲染 + 增量落盘 + 越界检测 + 核平兜底。两档的不变式相同（scrollback 不可触碰），但维持不变式的方式一个是数据层纪律、一个是渲染层检查。这个区分应该补进第 13 篇的框架里。</p>
@@ -295,7 +295,10 @@ block 不到 committed frontier 不发射，发射即归终端，从架构上保
 <p>所有权模型因而从一道单选题变成了一份调度表：什么东西、在什么阶段、归谁管，每个问题都可以单独回答。介质还是那个只进不退的电传打字机，但和地基的关系，比上一篇设想的还要再自由一点。</p>
 <hr>
 <h2 id="参考与延伸"><a class="header" href="#参考与延伸">参考与延伸</a></h2>
-<p><em>本文基于 <a href="https://github.com/MoonshotAI/kimi-code">Kimi Code</a> 源码的实际阅读：<code>packages/pi-tui/src/tui-main-screen.ts</code>（主屏差分渲染器）、<code>packages/pi-tui/src/tui-alt-screen.ts</code>（全屏渲染器）、<code>apps/kimi-code/src/tui/tui-state.ts</code>（模式选择）、<code>packages/pi-tui/AGENTS.md</code> 与两处 CHANGELOG（fork 分歧与事故史）。行文时 Kimi Code 版本为 commit <code>1e553fc</code>（2026-08-18）。ForgeLoopTUI 的退出行为核对基于其 v1.2.0 源码：主屏渲染，无 alt screen，无退出时清屏/归还逻辑。</em></p>
+<ul>
+<li><em>本文基于 <a href="https://github.com/MoonshotAI/kimi-code">Kimi Code</a> 源码的实际阅读：<code>packages/pi-tui/src/tui-main-screen.ts</code>（主屏差分渲染器）、<code>packages/pi-tui/src/tui-alt-screen.ts</code>（全屏渲染器）、<code>apps/kimi-code/src/tui/tui-state.ts</code>（模式选择）、<code>packages/pi-tui/AGENTS.md</code> 与两处 CHANGELOG（fork 分歧与事故史）。行文时 Kimi Code 版本为 commit <code>1e553fc</code>（2026-08-18）。</em></li>
+<li><em>ForgeLoopTUI 的退出行为核对基于其 v1.2.0 源码：主屏渲染，无 alt screen，无退出时清屏/归还逻辑。</em></li>
+</ul>
 
                     </main>
 
