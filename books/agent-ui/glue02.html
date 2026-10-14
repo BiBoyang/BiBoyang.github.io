@@ -35,10 +35,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-4135f8a6.js";
+            window.path_to_searchindex_js = "searchindex-77f28781.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-369bb13c.js"></script>
+        <script src="toc-0fc35937.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -191,7 +191,7 @@
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/glue02-promise-assertion.svg" alt="承诺—条款—断言：左列界面承诺，中列协议条款，右列每日断言；静默降级那条的断言格是空的，标注“承诺第一次被检验发生在生产“"><span class="img-wrapper"><img src="assets/glue02-promise-assertion.svg" alt="承诺—条款—断言：左列界面承诺，中列协议条款，右列每日断言；静默降级那条的断言格是空的，标注“承诺第一次被检验发生在生产“"></span></label></p>
 <p>第一层是<strong>承诺</strong>，用户信的那句话：“我看到的线程列表是完整的。“第二层是<strong>条款</strong>，协议里决定承诺真假的机制——state_db 归谁、降级走哪条分支，上一篇挖的就是这一层。第三层是<strong>断言</strong>，承诺的证人：一条每天运行、红了会被人看见的检查。上一篇走完了从承诺到条款的挖掘，这一篇走最后一步——<strong>每条条款必须对应一条每天出庭的断言，否则承诺只是愿望。</strong></p>
 <p>注意证人的定义。debug 日志不是证人：它只在有人翻卷宗时才开口，而翻卷宗永远发生在事故之后。文档也不是证人：它记录的是意图，不是现状。证人只有一个特征——<strong>每天出庭，且缺席会被发现</strong>。在工程世界里，满足这个定义的东西只有一种：跑在 CI 里、红了会拦下发布的测试。断言缺席的承诺不是被守住的，是没被检验的；它的第一次检验发生在生产，或者某个读源码的下午。</p>
-<p>这条路和全书走过的两段路是同一条。界面部分第 16 篇把渲染变成可断言的：ANSI 序列不再是“看起来对就行“，而是可以逐字节比对的快照。评测卷开篇把行为变成可断言的：没报错只是开始，绿灯会问两种谎。这一篇把那道缝变成可断言的——评测卷那条统一定律在这里有它最具体的形态：**daemon 世界和 embedded 世界产出同一个“一切正常“，你的观测对它们的差异就是盲的。**后面的每一节，都是给这类“两个世界、一个绿灯“的格子配一名证人。</p>
+<p>这条路和全书走过的两段路是同一条。界面部分第 16 篇把渲染变成可断言的：ANSI 序列不再是“看起来对就行“，而是可以逐字节比对的快照。评测卷卷首语把行为变成可断言的：没报错只是开始，绿灯会问两种谎。这一篇把那道缝变成可断言的——评测卷那条统一定律在这里有它最具体的形态：**daemon 世界和 embedded 世界产出同一个“一切正常“，你的观测对它们的差异就是盲的。**后面的每一节，都是给这类“两个世界、一个绿灯“的格子配一名证人。</p>
 <h2 id="二降级必须有人看见"><a class="header" href="#二降级必须有人看见">二、降级必须有人看见</a></h2>
 <p>把所有可以配的证人排一排，密度最高、造价最低的那一组，在降级路径上。所以本章不客气，主战场直接摆在这里。</p>
 <p>先把承诺的正面写出来：**拓扑变了，你会知道。**这句话有三层含义，对应三种切换。连接形态的切换——你连的是 daemon 还是内嵌引擎；存储归属的切换——你的历史落在哪个 state_db 里；安全等级的切换——审批通道、沙箱边界有没有随拓扑一起变。三种切换有一个共同义务：至少留下信息级的可见性，一行状态、一个脚注、一条警告，形式不拘，但不能停在 debug 日志里。</p>
@@ -254,7 +254,7 @@
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="prologue.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="infra01.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -268,7 +268,7 @@
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="prologue.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="infra01.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>

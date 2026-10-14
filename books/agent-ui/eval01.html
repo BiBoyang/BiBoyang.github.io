@@ -35,10 +35,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-4135f8a6.js";
+            window.path_to_searchindex_js = "searchindex-77f28781.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-369bb13c.js"></script>
+        <script src="toc-0fc35937.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -189,7 +189,7 @@
 </ul>
 <h2 id="一已经回答的那一半"><a class="header" href="#一已经回答的那一半">一、已经回答的那一半</a></h2>
 <p>先把已经到手的半个答案数清楚。</p>
-<p>基建卷 prologue 把「看起来完整」拆穿了一次：流式回答被截断，渲染出来毫无破绽——没报错，不代表没问题。那一篇的结论是判定必须下沉到协议层，complete 只能是排除出来的兜底，不能是默认值。界面部分第 16 篇再进一步，把渲染层的输出整个变成了可断言的：字节断言钉契约、快照钉形态、等价性钉不变量、守护测试钉纪律。到那一篇为止，「agent 说的话显示得对不对」这个问题，从字节到纪律每一层都有了断言形态。</p>
+<p>本卷卷首《没报错，就代表输出没问题吗》（prologue）把「看起来完整」拆穿了一次：流式回答被截断，渲染出来毫无破绽——没报错，不代表没问题。那一篇的结论是判定必须下沉到协议层，complete 只能是排除出来的兜底，不能是默认值。界面部分第 16 篇再进一步，把渲染层的输出整个变成了可断言的：字节断言钉契约、快照钉形态、等价性钉不变量、守护测试钉纪律。到那一篇为止，「agent 说的话显示得对不对」这个问题，从字节到纪律每一层都有了断言形态。</p>
 <p>但注意这两篇共同的幸运之处：<strong>被测对象是确定的。</strong> 渲染引擎喂同一段字节，产出必须逐字节相同；不等就是 bug，断言就地正法。prologue 的完整性状态机也一样——字节到没到、到全没有，是有标准答案的。这个幸运到行为层为止。agent 的「输出」不是一段文本，是一连串动作：改了哪些文件、调了哪些工具、为什么这个顺序、中间信了哪条记忆。同一道题喂两遍，动作序列可以完全不同，而<strong>两次都对</strong>。界面的半边有 oracle，行为的半边没有。</p>
 <p>prologue 结尾立过一面旗：流行的评测框架把指标分成结果、过程、效率、风险四层，而「答案被截断却看起来完整」这种故障哪一层都放不进去——它不改变 agent 的行为，只改变你看到的是不是真的。四层评的是能力，它考问的是评测的地基。这一卷，就是来接这面旗的。</p>
 <h2 id="二行为层难在三件事"><a class="header" href="#二行为层难在三件事">二、行为层难在三件事</a></h2>
@@ -226,14 +226,14 @@
 <ul>
 <li><em>本篇为评测卷卷首语（框架章），无对应博客篇；四问框架与六层划分浓缩自作者的私人评测全景笔记（未公开，仅作骨架来源，不作事实出处）。</em></li>
 <li><em>τ-bench 的 pass^k 口径见其论文原文（Sierra 团队的 Tool-Agent-User 交互基准）：以 k 次独立运行全部成功的概率度量可靠性，并以数据库终态做判定——「可靠性而非一次灵感」与「看终态」两条均与本卷互指。</em></li>
-<li><em>prologue 之问见基建卷 prologue；渲染层的四层断言翻译见界面部分第 16 篇，本章引用不重讲。</em></li>
+<li><em>prologue 之问见本卷卷首《没报错，就代表输出没问题吗》；渲染层的四层断言翻译见界面部分第 16 篇，本章引用不重讲。</em></li>
 </ul>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="infra03.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="prologue.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
@@ -247,7 +247,7 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="infra03.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="prologue.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 

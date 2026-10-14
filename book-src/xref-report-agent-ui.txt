@@ -1,6 +1,6 @@
-== agent-ui 互指审计 ==  目录条目 38（编号章 36 + 前置 2），部分：界面 / 胶水层 / 基建 / 评测
+== agent-ui 互指审计 ==  目录条目 37（编号章 34 + 前置 3），部分：界面 / 胶水层 / 基建 / 评测
 
-[A] 「第 N 篇」互指：260 条可解析，0 条可疑
+[A] 「第 N 篇」互指：308 条可解析，0 条可疑
   ch01.md:3  「第一篇」  OK → 界面 01 · 为什么 Agent 从 CLI/TUI 开始
   ch01.md:85  「第 4 篇」  OK → 界面 04 · Agent TUI：当事件树撞上线性终端
   ch02.md:9  「第 1 篇」  OK → 界面 01 · 为什么 Agent 从 CLI/TUI 开始
@@ -207,65 +207,113 @@
   infra03.md:37  「第 7 篇」  OK → 界面 07 · 中场：Event Sourcing，Agent UI 的底层模型
   infra03.md:53  「第 11 篇」  OK → 界面 11 · 多端 Agent 架构
   eval01.md:3  「界面部分第 16 篇」  OK → 界面 16 · 把 ANSI 变成可断言的：TUI 回归测试
-  eval01.md:11  「评测第 8 篇」  OK → 评测 08 · 什么代价：质量与成本的联合裁决
-  eval08.md:3  「评测第 1 篇」  OK → 评测 01 · 没报错只是开始：行为的可断言性
-  eval08.md:20  「评测第 6 篇」  OK → 评测 06 · 对照组的陷阱：归因靠对照不靠证据强度
-  eval08.md:26  「评测第 4 篇」  OK → 评测 04 · 炸弹：把故障注入沉到内容完整性
-  eval08.md:56  「评测第 10 篇」  OK → 评测 10 · 记忆怎么测：从「被注入」到「被采信」
-  eval08.md:66  「评测第 9 篇」  OK → 评测 09 · 配对实验手册：让同一道题回答两次
-  eval08.md:73  「评测第 6 篇」  OK → 评测 06 · 对照组的陷阱：归因靠对照不靠证据强度
-  eval08.md:87  「评测第 7 篇」  OK → 评测 07 · 裁判也要被校准
-  eval08.md:91  「评测第 1 篇」  OK → 评测 01 · 没报错只是开始：行为的可断言性
-  eval08.md:91  「评测第 2–5 篇」  OK → 评测 02 · 考题从哪来：为真实失败而建
-  eval08.md:91  「评测第 2–5 篇」  OK → 评测 03 · 绿灯的两种谎言：实验真的发生过吗
-  eval08.md:91  「评测第 2–5 篇」  OK → 评测 04 · 炸弹：把故障注入沉到内容完整性
-  eval08.md:91  「评测第 2–5 篇」  OK → 评测 05 · 检出率是个乘法
-  eval08.md:91  「评测第 3–5 篇」  OK → 评测 03 · 绿灯的两种谎言：实验真的发生过吗
-  eval08.md:91  「评测第 3–5 篇」  OK → 评测 04 · 炸弹：把故障注入沉到内容完整性
-  eval08.md:91  「评测第 3–5 篇」  OK → 评测 05 · 检出率是个乘法
-  eval08.md:91  「评测第 6、9 篇」  OK → 评测 06 · 对照组的陷阱：归因靠对照不靠证据强度
-  eval08.md:91  「评测第 6、9 篇」  OK → 评测 09 · 配对实验手册：让同一道题回答两次
-  eval09.md:3  「评测第 6 篇」  OK → 评测 06 · 对照组的陷阱：归因靠对照不靠证据强度
-  eval09.md:21  「评测第 7 篇」  OK → 评测 07 · 裁判也要被校准
-  eval09.md:29  「评测第 7 篇」  OK → 评测 07 · 裁判也要被校准
-  eval09.md:61  「评测第 7 篇」  OK → 评测 07 · 裁判也要被校准
-  eval09.md:69  「评测第 8 篇」  OK → 评测 08 · 什么代价：质量与成本的联合裁决
-  eval09.md:90  「评测第 3 篇」  OK → 评测 03 · 绿灯的两种谎言：实验真的发生过吗
-  eval09.md:108  「评测第 5 篇」  OK → 评测 05 · 检出率是个乘法
-  eval09.md:118  「评测第 2 篇」  OK → 评测 02 · 考题从哪来：为真实失败而建
-  eval09.md:124  「评测第 7 篇」  OK → 评测 07 · 裁判也要被校准
-  eval09.md:164  「评测第 8 篇」  OK → 评测 08 · 什么代价：质量与成本的联合裁决
-  eval10.md:14  「评测第 8 篇」  OK → 评测 08 · 什么代价：质量与成本的联合裁决
-  eval10.md:20  「评测第 5 篇」  OK → 评测 05 · 检出率是个乘法
-  eval10.md:39  「评测第 7 篇」  OK → 评测 07 · 裁判也要被校准
-  eval10.md:56  「评测第 2 篇」  OK → 评测 02 · 考题从哪来：为真实失败而建
-  eval10.md:66  「评测第 3 篇」  OK → 评测 03 · 绿灯的两种谎言：实验真的发生过吗
-  eval10.md:68  「评测第 8 篇」  OK → 评测 08 · 什么代价：质量与成本的联合裁决
-  eval10.md:78  「评测第 2 篇」  OK → 评测 02 · 考题从哪来：为真实失败而建
-  eval10.md:86  「评测第 4 篇」  OK → 评测 04 · 炸弹：把故障注入沉到内容完整性
-  eval10.md:90  「评测第 9 篇」  OK → 评测 09 · 配对实验手册：让同一道题回答两次
-  eval10.md:92  「评测第 9 篇」  OK → 评测 09 · 配对实验手册：让同一道题回答两次
-  eval10.md:96  「评测第 9 篇」  OK → 评测 09 · 配对实验手册：让同一道题回答两次
-  eval11.md:3  「第 1 篇」  OK → 界面 01 · 为什么 Agent 从 CLI/TUI 开始
+  eval01.md:9  「第 8 篇」  OK → 界面 08 · 为什么 Agent GUI 这么难
+  eval01.md:15  「界面部分第 16 篇」  OK → 界面 16 · 把 ANSI 变成可断言的：TUI 回归测试
+  eval01.md:23  「第 11 篇」  OK → 界面 11 · 多端 Agent 架构
+  eval01.md:25  「第 6 篇」  OK → 界面 06 · 输入的地狱：终端能力探测与降级
+  eval01.md:29  「第 2 篇」  OK → 界面 02 · TUI 不是低配 GUI
+  eval01.md:29  「第 4 篇」  OK → 界面 04 · Agent TUI：当事件树撞上线性终端
+  eval01.md:29  「第 6 篇」  OK → 界面 06 · 输入的地狱：终端能力探测与降级
+  eval01.md:39  「第 3 篇」  OK → 界面 03 · Markdown 在 TUI 上的流式地狱
+  eval01.md:40  「第 4 篇」  OK → 界面 04 · Agent TUI：当事件树撞上线性终端
+  eval01.md:41  「第 6 篇」  OK → 界面 06 · 输入的地狱：终端能力探测与降级
+  eval01.md:42  「第 5 篇」  OK → 界面 05 · 输入框：agent TUI 最被低估的组件
+  eval01.md:51  「第 3 篇」  OK → 界面 03 · Markdown 在 TUI 上的流式地狱
+  eval01.md:51  「第 4 篇」  OK → 界面 04 · Agent TUI：当事件树撞上线性终端
+  eval01.md:51  「第 5 篇」  OK → 界面 05 · 输入框：agent TUI 最被低估的组件
+  eval01.md:52  「第 6 篇」  OK → 界面 06 · 输入的地狱：终端能力探测与降级
+  eval01.md:52  「第 9 篇」  OK → 界面 09 · GUI 上的 Markdown 流式渲染
+  eval01.md:53  「第 8 篇」  OK → 界面 08 · 为什么 Agent GUI 这么难
+  eval01.md:55  「第 11 篇」  OK → 界面 11 · 多端 Agent 架构
+  eval01.md:55  「第 10 篇」  OK → 界面 10 · 权限 UX 与 Diff UX
+  eval01.md:55  「第 11 篇」  OK → 界面 11 · 多端 Agent 架构
+  eval01.md:57  「第 2 篇」  OK → 界面 02 · TUI 不是低配 GUI
+  eval01.md:63  「第 11 篇」  OK → 界面 11 · 多端 Agent 架构
+  eval02.md:29  「第 3 篇」  OK → 界面 03 · Markdown 在 TUI 上的流式地狱
+  eval03.md:25  「第 2 篇」  OK → 界面 02 · TUI 不是低配 GUI
+  eval03.md:67  「第 4 篇」  OK → 界面 04 · Agent TUI：当事件树撞上线性终端
+  eval03.md:71  「第 9 篇」  OK → 界面 09 · GUI 上的 Markdown 流式渲染
+  eval03.md:73  「第 6 篇」  OK → 界面 06 · 输入的地狱：终端能力探测与降级
+  eval03.md:79  「第 2 篇」  OK → 界面 02 · TUI 不是低配 GUI
+  eval03.md:86  「第 9 篇」  OK → 界面 09 · GUI 上的 Markdown 流式渲染
+  eval04.md:13  「第 3 篇」  OK → 界面 03 · Markdown 在 TUI 上的流式地狱
+  eval04.md:60  「第 5 篇」  OK → 界面 05 · 输入框：agent TUI 最被低估的组件
+  eval04.md:70  「第 3 篇」  OK → 界面 03 · Markdown 在 TUI 上的流式地狱
+  eval04.md:76  「第 5 篇」  OK → 界面 05 · 输入框：agent TUI 最被低估的组件
+  eval04.md:80  「第 3 篇」  OK → 界面 03 · Markdown 在 TUI 上的流式地狱
+  eval05.md:13  「第 4 篇」  OK → 界面 04 · Agent TUI：当事件树撞上线性终端
+  eval05.md:15  「第 4 篇」  OK → 界面 04 · Agent TUI：当事件树撞上线性终端
+  eval05.md:17  「第 4 篇」  OK → 界面 04 · Agent TUI：当事件树撞上线性终端
+  eval05.md:29  「第 4 篇」  OK → 界面 04 · Agent TUI：当事件树撞上线性终端
+  eval05.md:33  「第 4 篇」  OK → 界面 04 · Agent TUI：当事件树撞上线性终端
+  eval05.md:60  「第 6 篇」  OK → 界面 06 · 输入的地狱：终端能力探测与降级
+  eval05.md:64  「第 4 篇」  OK → 界面 04 · Agent TUI：当事件树撞上线性终端
+  eval05.md:80  「第 4 篇」  OK → 界面 04 · Agent TUI：当事件树撞上线性终端
+  eval05.md:97  「第 11 篇」  OK → 界面 11 · 多端 Agent 架构
+  eval06.md:29  「第 3 篇」  OK → 界面 03 · Markdown 在 TUI 上的流式地狱
+  eval06.md:45  「第 2 篇」  OK → 界面 02 · TUI 不是低配 GUI
+  eval06.md:73  「第 2 篇」  OK → 界面 02 · TUI 不是低配 GUI
+  eval06.md:87  「第 3 篇」  OK → 界面 03 · Markdown 在 TUI 上的流式地狱
+  eval08.md:13  「第 4 篇」  OK → 界面 04 · Agent TUI：当事件树撞上线性终端
+  eval08.md:26  「第 6 篇」  OK → 界面 06 · 输入的地狱：终端能力探测与降级
+  eval08.md:42  「界面部分第 8 篇」  OK → 界面 08 · 为什么 Agent GUI 这么难
+  eval08.md:54  「第 3 篇」  OK → 界面 03 · Markdown 在 TUI 上的流式地狱
+  eval08.md:62  「第 10 篇」  OK → 界面 10 · 权限 UX 与 Diff UX
+  eval08.md:70  「第 9 篇」  OK → 界面 09 · GUI 上的 Markdown 流式渲染
+  eval08.md:72  「第 6 篇」  OK → 界面 06 · 输入的地狱：终端能力探测与降级
+  eval08.md:78  「第 9 篇」  OK → 界面 09 · GUI 上的 Markdown 流式渲染
+  eval08.md:82  「第 2–5 篇」  OK → 界面 02 · TUI 不是低配 GUI
+  eval08.md:82  「第 2–5 篇」  OK → 界面 03 · Markdown 在 TUI 上的流式地狱
+  eval08.md:82  「第 2–5 篇」  OK → 界面 04 · Agent TUI：当事件树撞上线性终端
+  eval08.md:82  「第 2–5 篇」  OK → 界面 05 · 输入框：agent TUI 最被低估的组件
+  eval08.md:82  「第 3–5 篇」  OK → 界面 03 · Markdown 在 TUI 上的流式地狱
+  eval08.md:82  「第 3–5 篇」  OK → 界面 04 · Agent TUI：当事件树撞上线性终端
+  eval08.md:82  「第 3–5 篇」  OK → 界面 05 · 输入框：agent TUI 最被低估的组件
+  eval08.md:82  「第 6、9 篇」  OK → 界面 06 · 输入的地狱：终端能力探测与降级
+  eval08.md:82  「第 6、9 篇」  OK → 界面 09 · GUI 上的 Markdown 流式渲染
+  eval09.md:3  「第 6 篇」  OK → 界面 06 · 输入的地狱：终端能力探测与降级
+  eval09.md:17  「第 2 篇」  OK → 界面 02 · TUI 不是低配 GUI
+  eval09.md:27  「第 3 篇」  OK → 界面 03 · Markdown 在 TUI 上的流式地狱
+  eval09.md:27  「第 10 篇」  OK → 界面 10 · 权限 UX 与 Diff UX
+  eval09.md:29  「第 4 篇」  OK → 界面 04 · Agent TUI：当事件树撞上线性终端
+  eval09.md:67  「第 3 篇」  OK → 界面 03 · Markdown 在 TUI 上的流式地狱
+  eval09.md:73  「第 8 篇」  OK → 界面 08 · 为什么 Agent GUI 这么难
+  eval09.md:87  「第 3 篇」  OK → 界面 03 · Markdown 在 TUI 上的流式地狱
+  eval09.md:105  「第 4、5 篇」  OK → 界面 04 · Agent TUI：当事件树撞上线性终端
+  eval09.md:105  「第 4、5 篇」  OK → 界面 05 · 输入框：agent TUI 最被低估的组件
+  eval09.md:115  「第 2 篇」  OK → 界面 02 · TUI 不是低配 GUI
+  eval09.md:119  「第 11 篇」  OK → 界面 11 · 多端 Agent 架构
+  eval09.md:159  「第 8 篇」  OK → 界面 08 · 为什么 Agent GUI 这么难
+  eval10.md:17  「第 8 篇」  OK → 界面 08 · 为什么 Agent GUI 这么难
+  eval10.md:23  「第 5 篇」  OK → 界面 05 · 输入框：agent TUI 最被低估的组件
+  eval10.md:42  「第 11 篇」  OK → 界面 11 · 多端 Agent 架构
+  eval10.md:60  「第 3 篇」  OK → 界面 03 · Markdown 在 TUI 上的流式地狱
+  eval10.md:62  「第 8 篇」  OK → 界面 08 · 为什么 Agent GUI 这么难
+  eval10.md:72  「第 2 篇」  OK → 界面 02 · TUI 不是低配 GUI
+  eval10.md:80  「第 4 篇」  OK → 界面 04 · Agent TUI：当事件树撞上线性终端
+  eval10.md:82  「第 9 篇」  OK → 界面 09 · GUI 上的 Markdown 流式渲染
+  eval10.md:88  「第 9 篇」  OK → 界面 09 · GUI 上的 Markdown 流式渲染
+  eval10.md:91  「第 8 篇」  OK → 界面 08 · 为什么 Agent GUI 这么难
   eval11.md:3  「界面部分第 16 篇」  OK → 界面 16 · 把 ANSI 变成可断言的：TUI 回归测试
   eval11.md:8  「界面部分第 16 篇」  OK → 界面 16 · 把 ANSI 变成可断言的：TUI 回归测试
-  eval11.md:13  「第 1 篇」  OK → 界面 01 · 为什么 Agent 从 CLI/TUI 开始
-  eval11.md:29  「界面部分第 16 篇」  OK → 界面 16 · 把 ANSI 变成可断言的：TUI 回归测试
-  eval11.md:31  「第 4 篇」  OK → 界面 04 · Agent TUI：当事件树撞上线性终端
-  eval11.md:37  「界面部分第 16 篇」  OK → 界面 16 · 把 ANSI 变成可断言的：TUI 回归测试
-  eval11.md:51  「第 1 篇」  OK → 界面 01 · 为什么 Agent 从 CLI/TUI 开始
-  eval11.md:57  「界面部分第 16 篇」  OK → 界面 16 · 把 ANSI 变成可断言的：TUI 回归测试
-  eval11.md:61  「第 7 篇」  OK → 界面 07 · 中场：Event Sourcing，Agent UI 的底层模型
-  eval11.md:63  「第 6 篇」  OK → 界面 06 · 输入的地狱：终端能力探测与降级
-  eval11.md:67  「界面部分第 16 篇」  OK → 界面 16 · 把 ANSI 变成可断言的：TUI 回归测试
-  eval11.md:71  「第 4 篇」  OK → 界面 04 · Agent TUI：当事件树撞上线性终端
-  eval11.md:71  「第 4 篇」  OK → 界面 04 · Agent TUI：当事件树撞上线性终端
-  eval11.md:73  「第 4 篇」  OK → 界面 04 · Agent TUI：当事件树撞上线性终端
+  eval11.md:30  「界面部分第 16 篇」  OK → 界面 16 · 把 ANSI 变成可断言的：TUI 回归测试
+  eval11.md:32  「第 4 篇」  OK → 界面 04 · Agent TUI：当事件树撞上线性终端
+  eval11.md:38  「界面部分第 16 篇」  OK → 界面 16 · 把 ANSI 变成可断言的：TUI 回归测试
+  eval11.md:58  「界面部分第 16 篇」  OK → 界面 16 · 把 ANSI 变成可断言的：TUI 回归测试
+  eval11.md:64  「第 6 篇」  OK → 界面 06 · 输入的地狱：终端能力探测与降级
+  eval11.md:68  「界面部分第 16 篇」  OK → 界面 16 · 把 ANSI 变成可断言的：TUI 回归测试
+  eval11.md:72  「第 4 篇」  OK → 界面 04 · Agent TUI：当事件树撞上线性终端
+  eval11.md:72  「第 4 篇」  OK → 界面 04 · Agent TUI：当事件树撞上线性终端
+  eval11.md:74  「第 4 篇」  OK → 界面 04 · Agent TUI：当事件树撞上线性终端
+  eval11.md:90  「第 3 篇」  OK → 界面 03 · Markdown 在 TUI 上的流式地狱
+  eval11.md:98  「第 3 篇」  OK → 界面 03 · Markdown 在 TUI 上的流式地狱
+  eval11.md:98  「第 6 篇」  OK → 界面 06 · 输入的地狱：终端能力探测与降级
+  eval11.md:142  「第 16 篇」  OK → 界面 16 · 把 ANSI 变成可断言的：TUI 回归测试
 
 [B] 「系列第X篇」自标签不一致：0 处
   （无）
 
-[C] 疑似 slug 式编号引用（人工确认）：9 处
+[C] 疑似 slug 式编号引用（人工确认）：10 处
   infra01.md:23  「基02 的」  → 基建 02 · 移动端的架构代价（可解析，建议统一为「基建第 2 篇」）
   infra01.md:27  「00b 的截」  → 任何部分都无此编号，疑似失效引用
   infra01.md:37  「05 事件流」  → 候选：界面 05 · 输入框：agent TUI 最被低估的组件；评测 05 · 检出率是个乘法（裸编号，请人工确认想指哪个）
@@ -275,3 +323,4 @@
   infra02a.md:57  「基01 拆过」  → 基建 01 · 连接与会话（可解析，建议统一为「基建第 1 篇」）
   infra02a.md:84  「基01 的」  → 基建 01 · 连接与会话（可解析，建议统一为「基建第 1 篇」）
   infra02b.md:70  「基01 的」  → 基建 01 · 连接与会话（可解析，建议统一为「基建第 1 篇」）
+  eval03.md:85  「73 的基」  → 任何部分都无此编号，疑似失效引用
