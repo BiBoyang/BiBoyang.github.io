@@ -35,10 +35,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-1852586b.js";
+            window.path_to_searchindex_js = "searchindex-349847f8.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-63496813.js"></script>
+        <script src="toc-bfafaba3.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -179,7 +179,7 @@
                     <main>
                         <h1 id="记忆怎么测从被注入到被采信"><a class="header" href="#记忆怎么测从被注入到被采信">记忆怎么测——从「被注入」到「被采信」</a></h1>
 <blockquote>
-<p>这是我另一本小册《自顶向下拆 RAG》和这本之间欠了很久的一座桥：那本讲检索系统本身的评测，界面第 22 篇讲记忆的产品形态，但 agent 的长期记忆比传统 RAG 多出两层——宿主决定注入哪几条、模型决定真的去读哪几条。这一篇讲这两层怎么测，以及为什么「被注入」根本不是终点。</p>
+<p>这是我另一本小册《自顶向下拆 RAG》和这本之间欠了很久的一座桥：那本讲检索系统本身的评测，界面第 21 篇讲记忆的产品形态，但 agent 的长期记忆比传统 RAG 多出两层——宿主决定注入哪几条、模型决定真的去读哪几条。这一篇讲这两层怎么测，以及为什么「被注入」根本不是终点。</p>
 </blockquote>
 <h2 id="一开场同一个金标在-agent-身上多了两环"><a class="header" href="#一开场同一个金标在-agent-身上多了两环">一、开场：同一个金标，在 agent 身上多了两环</a></h2>
 <p>传统 RAG 评测的链条很短：检索到、生成对，判分结束。我在 RAG 书里建立的整套纪律——holdout 封存、gold 标注、按位置计的召回指标——在 agent 记忆场景里<strong>仍然必要，但远远不够</strong>。</p>
@@ -254,7 +254,7 @@
 <li><strong>判官端点的环境污染</strong>：转发判官请求的代码若读取系统代理设置，「判官不可达」会被染成代理的 503，还会测出一条产品根本不走的网络路径——对照组污染的网络版。</li>
 </ol>
 <h2 id="九记忆是第一块能被严格测量的长期状态"><a class="header" href="#九记忆是第一块能被严格测量的长期状态">九、记忆是第一块能被严格测量的长期状态</a></h2>
-<p>收口说回为什么这件事值得做。agent 身上的长期状态正在快速增多：规则文件、托管记忆、技能沉淀、用户画像、任务历史。它们大多数现在都没法测——界面第 22 篇抱怨过「生效配置不可见」是用户侧的黑箱，而<strong>评测侧的对应物是「注入集合必须可记录、可回放、可判分」</strong>。</p>
+<p>收口说回为什么这件事值得做。agent 身上的长期状态正在快速增多：规则文件、托管记忆、技能沉淀、用户画像、任务历史。它们大多数现在都没法测——界面第 21 篇抱怨过「生效配置不可见」是用户侧的黑箱，而<strong>评测侧的对应物是「注入集合必须可记录、可回放、可判分」</strong>。</p>
 <p>记忆是这堆长期状态里第一个拥有干净金标（事实可精确匹配）、天然配对形态（同一道题有记忆 vs 无记忆）、和清晰三层链的东西。它的评测法立住了，规则、画像、技能的评测才有模板可抄。也正因如此，这个战场上长出的纪律——召回精排分家、shadow 同一性、写路径先造题、采信才是终点、文本干预对弱模型失效——会比记忆系统本身活得更久。</p>
 <p><em>本章外部病例来自 M 项目的记忆系统设计文档、排序方案退役相关 PR 与记忆试点合同（观察窗口 2026-10；项目名从略，原文链接与文档路径登记在写作简报），迭代数字（0.620/0.495/0.790、33/34/42 of 60、15:1、55 次咨询 0 越阈等）成书前由我凭链接复核；LongMemEval 为公开学术基准，引用时需核对所用版本与指标定义。自家框架出自《自顶向下拆 RAG》与评测系列（2026-08～10）。</em></p>
 
@@ -266,6 +266,9 @@
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
+                            <a rel="next prefetch" href="eval11.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -277,6 +280,9 @@
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
+                    <a rel="next prefetch" href="eval11.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
             </nav>
 
         </div>

@@ -35,10 +35,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-1852586b.js";
+            window.path_to_searchindex_js = "searchindex-349847f8.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-63496813.js"></script>
+        <script src="toc-bfafaba3.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -184,16 +184,16 @@
 <hr>
 <h2 id="一难在哪输出是带状态的字节流"><a class="header" href="#一难在哪输出是带状态的字节流">一、难在哪：输出是带状态的字节流</a></h2>
 <p>普通函数的测试断言输入输出。TUI 渲染的“输出“是写到终端的字节序列，它的含义依赖于终端的当前状态：光标在哪、哪些模式开着、scrollback 里有什么。同一个字节序列，光标位置不同，结果完全不同。第 2 篇讲过帧状态记忆的脆弱性——8 个字段任何一个算错，整帧偏位——这类 bug 的特征是：<strong>单看任何一帧的字节都对，连起来就错。</strong></p>
-<p>所以 TUI 测试的第一性问题不是“断言什么“，是“把输出变成什么形态才可断言“。这里我推荐参考Codex。Codex的实践可以分成四层，从字节到纪律，一层比一层抽象，一层比一层便宜。</p>
+<p>所以 TUI 测试的第一性问题，排在“断言什么“前面的，是“把输出变成什么形态才可断言“。这里我推荐参考Codex。Codex的实践可以分成四层，从字节到纪律，一层比一层抽象，一层比一层便宜。</p>
 <hr>
 <h2 id="二四层断言"><a class="header" href="#二四层断言">二、四层断言</a></h2>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch24-ansi-assertable.svg" alt="把带状态的字节流逐层翻译成可断言的"><span class="img-wrapper"><img src="assets/ch24-ansi-assertable.svg" alt="把带状态的字节流逐层翻译成可断言的"></span></label></p>
 <h3 id="21-字节层mockterminal-接住一切"><a class="header" href="#21-字节层mockterminal-接住一切">2.1 字节层：MockTerminal 接住一切</a></h3>
-<p>最底下是字节断言：用一个 VT100 模拟终端接住引擎真实发射的字节，然后断言“进了 scrollback 的字节是什么、清了几次屏、flush 了几次“。第 13 篇提过 <code>tests/suite/vt100_live_commit.rs</code>，那就是这一层的样本——inline 派“发射即定型“的纪律，最终是靠字节级断言钉死的。</p>
-<p>这一层的特点是贵而硬：每个用例都要构造终端状态、喂事件、检查字节行为。它适合钉契约级的行为（“commit 区的字节绝不重复发射”），不适合铺满全部功能。</p>
+<p>最底下是字节断言：用一个 VT100 模拟终端接住引擎真实发射的字节，然后断言“进了 scrollback 的字节是什么、清了几次屏、flush 了几次“。第 13 篇提过 <code>tests/suite/vt100_live_commit.rs</code>，那就是这一层的样本。这里要防一个误读：Codex 默认走全屏，<code>vt100_live_commit</code> 钉的是它内置的 inline 降级路径（<code>insert_history.rs</code>）——第 13 篇的记分牌是 2:2 加全员双模，“发射即定型“的纪律不分阵营，最终都得靠字节级断言钉死。</p>
+<p>这一层的特点是贵而硬：每个用例都要构造终端状态、喂事件、检查字节行为。它适合钉契约级的行为（“commit 区的字节绝不重复发射”），不适合铺满全部功能。所谓契约级，就是一旦违反，击穿的是渲染模型本身：commit 字节重复发射，scrollback 就被永久污染——终端没有 undo，没有任何下游机制能补救，这种错只配在构建阶段被拦下。</p>
 <h3 id="22-快照层insta-与归一化"><a class="header" href="#22-快照层insta-与归一化">2.2 快照层：insta 与归一化</a></h3>
 <p>往上一层是快照。Codex 的 TUI 里有一个庞大的 insta 快照库——<code>tui/src</code> 下散落着八百多个 <code>.snap</code> 文件，chatwidget、streaming、markdown 渲染、bottom pane 各有自己的 snapshots 目录，配一个 TestBackend 把帧渲染成文本形式入库。第 13 篇提过的 <code>zellij_raw_terminal_wrap_above_viewport.snap</code> 就出自这里：冷门终端复用器的换行行为，被一条快照永久钉住。</p>
-<p>快照的死穴是抖动：任何无关变化（时间戳、随机 id、路径）都会让快照失败，失败多了审查者就会习惯性 accept，快照随之失效。所以快照层必须配归一化投资——动态值掩码成占位符，快照只固化结构和关键语义。Codex 在 core 侧的测试里把这件事做到了极致：请求快照入库前，权限说明、环境上下文、压缩 prompt 等大段注入全部替换成占位符，UUID 与时间戳掩码，JSON 先排序 key——快照只固化“结构形状“，prompt 文案微调不抖动。<strong>没有归一化层的快照不如不写。</strong></p>
+<p>快照的死穴是抖动：任何无关变化（时间戳、随机 id、路径）都会让快照失败，失败多了审查者就会习惯性 accept，快照随之失效。所以快照层必须配套归一化层——动态值掩码成占位符，快照只固化结构和关键语义。Codex 在 core 侧的测试里把这件事做到了极致：请求快照入库前，权限说明、环境上下文、压缩 prompt 等大段注入全部替换成占位符，UUID 与时间戳掩码，JSON 先排序 key——快照只固化“结构形状“，prompt 文案微调不抖动。<strong>没有归一化层的快照不如不写。</strong></p>
 <h3 id="23-等价性层断言不变量不断言帧"><a class="header" href="#23-等价性层断言不变量不断言帧">2.3 等价性层：断言不变量，不断言帧</a></h3>
 <p>第三层是我认为最有普适价值的一层，也是这个系列里第一次出现的断言形态：<strong>不逐帧断言输出，断言一个不变量。</strong></p>
 <p>流式渲染的正确性可以被一句话钉死：<strong>任意 delta 切分下，流式渲染的可见输出必须收敛于一次性全量渲染。</strong> 切分方式是无限的，逐帧断言永远覆盖不完；但不变量只有一个。Codex 的 streaming 模块里有一批这样的等价性测试：</p>
@@ -204,22 +204,22 @@
 </ul>
 <p>注意最后一个测试的手法：<strong>用实现验证实现</strong>。增量扫描器是为性能写的，全量扫描是为正确性写的，两者互相作对方的 oracle。这种“双实现互证“比任何固定预期值都难造假——bug 必须同时以同样的方式污染两份独立实现才能漏网。</p>
 <h3 id="24-守护层纪律进构建"><a class="header" href="#24-守护层纪律进构建">2.4 守护层：纪律进构建</a></h3>
-<p>最上面一层防的不是 bug，是<strong>架构退化</strong>。第 13 篇详细讲过 Grok 的 guard.rs：用 <code>include_str!</code> 扫描全部源码，断言 minimal 模式里不出现 <code>emit_to_scrollback</code> 这类标识符——纪律不是口头约定，是挂了就算构建失败的测试。Codex 有同构物：<code>alternate_screen_auto_uses_alt_screen</code> 把“Zellij 特判已删除“之后的新行为钉成测试，防的不是功能错误，是有人把特判加回来。</p>
+<p>最上面一层防的不是 bug，是<strong>架构退化</strong>。第 13 篇详细讲过 Grok 的 guard.rs：用 <code>include_str!</code> 扫描全部源码，断言 minimal 模式里不出现 <code>emit_to_scrollback</code> 这类标识符——口头纪律由此升级为挂了就算构建失败的测试。Codex 有同构物：<code>alternate_screen_auto_uses_alt_screen</code> 把“Zellij 特判已删除“之后的新行为钉成测试——功能错误自有功能测试去抓，它防的是有人哪天把特判加回来。</p>
 <p>守护测试的价值随代码库年龄增长。功能测试保护“现在对“，守护测试保护“对的结构不被未来的善意修改破坏“。第 13 篇那句“纪律比天才便宜“，在构建系统里的字面形态就是这一层。</p>
 <hr>
 <h2 id="三测试密度的账单"><a class="header" href="#三测试密度的账单">三、测试密度的账单</a></h2>
-<p>这套基建的规模值得量化一下。<code>streaming/controller.rs</code> 一共 1976 行，其中约 1200 行是测试——被测逻辑与测试的体积比接近 2:3。密度花在哪儿很说明问题：resize 与 partial drain 的组合有约十个专测，覆盖丢失、重复、换行余量三类回归，每类都有专名。这些是流式渲染历史上真实咬过人的 bug 类型，每一个都进了专名测试。</p>
-<p>这回答了“值不值“的问题。流式渲染的正确性涉及时序、布局、状态机的组合爆炸，人工回归不可能覆盖；而一旦基建就位，等价性层的单个测试能顶掉一整个手工测试矩阵。测试在这里不是成本中心，是让“事前状态机“这类精巧设计<strong>敢存在</strong>的前提——没有等价性测试盯着，任何后来者的“优化“都可能悄悄破坏收敛性，而且没有人会发现。</p>
+<p>这套基建的规模值得量化一下。<code>streaming/controller.rs</code> 一共 1976 行，其中约 1200 行是测试——被测逻辑与测试的体积比接近 2:3。密度花在哪儿很说明问题：resize 与 partial drain 的组合有约十个专测，覆盖丢失、重复、换行余量三类回归，每类都有专名。这些是流式渲染历史上真实坑过人的 bug 类型，每一个都进了专名测试。</p>
+<p>这也向我们回答了“值不值“的问题。流式渲染的正确性涉及时序、布局、状态机的组合爆炸，人工回归不可能覆盖；而一旦基建就位，等价性层的单个测试能顶掉一整个手工测试矩阵。测试在这里从成本中心变成了让“事前状态机“这类精巧设计<strong>敢存在</strong>的前提——没有等价性测试盯着，任何后来者的“优化“都可能悄悄破坏收敛性，而且没有人会发现。</p>
 <hr>
 <h2 id="四总结"><a class="header" href="#四总结">四、总结</a></h2>
-<p>回头看，这个系列里关于可测试性的判断一直是散点：第 2 篇列举 CLI/TUI 优势时提过“管道可测试“，第 13 篇把可测试性列为 inline 派的优点之一（“系统越聪明，证明它正确的基础设施越贵”）。Codex 的四层实践把这些散点收成了一个框架：</p>
+<p>回头看，这个系列里关于可测试性的判断一直是散点：第 2 篇列举 CLI/TUI 优势时提过“管道可测试“，第 13 篇把可测试性列为 inline 派的优点之一（“系统越聪明，证明它正确的基础设施越贵”）——而把这个优点兑现得最狠的，恰恰是默认全屏的 Codex：双模产品的测试账单要付两份。Codex 的四层实践把这些散点收成了一个框架：</p>
 <pre><code>字节断言  →  钉契约（贵而硬，只钉关键行为）
 快照      →  钉形态（配归一化，防抖动失效）
 等价性    →  钉不变量（一次断言，覆盖无限切分）
 守护      →  钉纪律（防架构退化，随年龄增值）
 </code></pre>
 <p>四层的共同主题是翻译：把不可断言的（字节流、时序、纪律）逐层翻译成可断言的（字节计数、文本快照、不变量、标识符）。</p>
-<p>对我自己的评测工作，这套基建还有一个反向启发。评测注入故障想测出 UI 层缺陷，等价性层指明了最敏感的注入点：delta 切分方式。同一个模型输出，按 token 切、按行切、按随机字节切，收敛性不变量任何一个被破坏，就是渲染层的真 bug——这是把“流式“这个变量本身变成故障注入的旋钮。测试基建与故障注入，在这里是同一件事的两面。</p>
+<p>对我自己的评测工作，这套基建还有一个反向启发。评测注入故障想测出 UI 层缺陷，等价性层指明了最敏感的注入点：delta 切分方式。同一个模型输出，按 token 切、按行切、按随机字节切，收敛性不变量任何一个被破坏，就是渲染层的真 bug——这是把“流式“这个变量本身变成故障注入的旋钮。测试基建与故障注入，在这里是同一件事的两面。这个启发本章只立旗，评测卷第 11 篇展开：那里会给等价性层一个正式的名字——蜕变测试，并把“同一件事的两面“这个判断坐实。</p>
 <hr>
 <h2 id="参考与延伸"><a class="header" href="#参考与延伸">参考与延伸</a></h2>
 <ul>
@@ -235,7 +235,7 @@
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="ch13.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="ch14.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -249,7 +249,7 @@
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="ch13.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="ch14.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>

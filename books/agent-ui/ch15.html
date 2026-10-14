@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>19 · 终端之外：GUI 与移动端的映射 - 自顶向下拆 Agent：从界面到地基</title>
+        <title>18 · 终端之外：GUI 与移动端的映射 - 自顶向下拆 Agent：从界面到地基</title>
 
 
         <!-- Custom HTML head -->
@@ -35,10 +35,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-1852586b.js";
+            window.path_to_searchindex_js = "searchindex-349847f8.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-63496813.js"></script>
+        <script src="toc-bfafaba3.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -184,9 +184,9 @@
 <hr>
 <h2 id="一gui-世界里inline-派不存在"><a class="header" href="#一gui-世界里inline-派不存在">一、GUI 世界里，inline 派不存在</a></h2>
 <p>第 13 篇两派成立有个前提：终端这个介质提供了两个可归属的资产池，你自己管理的帧，和终端的原生 scrollback。inline 派的全部精髓，是<strong>把历史托付给介质</strong>：发射进 scrollback，从此滚动、搜索、复制都归终端管，引擎脱手。</p>
-<p>GUI 没有这个托付对象。窗口是你画的，滚动区是你实现的，系统递给你一块随时会被回收的画布，仅此而已。你无处发射，没有一个“终端“站在你背后替你保存任何东西。</p>
+<p>GUI 没有这个托付对象。窗口是你画的，滚动区是你实现的，系统递给你一块随时会被回收的画布，仅此而已。</p>
 <p>所以第 13 篇那张 2:2 的记分牌，在 GUI 世界塌缩成一行：全屏自管是出厂设定，别无分店。Grok Build 默认形态那套“应用自管 scrollback“，在 GUI 语境里就是唯一解。</p>
-<p>但要说清楚：所有权问题没有消失。它只是换了一层皮。</p>
+<p>但要说清楚：<strong>所有权问题没有消失。它只是换了一层皮</strong>。</p>
 <h2 id="二像素与数据两种速朽两种不朽"><a class="header" href="#二像素与数据两种速朽两种不朽">二、像素与数据：两种速朽，两种不朽</a></h2>
 <p>把两个介质摆在一起看，会看到一组精确的镜像。</p>
 <p><strong>终端：像素不朽，数据易逝。</strong> 一行内容发射进 scrollback，终端模拟器替你保管它的像素，直到用户清屏；而引擎内存里的数据模型，进程一退就蒸发。第 14 篇记过 ForgeLoopTUI 的窘境正是这个：历史活在屏幕上，内存模型随进程蒸发，退出后没有干净归档。</p>
@@ -253,7 +253,7 @@
 <tr><td>分发与可达</td><td>白送：SSH、tmux、CI、管道，任何机器</td><td>收费：安装包、跨端、版本兼容</td></tr>
 <tr><td>输入带宽</td><td>收费：只有字节流，行级采纳、并排 diff 全要手搓</td><td>白送：命中测试、多点触控、拖拽</td></tr>
 <tr><td>表达力</td><td>收费：等宽格子，图片、表格、文件预览几乎不可能</td><td>白送：任意像素、排版、动画、多模态</td></tr>
-<tr><td>信任</td><td>白送：文本即真相，命令可复现、可管道审计</td><td>收费：界面可藏可换，信任要靠沙箱与同源策略（第 20 篇）</td></tr>
+<tr><td>信任</td><td>白送：文本即真相，命令可复现、可管道审计</td><td>收费：界面可藏可换，信任要靠沙箱与同源策略（第 19 篇）</td></tr>
 </tbody>
 </table>
 </div>

@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>17 · 收敛的另一面：pi-mono 暗线 - 自顶向下拆 Agent：从界面到地基</title>
+        <title>11 · 断言不了输出，就断言关系 - 自顶向下拆 Agent：从界面到地基</title>
 
 
         <!-- Custom HTML head -->
@@ -35,10 +35,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-1852586b.js";
+            window.path_to_searchindex_js = "searchindex-349847f8.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-63496813.js"></script>
+        <script src="toc-bfafaba3.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -177,111 +177,66 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="收敛的另一面pi-mono-暗线与生态同源"><a class="header" href="#收敛的另一面pi-mono-暗线与生态同源">收敛的另一面——pi-mono 暗线与生态同源</a></h1>
+                        <h1 id="断言不了输出就断言关系蜕变测试进-agent-评测"><a class="header" href="#断言不了输出就断言关系蜕变测试进-agent-评测">断言不了输出，就断言关系——蜕变测试进 agent 评测</a></h1>
 <blockquote>
-<p>第 13 篇把四家头部产品的双模开关当作“行业收敛”的证据写了下来，这一篇补另一半：我去取证 MiniMax 的 mcode，结果在它的发布产物里 grep 出一串不属于 MiniMax 的名字——2026 年中这批看起来各自收敛的 Agent TUI，相当一部分是同一个上游的下游。</p>
+<p>第 1 篇立过断言危机：非确定性系统的断言目标从结果移走，当时登记的去处是路径覆盖与终态。但这两个去处都假定「什么叫对」列得出清单——对开放式输出，这个假定本身就漏。这一篇补第三种移法：**断言不了输出，就断言关系。**界面部分第 16 篇的等价性层早就把它用出来了，只是没叫这个名字；这一篇给它正名，并把它从界面层的测试基建，升级成 agent 评测里的一种断言形态。</p>
 </blockquote>
+<h2 id="本章将讲"><a class="header" href="#本章将讲">本章将讲</a></h2>
+<ul>
+<li>断言危机的第三种解法：断言目标从结果移走之后，除了路径与终态，还可以移到关系——蜕变关系为什么是非确定性系统的天然断言。</li>
+<li>旗舰案例：界面部分第 16 篇的 delta 切分等价性按断言形态重拆——事后形态、全程形态，以及双实现互证这个 oracle 难题的另一种解法。</li>
+<li>与故障注入合流：每一条蜕变关系反过来都是一张注入地图，切分方式本身就是旋钮——收回第 4 篇。</li>
+</ul>
+<h2 id="一断言目标的三次搬家"><a class="header" href="#一断言目标的三次搬家">一、断言目标的三次搬家</a></h2>
+<p>第 1 篇把 agent 的断言难拆成三件事，第一件就是非确定性：同一输入不同输出，精确断言必死，断言目标只能从结果移走。当时登记的去处有两个：<strong>路径</strong>（不管输出是什么，该走的步骤走了没有）和<strong>终态</strong>（不管过程怎么抖，最后落库的状态对不对）。</p>
+<p>这两个去处解了一大批问题，但都还带着 oracle 的影子：路径覆盖要求你预先知道「合法路径长什么样」，终态断言要求你预先知道「什么终态算对」。对结构化的任务——订票、改库、跑测试——这两个清单列得出；对开放式的输出，一段回答、一次渲染、一份计划，列不出。你没法为「这次回答该说什么」写预期值，正如你没法为「这段 Markdown 渲染出来该是什么样」逐帧写预期值。</p>
+<p>还有第三种移法，这一篇的主角：<strong>移到关系</strong>。不断言输出是什么，断言输出与输出之间必须保持的关系——对输入做一个你选定的变换，输出必须满足一个你指定的关系。正确答案依然不知道，但<strong>不需要知道</strong>了。</p>
+<h2 id="二蜕变关系没有-oracle-时的断言形态"><a class="header" href="#二蜕变关系没有-oracle-时的断言形态">二、蜕变关系：没有 oracle 时的断言形态</a></h2>
+<p>这个手法在软件测试里有正式名字：<strong>蜕变测试</strong>（metamorphic testing），核心概念是蜕变关系（metamorphic relation，MR）。它通常追溯到 Chen、Cheung、Yiu 1998 年的一篇技术报告，动机被叫作 test oracle problem：很多程序事实上没有预言机——要么正确答案不存在（画图、排序检索），要么独立算一遍正确答案和被测程序本身一样贵。教科书例子是三角函数：没有表可查，怎么测 sin 的实现？你不需要知道 sin(x) 的具体值，只需要知道 sin(x) 必须等于 sin(π − x)——同一个程序，喂 x 和喂 π − x，两个输出必须相等。变换是考题，关系是判卷标准，预期值全程没有出场。</p>
+<p>一句话定义：<strong>与其断言 f(x) = y，不如断言 f(x) 与 f(g(x)) 之间满足关系 R</strong>——g 是你选的变换，R 是你对系统的理解。源用例跑一遍，把输入按 g 变出后继用例再跑一遍，断言的不是两个输出各自是什么，而是它们之间的关系。</p>
+<p>这个形态和 agent 评测是天作之合，理由有三：</p>
+<ol>
+<li><strong>oracle 缺位是常态，不是例外。</strong> agent 的产出是开放文本，「正确答案」要么不存在、要么写不起；MR 从设计上就不需要它。</li>
+<li><strong>变换是你控制的。</strong> 模型的非确定性在输出侧，而你选 g 的手在输入侧——非确定性还在，但它被关进了「关系必须保持」的笼子：输出可以抖，关系不许破。</li>
+<li><strong>一个关系顶一整个用例矩阵。</strong> 切分方式是无限的，逐帧断言永远覆盖不完；关系只有一个，断言一次管所有变换——这正是界面部分第 16 篇说的「一次断言，覆盖无限切分」。</li>
+</ol>
+<p>诚实义务也要尽：MR 只能证伪，不能证明。关系被破坏，一定有 bug；关系保持，只是没抓到。这个不对称和第 4 篇故障注入的检出逻辑同构——检出是证据，未检出只是没证据。蜕变测试不是 oracle 的替代品，是 oracle 缺位时的次优制度：次优，但成文。</p>
+<!-- 配图 eval11-metamorphic-relation.svg：源用例整段渲染 vs 三种切分变换的后继用例，四路输出汇入 ≡ 闸门；旁边传统断言「预期输出 y」画成缺位空框 -->
+<h2 id="三旗舰案例delta-切分是一条教科书级-mr"><a class="header" href="#三旗舰案例delta-切分是一条教科书级-mr">三、旗舰案例：delta 切分是一条教科书级 MR</a></h2>
+<p>界面部分第 16 篇讲过 Codex TUI 的四层断言框架，这里不重复，只把第三层（等价性层）单独抽出来，用 MR 的眼光重新拆一遍。它把流式渲染的正确性钉成一句话：「任意 delta 切分下，流式渲染的可见输出必须收敛于一次性全量渲染」——这句话的结构就是教科书级的蜕变关系：</p>
+<ul>
+<li><strong>源用例</strong>：模型输出整段、一次性渲染；</li>
+<li><strong>变换 g</strong>：同一段输出的切分方式——按 token 切、按行切、按随机字节切；</li>
+<li><strong>关系 R</strong>：可见输出收敛相等。</li>
+</ul>
+<p>注意这个断言从头到尾没有说「这段 Markdown 渲染出来该是什么样」——它不需要知道。它说的是<strong>切不许改变结果</strong>。正确答案缺位的地方，关系上岗。</p>
+<p><code>streaming/controller.rs</code> 里的三个测试（2026-10-14 按快照 commit 6b9826e3 复核行号），按断言形态可以分成两类。</p>
+<p><strong>事后形态</strong>：<code>controller_loose_vs_tight_with_commit_ticks_matches_full</code>（L1143）。关系只钉在终点——全部喂完才和全量渲染比一次。一次断言覆盖整个变换，便宜；但失败时你只知道「破了」，不知道在哪一步破的。</p>
+<p><strong>全程形态</strong>：<code>controller_live_view_matches_render_during_interleaved_table_streaming</code>（L1619）。关系钉在路径上的每一步——每喂一个 delta 就断言一次「已上屏内容 + 待放行 tail ≡ 全量渲染」。我尤其喜欢它断言失败时的报错设计：报出来的是<strong>出事的那个 delta</strong>，不是预期画面。失败定位的单位从「哪一帧错了」变成了「哪种切法把它切错了」——变换成了第一公民。</p>
+<p>两种形态之间是一个工程旋钮：<strong>断言密度</strong>。事后形态便宜、定位粗；全程形态贵、定位到 delta。写 MR 测试时这不是实现细节，是设计决策——关系钉得越密，抓得越早，跑得越贵。和第 1 篇那句「成本是一等约束」接得上：关系的断言密度，同样要用预算裁决。</p>
+<h2 id="四双实现互证oracle-难题的另一种解法"><a class="header" href="#四双实现互证oracle-难题的另一种解法">四、双实现互证：oracle 难题的另一种解法</a></h2>
+<p>第三个测试要单独立一类，因为它把 MR 推到了更激进的位置。</p>
+<p><code>incremental_holdback_matches_stateless_scan_per_chunk</code>（L1852）：一份有状态的增量实现、一份无状态的全量实现，逐 chunk 断言两者状态相等。用 MR 的语言说：变换 g 是「换一份独立实现」，关系 R 是「两份实现输出相等」。这个形态在文献里有自己的名字，叫伪 oracle（pseudo-oracle）；界面部分第 16 篇的大白话更直接：<strong>用实现验证实现</strong>。</p>
+<p>它回答的是 oracle 难题的另一面。MR 的主形态解的是「正确答案不存在」；双实现解的是「正确答案存在，但你信不过任何一份计算」——把绝对正确性问题降级为一致性问题。降级的收益来自独立性：<strong>bug 必须同时以同样的方式污染两份独立实现，才能漏网。</strong></p>
+<p>残余风险也要写明：两份实现共享的错误理解会双双漏过——同一个作者对 Markdown 表格规则的同一个误读，会同时长进两份代码里，一致性全绿，错误隐身。所以双实现不取代真 oracle，它取代的是「手工列预期值」那一层；规格级的误读，最终得靠第 7 篇那种裁判校准去抓。</p>
+<p>顺手和第 6 篇划一下界，免得两种「参照物」混为一谈：双臂对照（with / without）回答「是不是它的功劳」，参照物是被测物自己的另一臂；双实现互证回答「没有 oracle 拿什么当尺子」，参照物是另一份实现。两者的共同祖先是同一条原则——<strong>没有绝对答案时，用参照物替代绝对答案</strong>——分工只在参照物站在哪一侧。</p>
+<h2 id="五与故障注入合流关系是断言也是注入地图"><a class="header" href="#五与故障注入合流关系是断言也是注入地图">五、与故障注入合流：关系是断言，也是注入地图</a></h2>
+<p>界面部分第 16 篇末段留过一个反向启发：等价性层指明了最敏感的注入点——delta 切分方式。这一篇把它兑现，而且可以说得更强：<strong>每一条蜕变关系，反过来都是一张故障注入的地图。</strong></p>
+<p>逻辑是这样的。MR 断言「变换 g 下关系 R 必须保持」，等于宣布了系统在哪类扰动下许过承诺；而注入测试要找的最敏感的注入点，恰恰是被许下承诺的地方——承诺越硬，破坏承诺的注入越毒。既然「切分不许改变结果」是承诺，切分方式就是旋钮：按 token 切、按行切、按随机字节切；再往毒里做——在多字节 UTF-8 字符中间切、在表格分隔行中间切、在代码围栏的围栏线中间切。每一种切法都是一颗指名道姓的炸弹，炸的都是同一个不变量。随机扰动只能告诉你「系统可能会坏」；MR 指导的注入告诉你「系统承诺过不会这样坏」——后者才是回归套件里该常驻的东西。</p>
+<p>这给了故障注入一个和第 4 篇互补的选题方法。第 4 篇的内容完整性炸弹测的是「坏了会不会察觉」，伤型来自对物理失效模式的枚举；蜕变注入测的是「变换下还守不守承诺」，伤型来自对系统承诺的枚举。两份清单最后往往指向同一批部件，但后者多了一层「违约」的语义——检出的 bug 自带呈堂证供：不是「这里坏了」，是「你承诺过这里不会坏」。<strong>不知道往哪注入的时候，先问系统承诺过什么。</strong></p>
+<p>所以合流是字面意义的：造得出变换，才写得出 MR；写得出 MR，变换才不只是随机扰动，而是带着承诺条款的考题。第 4 篇从注入一侧到过这个交界，这一篇从断言一侧再走一遍——交界还在原地：断言不了输出，就断言关系；而关系画出的地图，测试与注入共用。</p>
+<!-- 配图 eval11-injection-knob.svg：切分旋钮分叉两轨——作为测试进 ≡ 闸门、作为注入进变换空间挑最毒的切法，两岔汇入「同一件事的两面」 -->
 <hr>
-<h2 id="一第六个样本里长着别人的名字"><a class="header" href="#一第六个样本里长着别人的名字">一、第六个样本里，长着别人的名字</a></h2>
-<p>2026 年 8 月 18 日，MiniMax 把 Code TUI 正式公开：npm 包 <code>@minimax-ai/code@0.1.4</code>，命令 <code>mcode</code>。按这个系列的方法论（第 13 篇对 Grok 做过的那套），新样本到手先做发布产物取证：不读宣传，读字节。</p>
-<p>先把这个包的成色摆清楚。MIT 协议，但没有源码仓库，没有 sourcemap，发布物是一个 23.3 MB 的单文件 <code>cli.js</code>，类名全部 mangled。属性名、字符串和注释残片仍然可读，足够做阵营判定，这叫“发布产物可检查“，它和“开源“之间隔着什么，第四节再说。</p>
-<p>阵营判定本身没有意外：inline 派主屏差分，和第 14 篇拆过的 Kimi Code 主屏行为同源。<code>previousViewportTop</code> 出现 3 次，<code>clearOnShrink</code> 出现 2 次，都是 pi-tui 主屏渲染器的内部标识符，第 14 篇的读者应该眼熟。</p>
-<p>顺着这些标识符继续 grep，出来的东西开始不像 MiniMax 了：</p>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th><code>cli.js</code> 里的字符串</th><th>出现次数</th></tr>
-</thead>
-<tbody>
-<tr><td><code>pi-agent</code></td><td>37</td></tr>
-<tr><td><code>pi-coding-agent</code></td><td>2</td></tr>
-<tr><td><code>mariozechner/pi</code></td><td>1</td></tr>
-<tr><td><code>@mariozechner</code></td><td>4</td></tr>
-<tr><td><code>@earendil-works</code></td><td>2</td></tr>
-</tbody>
-</table>
-</div>
-<p>一家 MiniMax 的官方 CLI 里，出现次数最多的第三方名字是 <code>pi-agent</code>，37 次。npm 依赖恰好两项：<code>@vscode/ripgrep</code> 和 <code>@mariozechner/clipboard</code>，后者的 scope 正是 pi-mono 作者本人的 npm 账号。公开前一周（8 月 9 日）已有报道称 MiniMax Code 2.0 是 “Rebuilt on Pi Agent”。这三件事叠在一起，“借鉴了某个库“已经解释不了：这是整个 agent 底座带着出厂铭牌。</p>
-<p>（<code>@earendil-works</code> 的两处引用归属我没有查到，如实记在这里。）</p>
-<h2 id="二pi-mono-是什么"><a class="header" href="#二pi-mono-是什么">二、pi-mono 是什么</a></h2>
-<p>先交代我对它本体的了解程度：<strong>本篇写作时我没有 pi-mono 的源码在手</strong>（克隆两次都因网络中断失败）。对它结构的全部了解，来自三个下游仓库里的引用和再生成命令，这件事本身就是本文论点最好的注脚：一个我从未打开过的仓库，它的包结构被我完整重建了出来，因为三个下游把它暴露得干干净净。</p>
-<p>pi-mono 是独立开发者 Mario Zechner（GitHub: badlogic）的 monorepo。从下游证据能重建出的骨架：</p>
-<ul>
-<li><strong>pi-tui</strong>：TUI 框架，差分渲染。第 14 篇拆了一整篇的 Kimi 主屏渲染器，就是它的直系后代；</li>
-<li><strong>pi-agent-core</strong>：agent 运行时（Agent 主循环、消息队列、事件类型）；</li>
-<li><strong>packages/ai</strong>：模型目录，<code>models.generated.ts</code>，九百多个模型的登记簿；</li>
-<li><strong>pi-coding-agent</strong>：建在以上部件上的 coding agent。</li>
-</ul>
-<p>规模感可以从侧面掂一下：kwwk 从它生成的模型目录有 900+ 个模型条目，kimi fork 的 pi-tui 基线是上游 0.80.2。一个人维护的 monorepo，版本号已经迭代到 0.8x，被三家头部公司以三种方式消费。</p>
-<h2 id="三三条血缘线"><a class="header" href="#三三条血缘线">三、三条血缘线</a></h2>
-<h3 id="31-kimi-code把-fork-的纪律写成文档"><a class="header" href="#31-kimi-code把-fork-的纪律写成文档">3.1 kimi-code：把 fork 的纪律写成文档</a></h3>
-<p><code>packages/pi-tui</code> 是从上游 vendored 进来的 fork，<code>pi-tui/AGENTS.md</code> 开头就把身份交代了：基线是上游 0.80.2（commit <code>7859b0af</code>），不再走 pnpm patches，所有本地修复直接改源码。然后逐条列出与上游的 <strong>8 处分歧</strong>，每条带守护测试，并写明规矩：每次从上游同步后，8 条必须逐条重验，测试挂了就意味着本地分歧被上游覆盖丢失。</p>
-<p>两处细节值得停下来。</p>
-<p>第一，8 条分歧里有 2 条是 CJK 修复。第 1 条：<code>wordWrapLine</code> 的单字素递归保护，上游在 <code>maxWidth=1</code> 遇到 CJK 时会无限递归爆栈；第 6 条：<code>CjkBoundaryUrlTokenizer</code>，GFM autolink 会把紧跟 URL 的中文全角标点吸进链接地址。一家中国公司 fork 一个 TUI 框架，第一批不可回退的修复里有两处是中文。fork 的真实动因，写在分歧清单的类型分布里。</p>
-<p>第二，第 5 条分歧（<code>previousRawLines</code>，逐帧行级缓存：引用没变的行直接复用上一帧的处理结果，“upstream has no such cache”），这条标记是下面鉴定 mcode 血统的决定性证据。</p>
-<p>还有一条自我修正的存档：AGENTS.md 明写这个 fork 曾经自己改过 viewport/scrollback 的渲染行为，后来整体回退、回归上游差分，第 14 篇引过的 CHANGELOG #1367 事故，在这里有了制度层的对应物。</p>
-<p>顺带一提，<code>package.json</code> 的 <code>author</code> 字段如今写着 “Moonshot AI”，version 0.84.4；而血统的完整账本在 AGENTS.md 里。同一份代码，署名权流转，族谱自留。</p>
-<h3 id="32-mcode上游原版直接打包"><a class="header" href="#32-mcode上游原版直接打包">3.2 mcode：上游原版，直接打包</a></h3>
-<p>有了 kimi fork 的分歧清单，mcode 的鉴定只剩一道对照题。</p>
-<p>判定它在 inline 差分这一侧没有疑问（<code>previousViewportTop</code>、<code>clearOnShrink</code> 等 pi-tui 主屏标识符都在），问题是：它用的是 kimi 改过的版本，还是上游原版？</p>
-<p>答案是原版，证据是一个反证：<code>previousRawLines</code> 出现 <strong>0 次</strong>。这个字段是 kimi fork 第 5 条分歧加的，上游没有，如果 mcode 打包的是 kimi 血统，它不可能没有这个标记。再往前追版本：<code>findAltScreenSearchMatches</code>、<code>wheelScrollLines</code>、<code>OSC 133</code> 也都是 0 次，说明内嵌的 pi-tui 早于上游加全屏搜索的那一批提交，是个偏老的快照。mcode 官方文档写支持 PgUp/PgDn 浏览历史，与这个快照的能力对不上，疑点记下待验，不影响血统结论。</p>
-<p>于是“开源“的成色可以摊开说了：MIT 协议挂在包上，但没有源码仓库、没有 sourcemap、类名 mangle。合规上挑不出毛病，工程上它是可检查的，社区上它是不开放的。kimi 和 mcode 是头部公司消费同一个个人项目的两种姿势：一个把血统写成文档，一个把血统 mangle 进 bundle。</p>
-<h3 id="33-kwwk最深的移植最诚实的注释"><a class="header" href="#33-kwwk最深的移植最诚实的注释">3.3 kwwk：最深的移植，最诚实的注释</a></h3>
-<p>kwwk（EYHN 的 Swift-native coding agent，第 14 篇对照表里缓解方案最全的那个）的血缘最深，注释也最坦白。</p>
-<p><strong>agent 运行时是移植的。</strong> <code>Sources/KWWKAgent/</code> 整个包在逐文件镜像 pi-agent-core，注释就是供词：<code>Agent.swift:166</code>“pi-agent-core’s <code>Agent</code> class but with Swift-native concurrency semantics”；<code>PendingQueue.swift:5</code>“Matches pi-agent-core’s <code>PendingMessageQueue</code>”；<code>AgentLoop.swift:125</code>“Mirrors pi-agent-core’s <code>runAgentLoop</code>”；<code>AgentTypes.swift:365</code>“Mirrors pi-agent-core’s <code>AgentEvent</code>”。连错误分类的排序都注明“Ordered like omp’s classifier“。</p>
-<p><strong>模型目录是生成的。</strong> <code>ModelsCatalog.swift:3</code> 写得直白：“Access to pi-mono’s curated catalog of 900+ models”，再生成命令是 <code>swift run kwwk-generate-models /path/to/pi-mono/packages/ai/src/models.generated.ts</code>，上游路径硬编码在注释里。</p>
-<p><strong>TUI 引擎是自己写的，但策略有出处。</strong> 762 行的 <code>TUI.swift</code> 是独立实现（第 14 篇拆过它的七层决策树），可一旦到 resize 和回退这类“前人踩过坑“的地方，注释一路引用 omp（oh-my-pi，建在 pi 之上的社区封装层）：152 行引 omp 的 branch/rewind 处理（<code>chatContainer.clear()</code> + <code>renderInitialMessages({clearTerminalHistory: true})</code>）；313 行引“omp 在 resize 时擦除并重放整个 transcript“的行为；394 行写“exactly like omp’s non-clearScrollback full paint (pi-tui emitFullPaint: …)“，一条注释链穿了两层生态：kwwk → oh-my-pi → pi-tui。甚至 OAuth 流程也有从 oh-my-pi 移植的痕迹（<code>OAuthLogin.swift:602</code>“Ported from oh-my-pi’s <code>zai.ts</code>”）。</p>
-<p>把三条线放在一起，2026 年中的 Agent TUI 生态多了一层此前没人画出来的金字塔：</p>
-<pre><code>pi-mono（Mario Zechner，个人 monorepo）
-├── pi-tui ──vendored fork──→ kimi-code（月之暗面，8 条分歧 + 守护测试）
-├── pi-tui + pi-agent ──打包──→ mcode（MiniMax，bundle 出厂）
-├── pi-agent-core ──Swift 移植──→ kwwk（KWWKAgent 逐文件镜像）
-└── packages/ai 模型目录 ──生成──→ kwwk（ModelsCatalog，900+ 模型）
-        └─ 中间层：oh-my-pi（omp），kwwk 的策略注释穿它引用 pi-tui
-</code></pre>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch13-pi-mono-lineage.svg" alt="pi-mono 血缘金字塔：三家头部公司，同一个上游"><span class="img-wrapper"><img src="assets/ch13-pi-mono-lineage.svg" alt="pi-mono 血缘金字塔：三家头部公司，同一个上游"></span></label></p>
-<p>第 13 篇对照表里的五个样本，三个共享这个上游。</p>
-<h2 id="四回到第-13-篇收敛要拆成两半"><a class="header" href="#四回到第-13-篇收敛要拆成两半">四、回到第 13 篇：收敛要拆成两半</a></h2>
-<p>第 13 篇的自我修正记录在案：我初稿把四家写成“收敛到 inline“，后来改成 2:2 记分牌 + 全员双模。现在要再修一层，这次修在“收敛“这个词本身。</p>
-<p>inline 这一侧的相似，有两种成因，证据强度完全不同：</p>
-<ul>
-<li><strong>真收敛</strong>：Claude Code（Ink fork）、Codex（ratatui + <code>insert_history</code>）、Grok Build（<code>xai-ratatui-inline</code>）。三家代码毫无血缘，各自独立走到同一个答案附近。这是工程共识的证据。</li>
-<li><strong>同源收敛</strong>：kimi（vendored fork）、mcode（打包）、kwwk（移植）。相似是因为同一份代码。这是供应链的证据。</li>
-</ul>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch13-real-vs-lineage.svg" alt="真收敛 vs 同源收敛：三个亲戚点头不等于三次独立验证"><span class="img-wrapper"><img src="assets/ch13-real-vs-lineage.svg" alt="真收敛 vs 同源收敛：三个亲戚点头不等于三次独立验证"></span></label></p>
-<p>对“业界都这么做了“这类论断，两种成因的效力天差地别。三个亲戚点头，不等于三次独立验证——它们投的可能是同一张票。</p>
-<p>这同时是对本系列方法论的修正。第 13 篇拿五家样本做对照，默认样本相互独立；这一篇证明默认不成立：mcode 作为“第六个独立样本“是假的，kwwk 也得拆开看：TUI 引擎是独立数据点（Swift 自研，注释自证策略出处），agent 运行时不是。<strong>多样本对照之前，先验样本的独立性</strong>；而验独立性的办法只有一个，还是读源码。界面行为相似的两家，底下的血统可以差出一个人的一整个 monorepo，这是“看起来一样的界面，底下的成本结构可以完全不同“（第 13 篇结尾）在生态维度的重演。</p>
-<h2 id="五隐形中枢个人-monorepo-的产业位"><a class="header" href="#五隐形中枢个人-monorepo-的产业位">五、隐形中枢：个人 monorepo 的产业位</a></h2>
-<p>为什么被反复选中 pi-mono？顺着第 13 篇的框架看，答案不神秘：它小（TypeScript，可以整包 vendored）、它站在 inline 派（第 13 篇论证过的那条结构性拉力）、它的测试文化过硬（kimi 那套“分歧必须带守护测试“的制度，没有上游测试密度做地基是立不住的）。头部公司评估自研 vs 拿来主义的账，第 13 篇第六节算过一遍，个人项目恰好落在“便宜且不容易被改坏“的格子里。</p>
-<p>值得多看一眼的是风险面。三家的关键路径共享一个单点上游：上游从 0.80 到 0.84 之间的任何破坏性改动，同时波及三家。kimi 的同步重验制度，本质上就是这份风险的显性化管理，他们比谁都清楚自己骑在谁的仓库上。而 mcode 和 kwwk 连这份管理都各有缺口：mcode 钉死在某个老快照上（升级要重新过一遍取证），kwwk 的镜像靠注释自觉对齐。</p>
-<p>还有一个更冷的说法：当“行业共识“的三个数据点其实同出一个人的仓库，这个共识的证据强度要打折。它仍然是证据（说明这套设计至少被三家认为可用），但它更接近 left-pad 式的供应链事实，算不上三次独立的工程投票。分辨两者，界面上看不出来。</p>
-<h2 id="六这张图上我的引擎站在哪"><a class="header" href="#六这张图上我的引擎站在哪">六、这张图上，我的引擎站在哪</a></h2>
-<p>最后把 ForgeLoopTUI 放回这张图上，说个私人的部分。</p>
-<p>ForgeLoopTUI 最早的起点，是想模仿 kwwk。动手之后，在“已完成内容归谁管“那条轴上分了岔：kwwk 选了 inline，我造出了全屏自管。当时觉得是走岔了，要模仿的东西没模仿成。放在血缘图上看，岔路反而是位置：独立实现的那一侧只剩 Claude Code、Codex、Grok Build，全部出自头部公司；一个无血统、Swift 原生、全屏自管的引擎，是这张图上稀有的独立数据点。</p>
-<p>第 13 篇说分叉发生在所有权轴上。这一篇补一句：分叉之上还有血缘轴。个人项目在巨头生态里的活路，往往不在主路上，在血缘图的空格里。</p>
-<h2 id="七总结"><a class="header" href="#七总结">七、总结</a></h2>
-<p>第 13 篇问“已完成的内容归谁管“，第 14 篇答“可以按生命周期分期“，这一篇的答案更平淡：先问这份代码是谁的。三篇连起来，“所有权“从引擎与终端的关系，延伸到了 fork 与上游的关系：你的渲染器得盯着每一行，但它的族谱决定了它的默认值、它的坑、它下一次升级时要重验的八件事。</p>
-<p>下一篇回到自己的引擎：读完五份源码之后，ForgeLoopTUI 吸收 inline 派工程件的改造做到哪一步了：什么抄了，什么没抄，什么决定不抄。</p>
-<hr>
-<h2 id="参考与延伸"><a class="header" href="#参考与延伸">参考与延伸</a></h2>
-<ul>
-<li><em>本文基于本地源码副本的实际阅读与发布产物取证：<a href="https://github.com/MoonshotAI/kimi-code">kimi-code</a> <code>1e553fc</code>（2026-08-18，与第 14 篇同一 pin；<code>packages/pi-tui/package.json</code>、<code>packages/pi-tui/AGENTS.md</code>、<code>src/tui-main-screen.ts</code>）。</em></li>
-<li><em><a href="https://github.com/EYHN/kwwk">kwwk</a> <code>ae0771d</code>（2026-08-19；<code>Sources/KWWKCli/TUI.swift</code>、<code>Sources/KWWKAgent/*.swift</code>、<code>Sources/KWWKAI/ModelsCatalog.swift</code>、<code>Scripts/GenerateModelsCore/</code>）。</em></li>
-<li><em>mcode 为 <code>@minimax-ai/code@0.1.4</code> 发布产物取证（<code>cli.js</code>，23,321,152 字节，标记计数见文中表格）。</em></li>
-<li><em>pi-mono 本体未直接阅读，本文对其结构的了解全部来自上述三个下游的引用与再生成命令，这一点本身即文中论点的一部分。</em></li>
-</ul>
+<p><em>本章源码事实基于 Codex 本地源码 2026-10-14 的复核：<code>codex-rs/tui/src/streaming/controller.rs</code> 三个测试分别位于 L1143、L1619、L1852，快照 main <code>6b9826e3</code>（2026-09-09）；四层断言框架与三个测试的行为细节见界面部分第 16 篇，本章只取断言形态视角，不重复展开。蜕变测试的概念定性（property-based 测试技术、应对 test oracle problem）2026-10-14 经 Wikipedia 词条核验；具体出处（Chen、Cheung、Yiu 1998 年技术报告）为教科书通识，按转述口径引用，未逐字核对原文。</em></p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="ch24.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="eval10.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="ch14.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
-                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -289,13 +244,10 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="ch24.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="eval10.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="ch14.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
-                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
-                    </a>
             </nav>
 
         </div>

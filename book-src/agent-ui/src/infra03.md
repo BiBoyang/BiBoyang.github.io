@@ -54,7 +54,7 @@ AG-UI（CopilotKit 出品）管 agent 和浏览器前端的对话：SSE 传输�
 
 ![三条协议边界：会话性由边界另一端是否有状态决定](assets/infra03-three-borders.svg)
 
-两条债也记下。其一，**协议会咬人**：MCP 2026-07-28 删 GET stream 的破坏性修订就是现场案例，依赖协议承诺的字段（比如断线恢复）说没就没，基01 里 kimi 那份"seq 字段全可选"的契约，就是客户端对协议咬人的标准防御。其二，**registry 也在割据**：Zed 一个、JetBrains 一个，agent 要么入驻两次要么选边，第 22 篇里 CLAUDE.md 和 AGENTS.md 的双写，在协议层换了个名字重演。
+两条债也记下。其一，**协议会咬人**：MCP 2026-07-28 删 GET stream 的破坏性修订就是现场案例，依赖协议承诺的字段（比如断线恢复）说没就没，基01 里 kimi 那份"seq 字段全可选"的契约，就是客户端对协议咬人的标准防御。其二，**registry 也在割据**：Zed 一个、JetBrains 一个，agent 要么入驻两次要么选边，第 21 篇里 CLAUDE.md 和 AGENTS.md 的双写，在协议层换了个名字重演。
 
 ## 六、总结
 

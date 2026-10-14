@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>22 · 规则与记忆 - 自顶向下拆 Agent：从界面到地基</title>
+        <title>21 · 规则与记忆 - 自顶向下拆 Agent：从界面到地基</title>
 
 
         <!-- Custom HTML head -->
@@ -35,10 +35,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-1852586b.js";
+            window.path_to_searchindex_js = "searchindex-349847f8.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-63496813.js"></script>
+        <script src="toc-bfafaba3.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -179,7 +179,7 @@
                     <main>
                         <h1 id="规则与记忆agent-的长期状态文件还是黑箱"><a class="header" href="#规则与记忆agent-的长期状态文件还是黑箱">规则与记忆——Agent 的长期状态，文件还是黑箱</a></h1>
 <blockquote>
-<p>第 21 篇讲 agent 的短期记忆，这一篇讲长期状态：跨会话活着、每次交互随身携带的东西。2026 年这个领域分成两条路线——进 git 的规则文件，和服务端数据库里的托管记忆——而它们共同缺一块界面：<strong>生效配置的预览</strong>。你永远看不到“这一次对话，agent 实际带着哪些规则和记忆上场”。</p>
+<p>第 20 篇讲 agent 的短期记忆，这一篇讲长期状态：跨会话活着、每次交互随身携带的东西。2026 年这个领域分成两条路线——进 git 的规则文件，和服务端数据库里的托管记忆——而它们共同缺一块界面：<strong>生效配置的预览</strong>。你永远看不到“这一次对话，agent 实际带着哪些规则和记忆上场”。</p>
 </blockquote>
 <hr>
 <h2 id="一正在塑造这个会话的那份文件"><a class="header" href="#一正在塑造这个会话的那份文件">一、正在塑造这个会话的那份文件</a></h2>
@@ -192,7 +192,7 @@
 <p>文件派的工程化上限长什么样，kimi-code 给了目前我见过最完整的一手样本：<strong>12 份嵌套的 AGENTS.md</strong>，从仓库根一路铺到 <code>packages/agent-core/src/services/</code> 这种深度。配套三条治理规则写在根文件里：根文件只放“热路径“规则；深层文档下沉到各自目录的 AGENTS.md；改代码前“follow the nearest <code>AGENTS.md</code> in the directory tree“（就近生效）。这就是 CSS 级联的文件版： specificity 靠目录深度实现。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch18-agents-cascade.svg" alt="12 份嵌套 AGENTS.md：CSS 级联的文件版，specificity 靠目录深度"><span class="img-wrapper"><img src="assets/ch18-agents-cascade.svg" alt="12 份嵌套 AGENTS.md：CSS 级联的文件版，specificity 靠目录深度"></span></label></p>
 <p>还有两个细节值得一提。其一，仓库根上 <code>CLAUDE.md</code> 和 <code>AGENTS.md</code> <strong>内容完全相同，双写两份</strong>，为了迁就两个 agent 各自的默认文件名，同一份规则存了两拷贝。标准割据的代价，具象成了一行 <code>cp</code>。其二，规则本身的内容已经治理到很细的地方：要求 agent 提交时不署名、不暴露自己是个 agent；公共文本里真实内部标识符要换成占位符；“人类作者必须理解这个变更，才允许提交 PR”。用文件驯服 agent，已经驯到了“不许承认自己是 agent“的粒度。</p>
-<p>生态的另一头是另一个一手事实：我把本地另外三个 agent 仓库扫了一遍（kwwk、grok-build、mcode），<strong>一份规则文件都没有</strong>。同一批做 agent 的工程团队，有的把规则文件铺成十二层的级联，有的一个字没写。文件派远不是行业共识，它是行业的一个阵营。</p>
+<p>生态的另一头是另一个一手事实：我把本地的 grok-build 仓库整个扫了一遍，<strong>一份规则文件都没有</strong>。同一批做 agent 的工程团队，有的把规则文件铺成十二层的级联，有的一个字没写。文件派远不是行业共识，它是行业的一个阵营。</p>
 <p>文件派的软肋也随之清楚：加载语义是方言市场（叠加还是覆盖、就近还是显式优先级，各家各说各话）；对普通用户它是 cargo-cult 风险，到处复制粘贴的魔法文本，没有人知道哪句在生效。</p>
 <h2 id="三托管派2026-年的记忆长出了一个设置页"><a class="header" href="#三托管派2026-年的记忆长出了一个设置页">三、托管派：2026 年的记忆，长出了一个设置页</a></h2>
 <p>另一条路线是产品化的记忆：agent 在对话里自动提取“关于你的事实“，存进服务端，跨会话注入。ChatGPT 和 Claude 在 2026 年都给出了管理界面：前者在 Settings → Personalization → Manage Memory，可以单条删除或全部清空；后者在 Settings → Memory，按主题查看、单条删、整体重置，还支持按项目（Cowork）开关，甚至给了一个截止 2026 年 9 月 9 日的旧记忆导出窗口。</p>
@@ -217,12 +217,12 @@
 </tbody>
 </table>
 </div>
-<p>一边是工程资产，一边是用户画像；一个把用户当工程师（规则即代码），一个把用户当用户（感受即数据）。第 21 篇问“上下文归谁“，这里问的是它的长期版本：“agent 的人格归谁。“现实的答案多是混合，于是回到了那个两头都欠的债：合成不可见。</p>
+<p>一边是工程资产，一边是用户画像；一个把用户当工程师（规则即代码），一个把用户当用户（感受即数据）。第 20 篇问“上下文归谁“，这里问的是它的长期版本：“agent 的人格归谁。“现实的答案多是混合，于是回到了那个两头都欠的债：合成不可见。</p>
 <h2 id="五缺失的界面生效配置预览"><a class="header" href="#五缺失的界面生效配置预览">五、缺失的界面：生效配置预览</a></h2>
 <p>前端工程师其实早就拥有这个问题的一半答案。CSS 是多条规则级联叠加的，没有人能靠读源文件推断最终样式，所以浏览器给了 DevTools 的 Computed Styles 面板：<strong>不管多少层样式表怎么打架，面板告诉你最终生效的每一条</strong>。</p>
 <p>agent 需要的就是这个面板的对应物。它不用复杂，第一版只要回答三个问题：</p>
 <ol>
-<li><strong>这次会话加载了哪些规则源？</strong> 文件路径 + 行数（或字节数）：全局的、项目的、记忆的，各自占多少上下文预算。这一条同时喂了第 21 篇的计量问题：规则文件是上下文账单里最沉默的大户，<code>/context</code> 类工具已有雏形，但“哪些规则活着“和“占了多少 token“目前是两个答案。</li>
+<li><strong>这次会话加载了哪些规则源？</strong> 文件路径 + 行数（或字节数）：全局的、项目的、记忆的，各自占多少上下文预算。这一条同时喂了第 20 篇的计量问题：规则文件是上下文账单里最沉默的大户，<code>/context</code> 类工具已有雏形，但“哪些规则活着“和“占了多少 token“目前是两个答案。</li>
 <li><strong>记忆注入了什么？</strong> 条目加出处（哪次对话、何时写入），provenance 补上，设置页从仓库升级成账本。</li>
 <li><strong>冲突时谁赢了？</strong> 就近覆盖了全局？记忆改写了规则？一条标注就够了。</li>
 </ol>
@@ -239,7 +239,7 @@
 <li><em>核查分层（截至 2026-09-28）：AGENTS.md 的定位、采用名单与“非正式标准“口径来自 <a href="https://agents.md">agents.md</a> 官网（多源交叉）。</em></li>
 <li><em>ChatGPT 记忆管理基于 OpenAI 帮助中心与官方公告，Claude 记忆管理基于 Anthropic 支持文档（含按主题查看、按项目开关、2026-09-09 截止的旧记忆导出窗口）。</em></li>
 <li><em>kimi-code 为本地一手（<code>1e553fc</code>：12 份嵌套 AGENTS.md 全清单、根文件治理规则引文、CLAUDE.md 与 AGENTS.md 双写比对）。</em></li>
-<li><em>kwwk <code>ae0771d</code>、grok-build <code>9fabade</code>、mcode-inspect 深扫均无规则文件。</em></li>
+<li><em>grok-build <code>9fabade</code> 深扫无规则文件。</em></li>
 <li><em>作者本机 <code>~/AGENTS.md</code>（61 行）为第一人称素材，其内容不在本文公开细节之列的部分未展开。</em></li>
 <li><em>“AGENTS.override.md 野生层级约定“未能核实，不引用。</em></li>
 </ul>
