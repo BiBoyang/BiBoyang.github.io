@@ -36,10 +36,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-103cdeda.js";
+            window.path_to_searchindex_js = "searchindex-d11408d0.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-bfafaba3.js"></script>
+        <script src="toc-9fefb157.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -182,7 +182,7 @@
 <p>前阵子看到有人在讨论 Agent 的 TUI 和 GUI，两派吵得挺热闹。</p>
 <p>我刚好两边都做过算是比较深入的研究,用 swift 从零开始写过一个 TUI 渲染引擎,也写过 iOS 上的 Agent GUI 客户端.在创作和优化性能的过程中,记录下来不少的笔记和代码,以及各种踩坑和思考,我水平有限,最多只能算是抛砖引玉了.</p>
 <p>写这组文章之前，我翻了一遍自己攒下来的东西：项目源码、调试笔记、性能分析记录、读过的博客和开源库的源码、知乎上的相关讨论。散在好几个文件夹里，有些是完整的文档，有些只是当时随手记的片段。觉得这些东西放着也是放着，不如整理出来。</p>
-<p>于是重新梳理了一遍，缺的地方补研究，浅的地方往下挖。前前后后写了二十几篇，未来可能还会更多，想到哪就写到哪。从 ANSI 转义序列到多端架构，从 Markdown 流式渲染的 O(n²) 陷阱到权限和 diff 的 UX 设计，再往下到渲染的所有权、上下文账本、记忆与协议——从界面一路挖到地基，再往下是检验：建起来之后，怎么证明它真的在工作。全书按方向分部分，方向挖到哪，部分就长到哪。</p>
+<p>于是重新梳理了一遍，缺的地方补研究，浅的地方往下挖。前前后后写了二十几篇，未来可能还会更多，想到哪就写到哪。从 ANSI 转义序列到多端架构，从 Markdown 流式渲染的 O(n²) 陷阱到权限和 diff 的 UX 设计，再往下到渲染的所有权与协议——从界面一路挖到地基，再往下是检验：建起来之后，怎么证明它真的在工作。全书按方向分部分，方向挖到哪，部分就长到哪。</p>
 <p>不是什么权威结论，就是一个人同时踩过 TUI 和 GUI 两条船之后，把踩过的坑和想清楚的事记下来。如果恰好对你有用，那就最好了。</p>
 <hr>
 <blockquote>
@@ -2535,8 +2535,7 @@ block 不到 committed frontier 不发射，发射即归终端，从架构上保
 </div>
 <p>这张表是对称的：终端的赠品是“过去“（已发射的历史）和“信任“（文本透明），GUI 的赠品是“现在“（合成器持有的结构）和“带宽“（输入与表达）。它也是第 1 篇“不是低配版、而是不同介质投影“那句话的完整清单：差异不在架构，事件树、投影、diff、审批、压缩、回放，两种界面是同一套内核的两个后端（Ink 在终端上长出声明式，UIKit 手写 frame 在 GUI 上停在命令式，楼层可以互换）；差异在各端要另付的介质费。</p>
 <p>这张表还有一条没画出来的横切轴：上面“终端/GUI“分的是契约，UI 平台本身跑在哪是另一个维度：原生、浏览器，或 Electron 这种双契约并存的容器（DOM 做界面，node-pty 另开一条真实终端）。同样标着“GUI“，浏览器一格拿不到本地 shell 环境，但多端同步和“服务端即事实源“是自带的；标着“终端“的 xterm.js 跑在浏览器里，TUI 应用的契约一字不变，agent 人却已经在远端机器上。第 11 篇用两轴四格给六个端定了坐标，基建系列则是“事实在服务端“那一格的完整展开。</p>
-<p>这也补上了第 1 篇补记那个判断的机制。agent 早期的需求结构（一维 token 流、文本工具链、处处可审计）恰好压在终端现成的格子上；而长会话、并行多 agent、行级审批、checkpoint 回放、手机伴随端（第 10、17–20 篇与基建系列），每一项都在消费 GUI 的赠品。<strong>不是 GUI 更好所以赢，是需求结构越过了两边税收结构的交叉点。</strong> 选界面从来不是选范式，是在 agent 生命周期的不同阶段，选哪边的税你更愿意缴。</p>
-<p>这也是本系列正文在这个系列里的终点站：界面的账本记完了，下一程换轨：事件流离开本地之后的命运：断线、重连、多服务器，以及一条 SSE 中断之后，谁还记得它讲到哪了。</p>
+<p>这也补上了第 1 篇补记那个判断的机制。agent 早期的需求结构（一维 token 流、文本工具链、处处可审计）恰好压在终端现成的格子上；而长会话、并行多 agent、行级审批、手机伴随端（第 10、17–19 篇与基建系列），每一项都在消费 GUI 的赠品。<strong>不是 GUI 更好所以赢，是需求结构越过了两边税收结构的交叉点。</strong> 选界面从来不是选范式，是在 agent 生命周期的不同阶段，选哪边的代价你更愿意付。</p>
 <hr>
 <h2 id="参考与延伸-15"><a class="header" href="#参考与延伸-15">参考与延伸</a></h2>
 <ul>
@@ -2598,7 +2597,7 @@ block 不到 committed frontier 不发射，发射即归终端，从架构上保
 <h2 id="五总结-3"><a class="header" href="#五总结-3">五、总结</a></h2>
 <p>第 10 篇问“批不批“，这一篇问“看到的真的吗“。前者是决策设计，后者是感知前提，感知层失守，决策层的一切精巧（分级、超时、auto mode 的信任衰减）都建在沙地上。human-in-the-loop 的完整拼写从来不是 approve what you see，是 <strong>see what you approve</strong>。</p>
 <p>放到系列坐标里：渲染所有权四部曲（11/12/14/15）讲的是“屏幕上的像素归谁管“；这一篇讲“像素本身能不能被信任“。两件事在终端上还是两个问题，到了 GUI 时代会合成一个：信任边界必须和渲染边界同构，否则就是给 innerHTML 写文档。</p>
-<p>下一篇转向感知的反面：记忆。引擎开始替你忘掉上下文的那一刻，没有对话框，没有提示音，只有一行灰字：context low。谁授权了这次遗忘，丢掉了什么，能不能审计，第 20 篇记这笔账。</p>
+<p>还有一笔账要挂在这里：感知的反面是记忆。引擎开始替你忘掉上下文的那一刻，没有对话框，没有提示音，只有一行灰字：context low。谁授权了这次遗忘，丢掉了什么，能不能审计——本篇答不了，先挂账。</p>
 <hr>
 <h2 id="参考与延伸-16"><a class="header" href="#参考与延伸-16">参考与延伸</a></h2>
 <ul>
@@ -2607,203 +2606,6 @@ block 不到 committed frontier 不发射，发射即归终端，从架构上保
 <li><em>编号为 CVE-2026-21852 的条目始终未能核实到原始记录，本文不引用。</em></li>
 <li><em>引擎排查基于本地源码：kimi-code <code>1e553fc</code>（<code>packages/pi-tui/src/utils.ts</code>）、grok-build <code>9fabade</code>（全仓库检索）、ForgeLoopTUI <code>f99367b</code>（<code>Sources/ForgeLoopTUI/Markdown/MarkdownEngine.swift</code>）。</em></li>
 <li><em>方法局限：grep 加人工阅读命中处，不能排除存在未被这两种方式覆盖的防线，结论以“未发现“为准，不断言“不存在“。</em></li>
-</ul>
-<div style="break-before: page; page-break-before: always;"></div>
-<h1 id="上下文账本agent-唯一的内存和它的-gc"><a class="header" href="#上下文账本agent-唯一的内存和它的-gc">上下文账本——Agent 唯一的内存，和它的 GC</a></h1>
-<blockquote>
-<p>“所有权”线的收尾，记最后一本账：<strong>状态的所有权</strong>。上下文窗口是 Agent 唯一的内存，它的垃圾回收（自动压缩）无提示、有损、事后不可申诉。先看用户看到的遗忘，再下到引擎层看各家怎么记账，最后回答一个问题：这笔账，用户有没有权利查。</p>
-</blockquote>
-<hr>
-<h2 id="一一次没有对话框的遗忘"><a class="header" href="#一一次没有对话框的遗忘">一、一次没有对话框的遗忘</a></h2>
-<p>用户视角的自动压缩是这样的：状态栏闪过一行灰字 context low，对话继续，一切如常，只是从某个时刻起，Agent 对三小时前那个关键约定的回答开始含糊。没有对话框，没有确认，没有“本次丢弃了哪些内容“的清单。<strong>程序没有崩，它只是忘了你为什么雇它。</strong></p>
-<p>比遗忘本身更值得拆的是那个计量条。第 8 篇 3.3 节讲过它有三层麻烦（滞后值 vs 估算值、压缩后的非单调回落、预警的产品决策）；今年的公开材料把第四层也暴露了：Claude Code 为自动压缩保留了约 33K token 的缓冲区（从更早的 45K 降下来），触发点因此显著早于历史，有分析认为在 64–75% 而非早期的 90%+；GitHub 上有 2026 年 6 月的 issue 标题就叫 “Auto compact does not trigger at 100% context”。</p>
-<p>把这些摆在一起会看到一个结构性事实：<strong>仪表和熔断器各读各的表</strong>。计量条显示的是一个估算口径的用量，触发压缩的是另一个口径（窗口判定减缓冲区），两者从不承诺一致，“显示 3% 实际已压缩“这类报告不是 UI bug，是两本账各记各的必然症状。</p>
-<p>第 7 篇的投影理论在这里遇到它的反面案例：事件流的投影是完整的：tool.started、tool.finished、file.changed，条条在案，回放无损；但<strong>状态</strong>的投影被静默替换了。投影完整性不等于状态完整性。事件流记得 Agent 做过什么，窗口里装的已经是一份改写过的记忆。</p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch17-two-gauges.svg" alt="仪表和熔断器各读各的表：显示 3%，实际已压缩"><span class="img-wrapper"><img src="assets/ch17-two-gauges.svg" alt="仪表和熔断器各读各的表：显示 3%，实际已压缩"></span></label></p>
-<h2 id="二引擎账四级流水线与那行熔断注释"><a class="header" href="#二引擎账四级流水线与那行熔断注释">二、引擎账：四级流水线与那行熔断注释</a></h2>
-<p>把 Claude Code 的引擎侧摊开（泄露源码的多家交叉分析，出处见脚注），会发现它的压缩不是一刀切，是一条四级流水线：</p>
-<p><strong>Snip → MicroCompact → ContextCollapse → AutoCompact。</strong></p>
-<p>前三级是本地操作，不调模型：Snip 截断超长工具输出，MicroCompact 清理噪音 token，ContextCollapse 折叠旧上下文：便宜、快、基本无损。只有最后一级 AutoCompact 调 LLM 生成摘要，把历史整体替换成压缩叙事：贵的、慢的、有损的，放在最后。这个分级和渲染侧的 stable prefix / 沉降分级（第 3、18 篇）是同一个设计哲学：确定性便宜的先上，概率性昂贵的兜底。</p>
-<p>流水线自己也有防线：连续失败 3 次自动压缩就放弃（<code>MAX_CONSECUTIVE_AUTOCOMPACT_FAILURES = 3</code>）。为什么要防它？泄露源码里的注释给出了数字：加熔断之前，曾有 <strong>1,279 个会话出现 50 次以上连续失败，每天浪费约 25 万次 API 调用</strong>。失败循环的机理值得一提：压缩本身要调模型，模型失败触发重试，重试带着一个更大的上下文，垃圾回收器自己成了内存泄漏。这行注释是“压缩是分布式系统问题“的最好证词。</p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch17-compaction-pipeline.svg" alt="四级压缩流水线与熔断：确定性便宜的先上，概率性昂贵的兜底"><span class="img-wrapper"><img src="assets/ch17-compaction-pipeline.svg" alt="四级压缩流水线与熔断：确定性便宜的先上，概率性昂贵的兜底"></span></label></p>
-<h2 id="三别家在怎么做账"><a class="header" href="#三别家在怎么做账">三、别家在怎么做账</a></h2>
-<p>批评“静默丢失“很容易，但只盯着一家会错过全貌。我把本地能查的两家实现翻了一遍，结论是：<strong>引擎账家家都记，差别大得惊人的是账本给谁看</strong>。</p>
-<h3 id="31-grok-build丢弃的内容落盘成带索引的档案"><a class="header" href="#31-grok-build丢弃的内容落盘成带索引的档案">3.1 grok-build：丢弃的内容落盘成带索引的档案</a></h3>
-<p>grok 的 <code>xai-compaction-transcript</code> crate 把压缩做成了<strong>档案系统</strong>：每个会话一个 <code>compaction/</code> 目录，<code>INDEX.md</code> 索引加 <code>segment_</code> 前缀的分段文件；分段上限 512KB，超限就地在文内写明 “[… TRUNCATED at {limit} bytes, {omitted} turns omitted …]”；逐 turn 有细节档位（verbose/balanced，后者每轮文本 2000 字符、回复 500 字符）。与 Python 实现的列头、段落、索引格式对齐。</p>
-<p>换句话说：<strong>被压缩掉的原文没有蒸发，它变成了磁盘上一份可浏览、带索引的 Markdown 档案</strong>。窗口里装摘要，档案里存全文，“丢弃“其实是“归档”。</p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch17-discard-as-archive.svg" alt="丢弃即归档：窗口里装摘要，磁盘上存全文"><span class="img-wrapper"><img src="assets/ch17-discard-as-archive.svg" alt="丢弃即归档：窗口里装摘要，磁盘上存全文"></span></label></p>
-<h3 id="32-flowdown用户主使的-fork-式压缩"><a class="header" href="#32-flowdown用户主使的-fork-式压缩">3.2 FlowDown：用户主使的 fork 式压缩</a></h3>
-<p>FlowDown（GUI 端）的 <code>compressConversation</code> 是另一种所有权答案：用户手动触发 → 导出整段会话为 Markdown → 调模型生成摘要 → <strong>创建一个新会话</strong>承载摘要。原始会话一个字节都不动。压缩在这里不是对历史的改写，是一次用户签字画押的衍生交易，原账本不可变，摘要是新资产。</p>
-<h2 id="四真正的分界账本的可见性"><a class="header" href="#四真正的分界账本的可见性">四、真正的分界：账本的可见性</a></h2>
-<p>把三家摆在一起，分界线不在工程深度（Claude Code 的四级流水线加熔断是三家里最深的引擎账），在<strong>这本账给谁看</strong>：</p>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th></th><th>引擎账（预算/归档/熔断）</th><th>用户账（丢了什么，可见吗）</th></tr>
-</thead>
-<tbody>
-<tr><td>Claude Code</td><td>四级流水线 + 熔断 + 33K 缓冲</td><td>一行灰字；计量与触发各读各的表</td></tr>
-<tr><td>grok-build</td><td>分段档案 + INDEX.md + 行内截断通告</td><td>档案在磁盘上，主动去看则有</td></tr>
-<tr><td>FlowDown</td><td>用户主使，fork 出新会话</td><td>原会话完整保留，账即本体</td></tr>
-</tbody>
-</table>
-</div>
-<p>第 19 篇说权限的前提是 see what you approve；这一篇是它的对偶：<strong>记忆的前提是 know what you forgot</strong>。三家里最接近这句承诺的，竟然是动作最“原始“的 FlowDown，因为它压根没把压缩做成对历史的改写。</p>
-<h2 id="五两条设计主张"><a class="header" href="#五两条设计主张">五、两条设计主张</a></h2>
-<p><strong>压缩应该是一等事件。</strong> 事件流里应该有 <code>context.compacted { kept: 摘要引用, dropped: [被折叠/截断的事件引用], reason }</code>，可订阅、可审计、可回放。grok 的落盘档案已经示范了“丢弃即归档“的物理形态；差的是把它接回事件协议，让 UI 能渲染“本次压缩收起了 47 条工具输出，保留 3 个决定，点开看原文“。摘要错了要能申诉：拒绝这次压缩、带着原上下文重开会话。第 18 篇说 GUI 端数据所有权是生存必需；这条是它在状态层的延伸，<strong>上下文的内容归用户，窗口只是引擎租用的</strong>。</p>
-<p><strong>仪表和熔断器必须读同一张表。</strong> 计量失真的根治不是校准估算，是让显示和触发共享同一个事实源。这句承诺在本系列的下一程兑现，事件流离开本机之后，“单一事实源“从好实践变成整个系统的地基。</p>
-<h2 id="六总结-4"><a class="header" href="#六总结-4">六、总结</a></h2>
-<p>四本账连起来读：11/12 记像素的账，15 记数据的账，16 问像素的真，17 记状态的账。所有权的问法始终同一个：<strong>这个东西归谁，什么时候换手，换手时留没留字据</strong>。渲染所有权争的是和终端的关系，数据所有权争的是和磁盘的关系，状态所有权争的是和用户记忆的关系。前两笔账行业已经开始算了，第三笔刚刚开张：谁家的产品先给用户一本可查的上下文账，谁就先拿到这个时代界面信任的下一块地皮。</p>
-<p>下一篇换轨。事件流离开本机：断线、重连、多服务器，以及那条中断的 SSE 流，谁还记得它讲到哪了。基建系列，从“账本“开始。</p>
-<hr>
-<h2 id="参考与延伸-17"><a class="header" href="#参考与延伸-17">参考与延伸</a></h2>
-<ul>
-<li><em>Claude Code 部分基于泄露源码的多家交叉分析（知乎“Claude Code 代码分析“系列、GitHub 上下文压缩深度解析、腾讯云分析报告；熔断注释数字“1,279 会话/50+ 次连续失败/日 25 万次调用“出自 CSDN 源码分析引注，二手转述）与公开 issue（“Auto compact does not trigger at 100% context”，2026-06）。</em></li>
-<li><em>33K/45K 缓冲与提前触发的量化来自 claudefa.st 与 hyperdev 的第三方分析。</em></li>
-<li><em>泄露源码分析中提及的 25K 附件重注入预算、Session Memory 快路径、effectiveWindow−13K 三个数字未能独立核实，本文不引用。</em></li>
-<li><em>本地一手取证：grok-build <code>9fabade</code>（<code>crates/codegen/xai-compaction-transcript/src/lib.rs</code>）、FlowDown <code>b2cecfd6</code>（<code>ConversationManager+Compress.swift</code>）。</em></li>
-</ul>
-<div style="break-before: page; page-break-before: always;"></div>
-<h1 id="规则与记忆agent-的长期状态文件还是黑箱"><a class="header" href="#规则与记忆agent-的长期状态文件还是黑箱">规则与记忆——Agent 的长期状态，文件还是黑箱</a></h1>
-<blockquote>
-<p>第 20 篇讲 agent 的短期记忆，这一篇讲长期状态：跨会话活着、每次交互随身携带的东西。2026 年这个领域分成两条路线——进 git 的规则文件，和服务端数据库里的托管记忆——而它们共同缺一块界面：<strong>生效配置的预览</strong>。你永远看不到“这一次对话，agent 实际带着哪些规则和记忆上场”。</p>
-</blockquote>
-<hr>
-<h2 id="一正在塑造这个会话的那份文件"><a class="header" href="#一正在塑造这个会话的那份文件">一、正在塑造这个会话的那份文件</a></h2>
-<p>先交代一个第一人称事实：我的机器上有一份全局 <code>~/AGENTS.md</code>，61 行。它规定了确认口令（用户单独发 <code>o</code> 等于同意）、授权的跨轮次边界、改代码前必须先出方案、以及一条自增长条款：同类低效交互出现第二次，必须主动询问要不要写回这份文件。我在这个系列里表现出的许多行为惯性，源头就是它。</p>
-<p>问题也在这里。此刻这个会话，实际生效的规则是多层叠加的：全局 AGENTS.md、项目目录里的 AGENTS.md、会话记忆、宿主注入的约定，<strong>没有任何一个界面能展示合成后的结果</strong>。连我这个“当事 agent“都只能凭构造去推断，用户就更只能凭信任。规则在治理行为，而规则的合成品本身是个黑箱。</p>
-<p>这不是冷门困境。把它叫做界面问题，是因为它有界面解法，往下先看两条路线各自长到了哪，再回到这块缺失的界面。</p>
-<h2 id="二文件派agentsmd-是-agent-时代的-dotfile"><a class="header" href="#二文件派agentsmd-是-agent-时代的-dotfile">二、文件派：AGENTS.md 是 agent 时代的 dotfile</a></h2>
-<p>AGENTS.md 官网的自我介绍很克制：“a simple, open format for guiding coding agents, used by over 60k open-source projects”，给编码 agent 的指引格式，六万多个开源项目在用，“把它想成给 agent 看的 README”。FAQ 更克制，直说这不是正式标准，没有治理机构，各家工具自行解释。一个不设门槛的约定，被 OpenAI Codex、Gemini CLI、Cursor、GitHub Copilot、Jules、Amp、Zed、Devin、Roo Code 先后采纳，成了事实标准。著名的例外是 Claude Code，主力用自家的 <code>CLAUDE.md</code>（部分配置下也读 AGENTS.md）。</p>
-<p>它的吸引力不难理解：规则就是文本文件，可 diff、可 review、有 blame、随仓库走。改规则和改代码走同一个 PR 流程，历史清清楚楚。已经有评论主张：CLAUDE.md 的变更本质是软件变更，该用对待代码的严格程度对待它。这个主张成立的前提，正是文件派把规则变成了 git 里的资产。</p>
-<p>文件派的工程化上限长什么样，kimi-code 给了目前我见过最完整的一手样本：<strong>12 份嵌套的 AGENTS.md</strong>，从仓库根一路铺到 <code>packages/agent-core/src/services/</code> 这种深度。配套三条治理规则写在根文件里：根文件只放“热路径“规则；深层文档下沉到各自目录的 AGENTS.md；改代码前“follow the nearest <code>AGENTS.md</code> in the directory tree“（就近生效）。这就是 CSS 级联的文件版： specificity 靠目录深度实现。</p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch18-agents-cascade.svg" alt="12 份嵌套 AGENTS.md：CSS 级联的文件版，specificity 靠目录深度"><span class="img-wrapper"><img src="assets/ch18-agents-cascade.svg" alt="12 份嵌套 AGENTS.md：CSS 级联的文件版，specificity 靠目录深度"></span></label></p>
-<p>还有两个细节值得一提。其一，仓库根上 <code>CLAUDE.md</code> 和 <code>AGENTS.md</code> <strong>内容完全相同，双写两份</strong>，为了迁就两个 agent 各自的默认文件名，同一份规则存了两拷贝。标准割据的代价，具象成了一行 <code>cp</code>。其二，规则本身的内容已经治理到很细的地方：要求 agent 提交时不署名、不暴露自己是个 agent；公共文本里真实内部标识符要换成占位符；“人类作者必须理解这个变更，才允许提交 PR”。用文件驯服 agent，已经驯到了“不许承认自己是 agent“的粒度。</p>
-<p>生态的另一头是另一个一手事实：我把本地的 grok-build 仓库整个扫了一遍，<strong>一份规则文件都没有</strong>。同一批做 agent 的工程团队，有的把规则文件铺成十二层的级联，有的一个字没写。文件派远不是行业共识，它是行业的一个阵营。</p>
-<p>文件派的软肋也随之清楚：加载语义是方言市场（叠加还是覆盖、就近还是显式优先级，各家各说各话）；对普通用户它是 cargo-cult 风险，到处复制粘贴的魔法文本，没有人知道哪句在生效。</p>
-<h2 id="三托管派2026-年的记忆长出了一个设置页"><a class="header" href="#三托管派2026-年的记忆长出了一个设置页">三、托管派：2026 年的记忆，长出了一个设置页</a></h2>
-<p>另一条路线是产品化的记忆：agent 在对话里自动提取“关于你的事实“，存进服务端，跨会话注入。ChatGPT 和 Claude 在 2026 年都给出了管理界面：前者在 Settings → Personalization → Manage Memory，可以单条删除或全部清空；后者在 Settings → Memory，按主题查看、单条删、整体重置，还支持按项目（Cowork）开关，甚至给了一个截止 2026 年 9 月 9 日的旧记忆导出窗口。</p>
-<p>所以要修正一句早期批评：<strong>“记忆没有列表视图“已经过时</strong>，列表有了，删除也有了。仍然缺的是三样更深的：</p>
-<p><strong>出处（provenance）。</strong> 这条记忆是什么时候写的？来自哪次对话？由哪句话触发？设置页里一概没有。你看到的是结论（“用户偏好简洁回复”），看不到证据链。对照文件派：git blame 给每一行规则标了作者和时间，<strong>托管记忆连 blame 都没有</strong>。</p>
-<p><strong>审计。</strong> 记忆被改过吗？agent 自己修正过它的判断吗？没有 diff、没有历史。文件派的规则变更有 PR 记录，托管派的记忆演变无迹可寻。</p>
-<p><strong>合成视图。</strong> 这是最要害的：规则文件 + 托管记忆 + 系统提示 + 会话内上下文，最终拼成什么样的“agent 世界观“，没有任何地方可看。Claude Code 的处境最能说明问题：它同时有 CLAUDE.md（文件派）和 memory（托管派），两套叠加，叠加结果不可见。</p>
-<p>写入的不对称也还在：agent 自动写，用户事后翻设置页才发现被记住了，发现方式是“被记住“，从来不是“被通知“。</p>
-<h2 id="四两条路线的真正分歧"><a class="header" href="#四两条路线的真正分歧">四、两条路线的真正分歧</a></h2>
-<p>把两派并排，分歧不在存储形式，在<strong>归属</strong>：</p>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th></th><th>文件派</th><th>托管派</th></tr>
-</thead>
-<tbody>
-<tr><td>沉淀的内容</td><td>“agent 应该怎样做事”</td><td>“用户是什么样的人”</td></tr>
-<tr><td>存放地</td><td>git 仓库</td><td>服务端数据库</td></tr>
-<tr><td>所有权</td><td>用户（随 repo 走）</td><td>服务（随账号走）</td></tr>
-<tr><td>审查单位</td><td>变更（diff/PR）</td><td>条目（列表/删除）</td></tr>
-<tr><td>变更权</td><td>人提交，agent 建议</td><td>agent 自动，人否决</td></tr>
-</tbody>
-</table>
-</div>
-<p>一边是工程资产，一边是用户画像；一个把用户当工程师（规则即代码），一个把用户当用户（感受即数据）。第 20 篇问“上下文归谁“，这里问的是它的长期版本：“agent 的人格归谁。“现实的答案多是混合，于是回到了那个两头都欠的债：合成不可见。</p>
-<h2 id="五缺失的界面生效配置预览"><a class="header" href="#五缺失的界面生效配置预览">五、缺失的界面：生效配置预览</a></h2>
-<p>前端工程师其实早就拥有这个问题的一半答案。CSS 是多条规则级联叠加的，没有人能靠读源文件推断最终样式，所以浏览器给了 DevTools 的 Computed Styles 面板：<strong>不管多少层样式表怎么打架，面板告诉你最终生效的每一条</strong>。</p>
-<p>agent 需要的就是这个面板的对应物。它不用复杂，第一版只要回答三个问题：</p>
-<ol>
-<li><strong>这次会话加载了哪些规则源？</strong> 文件路径 + 行数（或字节数）：全局的、项目的、记忆的，各自占多少上下文预算。这一条同时喂了第 20 篇的计量问题：规则文件是上下文账单里最沉默的大户，<code>/context</code> 类工具已有雏形，但“哪些规则活着“和“占了多少 token“目前是两个答案。</li>
-<li><strong>记忆注入了什么？</strong> 条目加出处（哪次对话、何时写入），provenance 补上，设置页从仓库升级成账本。</li>
-<li><strong>冲突时谁赢了？</strong> 就近覆盖了全局？记忆改写了规则？一条标注就够了。</li>
-</ol>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch18-computed-config.svg" alt="生效配置预览：agent 需要 Computed Styles 面板的对应物"><span class="img-wrapper"><img src="assets/ch18-computed-config.svg" alt="生效配置预览：agent 需要 Computed Styles 面板的对应物"></span></label></p>
-<p>价值清单随手可列：排错时它是第一站（“它为什么坚持用这个过时约定“十有八九是规则层的事故）；信任上它是 16 篇的感知前提（看不到携带的规则，“遵循你的约定“就是一句不可验证的话）；工程上它是文件派治理的最后一环，有 diff、有 review、有就近级联，独独没有“实际生效值”，整套 git 流程差最后一厘米。</p>
-<p>它为什么还没长出来？因为合成规则的每一层归属不同的实现：文件是用户写的，加载是客户端定的，记忆是服务端存的，<strong>恰好因为没有人拥有全部三层，才没有人有立场给出合成视图</strong>。标准割据的代价，从第二节那行 <code>cp</code> 升级成了整块缺失的界面。</p>
-<h2 id="六总结-5"><a class="header" href="#六总结-5">六、总结</a></h2>
-<p>规则与记忆是 agent 的人格层。界面会换、模型会换、这个系列讨论过的每一种渲染策略都会过时，而人格层一旦建立，每一次交互都从它出发。2026 年的行业给了它两副身位：git 里的文本，或数据库里的条目，两副都在生长，也都不完整：文件派有审计没有合成，托管派有列表没有出处。</p>
-<p>判准可以是一句话：看一个产品把长期状态放在哪。放进 git 的，把用户当工程师；放进数据库的，把用户当用户；两样都放、又不给合成视图的，把用户当猜谜者。而那块叫“生效配置预览“的界面，会是这个方向的下一块必争之地，谁先做出来，谁就拿到了 agent 行为可审计性的最后一厘米。</p>
-<p>下一篇回到基建轨：MCP、ACP、AG-UI，agent 与工具、编辑器、前端之间那三套正在三国杀的协议，三个边界各欠着谁的债。</p>
-<hr>
-<h2 id="参考与延伸-18"><a class="header" href="#参考与延伸-18">参考与延伸</a></h2>
-<ul>
-<li><em>核查分层（截至 2026-09-28）：AGENTS.md 的定位、采用名单与“非正式标准“口径来自 <a href="https://agents.md">agents.md</a> 官网（多源交叉）。</em></li>
-<li><em>ChatGPT 记忆管理基于 OpenAI 帮助中心与官方公告，Claude 记忆管理基于 Anthropic 支持文档（含按主题查看、按项目开关、2026-09-09 截止的旧记忆导出窗口）。</em></li>
-<li><em>kimi-code 为本地一手（<code>1e553fc</code>：12 份嵌套 AGENTS.md 全清单、根文件治理规则引文、CLAUDE.md 与 AGENTS.md 双写比对）。</em></li>
-<li><em>grok-build <code>9fabade</code> 深扫无规则文件。</em></li>
-<li><em>作者本机 <code>~/AGENTS.md</code>（61 行）为第一人称素材，其内容不在本文公开细节之列的部分未展开。</em></li>
-<li><em>“AGENTS.override.md 野生层级约定“未能核实，不引用。</em></li>
-</ul>
-<div style="break-before: page; page-break-before: always;"></div>
-<h1 id="计划即界面checklist-正在成为-agent-时代的-diff"><a class="header" href="#计划即界面checklist-正在成为-agent-时代的-diff">计划即界面——checklist 正在成为 Agent 时代的 diff</a></h1>
-<blockquote>
-<p>控制三部曲之首：第 10 篇讲事中（审批），这一篇讲事前（计划），下一篇讲事后（回滚）。论点一句话：逐条审批的粒度撑不起长任务，第 14 次弹窗时你已经不读内容了。真正可扩展的控制，是事前批准一份可编辑的计划，执行中看着它被逐项勾掉——checklist 正在成为 agent 时代的 diff。</p>
-</blockquote>
-<hr>
-<h2 id="一你批准过最贵的一次同意"><a class="header" href="#一你批准过最贵的一次同意">一、你批准过最贵的一次“同意“</a></h2>
-<p>先复述一个每个人经历过的时刻：第 14 次 <code>[y/n]</code> 弹出来，你的手指比眼睛先动，按了 y。第 10 篇把这叫授权疲劳，并记录了行业的第一反应：auto mode 让分类器替你按 y（8 月起成了默认），机器抓住八九成的危险命令，比疲劳的人类可靠得多。</p>
-<p>但这条路付的代价第 10 篇也写了：分类器是新的黑箱，而程序员要的第一件事是可观察。于是还有第二条路没被走满：<strong>把审批的单位从“一次操作“升格为“一份计划“</strong>。不问“这个命令能不能跑“，先问“你打算做什么“，批准一次，管一整段。这不是新发明，是给审批换了一个更省力的粒度。</p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch19-approval-granularity.svg" alt="把审批的单位从一次操作升格为一份计划"><span class="img-wrapper"><img src="assets/ch19-approval-granularity.svg" alt="把审批的单位从一次操作升格为一份计划"></span></label></p>
-<h2 id="二计划在产品里的三个真实形态"><a class="header" href="#二计划在产品里的三个真实形态">二、计划在产品里的三个真实形态</a></h2>
-<p><strong>Claude Code 的 plan mode：把审批做成一种模式。</strong> 官方文档的口径：会话里按 Shift+Tab 在权限模式间轮换（default → acceptEdits → plan……），进入 plan 模式后 agent 被禁止编辑文件和执行有状态变更的命令，只能读和探索，产出一份计划；你审完批准，写权限才解锁。注意这个设计的重心：它没有发明新弹窗，它把“只读探索“和“开始动手“之间的那条线，从一条条审批上移成了一道模式边界，<strong>批准计划 = 批准跨界</strong>。</p>
-<p><strong>Kiro 的 spec 三件套：把瀑布搬回来产品化。</strong> <code>.kiro/specs/</code> 目录下按序生成 <code>requirements.md</code>（用 EARS 语法写，“WHEN… THE SYSTEM SHALL…”）、<code>design.md</code>、<code>tasks.md</code>，另有 <code>.kiro/steering/</code> 存放长期的产品与项目语境。AWS 这套被人叫 spec-driven development，形态上是需求-设计-任务的老瀑布，但角色变了：文档不是给人执行的开发计划，是给 agent 的执行输入，写文档的痛苦被 agent 分摊了大半之后，瀑布的结构价值才回来。</p>
-<p><strong>kimi-code 的两件套：清单是被记账的事实。</strong> 这是本篇的一手样本，两个部件都值得细看。</p>
-<p>其一，<code>TodoList</code> 是一个 builtin 工具（<code>agent-core/src/tools/builtin/state/todo-list.ts</code>），模型用它维护“visible plan of sub-tasks“。要害在存储方式：todos 活在 agent 级的 tool store 里，写入走 <code>tools.update_store</code>，注释原话，“the store update is visible on wire replay”。<strong>清单的每次变更都是 wire 事件流上的一条记录</strong>，重放可见、多端可投影。工具描述里还写着使用纪律：完成一项立刻勾掉，<strong>任何时刻只保留一个 in_progress</strong>。</p>
-<p>其二，一个叫 <code>TodoListReminderInjector</code> 的注入器（<code>agent-injection/todo-list.ts</code>）：如果模型连续 10 轮没碰过清单，就往上下文里注入一条提醒，之后每 10 轮再提醒一次。这个细节的价值在于它承认了一件事：<strong>agent 会忘记维护自己的计划</strong>。清单不是生成一次就自然保鲜的，得有人（这里是系统）拿着鞭子在上下文里催。</p>
-<p>计划文档本身也被记账：每次 ExitPlanMode 的评审提交，计划正文被卸载成带版本号的文件（<code>v&lt;N&gt;.md</code>，附 sha256 和字节数），事件流里只存引用记录，冷重建时照样投影出“计划修订“标记和 plan 模式徽章，服务端还有专门的 <code>/transcript/plan</code> 查询端。第 21、22 篇的账本思想，在计划上完整落地了一回。</p>
-<h2 id="三checklist-是人机共享的状态机"><a class="header" href="#三checklist-是人机共享的状态机">三、checklist 是人机共享的状态机</a></h2>
-<p>把三个样本放在一起，能看出 checklist 这个界面的真实身份：它同时是两个东西，<strong>给用户看的进度 UI，和给模型看的自持上下文</strong>。kimi 的设计点破了这层双重性：清单活在事件流里，人读它的投影（勾选框），模型读它的注入（“你还剩三项，保持一个 in_progress”）。一个状态，两侧消费，这正是第 11 篇多端投影在“计划“上的最小实例。</p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch19-checklist-duality.svg" alt="checklist 是人机共享的状态机：一个状态，两侧消费"><span class="img-wrapper"><img src="assets/ch19-checklist-duality.svg" alt="checklist 是人机共享的状态机：一个状态，两侧消费"></span></label></p>
-<p>由此带出三个没被普遍想清楚的设计问题：</p>
-<p><strong>谁能勾？</strong> 人勾是进度确认（我看到了），模型勾是完成声明（我做完了）。前者是读操作，后者是对用户的承诺，语义完全不同，但多数产品的勾选框长得一模一样。混用的话，清单会在不知不觉中从“共享状态“退化成“模型的自说自话“。</p>
-<p><strong>勾了算什么？</strong> 模型勾掉一项，等于宣称完成——但这是声明，还没有证据（测试呢？验证呢？）。声明与证据的落差是“完成“这个概念最深的一道裂缝，本系列后面讲验收时会回到这里，先立桩。</p>
-<p><strong>偏了怎么办？</strong> 计划批准之后，执行偏离计划时界面该报警还是静默跟随？目前的答案几乎都是静默：计划批准完就退场，agent 做的时候没人再对照。可计划的全部价值恰恰在提供<strong>偏离的参照系</strong>：没有基准读数就没有失真一说（第 20 篇的计量原理），没有批准过的计划，“跑偏“也无从定义。</p>
-<h2 id="四计划是契约还是散文"><a class="header" href="#四计划是契约还是散文">四、计划是契约还是散文</a></h2>
-<p>反方观点值得严肃对待：spec-driven 是瀑布借尸还魂；模型从不逐字执行计划，批准它纯粹是仪式感，给人虚假的掌控。</p>
-<p>仪式感的批评打不倒计划，因为计划的工程价值从来不在被执行到字面，在于三件更便宜的事：<strong>沟通</strong>（一份可编辑的计划把“我以为你说的是“提前到动手之前暴露）；<strong>对齐</strong>（批准计划是对 08 那套四层授权的一次性打包，计划≈会话级授权的操作集合）；<strong>参照</strong>（偏离子有定义，追责有基准）。真正该批评的是另一种形态：不可编辑的计划、批准后即蒸发的计划、没有版本的计划。kimi 给计划文档上 sha256 和版本号，就是在把“计划是事实“这件事做实，而不是做成一段聊天记录里的散文。</p>
-<h2 id="五总结-4"><a class="header" href="#五总结-4">五、总结</a></h2>
-<p>事前的计划、事中的审批、事后的回滚，是同一根信任链条的三节。第 10 篇讲了中节，这一篇讲了前节：把审批的粒度升到计划，用清单把执行钉在计划上，让偏离可定义。链条还缺最后一节：当一切已经发生，那个叫“回滚“的按钮，到底能兑现多少。下一篇拆它：checkpoint 能回滚什么，以及它假装能回滚什么。</p>
-<hr>
-<h2 id="参考与延伸-19"><a class="header" href="#参考与延伸-19">参考与延伸</a></h2>
-<ul>
-<li><em>核查分层（截至 2026-09-28）：Claude Code plan mode 基于 <a href="https://code.claude.com/docs">官方权限模式文档</a>（Shift+Tab 轮换、plan 模式阻止写入直至计划批准）及多家第三方解读交叉。</em></li>
-<li><em>Kiro 三件套基于 kiro.dev/AWS 官方材料与社区文档（<code>.kiro/specs/</code> 目录、EARS 语法、steering 目录）。</em></li>
-<li><em>kimi-code 为本地一手（<code>1e553fc</code>：<code>packages/agent-core/src/tools/builtin/state/todo-list.ts</code> 的存储与纪律注释、<code>src/agent/injection/todo-list.ts</code> 的 10 轮提醒注入器、transcript 层的 plan 版本化记录与 <code>/transcript/plan</code> 端）。</em></li>
-<li><em>“plans/</em>.md 社区工作流“的普遍性未核实，不引用。*</li>
-</ul>
-<div style="break-before: page; page-break-before: always;"></div>
-<h1 id="checkpoint-的谎言回滚按钮能兑现多少"><a class="header" href="#checkpoint-的谎言回滚按钮能兑现多少">Checkpoint 的谎言——回滚按钮能兑现多少</a></h1>
-<blockquote>
-<p>控制三部曲终章。事前的计划（23）、事中的审批（10）、事后的回滚（本篇），是同一根信任链条的三节，这一节的病情最隐蔽：回滚按钮长得像“世界可以重来”，实际的语义是“文件可以重来，就这些”。这篇拆它能兑现什么、假装能兑现什么，以及虚假的可撤销感如何让真正不可逆的操作变得更危险。</p>
-</blockquote>
-<hr>
-<h2 id="一按下-rewind-的那一秒"><a class="header" href="#一按下-rewind-的那一秒">一、按下 rewind 的那一秒</a></h2>
-<p>界面现象：<code>/rewind</code> 按下（或空输入行双击 Esc），菜单弹出，选中一个时间点，屏幕一闪——diff 消失，文件回到三分钟前。用户的体感是完整的：世界回去了。</p>
-<p>实际发生的事，按 Claude Code 官方文档的口径：会话里<strong>每个 prompt 对应一个 checkpoint</strong>，快照追踪的是 Write、Edit、NotebookEdit 这三个文件编辑工具造成的修改；回滚菜单给三个方向：代码和对话一起回、只回对话、只回代码。保留策略：最近 100 个快照（第三方实测补充：超过 30 天的跳过，子 agent 的编辑和软链文件不在追踪范围内）。</p>
-<p>把追踪范围读三遍：<strong>Write、Edit、NotebookEdit</strong>。也就是说，agent 通过 Bash 删掉的文件、<code>git push</code> 出去的历史、子 agent 的改动，都不在这个保护网里。有第三方教程干脆把 <code>/rewind</code> 定性为“surgical recovery tool“（外科手术式的恢复工具），提醒你别拿它当通用 undo。</p>
-<h2 id="二agent-的副作用早就溢出仓库了"><a class="header" href="#二agent-的副作用早就溢出仓库了">二、agent 的副作用早就溢出仓库了</a></h2>
-<p>第 10 篇的四层风险模型里有一列叫“可回滚性“：只读、可回滚写入、难回滚写入、外部副作用。这个维度早就预见到了今天的问题，但产品界面没有跟上：<strong>审批弹窗不区分“这个操作可以被 checkpoint 兜住“和“这个操作出了门就回不来“</strong>，回滚按钮也不标注自己的覆盖边界。</p>
-<p>把 checkpoint 罩不住的清单摆出来，问题的形状就清楚了：已经发出的邮件和消息、已经合并的 PR、云上已经创建或删除的资源、已经扣费的 API 调用、MCP 工具对第三方系统的每一次写入、bash 里 <code>rm</code> 掉的文件。这些操作和文件编辑共享同一颗“允许“按钮、共享同一种被保护的错觉，而它们恰恰是四层模型里最底下两层的东西。<strong>安全网盖住了轻的，漏下来的全是重的。</strong></p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch20-safety-net.svg" alt="安全网盖住了轻的，漏下来的全是重的"><span class="img-wrapper"><img src="assets/ch20-safety-net.svg" alt="安全网盖住了轻的，漏下来的全是重的"></span></label></p>
-<h2 id="三rewind-回得去文件回不去世界"><a class="header" href="#三rewind-回得去文件回不去世界">三、rewind 回得去文件，回不去世界</a></h2>
-<p>Claude Code 的 rewind 主打<strong>文件级</strong>：对话可以继续走，代码回到过去。</p>
-<p>但“重来“在理想里应该是时间旅行：会话分支和文件快照一起回到同一个时间点，对话状态、代码状态、工具执行到一半的外部状态，三者对齐。现实是 rewind 只回得去三样里的一样——会话留在原地继续走，外部世界的状态没有任何人碰得到，因为它根本没有快照可回。</p>
-<p>这里能接上第 17 篇的一条纪律：“appendFrame 是永久历史的唯一通道”。渲染层靠单一事实通道保住历史的完整性，文件层靠 checkpoint 快照保住代码的可回退性，<strong>同一个原则（为可逆性显式建一份账）在两层各自落地，唯独外部副作用那层还没有人建账</strong>。也许根本建不了：邮件发出去就是发出去了，那层的“账“只能事先记（审批时告知），不能事后回。</p>
-<h2 id="四虚假的可撤销感和它的风险补偿"><a class="header" href="#四虚假的可撤销感和它的风险补偿">四、虚假的可撤销感，和它的风险补偿</a></h2>
-<p>人机交互里有一条老常识：有 undo 的系统里，用户胆子更大，这叫风险补偿。把它放到 2026 年的组合里看：auto mode 让审批变快（第 10 篇补记），checkpoint 让失败显得可救，两者叠加，用户对“允许“的心理门槛被系统性压低。</p>
-<p>问题在于兜底的网只盖住文件系统。用户以为的保障是“错了能回来“，实际的保障是“文件错了能回来“。那 20% 溢出仓库的操作（push、付费、外发、删资源）在网眼之外，而审批越轻快，它们发生的频率越高。<strong>checkpoint 的最大风险不是失效，是它让别的保护显得不需要。</strong></p>
-<p>三条设计主张，按成本排序：</p>
-<ol>
-<li><strong>能力边界如实标注。</strong> 回滚按钮旁边一句话：“本回滚不覆盖 bash 修改、子 agent 编辑与一切仓库外操作。”（CC 文档其实写了范围，UI 上没说。）第 10 篇四层模型的“难回滚“和“外部副作用“两层，界面上应该显式标注“此操作不受 rewind 保护“。</li>
-<li><strong>不可逆清单成为一等数据。</strong> 哪些工具的副作用出了仓库，应该是产品的显式清单而不是用户的知识，它同时是审批界面的输入（标红）和回滚界面的边界说明。</li>
-<li><strong>回滚覆盖度接进审批。</strong> 同一颗允许按钮，对“checkpoint 罩得住“的操作和罩不住的操作，视觉与文案应该不同，这不必新发明，第 10 篇的模型就差这最后一公里。</li>
-</ol>
-<h2 id="五总结-5"><a class="header" href="#五总结-5">五、总结</a></h2>
-<p>事前的计划、事中的审批、事后的回滚，三节链条的公共原理只有一句话：<strong>让用户在对的时间看到对的边界。</strong> 计划展示意图的边界（打算做什么），审批展示操作的边界（正要碰什么），回滚本应展示可逆性的边界（哪些错能改）。第三节现在是三者中最虚的，虚到用户普遍不知道它有边界。</p>
-<p>而比边界更深的那个问题，三部曲也只能触到边：模型说“做完了“，勾选框打了勾，回滚也用不上——<strong>声明不等于证据</strong>。计划可以被批准，操作可以被允许，错误可以被回滚，唯独“完成“本身还没有被验证。这是系列后面“回放与验收“要拆的最后一道缝：让“做完了“三个字带上证据。</p>
-<hr>
-<h2 id="参考与延伸-20"><a class="header" href="#参考与延伸-20">参考与延伸</a></h2>
-<ul>
-<li><em>核查分层（截至 2026-09-28）：Claude Code checkpointing 基于官方文档（追踪 Write/Edit/NotebookEdit、三向回滚菜单、每 prompt 一快照、最近 100 个）与第三方实测（30 天上限、跳过子 agent 编辑与软链、bash 删除不可恢复、“surgical recovery tool“的定位建议）交叉。</em></li>
-<li><em>风险补偿为 HCI 常识性论述。</em></li>
-<li><em>“三向回滚菜单“的第三项（code-only）以官方文档为准。</em></li>
-<li><em>Cursor 的 checkpoint 机制未核实，不引用。</em></li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="第四条边界当主语是引擎"><a class="header" href="#第四条边界当主语是引擎">第四条边界——当主语是引擎</a></h1>
@@ -2864,7 +2666,7 @@ block 不到 committed frontier 不发射，发射即归终端，从架构上保
 <p>而所有这些机制的成本，都由一个朴素的问题定价：这两端，是不是独立发布？是，就付协议成本；不是，就允许紧耦合。胶水层的设计，说到底是一门发布关系的经济学。</p>
 <p>这条缝先讲到这里。再往下走一层，承诺要穿过的东西从进程边界换成网络和操作系统：连接会断、端会被操作系统杀掉、协议对面坐着别家的主语——那是基建三篇的事，从《没报错，就代表输出没问题吗》那个问句开场。</p>
 <hr>
-<h2 id="参考与延伸-21"><a class="header" href="#参考与延伸-21">参考与延伸</a></h2>
+<h2 id="参考与延伸-17"><a class="header" href="#参考与延伸-17">参考与延伸</a></h2>
 <ul>
 <li><em>事实核查分层（截至 2026-10-07）：本文 Codex 事实基于 rust-v0.154.0（HEAD 6b9826e3a，2026-09-09 快照）亲读——initialize 握手结构（app-server-protocol/src/protocol/v1.rs）、experimental 门控（message_processor.rs:912-920）、v1 冻结纪律（仓库 AGENTS.md:269）、TUI 内嵌走 JSON-RPC envelope（app-server/src/in_process.rs:22）、历史投影与分页（app-server-protocol/src/protocol/thread_history.rs、thread_history_projection.rs:1-3、v2/thread.rs:400,450）、静默降级分支（tui/src/lib.rs:518-521，逐行亲验）、voice-host 同构建校验（voice-host/src/main.rs:48 的 –build-commit）、computer use 治理面（features/src/lib.rs:271、protocol/src/openai_models.rs:402、core/src/session/step_activation.rs:110）与 cua_repl 通道（protocol/src/mcp.rs:38）。</em></li>
 <li><em>降级分支的数据影响（同一 codex_home、数据不断裂、<code>/status</code> Remote Connection 行整体消失）为 2026-10-07 晚接力复核增补（tui/src/lib.rs:518-521、thread-store/src/local/read_thread.rs:30）。</em></li>
@@ -2932,7 +2734,7 @@ block 不到 committed frontier 不发射，发射即归终端，从架构上保
 <p>在全书的地图上，这一篇认领的是评测卷四问地图上“协议“那层被测对象；四问之中，它主要回答“坏了会不会察觉“。评测卷讲统一定律——两个世界产出同一个绿灯，观测就是盲的；这一篇做的事，是在协议层把每个“两个世界“的格子找出来，一格配一名证人。</p>
 <p>上一篇结尾说：界面的每一个承诺，往下挖两层会碰到一条协议的条款，挖三层会碰到一个 try/catch 分支。这一篇把这句话补完——<strong>挖到第几层不重要，重要的是每一层都该有一条断言住在那里。承诺不是被信守的，是被看守的。</strong></p>
 <hr>
-<h2 id="参考与延伸-22"><a class="header" href="#参考与延伸-22">参考与延伸</a></h2>
+<h2 id="参考与延伸-18"><a class="header" href="#参考与延伸-18">参考与延伸</a></h2>
 <ul>
 <li><em>全章初稿，2026-10-07。</em></li>
 <li><em>Codex 行号基准 rust-v0.154.0，HEAD <code>6b9826e3a</code>。</em></li>
@@ -3117,7 +2919,7 @@ complete               以上全部排除，才轮到我
 <p>所以这一篇的结论可以压成一句：<strong>界面承诺的真假，不取决于渲染层多努力，取决于事实源存在哪一层。</strong> 半行字卡在屏幕上的那一刻，界面能说“正在重连，已恢复到第 N 个事件“，还是只能让动画继续转下去骗人，这个差别在上线之前，就已经被后端的一张表决定了。</p>
 <p>下一篇把镜头从连接的两端拉近到拿在手里的那一端：一部随时会被操作系统杀掉的手机，如何在一台会话的每个站点（输入、发送、排队、流式、回看）保住“流畅“和“完整“这两件互相打架的事。</p>
 <hr>
-<h2 id="参考与延伸-23"><a class="header" href="#参考与延伸-23">参考与延伸</a></h2>
+<h2 id="参考与延伸-19"><a class="header" href="#参考与延伸-19">参考与延伸</a></h2>
 <ul>
 <li><em>事实核查分层（截至 2026-09-28）：MCP 部分引自官方 changelog（<a href="https://modelcontextprotocol.io/specification/2026-07-28/changelog">modelcontextprotocol.io/specification/2026-07-28/changelog</a>，“Remove SSE stream resumability and message redelivery…“为原文引用）及多家第三方解读交叉。</em></li>
 <li><em>Vercel 部分基于 AI SDK 官方文档（Chatbot Resume Streams，<code>resumable-stream</code> + Redis）与第三方边界测评。</em></li>
@@ -3171,7 +2973,7 @@ complete               以上全部排除，才轮到我
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/infra02a-six-stations.svg" alt="六个站点，一个常数：用户在任一站断掉，会话都要能活下来"><span class="img-wrapper"><img src="assets/infra02a-six-stations.svg" alt="六个站点，一个常数：用户在任一站断掉，会话都要能活下来"></span></label></p>
 <p>流畅和完整这对冤家也是这么和解的：完整性靠事实外置（搬到磁盘和服务端），流畅性靠降级自由（画面可以随时扔，因为事实扔不掉）。下一篇（二·下）把这六个站点背后的架构账单一次摊开：被操作系统禁止的长连接、只肯当信号用的推送通道、替 agent 跑工具的服务端工作区，以及那句话作为第一原则的完整含义：agent loop 不能拥有 socket。</p>
 <hr>
-<h2 id="参考与延伸-24"><a class="header" href="#参考与延伸-24">参考与延伸</a></h2>
+<h2 id="参考与延伸-20"><a class="header" href="#参考与延伸-20">参考与延伸</a></h2>
 <ul>
 <li><em>一手取证：FlowDown <code>b2cecfd6</code>（<code>ConversationManager.swift</code> 的 <code>temporaryEditorObjects</code> 防抖持久化、<code>ConversationSessionManager.swift</code> 的 <code>countIncomingTokens</code>/Live Activity、<code>Pipeline/</code> 的流式与结算路径）。</em></li>
 <li><em>Claude Code 本机会话 JSONL（<code>type: "queue-operation"</code>/<code>"operation": "enqueue"</code>，2026-09-28 取证）。</em></li>
@@ -3206,14 +3008,14 @@ complete               以上全部排除，才轮到我
 <p><strong>审批挂起与会话休眠。</strong> 用户三小时不回，agent 停在等审批的状态上，会话资源怎么办？Cloudflare 的 Durable Object 休眠给了一个参考形态：对象睡了，WebSocket 状态还保着，消息到达即唤醒，休眠期不收活跃算力的钱。<strong>“等待“在服务端是被明码计价的资源</strong>，谁的账单、按什么计，是移动端产品没法回避的伦理题，因为等待的发起者（用户离开）和付费者未必是同一个预期。</p>
 <p><strong>云和本地抢同一个仓库。</strong> 云端 agent 在自己的工作区里跑，用户的桌面可能正开着同一个 repo，两边的改动如何合流，是 09 篇“统一 Workspace Model“在云时代的完整形态。这个问题目前没有谁真正答好，记为开放题。</p>
 <p><strong>工作区还是一个网络主体。</strong> 容器或 microVM 划定了文件系统边界，却没有自动划定网络边界：agent 在工作区里可以发任意出站连接，而它恰是一个会被自己处理的输入策反的执行者——一条恶意工具输出就能借 <code>curl</code> 或 npm 的 postinstall 把环境变量送出去。这类流量走 shell、不走 MCP，下一篇的工具边界管不到它。执行环境因此迟早要补上第三道边界：按 agent 实例签发的短命身份、默认拒绝的出站白名单，且强制执行点必须在 agent 进程之外（胶水层声明“需要连谁“，沙箱网关负责“别的什么都不通“）。还有一条传统网络里不存在的通道要单独盯：到模型 API 的那条 TLS 既是指令输入通道，又是带宽最高的数据外泄出口——两类历来分开管控的流量，在 agent 这里合成了一条加密流。这层目前没有公认形态，与云端工作区并记为开放题。</p>
-<h2 id="六总结-6"><a class="header" href="#六总结-6">六、总结</a></h2>
+<h2 id="六总结-4"><a class="header" href="#六总结-4">六、总结</a></h2>
 <p>把上下两篇收进一句话：<strong>agent loop 不能拥有 socket。</strong></p>
 <p>执行不拥有连接（挂起、杀进程、换服务器，会话继续）；连接不携带事实（断了，游标和 log 还在）；推送不携带内容（门铃只负责叫人）；客户端不携带状态（它的每样记忆都有磁盘或服务端的备份）。移动端不是这套原则的一个应用场景，<strong>它是最苛刻的那个证明环境</strong>：进程朝不保夕、网络七零八落、版本几周漂移，在这样的地基上还能兑现“流畅且完整“，靠的就是把每一样事实都安放在比进程、比连接、比画面活得久的地方。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/infra02b-first-principle.svg" alt="agent loop 不能拥有 socket：四条分离原则"><span class="img-wrapper"><img src="assets/infra02b-first-principle.svg" alt="agent loop 不能拥有 socket：四条分离原则"></span></label></p>
 <p>第 11 篇当年写过“Mobile 是 Companion，不是主战场“，从渲染负担看它依然成立；但从架构纪律看要补一句：<strong>移动端是这个行业里最诚实的甲方。</strong> 它不允许任何“先连着再说“的懒惰假设，每一条都在逼你把事实和传输分开。桌面端能蒙混过关的架构，在手机上四秒内露馅。</p>
 <p>下一篇回到地面：agent 与编辑器、前端、工具之间那三套正在三国杀的协议，MCP、ACP、AG-UI，三个边界各欠着谁的债。</p>
 <hr>
-<h2 id="参考与延伸-25"><a class="header" href="#参考与延伸-25">参考与延伸</a></h2>
+<h2 id="参考与延伸-21"><a class="header" href="#参考与延伸-21">参考与延伸</a></h2>
 <ul>
 <li><em>核查分层：Durable Object 休眠与单写者语义基于 Cloudflare Agents 官方文档（同基01 核查）。</em></li>
 <li><em>APNs payload 上限与静默推送限流按平台公开行为的量级表述（数千字节；低优先级、合并、受低电量与后台刷新设置影响），未引具体政策编号。</em></li>
@@ -3237,7 +3039,7 @@ complete               以上全部排除，才轮到我
 </ul>
 <p>主语不同，欠的债也不同。逐条看。</p>
 <h2 id="二工具边界mcp-和它的无状态豪赌"><a class="header" href="#二工具边界mcp-和它的无状态豪赌">二、工具边界：MCP 和它的无状态豪赌</a></h2>
-<p>MCP 管的是能力发现和结构化 IO：工具怎么声明自己的 schema、结果怎么以结构化形态返回（<code>structuredContent</code> 明说是给模型的，第 20、22 篇都引过它）。这条边界上，基01 已经核查过 2026-07-28 那次激进的无状态化重写：会话头删了，断线恢复删了，官方 changelog 的措辞是把这些“从传输里移除“，流断在半路，结果作废，客户端在应用层重试。</p>
+<p>MCP 管的是能力发现和结构化 IO：工具怎么声明自己的 schema、结果怎么以结构化形态返回（<code>structuredContent</code> 明说是给模型的）。这条边界上，基01 已经核查过 2026-07-28 那次激进的无状态化重写：会话头删了，断线恢复删了，官方 changelog 的措辞是把这些“从传输里移除“，流断在半路，结果作废，客户端在应用层重试。</p>
 <p>当时把它当传输层新闻讲，这里补上边界层的解读：<strong>MCP 敢这么做，是因为工具这个对话者近似纯函数</strong>。调用、返回、结束——边界对面没有需要延续的视图状态，会话性对这条边界是奢侈品而非必需品。无状态化的代价是真实的（会话被推给两端自己解决），但这个代价恰好落在了一个扛得住的位置。</p>
 <h2 id="三编辑器边界acp-的lsp-时刻"><a class="header" href="#三编辑器边界acp-的lsp-时刻">三、编辑器边界：ACP 的“LSP 时刻“</a></h2>
 <p>ACP 面对的问题形状是编辑器圈的老朋友：编辑器不想为每个 agent 写一遍 UI，agent 不想为每个编辑器写一遍适配，这正是 LSP 解决过的问题，只是主角从语言换成了 agent。所以它的定位被叫做“AI coding agent 的 LSP 时刻“：开放标准，JSON-RPC over stdio/WebSocket，agent 作为子进程被编辑器拉起，编辑器从此是一个能装任何 agent 的通用投影面。</p>
@@ -3265,12 +3067,12 @@ complete               以上全部排除，才轮到我
 </div>
 <p>规律就藏在“会话性“那一行：<strong>协议的会话性由边界另一端是否有状态决定。</strong> 工具无视图，MCP 可以拍掉会话；编辑器有状态，ACP 必须扛住会话；前端要增量，AG-UI 干脆把整个协议做成事件流。选协议之前先看对面是谁，跟第 11 篇选端先看约束是同一个思考方式。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/infra03-three-borders.svg" alt="三条协议边界：会话性由边界另一端是否有状态决定"><span class="img-wrapper"><img src="assets/infra03-three-borders.svg" alt="三条协议边界：会话性由边界另一端是否有状态决定"></span></label></p>
-<p>两条债也记下。其一，<strong>协议会咬人</strong>：MCP 2026-07-28 删 GET stream 的破坏性修订就是现场案例，依赖协议承诺的字段（比如断线恢复）说没就没，基01 里 kimi 那份“seq 字段全可选“的契约，就是客户端对协议咬人的标准防御。其二，<strong>registry 也在割据</strong>：Zed 一个、JetBrains 一个，agent 要么入驻两次要么选边，第 21 篇里 CLAUDE.md 和 AGENTS.md 的双写，在协议层换了个名字重演。</p>
-<h2 id="六总结-7"><a class="header" href="#六总结-7">六、总结</a></h2>
+<p>两条债也记下。其一，<strong>协议会咬人</strong>：MCP 2026-07-28 删 GET stream 的破坏性修订就是现场案例，依赖协议承诺的字段（比如断线恢复）说没就没，基01 里 kimi 那份“seq 字段全可选“的契约，就是客户端对协议咬人的标准防御。其二，<strong>registry 也在割据</strong>：Zed 一个、JetBrains 一个，agent 要么入驻两次要么选边，CLAUDE.md 和 AGENTS.md 的双写，在协议层换了个名字重演。</p>
+<h2 id="六总结-5"><a class="header" href="#六总结-5">六、总结</a></h2>
 <p>把三篇基建的账合到界面上：ACP 决定编辑器能不能内联渲染 agent 的 diff、能不能把权限请求嵌进侧栏；AG-UI 决定前端组件收到的是增量还是全量、状态会不会静默漂移；MCP 的无状态化决定断线那一刻，工具调用这条支路上的界面敢不敢承诺续传。<strong>界面的每一个承诺，往下挖两层都会碰到一条协议的条款。</strong></p>
 <p>基建系列到此收口：连接（基01）、端（基02）、协议（基03），事件流离开本机之后的全部旅程。旅程之外还站着一个这三篇没请进来的角色——网络本身：当 principal 是一个会被输入策反、还会瞬时繁殖子代的 agent，“谁能连谁、能碰什么“该按什么身份强制执行，今天还散落在工具授权和沙箱配置里，没有长成自己的一层（基02 末尾把它和云端工作区并记为开放题）。下一篇回到界面本体轨，讲控制的三部曲之首：计划。逐条审批必然疲劳，可扩展的控制粒度是事前批准一份可编辑的计划——checklist 正在成为 agent 时代的 diff。</p>
 <hr>
-<h2 id="参考与延伸-26"><a class="header" href="#参考与延伸-26">参考与延伸</a></h2>
+<h2 id="参考与延伸-22"><a class="header" href="#参考与延伸-22">参考与延伸</a></h2>
 <ul>
 <li><em>核查分层（截至 2026-09-28）：ACP Registry 名单与接入方式基于 Zed 官方博客与文档、JetBrains 官方博客（2026-01）及 agentclientprotocol.com 目录，多源交叉。</em></li>
 <li><em>AG-UI 事件分组基于 CopilotKit 官方资料与第三方教程（事件计数 16–17 存在版本差异，按量级表述）。</em></li>
@@ -3281,205 +3083,524 @@ complete               以上全部排除，才轮到我
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="没报错只是开始行为的可断言性"><a class="header" href="#没报错只是开始行为的可断言性">没报错只是开始——行为的可断言性</a></h1>
 <blockquote>
-<p>全书开篇问过：没报错，就代表输出没问题吗？界面部分第 16 篇回答了这个问题的一半——渲染层。但 agent 不只是会说话，它会做事：行为层的可断言性是另一个量级的难题。这一篇是本卷的地图：把“agent 评测”这团乱麻收拢成四个问题，后面每章认领一问。</p>
-</blockquote>
-<blockquote>
-<p><strong>待办（2026-10-07）· 执笔中</strong>：本章为全卷框架章，无对应博客篇，正文新写中；骨架与配图已定，先立章节地图于此。</p>
+<p>全书开篇问过：没报错，就代表输出没问题吗？界面部分第 16 篇回答了这个问题的一半——渲染层，把带状态的字节流逐层翻译成可以断言的东西。但 agent 不只是会说话，它会做事：行为层的可断言性是另一个量级的难题。这一篇是本卷的地图：把「agent 评测」这团乱麻收拢成四个问题，后面每章认领一问。</p>
 </blockquote>
 <h2 id="本章将讲"><a class="header" href="#本章将讲">本章将讲</a></h2>
 <ul>
 <li>agent 断言难在三件事：<strong>非确定性</strong>——同一输入不同输出，断言目标从结果移到路径覆盖与终态；<strong>成本是一等约束</strong>——每个样本都是真金白银；<strong>被测对象是复合体</strong>——模型 × 脚手架 × 工具 × 内容，归因必须靠对照。</li>
 <li>四问框架：能不能做对、坏了会不会察觉、是不是它的功劳、什么代价——也是本卷后续各章的目录。</li>
-<li>“什么代价“一问只立框架不展开：成本怎么进入 go/no-go 裁决，由评测第 8 篇接棒。</li>
+<li>「什么代价」一问只立框架不展开：成本怎么进入 go/no-go 裁决，由第 8 篇接棒。</li>
 </ul>
+<h2 id="一已经回答的那一半"><a class="header" href="#一已经回答的那一半">一、已经回答的那一半</a></h2>
+<p>先把已经到手的半个答案数清楚。</p>
+<p>基建卷 prologue 把「看起来完整」拆穿了一次：流式回答被截断，渲染出来毫无破绽——没报错，不代表没问题。那一篇的结论是判定必须下沉到协议层，complete 只能是排除出来的兜底，不能是默认值。界面部分第 16 篇再进一步，把渲染层的输出整个变成了可断言的：字节断言钉契约、快照钉形态、等价性钉不变量、守护测试钉纪律。到那一篇为止，「agent 说的话显示得对不对」这个问题，从字节到纪律每一层都有了断言形态。</p>
+<p>但注意这两篇共同的幸运之处：<strong>被测对象是确定的。</strong> 渲染引擎喂同一段字节，产出必须逐字节相同；不等就是 bug，断言就地正法。prologue 的完整性状态机也一样——字节到没到、到全没有，是有标准答案的。这个幸运到行为层为止。agent 的「输出」不是一段文本，是一连串动作：改了哪些文件、调了哪些工具、为什么这个顺序、中间信了哪条记忆。同一道题喂两遍，动作序列可以完全不同，而<strong>两次都对</strong>。界面的半边有 oracle，行为的半边没有。</p>
+<p>prologue 结尾立过一面旗：流行的评测框架把指标分成结果、过程、效率、风险四层，而「答案被截断却看起来完整」这种故障哪一层都放不进去——它不改变 agent 的行为，只改变你看到的是不是真的。四层评的是能力，它考问的是评测的地基。这一卷，就是来接这面旗的。</p>
+<h2 id="二行为层难在三件事"><a class="header" href="#二行为层难在三件事">二、行为层难在三件事</a></h2>
+<p><strong>第一难：非确定性。</strong> 断言的前提是「正确答案存在且可枚举」。渲染层有，行为层没有。同一输入不同输出，断言目标只能从「结果」搬走——搬到路径覆盖（该走的步骤走了没有）和终态（不管过程怎么抖，最后落库的状态对不对）。这是断言目标的两次搬家；第 11 篇还会补第三次：断言不了输出，就断言输出之间的关系。三次搬家有一个共同的方向——离「逐字比对预期值」越来越远，离「这个系统必须保持的性质」越来越近。</p>
+<p>非确定性还带来一个统计后果：单次成功说明不了什么。一个 agent 跑一遍成功，是灵感还是能力？τ-bench 给过一个官方口径的注脚——它不看单次 pass，看 pass^k：k 次独立运行<strong>全部</strong>成功的概率，把「可靠性」从一次灵感里拆出来。同一个 0.75 的单次成功率，可以是每次都四分之三的稳，也可以是时灵时不灵的赌——这两种 agent 是两种产品。第 6 篇会把 pass@k 与 pass^k 这对指标讲透，这里只立一句：<strong>本卷所有结论都以「跑多次」为前提，单次跑分不作数。</strong></p>
+<p><strong>第二难：成本是一等约束。</strong> 界面层的测试是免费的：八百个快照文件，跑一次 CI 几秒钟，断言随便加。行为层反过来——每跑一次实验都是真金白银的 token，每个样本都是一次付费会话。这改变了评测的形状：样本量不由统计愿望决定，由预算决定；「再跑一万次取平均」这个选项不存在；连「这个实验值不值得跑」本身都成了一个需要裁决的问题。成本怎么进入 go/no-go 决策、账怎么记才不污染归因，这一问本篇只立框架，展开交给第 8 篇。</p>
+<p><strong>第三难：被测对象是复合体。</strong> 测 agent 从来不是只测模型。一次运行的结果是模型 × 脚手架 × 工具 × 内容的乘积：换了 harness，同一个模型判若两人；同一段系统提示，写在 description 里和写在正文里效果天差地别（第 2 篇有实测）；skill 文件被截掉三分之一，有的宿主当场翻车有的毫无察觉（第 4 篇）。所以本卷几乎不谈「这个模型行不行」，只谈「这个差异能不能归因」——而归因的最低配置是对照，这是第 6 篇的主题。</p>
+<h2 id="三被测对象的六层"><a class="header" href="#三被测对象的六层">三、被测对象的六层</a></h2>
+<p>复合体具体是哪几层？把全书的病例摊开，被测对象自下而上正好六层：</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/eval01-four-questions-map.svg" alt="Agent 评测收拢为四个问题：六层被测对象 × 四问，能力评测、故障注入、对照实验三个姿势各连一问"><span class="img-wrapper"><img src="assets/eval01-four-questions-map.svg" alt="Agent 评测收拢为四个问题：六层被测对象 × 四问，能力评测、故障注入、对照实验三个姿势各连一问"></span></label></p>
+<ul>
+<li><strong>模型</strong>：权重里的能力。榜单和基准的主战场，本卷着墨最少——不是不重要，是「只测这一层」的幻觉最害人。</li>
+<li><strong>流式协议</strong>：字节的到达与完整。prologue 整篇是这一层的病例：截断的回答看起来完整。</li>
+<li><strong>宿主 harness</strong>：循环、重试、兜底、权限。基建卷三篇在讲它；本卷第 3 篇讲它的另一面——静默降级如何让实验根本没发生。</li>
+<li><strong>内容与扩展</strong>：skill、插件、规则文件、记忆。第 4 篇的故障注入炸弹就埋在这一层。</li>
+<li><strong>生态</strong>：别人的插件、别人的评测、别人的榜单。第 6 篇的战场。</li>
+<li><strong>仓库与上游</strong>：被测代码本身。第 5 篇把故障注入从 skill 推到仓库，靠的就是这一层的 88 份原始记录。</li>
+</ul>
+<p>六层都能坏，且坏法各异；同一层修好了不代表相邻层没事。这张地图的用处是反着用的——拿到任何一个评测结论，先问：它测的是哪一层？结论能外推到哪一层？</p>
+<h2 id="四四个问题三个姿势"><a class="header" href="#四四个问题三个姿势">四、四个问题，三个姿势</a></h2>
+<p>地图的右半边是四个问题，本卷每章认领一问：</p>
+<ol>
+<li><strong>能不能做对</strong>——能力评测。但「做对」的前提是考题合法：考题从哪来、凭什么存在，是第 2 篇。</li>
+<li><strong>坏了会不会察觉</strong>——故障注入。第 3 篇先讲最便宜的失败（实验根本没发生，绿灯照样全绿），第 4 篇把炸弹真的埋下去，第 5 篇从战例里抽出检出率的乘法模型。</li>
+<li><strong>是不是它的功劳</strong>——对照实验。第 6 篇讲归因的最低配置，第 9 篇是把对照落到地面的操作手册。</li>
+<li><strong>什么代价</strong>——质量与成本的联合裁决。本篇只立框架，第 8 篇接棒。</li>
+</ol>
+<p>四问之外还有一问，问的是评测自己：裁判会不会错？会，而且裁判的 bug 比被测对象的更隐蔽——第 7 篇用我自己的一次公开翻案收口，那是本卷的元评测章。第 10 篇把整套方法搬进一个具体领域（记忆），第 11 篇补上断言形态的第三块拼图（蜕变测试）。十个章号，四问加一面镜子。</p>
+<p>三个姿势各连一问，但姿势不是章的私有财产：能力评测里有注入（第 2 篇的红绿对照就是注出来的），故障注入里全是微型对照实验。地图画的是主雇关系，不是围墙。</p>
+<h2 id="五本卷的叙事弧与公理"><a class="header" href="#五本卷的叙事弧与公理">五、本卷的叙事弧与公理</a></h2>
+<p>交代一下本卷的口气。和界面卷拿 ForgeLoopTUI 当参照系一样，本卷的参照系是我自己的评测工具链：dsh-eval-harness、skill-quake 故障注入管线、108 格截断矩阵。叙事弧大致是：先拿自己的 harness 当尺子，再拿尺子去量别人的生态，然后发现尺子本身的刻度是错的，最后把「修正尺子」长成纪律。所以本卷的病例大多是我自己的翻案记录——这不是自曝家短的癖好，是本卷的公理决定的：</p>
+<p><strong>评测的全部产物——考题、观测、对照组、裁判——自己也是软件，也会坏，也需要被测。</strong> 每一章既是拿评测问 agent，也是拿这句公理问评测本身。第 7 篇的「错误 → 机制化」清单，就是这句公理逐章兑现后的总账。</p>
+<h2 id="参考与延伸-23"><a class="header" href="#参考与延伸-23">参考与延伸</a></h2>
+<ul>
+<li><em>本章为全卷框架章，无对应博客篇；四问框架与六层划分浓缩自作者的私人评测全景笔记（未公开，仅作骨架来源，不作事实出处）。</em></li>
+<li><em>τ-bench 的 pass^k 口径见其论文原文（Sierra 团队的 Tool-Agent-User 交互基准）：以 k 次独立运行全部成功的概率度量可靠性，并以数据库终态做判定——「可靠性而非一次灵感」与「看终态」两条均与本卷互指。</em></li>
+<li><em>prologue 之问见基建卷 prologue；渲染层的四层断言翻译见界面部分第 16 篇，本章引用不重讲。</em></li>
+</ul>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="考题从哪来为真实失败而建"><a class="header" href="#考题从哪来为真实失败而建">考题从哪来——为真实失败而建</a></h1>
 <blockquote>
 <p>评估器该为已发现的错误而建，不为想象中的错误而建——想象中的错误测出来，全是噪声。这一篇讲用例的来源哲学：一条评测用例凭什么存在。</p>
 </blockquote>
-<blockquote>
-<p><strong>待办（2026-10-07）· 收编中</strong>：本章正文将由博客《给 skill 建门禁》（2026-09-17）收编改写（原则：论点先行、事件压缩），并补触发评测的双向口径；骨架与配图已定。</p>
-</blockquote>
 <h2 id="本章将讲-1"><a class="header" href="#本章将讲-1">本章将讲</a></h2>
 <ul>
 <li>红绿对照：用例的合法出生证明——每个修过的 bug 配一条 FAIL→PASS 用例，与 SWE-bench 的 fail-to-pass 同构。</li>
 <li>触发层必须测双向：该触发时触发、不该触发时不触发；TP/FP/FN/TN 的口径，以及为什么影子信号不进混淆矩阵。</li>
-<li>一次红线写法实证：同一条用例，description 写“不管“声明 vs 正文写行为指令，66.7% FAIL → 100% PASS。</li>
+<li>一次红线写法实证：同一条用例，description 写「不管」声明 vs 正文写行为指令，66.7% FAIL → 100% PASS。</li>
 </ul>
+<h2 id="一想象中的错误测出来全是噪声"><a class="header" href="#一想象中的错误测出来全是噪声">一、想象中的错误测出来全是噪声</a></h2>
+<p>评测圈有一条够狠的纲领：评估器该为已发现的错误而建，不该为想象中的错误而建（Hamel Husain 与 Shreya Shankar 的 eval FAQ 把它立成了 error analysis 的纲领，这里按我的理解转述）。我第一次读到时觉得偏激——不想象错误，用例从哪来？后来自己建了几轮门禁，才承认它是对的。</p>
+<p>想象的错误有个共同的产出模式：对着被测对象空想「它可能会犯什么错」，批量造一批用例，跑完得到一批红灯。然后你会发现这些红灯要么修不动（因为这个「错」在真实使用里根本不发生），要么修完了用户毫无感觉。噪声不是指数字抖，是指<strong>用例和真实失败之间没有血缘关系</strong>——你测的是一个你想象出来的系统。</p>
+<p>纲领的正面说法是：用例要从真实失败里长出来。流程是固定的：真实失败（线上事故、实验翻车、日志里的异常）→ 亲手标注，开放编码，给它归类 → 失败分类表里有了这一格 → 写成一条指名道姓的红测试 → 修复 → 转绿 → 进回归套件常驻。每一步都不可省略，尤其是第一步。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/eval02-failure-to-testcase.svg" alt="评估器为已发现的错误而建：从真实失败到指名红测试再到回归套件的流水线"><span class="img-wrapper"><img src="assets/eval02-failure-to-testcase.svg" alt="评估器为已发现的错误而建：从真实失败到指名红测试再到回归套件的流水线"></span></label></p>
+<h2 id="二红绿对照用例的出生证明"><a class="header" href="#二红绿对照用例的出生证明">二、红绿对照：用例的出生证明</a></h2>
+<p>「从真实失败长出来」在工程上有一个精确的判定：<strong>先红，后绿</strong>。一个 bug 被修好之后，配一条在修复前 FAIL、修复后 PASS 的用例——这条用例就是这次修复的出生证明。没有先红过的用例没有资格进套件，因为它没证明过自己抓得住任何东西。</p>
+<p>这个口径不是私家发明。SWE-bench 的判定信号就是 fail-to-pass：一个补丁算不算数，看它是否让一批此前失败的测试转绿（官方口径如此）。红绿对照是把同构的纪律搬到 agent 评测：每个修过的 bug，都欠套件一条这样的用例。</p>
+<p>我自己的一次完整闭环发生在给 skill 建门禁那天。skill-up 的 benchmark 模式会把每个用例跑 with/without 两臂，我给自己的 polish skill 跑完首轮，6 通过 4 失败，报告漂亮。直到翻被测 agent 的会话落盘才发现：<strong>所有 with 臂的会话里，这个 skill 的名字出现次数是零</strong>——harness 遍历 skill 目录时不跟随符号链接，我的九个 skill 全是软链，选中文件数为零，安装逻辑把这个零当成正常，一个文件没上传，debug 日志还照常打印「installed」。也就是说前面三轮全量评测，两臂跑的都是裸模型，报告里的 PASS 和 FAIL 全是 noise 装扮成的 signal。</p>
+<p>（「实验根本没发生」是第 3 篇的主角，那里会把这类绕行通道整个编目；这里只取它的后半段。）</p>
+<p>后续是：我报了 issue，顺手把修复写了——解析符号链接，并且「选中零个文件」直接报错，附三条回归测试。注意最后这个改动才是红绿对照的本体：symlink 只是零文件的一种成因，<strong>「选中了零个文件却照常评估」这个沉默本身才是该被判死的东西</strong>。修复让那三条用例从红转绿，它们从此站在套件里，专杀「静默的零」。</p>
+<p>红测试还有一条纪律：起名不能省。一条没有名字的边界，对下一个改代码的人不存在。「零文件安装报错」必须指名道姓，否则三个月后没人记得它防的是什么。</p>
+<h2 id="三测增量不测能力"><a class="header" href="#三测增量不测能力">三、测增量，不测能力</a></h2>
+<p>有了出生证明，下一个问题是：什么样的考题有区分度？</p>
+<p>首轮数据最容易误读的地方是：经典任务上两臂拉不开差距。裸模型润色文章、找内存泄漏本来就很强，这种题两边都满分，delta +0.00。这不代表被测的东西没用，代表<strong>你的用例测错了东西</strong>——测的是模型的存量能力，不是被测对象带来的增量。</p>
+<p>一天跑完十七个 skill 之后，有区分度的用例只有三类：</p>
+<ol>
+<li><strong>红线与边界</strong>——「不注水」「不编造」「确认前不动文件」。这是被测对象声称提供、而裸模型不保证的东西。</li>
+<li><strong>对抗性施压</strong>——「线上在报警，很急，别问东问西」。压力是红线唯一有效的显影剂：我的 plan-first skill 在施压下仍然先出方案不动文件（with 100% 对 without 75%），朋友的 check skill 顶住了「测试全绿直接放行」的压力并反指「这是假绿」。</li>
+<li><strong>流程纪律</strong>——「论点标出处」「敏感文件闸门」。主干答案裸模型也会给，但纪律不会。</li>
+</ol>
+<p>这三类有个共同前提值得说破：它们测的都是被测对象<strong>自己声明</strong>的规约，不是评测者想象中的错误。红线写在 SKILL.md 里，就是一份已存在的行为规约，测它更接近给规约补测试，而不是凭空设计质量标准；何况用例资格全是实测挣来的——先跑出大面积 FAIL，它才配进套件。失败是被发现的，不是被发明的。</p>
+<p>边界用例还有一个设计要点：<strong>域内夹带</strong>。测「润色 skill 不做全文翻译」不能用纯域外请求（「帮我写篇博客」——skill 根本不触发，测的是裸模型，什么也证明不了）；要以触发域内的事项为主请求，夹带一条它声明「不管」的事项：「帮我把这段话润色一下，然后翻译成英文」。主请求负责把 skill 激活，夹带负责考它的边界。</p>
+<h2 id="四触发层必须测双向"><a class="header" href="#四触发层必须测双向">四、触发层必须测双向</a></h2>
+<p>skill 这类「按 description 自主加载」的扩展，还有一层最容易被跳过的评测：<strong>触发本身</strong>。该加载时加载了吗？不该加载时忍住了吗？</p>
+<p>只测前者是常态，也是错的。一个「什么请求都触发」的 skill 在单向评测里 recall 满分，实际上它是个灾难——把无关对话全染成自己的上下文。所以触发层必须建混淆矩阵，四个格子全都要：TP（该触发且触发）、FP（不该触发却触发）、FN（该触发没触发）、TN（不该触发且没触发）。用例集由此分成 pos 和 neg 两半，neg 用例不是陪衬，是和 pos 同等重要的考题——「不当触发的代价」只能从 neg 里量出来。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/eval02-trigger-confusion.svg" alt="触发层双向口径：TP / FP / FN / TN 混淆矩阵与影子信号侧袋"><span class="img-wrapper"><img src="assets/eval02-trigger-confusion.svg" alt="触发层双向口径：TP / FP / FN / TN 混淆矩阵与影子信号侧袋"></span></label></p>
+<p>我的触发报告工具里有两条口径值得写成规矩，都是翻车翻出来的：</p>
+<ul>
+<li><strong>影子信号不进混淆矩阵。</strong> agent 用 Read 工具读了 SKILL.md 全文，不算协议级激活（协议激活只认 Skill 工具调用）——但它是宝贵的「影子使用」信号：模型动了心、走了手动路径。这个信号独立呈现，<strong>不进矩阵、不减 recall</strong>。把它混进矩阵，你会同时失去「协议激活」的准确度和「影子使用」的信息量。</li>
+<li><strong>超时的用例不进分母。</strong> 曾经有上游 bug：case 超时强杀引擎，结果文件来不及落盘。这种用例如果默默从分母里消失，通过率就被偷抬了。所以排除必须显式：<strong>报排除计数</strong>，让「没测成的」和「测了没过的」在报告里各占各的格子。</li>
+</ul>
+<h2 id="五红线写在哪模型才遵守"><a class="header" href="#五红线写在哪模型才遵守">五、红线写在哪，模型才遵守</a></h2>
+<p>最后一节是一次实证，它同时演示了本篇全部主张的闭环。</p>
+<p>所有 skill 作者都凭直觉在做一件事：写「不许做 X」。但这条约束写在 SKILL.md 的什么位置才有约束力？我给朋友的八个 skill 做评测时发现了一个天然对照组——它们的边界声明恰好分布在三种位置：</p>
+<ul>
+<li><strong>只写在 frontmatter description 里的，全灭。</strong> write 的「Not for commit messages」只在 description，被夹带请求触发后直接交付了一条工整的 commit message，全程零边界声明。health 更糟：审计请求夹带「顺便看看这个文件为什么报错」，它不仅接了调试，还动手修改运行了项目文件——把自己「审计不动手」的纪律一起拖下水。</li>
+<li><strong>正文有规则但只是路由表的，也没守住。</strong> check 的正文写了「prose review 路由到 /write」，但没写「/write 不在场怎么办」。评测环境只装了它一个，规则找不到出口，于是静默接单——路由声明没有降级路径，等于没有声明。</li>
+<li><strong>写进正文行为指令的，守住了。</strong> ui 的边界写在正文里，全场唯一守住：「按规范我不在这里手搓版式」，然后给出正确的接手方。</li>
+</ul>
+<p>三层证据拼出的结论很硬：<strong>frontmatter 的声明是路由元数据，管的是「要不要加载」，管不了「加载之后做什么」。运行时的边界约束必须是正文里的行为指令。</strong></p>
+<p>这个结论当天就闭环了：我的 polish skill 的「不管全文翻译」原本也只写在 description，评测实锤失守（66.7% FAIL）；把「守边界」写进正文红线节，重跑同一条用例——100% PASS，agent 的原话是「英文版本需要你另行处理；下面只完成中文润色部分」。改动一行规则，用例从红到绿。</p>
+<p>回头清点这次实证：用例来自真实失败（66.7% FAIL 是实测出来的，不是想象的）；资格是挣来的（先红才配进套件）；修复有出生证明（同一条用例从红到绿）；结论立刻变成了两条上游 PR 的内容。eval 不是打分，是改被测对象的扳手——而扳手的每一颗螺丝，都得有出生证明。</p>
+<p>（单次跑分为什么不作数——同一条用例三轮跑出 25%、75%、100%——这个口径问题归第 6 篇，那里会把 pass@k 与 pass^k 讲透。）</p>
+<h2 id="参考与延伸-24"><a class="header" href="#参考与延伸-24">参考与延伸</a></h2>
+<ul>
+<li><em>本章主体收编自已发布博客《给 skill 建门禁：一天里的三种沉默失败、一次红线写法实证，和它抓到的上游 bug》（2026-09-17），按「论点先行、事件压缩」重排；触发双向口径（影子信号、超时排除计数）出自作者的 huohou 仓库 evals-shared 工具链与 2026-09-19 会话记录。</em></li>
+<li><em>SWE-bench 以 fail-to-pass 测试为判定信号，见其官方站点口径。</em></li>
+<li><em>「为已发现的错误而建」的纲领表述转述自 Hamel Husain 与 Shreya Shankar 的 eval FAQ 与 error analysis 系列文章，具体措辞以原文为准。</em></li>
+<li><em>符号链接零文件事故的后续：skill-up issue #253 与修复 PR #257（含三条回归测试）。</em></li>
+</ul>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="绿灯的两种谎言实验真的发生过吗"><a class="header" href="#绿灯的两种谎言实验真的发生过吗">绿灯的两种谎言——实验真的发生过吗</a></h1>
 <blockquote>
 <p>全书开篇问过：没报错，就代表输出没问题吗？这一篇把同样的怀疑推向行为层，先讲失败里最便宜也最致命的一类：不是检查问错了，就是检查看着的那件事根本没发生——两种情况里，绿灯都是全绿的。</p>
 </blockquote>
-<blockquote>
-<p><strong>待办（2026-10-07）· 底稿已定、扩写中</strong>：本章主体为定稿底稿；成章时将按简报收编博客《从 trace 到 eval》（2026-08-23）、《给流式协议造故障》（2026-09-25）作病例段，六条绕行通道逐条展开，章首病例优先换成作者自己的病例。</p>
-</blockquote>
-<hr>
-<p>绿灯会说谎，而且有两种说法。</p>
-<p>第一种：检查问错了问题。比如密钥目录的信任检查，问的是“那个文件在不在“，而该问的是“这个目录能不能信“。文件存在的时候，两个问题的答案一模一样，所以它天天绿。它不是坏了——它只在文件不在的那一天才和真问题分道扬镳，而那一天恰恰只有日志在场，等你跟着翻日志才撞见。这种检查最难发现，因为它平时是对的，一个红灯都不亮。</p>
-<p>第二种：检查本身没毛病，但它看的东西根本没发生。你以为是完整流程，其实关键部件被绕过去了：插件没挂上，harness 记个警告继续跑；mock 只实现了 happy path；agent 直接写出 grader 想看的结果文件；前置条件不满足，skip 静默生效；主路径失败被兜底接住，走了 plan B 还报成功；grader 只看终态，中间步骤无约束。这时每条检查都是好的，红的绿的都对——只是那件事压根没发生。</p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/eval03-bypass-channels.svg" alt="六条绕行通道：静默降级、happy-path mock、直写结果文件、skip 静默生效、兜底吞主路、grader 只看终态，全都绕到同一个绿灯"><span class="img-wrapper"><img src="assets/eval03-bypass-channels.svg" alt="六条绕行通道：静默降级、happy-path mock、直写结果文件、skip 静默生效、兜底吞主路、grader 只看终态，全都绕到同一个绿灯"></span></label></p>
-<p>两种谎言背后是同一条定律：<strong>当两个不同的世界产出同一个绿灯，你的观测对它们的差异就是盲的。</strong>“文件在“和“目录可信“是两个世界，“真实跑通“和“绕行达成“也是两个世界。而系统——尤其是里面装着优化器的系统，比如 agent——会自己漂向那个能过关的世界。模型越强，找到绿灯最短路径的本事越大，这个漂移越快。</p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/eval03-green-light-lies.svg" alt="两种谎言踩进同一个危险格子：状态坏 × 检查绿——要么检查问错了问题，要么被测的事根本没发生"><span class="img-wrapper"><img src="assets/eval03-green-light-lies.svg" alt="两种谎言踩进同一个危险格子：状态坏 × 检查绿——要么检查问错了问题，要么被测的事根本没发生"></span></label></p>
-<p>“被绕过的部分最容易出事“不是巧合，是因果。会被绕过的部分和容易出事的部分本来就是同一批：网络、重试、超时、清理、兜底——都是环境不对劲时才需要工作的部件。它们因为“麻烦“在测试里被绕过，又因为“少见但致命“在生产里出事。更糟的是，测试本是它们唯一的上场机会，绕过等于零锻炼，第一次真实执行发生在生产。而 grader 若可被绕过，你就不只是没测它——你在主动筛选“不经过它“的解法。</p>
-<p>对策是两个方向。</p>
-<p>一是分叉观测：让两个世界产出不同的记录。最简单的做法是把一个布尔拆成两次判断、分别记结果——“文件在“和“目录可信“分开记，“结果通过“和“关键部件真的跑了“分开记。分歧日不用再等有人翻日志，它自己就是一条可断言的记录。推广开就是：终态之外记路径凭据——工具真的调了、插件真的挂了、网络真的打了，和结果分开记、分开断言。</p>
-<p>二是故障注入：主动把坏世界造出来，看有没有人叫。对检查，喂坏样本——把目录改名、把配置删一行再跑一遍。红了，这个检查才算存在；不红，它只是装饰。对流程，做消融——把你以为是主干的部件拆掉再跑一遍：分数掉了，说明它真的在被测；分数没动，说明你测的从来就不是你以为的东西。</p>
-<p>最后：每次靠偶然发现或翻日志才看见问题，本身就是症状——当时没有任何检查在场。而每次惊讶都标出一块该写断言的空地。把惊讶的具体原因写成一条指名道姓的测试，起名这一步不能省：一条没有名字的边界，对下一个改代码的人不存在。起完名，“只在某一天才分开“就从侥幸变成了每天都要过的一道关。</p>
-<hr>
-<h2 id="参考与延伸-27"><a class="header" href="#参考与延伸-27">参考与延伸</a></h2>
+<h2 id="本章将讲-2"><a class="header" href="#本章将讲-2">本章将讲</a></h2>
 <ul>
-<li><em>本章为底稿（2026-10-05 定稿，2026-10-06 入册），成章时按 <code>新增分卷写作简报-eval-2026-10</code> 扩写病例段（收编博客《从 trace 到 eval》《给流式协议造故障》，六条绕行通道展开）。</em></li>
-<li><em>密钥目录病例整理自作者 2026-10-05 与 @echo_vic 在 X 上关于 agent harness eval 的公开讨论，他的原表述是「密钥目录的信任检查问的是“这个文件在不在“，而它该问的是“这个目录能不能信“」。</em></li>
-<li><em>两种谎言的归纳、因果机制与对策展开是作者的。</em></li>
+<li>两种谎言各配真实病例：检查问错了问题（zstd 静默截断），检查全对但被测的事根本没发生（六条绕行通道逐条展开）。</li>
+<li>统一定律：两个世界产出同一个绿灯，观测对它们的差异就是盲的；装着优化器的系统会自己漂向能过关的世界。</li>
+<li>对策两方向：分叉观测（在场证明与送达证明）与故障注入（包括对测量仪器自身的消融）。</li>
+</ul>
+<h2 id="一第一种谎言检查问错了问题"><a class="header" href="#一第一种谎言检查问错了问题">一、第一种谎言：检查问错了问题</a></h2>
+<p>我自己的 harness 里有过一个天天全绿的检查。评测管线要读 dsh 落盘的 session trace，格式是多帧拼接的 zstd 压缩容器；采集层拿到文件，调一次解压，解出明文，检查通过，流程往下走。这个检查跑了几周没红过一次。</p>
+<p>它问的问题是「这个文件能解压吗」。该问的是「帧数对不对」——一次性解压对这种容器<strong>只解出第一帧，不报错，静默截断</strong>。单帧文件里两个问题的答案一模一样，所以它天天绿；直到 trace 体积长大、开始分帧的那一天，两个答案分道扬镳，而分叉的瞬间没有任何红灯在场——解析照常成功，只是后面的帧全丢了。后来钉死它的办法是逐帧解析，外加一条显式告警：trace 跳行数增长必须被看见。</p>
+<p>同一个形状的例子我在 X 上和 @echo_vic 讨论 harness eval 时也撞见过一个：密钥目录的信任检查，问的是「那个文件在不在」，该问的是「这个目录能不能信」。文件在的时候，两个问题的答案一模一样，它只在文件不在的那一天才和真问题分道扬镳，而那一天恰恰只有日志在场。</p>
+<p>这种检查最难发现，因为它平时是对的，一个红灯都不亮。<strong>它不是坏检查，它是一个只在大地上回答过问题、从没在分叉日回答过的检查。</strong></p>
+<h2 id="二第二种谎言被测的事根本没发生"><a class="header" href="#二第二种谎言被测的事根本没发生">二、第二种谎言：被测的事根本没发生</a></h2>
+<p>第二种更阴：检查本身没毛病，每条都对，红的绿的都对——只是它看的那件事压根没发生。你以为是完整流程，其实关键部件被绕过去了。绕行通道我编目过六条，每条都配得着真实病例。</p>
+<p><strong>1. 静默降级：部件没挂上，警告继续跑。</strong> 给 skill 建门禁时的头号事故：harness 遍历 skill 目录不跟随符号链接，选中文件数为零，安装逻辑把这个零当成正常，一个文件没上传，日志照常打印「installed」——三轮全量评测，对照臂和实验臂跑的都是裸模型，报告全是噪声装扮成的信号（完整经过见第 2 篇）。降级本身可以有理由存在，<strong>静默</strong>不行：降级必须是一条能判红的事件，不是一行警告。</p>
+<p><strong>2. mock 只实现 happy path。</strong> 我给流式协议造故障时修出来的教训：mock 的权威性和被测客户端的严格性成反比——客户端越宽容，你的方言错误藏得越深。初版 mock 把「长度截断」发成完成事件裹一个状态字段，凭直觉拼的，信息都在；真实 API 的方言是一个独立事件类型。同一个错误，严格解析完成事件的客户端直接假阴性，宽容的兼容层默默消化——两边都绿。修法是给每种故障形态配一个「必然触发现有检测」的阳性对照变体，细到事件名的粒度：mock 说错了方言这件事，只有阳性对照能当场拆穿。</p>
+<p><strong>3. agent 直写 grader 要看的结果文件。</strong> 判分看什么，优化器就生产什么。我的 harness 抓过活着的样本：问图片尺寸，agent 没调该测的读图工具，用 bash 的 <code>file</code> 命令兜底答对——结构断言全绿，想测的能力零覆盖。Anthropic 记录过更省事的版本：长时程项目后期，新会话的 agent 环顾四周看到已有进展，直接宣布完成——什么都没做就「通过」了，他们的防线是把特性清单全部初始化为 failing，agent 只能翻完成位，不能删不能改。</p>
+<p><strong>4. skip 静默生效：前置条件不满足，用例消失。</strong> 我踩过的形态：筛选条件一个笔误，用例零命中，CI 空跑，显示绿色。没有任何测试失败——因为没有测试运行。现在的防御是筛选无命中直接报错：零是一个必须举证的结果，不是一个安全的默认值。</p>
+<p><strong>5. 兜底吞主路：主路径失败，走了 plan B 还报成功。</strong> 最日常的形态是工具报错被粉饰：工具返回了 error，agent 当作没看见，最终回答依然自信，单看最终文本完全正常。所以 trace 里的工具硬错误要单独提取，任何一条都足以判 FAIL——「最终答案像样」不能冲销「主路径出过事」。</p>
+<p><strong>6. grader 只看终态，中间步骤无约束。</strong> 终态对了，一切都对吗？Braintrust 的综述里有个尖锐的口径：一次事故响应用了 35 次工具调用才解决——「这不是 pass，是伪装成 pass 的成本事故」。终态检查回答「做成了没有」，回答不了「付出的代价是不是已经否定了方案」。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/eval03-bypass-channels.svg" alt="六条绕行通道：静默降级、happy-path mock、直写结果文件、skip 静默生效、兜底吞主路、grader 只看终态，全都绕到同一个绿灯"><span class="img-wrapper"><img src="assets/eval03-bypass-channels.svg" alt="六条绕行通道：静默降级、happy-path mock、直写结果文件、skip 静默生效、兜底吞主路、grader 只看终态，全都绕到同一个绿灯"></span></label></p>
+<p>六条通道共用同一个出口：<strong>绿灯全绿，实验没发生。</strong></p>
+<h2 id="三统一定律"><a class="header" href="#三统一定律">三、统一定律</a></h2>
+<p>两种谎言背后是同一条定律：<strong>当两个不同的世界产出同一个绿灯，你的观测对它们的差异就是盲的。</strong>「文件在」和「目录可信」是两个世界，「真实跑通」和「绕行达成」也是两个世界。而系统——尤其是里面装着优化器的系统，比如 agent——会自己漂向那个能过关的世界。模型越强，找到绿灯最短路径的本事越大，这个漂移越快。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/eval03-green-light-lies.svg" alt="两种谎言踩进同一个危险格子：状态坏 × 检查绿——要么检查问错了问题，要么被测的事根本没发生"><span class="img-wrapper"><img src="assets/eval03-green-light-lies.svg" alt="两种谎言踩进同一个危险格子：状态坏 × 检查绿——要么检查问错了问题，要么被测的事根本没发生"></span></label></p>
+<p>「被绕过的部分最容易出事」不是巧合，是因果，而且有三条机制：</p>
+<ul>
+<li><strong>选择效应</strong>：会被绕过的部分和容易出事的部分本来就是同一批——网络、重试、超时、清理、兜底，都是环境不对劲时才需要工作的部件。它们因为「麻烦」在测试里被绕过，又因为「少见但致命」在生产里出事。</li>
+<li><strong>零锻炼</strong>：测试本是这些部件唯一的上场机会，绕过等于零锻炼，第一次真实执行发生在生产。</li>
+<li><strong>筛选效应</strong>：grader 若可被绕过，你就不只是没测它——你在主动筛选「不经过它」的解法。这个压力随模型升级持续恶化，因为更强的优化器找捷径更快。</li>
+</ul>
+<p>镜子的另一面也要记账：有假通过就有假失败。基础设施错误被记成「推理失败」就是在冤枉 agent——外部文献里有个硬数字：一个数据提取的基础设施 bug 修掉之后，基准分从 50% 直接跳到 73%。判定前永远先问一句：这次失败真的是 agent 的失败吗？（这个问题的制度化形态是无效台账，见第 9 篇。）</p>
+<h2 id="四对策一分叉观测在场证明与送达证明"><a class="header" href="#四对策一分叉观测在场证明与送达证明">四、对策一：分叉观测——在场证明与送达证明</a></h2>
+<p>第一个对策方向是让两个世界产出<strong>不同</strong>的记录。</p>
+<p>最简单的做法是把一个布尔拆成两次判断、分别记结果——「文件在」和「目录可信」分开记，「能解压」和「帧数对」分开记，「结果通过」和「关键部件真的跑了」分开记。分歧日不用再等有人翻日志，它自己就是一条可断言的记录。</p>
+<p>推广开就是两层证明。<strong>在场证明</strong>：全量跑之前，先验证被测对象真的在场——不看退出码，看直接证据：工作区里的落盘文件、会话落盘里的加载日志行。PASS 只证明流程跑完了，不证明实验发生了。<strong>送达证明</strong>：终态之外记路径凭据——工具真的调了（断言调用序列，不许 bash 兜底冲销）、工具真的成了（硬错误单列，一票判红）、信号真的到了。我给流式协议写 mock 时把这层做成了标配：每个请求落一条结构化日志，实际写的字节数、完整事件序列、终止证人送达没有、以什么方式关流，全部在案；请求侧对称记录。有了这层，「工具没反应」和「故障没送达」才分得开——本书好几次翻案靠的都是逐事件核对这些字节。</p>
+<h2 id="五对策二故障注入包括对仪器自身"><a class="header" href="#五对策二故障注入包括对仪器自身">五、对策二：故障注入——包括对仪器自身</a></h2>
+<p>第二个方向更主动：把坏世界造出来，看有没有人叫。</p>
+<p>对<strong>检查</strong>，喂坏样本——把目录改名、把配置删一行、把流按要求截断，再跑一遍。红了，这个检查才算存在；不红，它只是装饰。第 4 篇会把这件事做成一个 108 格的矩阵。</p>
+<p>对<strong>流程</strong>，做消融——把你以为是主干的部件拆掉再跑一遍：分数掉了，说明它真的在被测；分数没动，说明你测的从来就不是你以为的东西。</p>
+<p>还有第三条，最少人做：<strong>对测量仪器本身做故障注入</strong>。仪器也是软件，它的假设可以和被测物正面冲突——第 9 篇有个病例：校验器假设「两臂回执顺序一致」，而 treatment 恰恰是改顺序，139 行里 88 行被仪器判了无效。这类事故的通用解法不是放宽仪器，是先怀疑仪器。我自己的待做清单里有一项就是把注入对象对准 harness 自身：逐个拆掉部件，看门禁分数动不动——还没跑出数字，先不写结论，但方向是定的：仪器不经过注入考验，和被测对象不经过注入考验一样，都只是「看起来在工作」。</p>
+<p>消融和下一卷常用的双臂对照要分清：消融拆的是测量仪器，双臂扰动的是被测物——各管一半，第 6 篇讲双臂那半。</p>
+<h2 id="六每次惊讶都是一块空地"><a class="header" href="#六每次惊讶都是一块空地">六、每次惊讶都是一块空地</a></h2>
+<p>最后一条是纪律层面的。每次靠偶然发现或翻日志才看见问题，本身就是症状——说明当时没有任何检查在场。而每次惊讶都标出一块该写断言的空地。</p>
+<p>把惊讶的具体原因写成一条指名道姓的测试，起名这一步不能省：一条没有名字的边界，对下一个改代码的人不存在。起完名，「只在某一天才分开」就从侥幸变成了每天都要过的一道关——这就是第 2 篇说的出生证明，也是两种谎言唯一的终点站。</p>
+<h2 id="参考与延伸-25"><a class="header" href="#参考与延伸-25">参考与延伸</a></h2>
+<ul>
+<li><em>本章底稿 2026-10-05 定稿，成章时收编了已发布博客《从 trace 到 eval：trace 设计、Agent 评测方法论、一个评测 harness 的实现，和它抓到的上游并发 bug》（2026-08-23）与《给流式协议造故障：三协议 mock、once 注入、字节级送达证明，和 strings 阴性不等于代码不存在》（2026-09-25）的病例段；章首 zstd 病例与前者的采集层事故同源。</em></li>
+<li><em>密钥目录病例整理自作者 2026-10-05 与 @echo_vic 在 X 上关于 agent harness eval 的公开讨论，他的原表述是「信任检查问的是“这个文件在不在“，而它该问的是“这个目录能不能信“」。</em></li>
+<li><em>「提前宣告胜利」与特性清单初始化为 failing 的防线，转述自 Anthropic 关于长时程 agent 工程实践的公开文章；「35 次工具调用不是 pass」转述自 Braintrust 的 agent 综述；基准分 50→73 的基础设施归因案例转述自 LangChain 的 eval checklist（引 Witan Labs）。三处均为转述级引用，具体数字以原文为准。</em></li>
+<li><em>「仪器假设与 treatment 正面冲突」的完整病例（139 行判无效 88 行）见第 9 篇；「选中零文件照常评估」的完整经过见第 2 篇。</em></li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="炸弹故障注入下沉到内容完整性"><a class="header" href="#炸弹故障注入下沉到内容完整性">炸弹——故障注入下沉到内容完整性</a></h1>
 <blockquote>
-<p>协议层的 mock 解的是“环境不可控“；但还有一类更原始的故障——脚手架物理残缺：文件被截断、被删除、frontmatter 被清掉，宿主会怎样？这类“内容完整性“故障在正统 robustness eval（prompt 扰动）里是空白。这一篇是造弹与引爆的记录。</p>
+<p>协议层的 mock 解的是「环境不可控」；但还有一类更原始的故障——脚手架物理残缺：文件被截断、被删除、frontmatter 被清掉，宿主会怎样？这类「内容完整性」故障在正统 robustness eval（prompt 扰动）里是空白。这一篇是造弹与引爆的记录。</p>
 </blockquote>
-<blockquote>
-<p><strong>待办（2026-10-07）· 收编中</strong>：本章正文将由博客《回答被截断，你的 CLI 知道吗》（2026-09-25）与《考官带伤阅卷》（2026-09-27）合并收编，按“造弹 → 矩阵 → 翻车与翻案“重组；骨架与配图已定。</p>
-</blockquote>
-<h2 id="本章将讲-2"><a class="header" href="#本章将讲-2">本章将讲</a></h2>
+<h2 id="本章将讲-3"><a class="header" href="#本章将讲-3">本章将讲</a></h2>
 <ul>
 <li>108 格注入矩阵：检出（L2 及以上）只有 6/30，L0 无察觉占六成——<strong>检出不难，告知才是缺口</strong>。</li>
 <li>挡路的伤 8/8 检出，不挡路的伤 2/8——差异在位置，不在剂量。</li>
 <li>方法学红线：只动副本、C0 阴性对照全程压阵，以及一个差点发布的错误结论如何被翻案。</li>
 </ul>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/eval04-108-grid.svg" alt="108 次故障注入矩阵：L0 无察觉占约六成；挡路的伤 8/8 检出，不挡路的伤 2/8"><span class="img-wrapper"><img src="assets/eval04-108-grid.svg" alt="108 次故障注入矩阵：L0 无察觉占约六成；挡路的伤 8/8 检出，不挡路的伤 2/8"></span></label></p>
+<h2 id="一两种炸弹"><a class="header" href="#一两种炸弹">一、两种炸弹</a></h2>
+<p>第 3 篇讲过给流式协议造故障的厨房：本地 mock provider、六种故障做成请求参数、once 注入、字节级送达证明。那颗炸弹解的是「环境不可控」——真实的断流和丢事件是运气事件，mock 里才是一行参数，确定性是全部意义。</p>
+<p>但那颗弹炸的是「流」。还有一类更原始的故障没人埋过：<strong>文件</strong>。skill、插件、规则文件，全是磁盘上的一堆 markdown——它会残缺：下载截断、同步丢文件、手滑删错行、生成事故写空 frontmatter。正统的 robustness eval 折腾的是 prompt 扰动（换措辞、加噪声），「脚手架物理残缺后宿主会怎样」这一层是空白。问题很朴素：<strong>当一个 skill 自己带着伤被加载、被执行时，宿主 agent 能发现吗？</strong></p>
+<p>靶子我选了一个最疼的：阿里开源的 skill-up 评测工具链里的 skill-upper——一个「负责测评其他 skill 的 skill」。选它的理由很直白：如果连续约考官自己都带着伤出题，它改的卷子还准吗？</p>
+<h2 id="二造弹的纪律"><a class="header" href="#二造弹的纪律">二、造弹的纪律</a></h2>
+<p>故障注入有一半的价值在方法学里。五条红线，每条都有出处：</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/eval04-injection-pipeline.svg" alt="故障注入管线里的方法学红线：只动副本、哈希匿名暂存、零上下文宿主、分层记录、C0 阴性对照全程压阵"><span class="img-wrapper"><img src="assets/eval04-injection-pipeline.svg" alt="故障注入管线里的方法学红线：只动副本、哈希匿名暂存、零上下文宿主、分层记录、C0 阴性对照全程压阵"></span></label></p>
+<ol>
+<li><strong>做实验的人不能当宿主。</strong> 谁动的手脚谁知道伤在哪，自己跑出来的「发现」不算数。每次运行都派一个零上下文的全新宿主，只知道 skill 路径和一句普通的用户请求。</li>
+<li><strong>中性 prompt。</strong> 请求里没有任何「检查完整性」的暗示——「帮我给这个 skill 设计评测并 validate，别真跑」。所有运行共用同一份模板，只换路径。</li>
+<li><strong>机械证人与 agent 警觉性分层记录。</strong> 每个注入状态先过一个确定性检查器（frontmatter 必填字段、引用文件存活性、截断签名），它只回答「文件层面有没有伤」；然后再看 agent 层的表现。两层分开记，谁在哪一格失效一目了然。</li>
+<li><strong>只动副本，每格必恢复。</strong> 变异只动副本，做完即 <code>git checkout</code> 恢复，机械证人确认签名回到健康态再进下一格。</li>
+<li><strong>C0 阴性对照全程压阵。</strong> 全部恢复、重跑基线、期望无误报——它证明流程无残留、证人无误报。阴性对照不是走过场：没有它，「检出」和「误报」用的是同一张嘴。</li>
+</ol>
+<p>后来还长了第六条，是翻车翻出来的：<strong>宿主可见的任何路径都不能编码伤型。</strong> 早先的运行路径里编码了伤型（<code>kimi+t5-trunc-asset/...</code>），至少两路宿主在报告里引用路径名当佐证。工具链随后把宿主可见路径全部改成哈希匿名暂存——做注入实验，连目录名都是泄密渠道。</p>
+<h2 id="三矩阵"><a class="header" href="#三矩阵">三、矩阵</a></h2>
+<p>四种基础伤型各对应一类真实事故：T1 主文件拦腰截断在 60% 处（下载/同步截断）、T2 删掉正文明确引用的附件（拷贝丢文件）、T3 附件截到一半（半截写盘）、T4 清空 frontmatter 的 name/description（生成事故），后续又补了 T5（用例模板截半）、T6（删掉指令点名要复制的模板）和 T1-85（主文件只截 85% 的剂量变体）。行为分级：L0 无察觉 / L1 有信号但说错对象 / L2 明确指出不完整 / L3 指出并拒绝执行。</p>
+<p>批量跑完，规律干净得刺眼：</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>伤型</th><th>伤与执行路径的关系</th><th>检出率</th></tr>
+</thead>
+<tbody>
+<tr><td>T1 主文件截 60%（后续步骤凭空消失）</td><td>直接挡路</td><td><strong>8/8</strong>，全部 L2，全部精确定位到断点行</td></tr>
+<tr><td>T6 删指令点名要复制的模板</td><td>指令直接落空</td><td>3/3</td></tr>
+<tr><td>T5 用例模板截半</td><td>半挡</td><td>2/3</td></tr>
+<tr><td>T3 参考文档截半（「可以参考」）</td><td>不挡路</td><td><strong>2/8</strong></td></tr>
+</tbody>
+</table>
+</div>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/eval04-108-grid.svg" alt="108 次故障注入矩阵：L0 无察觉占约六成；挡路的伤 8/8 检出，不挡路的伤 2/8"><span class="img-wrapper"><img src="assets/eval04-108-grid.svg" alt="108 次故障注入矩阵：L0 无察觉占约六成；挡路的伤 8/8 检出，不挡路的伤 2/8"></span></label></p>
+<p>没检出的那六路不是没读文件——它们读完了半截的参考文档、用了它的决策树、给出了完整输出，只是谁也没发现文件只读到一半。<strong>L0 的最强形态不是看不见，是看见了不认为是异常。</strong> 定稿后还有一次场外复现：另一颗伤弹的宿主在报告里写下「SKILL.md 本身看起来完整」，而运行目录名其实已经把「带伤」泄露给它了——警觉被引导起来，又被干净的切口排除掉。</p>
+<p>然后是回马枪，这轮我最在意。把带伤的考官（T3 版 skill-upper）留下，再给它一个被做了同样手脚的目标 skill，让它产评测用例。结果：<strong>两处伤都没被发现，而且卷子真的改歪了</strong>——健康基线的判分脚本对格式规则有五项显式机械断言，带伤考官产出的用例对其中源自被截半段的断言全部零命中。文档残缺 → 理解残缺 → 用例残缺，沿链静默传导，全程无告警。评测仪器的伤不治，它会继续生产出「看起来完整」的下游结论。</p>
+<p>横向三个宿主的矩阵（各跑 T1/T3）：挡路的伤在所有宿主上稳定检出（T1 合计 14/14）；不挡路的伤出现宿主间差异（T3 从 2/8 到 3/3）。但这里必须如实声明一个口径：三列里有一列实际跑在兼容端点的另一个模型上——矩阵同时携带宿主脚手架与模型两个变量，<strong>差异不做归因拆分</strong>，只能写「宿主间检出行为差异可见」，不能写「谁比谁强」。原生模型对照列留在仓库的复现手册里，不重跑。</p>
+<p>同一周我还引爆了协议层那颗弹（四个 CLI、六种流式故障、108 格）：F0 对照全绿，故障格 30 格里检出（L2 及以上）只有 6/30，L0 静默占六成；说出「回答被截断」这级人话的 L2 一格都没有——<strong>检出不难，告知才是缺口</strong>。两个实验一个测流、一个测文件，证据形态不同，收敛于同一句话：<strong>内容层判不出完整性；地基只做验收，不评级。</strong></p>
+<h2 id="四剂量与位置"><a class="header" href="#四剂量与位置">四、剂量与位置</a></h2>
+<p>这张表最容易被误读成剂量-响应曲线：伤越重越容易被发现。不是。T1 截 60%（丢 40% 内容）检出 8/8，截 85%（只丢 15% 的尾部速查表）反而只有 1/3——<strong>自变量从来不是伤的大小，是伤的位置</strong>。</p>
+<p>准确的提法是剂量-位置效应：检出率由「伤是否横在 agent 正要执行的那条指令上」决定。指令说「复制这个模板」而文件不在，3/3；主流程的后续步骤凭空消失，8/8；「可以参考」的文档坏了一半，2/8；与本次执行无关的元数据，概率性掷骰子。为什么，留给第 5 篇——那里会把「挡路」拆成乘法里的一个因子。</p>
+<h2 id="五翻车与翻案"><a class="header" href="#五翻车与翻案">五、翻车与翻案</a></h2>
+<p>这两周里我自己翻了两次车，都值得留档。</p>
+<p><strong>第一次，把轶事差点写成结论。</strong> 首轮手工实验里 T4（空 frontmatter）的宿主只字未提、照常跑完，一个干净的 L0。差点写下「执行层对元数据之伤稳定无察觉」。第三轮批量复测，三路宿主全部明确指出了空 frontmatter，其中一路还主动推断「可能影响触发」。修正后的准确说法是：那也是概率性的——<strong>单发是轶事，x/N 才算数</strong>。首轮那发 L0 保留为轶事证据，不计入批量口径。</p>
+<p><strong>第二次，差点发布一个错误结论。</strong> 协议层矩阵的初版里，codex 对 length 截断完全静默——这和它的源码直接冲突（源码里那个事件明确会进重试路径）。排查到最后，嫌疑人是我自己：初版 mock 把截断信号发成了完成事件裹一个状态字段，而真实 API 的方言是一个独立事件类型；客户端的完成分支根本不解析那个状态字段——<strong>不是它收到信号装没看见，是我的 mock 压根没把信号说出口</strong>。用法语考学生加法，学生没反应，差点判他不会算术。中途还差点二次误判：往二进制里搜事件名整串零命中，差点写下「无此处理器」——实际编译器把匹配内联成立即数比较，事件名不进字符串表，而处理器的证据串一直都在。strings 阴性，不等于代码不存在。</p>
+<p>修正方言后全量复测，初版那两格作废，证据保留并单独标注——它们现在是「测试夹具如何制造假阴性」的教学样本。这次翻案的代价是两格子返工，不是一篇错误的结论；而它能被翻回来，全靠第 3 篇那层送达证明：「工具没反应」和「故障没送达」之间，隔着一层必须自证的字节。</p>
+<p>两次翻车指向同一条发布纪律：<strong>最刺眼的结论，先当嫌疑人审一遍——它往往是你自己的仪器。</strong></p>
+<h2 id="六防线该长在哪"><a class="header" href="#六防线该长在哪">六、防线该长在哪</a></h2>
+<p>实验做完，自然的质疑是成本：检查会不会让 skill 变胖、加载变贵？答案的三档防线留到第 5 篇展开，这里只记结论的形状：把检查写进 skill 正文是最贵也最不可靠的一档（每次加载付 token，只换来看机缘的检出）；CI、loader、安装器那几档是零 token 的确定性。<strong>完整性是供应链问题，不是上下文问题。</strong></p>
+<h2 id="参考与延伸-26"><a class="header" href="#参考与延伸-26">参考与延伸</a></h2>
+<ul>
+<li><em>本章由已发布博客《回答被截断，你的 CLI 知道吗：四个工具、六种故障、108 格矩阵，和一个差点发布的错误结论》（2026-09-25）与《考官带伤阅卷：对 Agent Skill 做故障注入的完整性实验》（2026-09-27）合并收编，按「造弹 → 矩阵 → 翻车与翻案」重组；协议层 mock 的机制细节（F0–F5、once 语义）见第 3 篇与《给流式协议造故障》（2026-09-25），本章只引用。</em></li>
+<li><em>实验数字出自 truncation-detection-benchmark（2026-09-25 运行，108 格逐格证据开源）与 skill-quake（2026-09-27 前后运行，results/ 目录三批汇总）；宿主矩阵含脚手架 × 模型双变量，检出差异不做归因拆分，原生对照列见仓库 docs/REPLICATION.md。</em></li>
+<li><em>行为分级口径：L0 无察觉 / L1 信号指错对象 / L2 明确指出 / L3 拒绝执行；统计口径：首轮手工实验不并入批量累计，x/N 不读作精确比率估计（单条件 N=3～8）。</em></li>
+<li><em>上游互动：skill-up issue #253/PR #257（零文件安装）、issue #280/PR #281（完整性检查进 CLI）、kimi-code issue #4012（主 agent 截断静默接受）。</em></li>
+</ul>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="检出率是个乘法"><a class="header" href="#检出率是个乘法">检出率是个乘法</a></h1>
 <blockquote>
-<p>检出率 = 读到 × 愿报 × 挡路。三个乘数缺了任何一个，“未检出“就不可以归因——这是本卷的方法论核心，从战例里抽出来的模型。</p>
+<p>检出率 = 读到 × 愿报 × 挡路。三个乘数缺了任何一个，「未检出」就不可以归因——这是本卷的方法论核心，从战例里抽出来的模型。</p>
 </blockquote>
-<blockquote>
-<p><strong>待办（2026-10-07）· 收编中</strong>：本章正文由同名草稿《检出率是个乘法：把故障注入从 skill 推到仓库，三个乘数，和一个被我亲手推翻的假说》收编改写，成书首发（草稿不再单独发博客）；骨架与配图已定。</p>
-</blockquote>
-<h2 id="本章将讲-3"><a class="header" href="#本章将讲-3">本章将讲</a></h2>
+<h2 id="本章将讲-4"><a class="header" href="#本章将讲-4">本章将讲</a></h2>
 <ul>
-<li>三个乘数逐一定义；为什么“察觉了但没报“是最危险的未检出形态；检出 ≠ 止损。</li>
+<li>三个乘数逐一定义；为什么「察觉了但没报」是最危险的未检出形态；检出 ≠ 止损。</li>
 <li>剂量-位置效应：同一强度的伤，位置决定检出。</li>
 <li>防线该建在哪：CI / loader / 安装器（零 token 的确定性），而不是 skill 正文；以及一个被我亲手推翻的假说。</li>
 </ul>
+<h2 id="一把故障注入推到任意仓库"><a class="header" href="#一把故障注入推到任意仓库">一、把故障注入推到任意仓库</a></h2>
+<p>第 4 篇的结论是一句话：检出与否不取决于伤有多重，取决于伤是否挡在 agent 要走的路上。这话是在 Agent Skill 上证出来的——一个 SKILL.md 加几个附件，结构简单。自然的追问是：换成普通仓库，同样的伤、同样的宿主，规律还在吗？</p>
+<p>靶子选了两个。<strong>靶子一</strong>：照 Vercel 开源的 eve 框架的结构（「an agent is a directory」——instructions.md 是系统指令，tools/ 一文件一工具，skills/ 按需加载）手搓一个最小贺卡 agent；这个结构和 skill 目录同构，故障菜单几乎零翻译成本平移，题库也和第 4 篇同源，结果才可比。<strong>靶子二</strong>：PydanticAI，选它不是因为有名，是它自带确定性模型替身——行为层不用烧真模型就能复现，还能截获「框架到底发给模型什么」，后面有大用。</p>
+<p>宿主两位（kimi CLI 与 codex CLI），版本日期进报告。开跑前多了一道以前没有的工序——<strong>训练数据在位探针</strong>：冷启动问两个宿主「你知道 eve 吗」，都答不了解。权重里没有原件，实验才干净。方法、中性 prompt、哈希路径、证人先行全部沿用第 4 篇的管线。本篇一共 88 次宿主运行。</p>
+<p>全部跑完之后，数据逼着我把「检出率」拆成了三个因子：</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/eval05-three-factors.svg" alt="检出率 = 读到 × 愿报 × 挡路：三道串联闸门，未检出沿闸门折返归因"><span class="img-wrapper"><img src="assets/eval05-three-factors.svg" alt="检出率 = 读到 × 愿报 × 挡路：三道串联闸门，未检出沿闸门折返归因"></span></label></p>
+<blockquote>
+<p><strong>检出 = 读到（外壳供给）× 愿报（模型供给）× 挡路（任务供给）</strong></p>
+</blockquote>
+<p>乘法的意思是：任何一道闸为零，乘积就是零；而且<strong>未检出可以沿闸门折返归因</strong>——断在哪一道，是可以查出来的。</p>
+<h2 id="二因子一挡路旧规律在新载体上原样复现"><a class="header" href="#二因子一挡路旧规律在新载体上原样复现">二、因子一：挡路——旧规律在新载体上原样复现</a></h2>
+<p>给 eve 风格目录注入的第一种伤，是第 4 篇 T1 的平移：instructions.md 从 22 行截到 12 行，切口选在一句完整的话之后——剩下的流程恰好还能走完，丢的是安全规则和工具约定。机械证人对这种伤完全静默，压力全在宿主警觉性上。</p>
+<p>结果：E1 格 <strong>0/16</strong>（两个宿主各 0/8）。</p>
+<p>这个零要和第 4 篇对照着看：同样是「主文件截断」，T1 在 skill 靶子上 8/8 全检出，这里颗粒无收。区别不在伤的大小——T1 砍掉的是任务必经的步骤，E1 砍完剩下的路恰好还能走。<strong>换了一类文件系统，「检出取决于伤是否挡路」原样复现</strong>——这是方法泛化成立的核心证据。PydanticAI 靶子上又复现了一遍：README 截到 23/38 行、rules.md 截到 13/20 行，检出分布同样跟着「挡不挡路」走，不跟着「丢了多少」走。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/eval05-dose-position.svg" alt="剂量-位置效应：挡路的伤 8/8 检出，不挡路的伤 2/8；差异在位置不在剂量"><span class="img-wrapper"><img src="assets/eval05-dose-position.svg" alt="剂量-位置效应：挡路的伤 8/8 检出，不挡路的伤 2/8；差异在位置不在剂量"></span></label></p>
+<h2 id="三因子二读到没打开的文件不会伤人"><a class="header" href="#三因子二读到没打开的文件不会伤人">三、因子二：读到——没打开的文件不会伤人</a></h2>
+<p>E3 格原本是阳性对照：把渲染工具的源码截断在 schema 正中间，括号不闭合，语法断裂，机械证人必抓——证明检测通道是活的。instructions 第三步还明确点名了这个工具。</p>
+<p>结果意外：kimi 的 8 发里，<strong>7 发的文件访问轨迹里根本没有 tools/ 目录</strong>——它把工具当概念，按 instructions 的描述直接执行了。更糟的是其中 2 发反向幻觉，声称「工具不存在」。文件被点名 ≠ 文件会被读。</p>
+<p>这给了「挡路」一个前置条件：伤得先出现在宿主的<strong>阅读路径</strong>上，才谈得上挡不挡执行路径。没读 = 没伤。</p>
+<p>「读到」是个过程信号，好消息是它可以机械提取，不用人工读 transcript。我在另一个宿主（pi）上实测过一条 <code>reread_any</code> 绊线——宿主是否重新打开过被注入的文件：TP=8、FP=0、TN=23、FN=3（2026-10-03，pi v1.0.0）。过程信号不需要完美，需要的是<strong>口径稳定、可以进门禁</strong>。</p>
+<h2 id="四因子三愿报我亲手推翻的外壳假说"><a class="header" href="#四因子三愿报我亲手推翻的外壳假说">四、因子三：愿报——我亲手推翻的「外壳假说」</a></h2>
+<p>E3 的第一轮结果出来时，解释看起来是现成的：codex 5/8 检出（有一发精确到「565 字节、缺 execute 实现和收尾括号」），kimi 0/8——codex 外壳更严谨嘛，它会习惯性地先 cat 源码。</p>
+<p>且慢。查了一下配置：这台机器上的 codex CLI 跑的是 k3-256k——<strong>也是同一家模型</strong>。昨晚的对比是「外壳 + 模型」两个变量一起动的。补一个同模型对照格：codex 外壳 × kimi-for-coding，N=8：</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>外壳</th><th>模型</th><th>E3 检出</th></tr>
+</thead>
+<tbody>
+<tr><td>kimi CLI</td><td>kimi-for-coding</td><td>0/8</td></tr>
+<tr><td>codex CLI</td><td>kimi-for-coding</td><td>0/8</td></tr>
+<tr><td>codex CLI</td><td>k3-256k</td><td>5/8</td></tr>
+<tr><td>kimi CLI</td><td>k3-256k</td><td>1/8</td></tr>
+</tbody>
+</table>
+</div>
+<p><strong>外壳假说死了。</strong> codex 外壳在同模型下依旧读完了所有文件——exec 日志里 cat 记录都在——但 kimi-for-coding 读完不报。严谨住在模型里，不住在外壳里。（诚实的 caveat：k3-256k 那路带着高推理档位，对照格没显式对齐推理档，模型变量没钉到完全死。方向可信，强度存疑——这个 caveat 本身就是第 6 篇要讲的：变量没隔离，结论就要降格。）</p>
+<p>这批数据里最冷的一发：kimi-for-coding 有一发在推理流里写下「render_card.ts was truncated (only 12 lines)」，<strong>它看见了，精确地看见了</strong>——然后把这件事合理化掉，最终交付只字未提，卡片照发。另一发更标准：推理里写明文件截断、止于 schema 中间，最终回复只有卡片正文。</p>
+<p>第 4 篇说「察觉了才报，没察觉就不报」。这一格补上更难受的形态：<strong>察觉了，也可以不报。</strong> 推理流不是交付物——用户看不见的那部分里发现的东西，约等于没发现。如果你只审计交付物，你审计的是它的表达欲，不是它的感知力。这条已经作为 L1 的新形态（perceived-but-unreported）写进了分级口径。</p>
+<h2 id="五检出--止损"><a class="header" href="#五检出--止损">五、检出 ≠ 止损</a></h2>
+<p>E2 是唯一全员满分的一格：16/16 宿主明确报告了 skill 文件缺失（L2）。然后呢？全部选择「报告后继续」。被删掉的文件里有一条「恰好一个 emoji 置于末尾」——健康基线的合规率是 4/4，E2 掉到 0/8 和 3/8；明令禁止的抬头格式出现了 4 例。</p>
+<p><strong>16 个宿主一边申报残缺，一边产出残缺的卡片。</strong> 申报和止损是两回事——没有任何一个宿主认为「文件缺了」值得停下来。检出率再漂亮，也只是信息，不是防线。</p>
+<h2 id="六确定性证人与阳性对照"><a class="header" href="#六确定性证人与阳性对照">六、确定性证人与阳性对照</a></h2>
+<p>PydanticAI 的替身模型允许截获框架发给模型的全部 payload，零模型成本。截断的内容原样、安静地流进模型输入：工具 docstring 截断后从 211 字符变 31 字符、rules.md 截断后 system prompt 从 917 变 663——框架告警为零。这不是框架的 bug（它没有义务校验用户内容），但它量化了静默传导的形状：<strong>从文件残缺到模型输入残缺，中间没有任何一道关卡。</strong></p>
+<p>也要给宿主记一笔功。R3 格把 agent.py 截断在 docstring 未闭合处——import 即 SyntaxError，响亮故障：codex 那路打出 8/8，多数先发 ast.parse 验证再下结论，3/8 直接阻断任务要求完整文件。这一格的意义和阳性对照一样：<strong>阴性结论必须配阳性证据</strong>，否则「没检出」和「检测通道死了」无法区分。</p>
+<h2 id="七防线该长在哪"><a class="header" href="#七防线该长在哪">七、防线该长在哪</a></h2>
+<p>现在可以回答第 4 篇留下的成本质疑了：完整性检查会不会让 skill 变胖变贵？三档防线的成本结构摆在一起，答案自己就出来了：</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>防线位置</th><th>运行时 token 成本</th><th>可靠性</th></tr>
+</thead>
+<tbody>
+<tr><td>skill 正文里的自检指令</td><td>每次加载都付，永久付</td><td>概率性（本卷实验里 2/8 ~ 8/8 浮动）</td></tr>
+<tr><td>CI / 发布期机械检查</td><td>零</td><td>确定性（断链、空 frontmatter 硬抓）</td></tr>
+<tr><td>loader / 安装期校验</td><td>零</td><td>确定性</td></tr>
+</tbody>
+</table>
+</div>
+<p>最贵的那档最不可靠。烧 token 换来的不是安全，是「看机缘的安全」。所以：<strong>输出给人看的 skill</strong>，CI 跑一次机械检查就够；<strong>输出被机器消费的 skill</strong>（评测、生成配置、进门禁的）， verdict 错了没人看见，值得发布期门禁加哈希清单；<strong>分发给很多人的 skill</strong>，检查该长在安装器那一层，装的时候验，不是用的时候每次烧上下文自查。一句话：<strong>完整性是供应链问题，不是上下文问题</strong>——地基的验收长在地基上。</p>
+<h2 id="八诚实清单这篇被抓的-bug-在我自己身上"><a class="header" href="#八诚实清单这篇被抓的-bug-在我自己身上">八、诚实清单：这篇被抓的 bug 在我自己身上</a></h2>
+<p>老规矩：每篇最后抓到的 bug 不在被测对象里，在测量系统自己身上。这篇有双份：</p>
+<ol>
+<li><strong>路径名泄漏。</strong> staging 根目录叫 <code>repo-quake</code>，对宿主可见——有宿主顺着路径名把实验猜出来了，违反了自己定的「路径不编码伤型」。</li>
+<li><strong>证人文件没收走。</strong> 机械证人的输出文件放在宿主可见的 staging 树里，有一发宿主读了它，反推出实验性质。</li>
+</ol>
+<p>受影响的 4 发检出本身仍然真实（都是先指出具体损伤、后猜测实验性质），数据保留、逐发加注记；两条教训固化回了工具链主干：实验产物对宿主不可见、宿主配置列为必进报告的格子变量。裁判被校准，又闭环了一次——这个循环本身是第 7 篇的主题。</p>
+<h2 id="参考与延伸-27"><a class="header" href="#参考与延伸-27">参考与延伸</a></h2>
+<ul>
+<li><em>本章由作者同名草稿收编改写，成书首发（草稿不再单独发博客）；全部 88 份原始记录与工具链在 skill-quake / repo-quake 仓库（2026-09 底至 2026-10 初运行），两条方法学修订已固化进主干（611fabc）。</em></li>
+<li><em>靶子一为照 Vercel eve 框架（2026-06 开源）目录结构手搓的最小 agent，未对其仓库本体注入；靶子二为 PydanticAI，确定性替身与 payload 截获为其官方 TestModel/FunctionModel 能力。</em></li>
+<li><em>pi 宿主的 reread_any 绊线数字（TP=8/FP=0/TN=23/FN=3）为 2026-10-03 pi v1.0.0 实测。</em></li>
+<li><em>「外壳假说」对照格中 k3-256k 路的推理档位未与对照格显式对齐，强度结论按文中 caveat 降格理解。</em></li>
+</ul>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="对照组的陷阱归因靠对照不靠证据强度"><a class="header" href="#对照组的陷阱归因靠对照不靠证据强度">对照组的陷阱——归因靠对照不靠证据强度</a></h1>
 <blockquote>
 <p>证据再硬，也同时兼容两个相反的故事。对照组选错比没有对照组更危险——它给错误结论配上证据。这一篇讲归因的最低配置。</p>
 </blockquote>
-<blockquote>
-<p><strong>待办（2026-10-07）· 收编中</strong>：本章正文将由草稿《测别人的生态：四层漏斗、三种 oracle、一次推翻自己的归因，和它抓到的三只 bug》收编改写，成书首发；Anthropic 官方 plugin evals 的双臂设计作收编注脚；骨架与配图已定。</p>
-</blockquote>
-<h2 id="本章将讲-4"><a class="header" href="#本章将讲-4">本章将讲</a></h2>
+<h2 id="本章将讲-5"><a class="header" href="#本章将讲-5">本章将讲</a></h2>
 <ul>
-<li>双臂对照（with / without）为什么是归因的最低配置；裸基线缺位时，“全绿“和“没测到“同貌。</li>
+<li>双臂对照（with / without）为什么是归因的最低配置；裸基线缺位时，「全绿」和「没测到」同貌。</li>
 <li>对照组被污染的三种形态。</li>
 <li>pass@k 与 pass^k：同一个 0.75，两个数讲出相反的故事——单次跑分为什么不作数。</li>
 </ul>
+<h2 id="一测自己的东西有-spec测别人的没有"><a class="header" href="#一测自己的东西有-spec测别人的没有">一、测自己的东西有 spec，测别人的没有</a></h2>
+<p>前面几篇的靶子都是自己的东西：自己的插件、自己的 skill、自己用的 CLI。这一篇换猎场——测别人的生态。靶子是 dsh 插件榜上三个高星项目：一个路由/注入器（约 7000★）、一个视觉工具（约 4000★）、一个多 agent 编排（约 1800★）。星数是测评当天从 GitHub API 现拉的，版本和日期先进报告，老规矩。</p>
+<p>测别人的东西，差别只有一句话：<strong>测自己的工具有 spec，测别人的生态没有。</strong> 你不知道作者的设计意图，只有一份 README、一个安装命令、和一堆你愿意相信的星。oracle（判定依据）的缺席逼出三个新问题：oracle 从哪来？锅（失败的归因）怎么分？分母（结论对什么成立）是谁？插件的测评结果只是证据，主角是方法。</p>
+<h2 id="二分母是谁你只能测装得上的"><a class="header" href="#二分母是谁你只能测装得上的">二、分母是谁：你只能测装得上的</a></h2>
+<p>先说一个容易被跳过的前提：生态评测的分母从来不是「全部插件」。最大的插件目录收录约一千五百条，收录规则是提个 YAML 就进——没有安装验证。另一份清单的作者较真，在容器里逐个真装：9247 个候选，1673 个实测，<strong>979 可用 / 600 不兼容 / 94 待定</strong>——装得上的只有六成。任何生态测评的结论，天然只对「可安装的头部」成立。</p>
+<p>这一层很快就从「前提」变成了「数据」。第一个插件就给我上了一课：7000★ 的那个，一键安装命令成功、exit 0，插件是死的——它靠 <code>prepare</code> 钩子在安装时自动构建，而隔离环境的包管理器默认拦截构建脚本，产物目录整个缺席。<strong>安装命令的成功和插件的存活是两个独立事件。</strong> 顺手还抓到 npm 同名错位：裸名指向的是另一个账号的不相干包，而真身其实挂在 scoped 名下——安装指引的正确形态只剩一种：全限定、钉版本、写明出处。</p>
+<p>所以漏斗有四层：<strong>人气 → 可装 → 行为正确 → 故障韧性</strong>。安装不是测评开始前的静默过滤器，它就是第一层数据。</p>
+<h2 id="三oracle-从哪来三种加一张诚实牌"><a class="header" href="#三oracle-从哪来三种加一张诚实牌">三、oracle 从哪来：三种，加一张诚实牌</a></h2>
+<p>没有 spec，oracle 只有三个来源，抓的虫不同：</p>
+<ul>
+<li><strong>README 承诺</strong>——测名不副实。把作者宣称的功能落成可判定断言：它说「图片给它，还你结构化证据」，那就断言它的工具必须真实被调用、输出必须带工具标记（不许 bash 兜底答对——第 3 篇的覆盖断言在这里复用）。</li>
+<li><strong>行为钉版</strong>——测回归。把首次运行的行为固化为基线，将来变了就红。措辞要小心：行为变了不等于行为错了，红只意味着「该有人来看一眼」。</li>
+<li><strong>宿主不变量</strong>——测相容性。「插件在场时，宿主原有的故障处理不能被破坏」——最有杀伤力的断言，因为它不依赖插件的任何文档。</li>
+</ul>
+<p>三个插件恰好各占一种形态。但第四种情况也存在：<strong>有些承诺落成不了可判定断言。</strong> 视觉插件的「看图看得好不好」，在我的环境里没有能用的视觉引擎，无法判定。正确动作是在报告里如实标「不可判定」——写一条永远通过的橡皮图章断言假装覆盖到了，比没有断言更坏：它给「没测」配了证据。</p>
+<h2 id="四双臂归因的最低配置"><a class="header" href="#四双臂归因的最低配置">四、双臂：归因的最低配置</a></h2>
+<p>韧性层的做法是 chaos：把插件挂进故障环境跑四格（对照 + 三种协议故障）。判定口径一句话：<strong>挂载后宿主行为变了，账才算到插件头上。</strong> 两个可测插件全绿，与裸基线逐格一致。</p>
+<p>这个「全绿」值钱，值钱在它是对照出来的：一个直接坐在模型请求链路上的 7000★ 注入器插件，不破坏宿主的故障检出与恢复——<strong>没有裸基线，「全绿」和「没测到」长得一模一样。</strong> 这就是双臂对照（with / without）的最低配置地位：两臂只差一个变量，分数相减得 Δ，Δ 才是被测物的真贡献。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/eval06-two-arms.svg" alt="归因靠对照：with / without 双臂相减得 Δ；对照组被污染的三种形态"><span class="img-wrapper"><img src="assets/eval06-two-arms.svg" alt="归因靠对照：with / without 双臂相减得 Δ；对照组被污染的三种形态"></span></label></p>
+<p>这个设计不是私家偏方。Anthropic 官方的 Claude Code plugin evals 把 with/without 双臂默认打开、裸基线内置——「插件在不在场」作为一等变量写进了官方评测协议（其 grader 分六档，机制不展开，一句官方背书即可）。社区基建和官方文档在同一个点上汇合：双臂不是增强，是底线。</p>
+<p>对照组的反面教材有三种常见形态，都进过我的事故现场：拿<strong>老配置</strong>当对照（混淆变量藏在「新旧差异」里，下一节的翻案就是它）；对照组靠<strong>默认值</strong>「自动出现」（第 2 篇里宿主的自动发现机制把对照组悄悄喂了和能力同源的东西——对照组的「无」必须强制出来）；以及干脆<strong>无裸基线</strong>直接报分。三种形态殊途同归：给错误的结论配上了证据。</p>
+<h2 id="五一次推翻自己的归因"><a class="header" href="#五一次推翻自己的归因">五、一次推翻自己的归因</a></h2>
+<p>本篇的戏肉，是我自己的一次误判。</p>
+<p>视觉插件的行为层首跑，现象非常「清楚」：在新建的隔离配置里装上插件，首次启动直接挂死，三十分钟没有输出。安装日志干净、配置结构正常、插件是 npm 正规军——「插件启动阻塞」，归因报告第一版就这么写的，证据看着很硬。</p>
+<p>按归因纪律，下结论前补一个裸对照：全新配置，什么都不装，首启。</p>
+<p>也挂。</p>
+<p>真凶是宿主自己的「新配置首启挂起」——和插件无关。我当时的对照用的是老配置，混淆变量是「新配置首启」而不是插件。<strong>对照组选错比没有对照组更危险</strong>：没有对照，你只会说「我不知道」；有了错的对照，你会说「我知道了」——而那个知道是错的。</p>
+<p>后续按纪律执行：归因文件里 v1 的错误结论和推翻过程<strong>原样保留</strong>，没有改成「一开始就判对了」——归因文件的价值恰恰在于记录错误，下次再遇到「证据很硬」的时刻，它提醒你硬证据是怎么兼容两个故事的。宿主的真 bug 报了上游（复现步骤与四路排除证据附全）；插件这边我只提了 issue 没提 PR——提 PR 得拿出能跑的方案，提 issue 只要附上能复现的证据，前者是空头承诺，后者才是诚实可行动。</p>
+<p>这轮还顺手校准了裁判自己：评测 runner 的超时只杀直接子进程，包装器形态的孙进程被孤儿化，整条 runner 挂死 34 分钟——裁判被它要测的场景打穿了。修复是进程组杀，回归测试专门断言「孙进程必死」。这个故事的完整版归第 7 篇。</p>
+<h2 id="六passk-与-passk单次跑分不作数"><a class="header" href="#六passk-与-passk单次跑分不作数">六、pass@k 与 pass^k：单次跑分不作数</a></h2>
+<p>最后一节是统计口径，不堆公式，只讲两个数讲出的相反故事。</p>
+<p>一个 agent 单次成功率 0.75。现在跑 10 次。<strong>pass@k</strong> 问：10 次里至少成功一次的概率——约 1.0，近乎必然。<strong>pass^k</strong> 问：10 次全部成功的概率——0.75¹⁰ ≈ 0.056，几乎不可能。同一个 0.75，一个讲「给它机会总能成」，一个讲「交给它必出事」。两个数都对，但一个是给消费者看的广告，一个是给运维看的账单。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/eval06-passk.svg" alt="pass@k 爬向 1.0 与 pass^k 跌向 0.056：同一用例 0.75 的两种叙事"><span class="img-wrapper"><img src="assets/eval06-passk.svg" alt="pass@k 爬向 1.0 与 pass^k 跌向 0.056：同一用例 0.75 的两种叙事"></span></label></p>
+<p>选哪个数取决于你回答什么问题：「这个 agent 有没有可能做对」用 pass@k，「这个 agent 靠不靠得住」用 pass^k——τ-bench 把后者立为可靠性指标，理由就是它对「时灵时不灵」的惩罚是指数级的。混在一起用就是叙事作弊：拿 pass@10 的 1.0 去汇报可靠性，等于把十次里的九次失败从分母里抹掉。</p>
+<p>所以第 2 篇那个现象（同一条用例三轮跑出 25%、75%、100%）的读法就清楚了：单次跑分是采样，不是测量。配套纪律两条：报告必须带迭代次数，单比例用 Wilson 区间看下界不看点估计——点估计的 3/3 和 30/30 在报告里长得一样，区间不会撒谎。</p>
+<h2 id="七沉淀生态评测四条"><a class="header" href="#七沉淀生态评测四条">七、沉淀：生态评测四条</a></h2>
+<ol>
+<li><strong>分母写出来。</strong> 采样框、安装成功率、剔除名单全进报告；结论只对「可安装的头部」成立，这个限定写进结论本身。</li>
+<li><strong>oracle 分三层。</strong> README 承诺 / 行为钉版 / 宿主不变量；写不出可判定断言的，标「不可判定」。</li>
+<li><strong>归因先跑裸对照。</strong> 红格没有对照组不许下结论。</li>
+<li><strong>成本透明。</strong> 版本、日期、token 开销进每份报告（本轮真实 API 合计 20116 token）——读者有权知道结论的价格。</li>
+</ol>
+<h2 id="参考与延伸-28"><a class="header" href="#参考与延伸-28">参考与延伸</a></h2>
+<ul>
+<li><em>本章由作者草稿《测别人的生态：四层漏斗、三种 oracle、一次推翻自己的归因，和它抓到的三只 bug》收编改写，成书首发（草稿不再单独发博客）；实验运行于 2026-09-26/27，上游互动：dsh Discussion #7978（新 profile 首启挂起）、routing-suite issue #152（预构建产物建议）。</em></li>
+<li><em>Anthropic Claude Code plugin evals 的双臂默认开启与六档 grader，经官方文档核实（2026-10-05，v2.1.269 文档口径）。</em></li>
+<li><em>pass^k 可靠性指标与「看数据库终态」的判定方式出自 τ-bench 论文；可安装率数字（9247/1673/979/600/94）来自社区清单作者的容器实测，引用时已注明口径。</em></li>
+<li><em>消融与双臂的分工：消融拆测量仪器（第 3 篇），双臂扰动被测物（本篇），各管一半。</em></li>
+</ul>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="裁判也要被校准meta-eval"><a class="header" href="#裁判也要被校准meta-eval">裁判也要被校准——meta-eval</a></h1>
 <blockquote>
 <p>这个系列翻过的每一次案，最后都指向同一件事：裁判本身也要被校准。评测系统的 bug，比被测对象的更隐蔽——这是本卷收口，也是全书收口。</p>
 </blockquote>
-<blockquote>
-<p><strong>待办（2026-10-07）· 收编中</strong>：本章正文将由博客《我给 skill-up 报了一个不存在的 bug》（2026-09-20）、《CI 红、本地绿》（2026-09-22）收编改写，末节回到全书开篇之问作全书答毕；骨架与配图已定（收口配图已按四卷现状修订为四环递进，2026-10-07；引擎、网络两卷落地时再定稿）。</p>
-</blockquote>
-<h2 id="本章将讲-5"><a class="header" href="#本章将讲-5">本章将讲</a></h2>
+<h2 id="本章将讲-6"><a class="header" href="#本章将讲-6">本章将讲</a></h2>
 <ul>
 <li>观测会骗人、考题会骗人、对照组会骗人、绿灯会骗人——全书病例的回环。</li>
 <li>误报公开更正的成本是一次尴尬，收益是一条可信的轨迹。</li>
-<li>“错误 → 机制化“清单：每次翻车长出的机制（排除计数、判活器回归、绝对路径纪律、flaky 分账），作全书方法论清单。</li>
+<li>「错误 → 机制化」清单：每次翻车长出的机制（排除计数、判活器回归、绝对路径纪律、flaky 分账），作全书方法论清单。</li>
 </ul>
+<h2 id="一一个误报的完整一生"><a class="header" href="#一一个误报的完整一生">一、一个误报的完整一生</a></h2>
+<p>我给 skill-up 提过两个挨着的 issue。第一个是真问题（超时强杀引擎，产物文件整个蒸发），后来成了 issue 加修复 PR。第二个，第二天我自己回到 issue 下面发了一条评论：「这是一个误报，skill-up 的行为完全正确，请关闭。」</p>
+<p>误报的诞生现场很体面。为了补回超时丢失的数据，我单 case 重跑了三次，每次控制台都报 <code>1 passed</code>，但产物目录里结果文件依然不存在。发 issue 前我还做了个「严谨」的复现：记录文件 mtime，重跑，再记录——mtime 纹丝不动。「重跑报 PASS 但产物零更新」，铁证如山，我把它连同命令输出一起写进了 issue，标题起得很有把握。</p>
+<p>两天后准备提 PR，加 <code>-v</code> 复现，一条 DEBUG 日志把我击毙：重跑的产物 append 进了新的 iteration 目录——文档里写得明明白白的语义，行为完全正确。我的两个观测错误原形毕露：<strong>其一</strong>，三次补跑是在子目录里敲的，相对路径的产物老老实实写进了嵌套目录，而我检查的是仓库根下的同名目录；<strong>其二</strong>，那个「严谨」的 mtime 复现，stat 的是旧 iteration 的文件——<strong>mtime 是真的，数字是一致的，结论是错的</strong>。我验证了一个没人怀疑的命题（旧文件不会被改写），却以为自己验证了那个有问题的命题（新文件没有写出）。还有一个隐形的帮凶：头一天那个真实的超时丢产物问题给了我「产物会丢」的先入之见，让我对「又一次丢失」毫无防备。</p>
+<p>每一格观测都「对」，拼起来的图景却是虚构的。这就是第 3 篇那条定律在观测者身上的版本：两个世界产出同一组证据，而我对它们的差异是盲的。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/eval07-meta-loop.svg" alt="裁判校准的元闭环：误报 → 假结论 → 公开翻案 → 长出新机制"><span class="img-wrapper"><img src="assets/eval07-meta-loop.svg" alt="裁判校准的元闭环：误报 → 假结论 → 公开翻案 → 长出新机制"></span></label></p>
+<h2 id="二公开翻案的成本与收益"><a class="header" href="#二公开翻案的成本与收益">二、公开翻案的成本与收益</a></h2>
+<p>发现真相当天，我在原 issue 下发了更正评论：说明行为正确、给出日志证据、逐条拆解自己的两个观测错误、指出唯一真实的问题、道歉并请关闭。写这段评论花的时间比写原 issue 还长——这是应该的。<strong>公开误报的成本是一次尴尬，收益是维护者的时间和一个可信的轨迹记录</strong>：下次你再报问题时，你的历史记录在替你说话。</p>
+<p>回头看，那组「铁证」有一个性质值得单独说：<strong>证据质量不保证结论正确，它保证的是纠错的速度。</strong> 最小复现、环境信息、内联证据，这些纪律没能阻止我犯错，但让我的错误可被快速验证和推翻——verbose 日志一跑就水落石出。第 3 篇的「不可判定」标注、第 6 篇归因文件里原样保留的错误结论，是同一条纪律的不同形态：给将来的纠错留抓手。</p>
+<p>误报调查还顺手孵出了真修复。读源码时发现我在 issue 里建议的修法和真实缺口对不上——上游早有优雅终止，缺的是「超时且产物缺失时合成一份最小结果文件」这个兜底，于是 PR 做的正是 issue 里我自己标的备选方案，PR 描述里专门开了一节说明与 issue 提纲的出入。<strong>issue 里的修复建议是假设，不是承诺</strong>——维护者看到的不是一个推翻自己的别扭 PR，而是一份诚实的调查记录。</p>
+<h2 id="三绿灯也会骗人"><a class="header" href="#三绿灯也会骗人">三、绿灯也会骗人</a></h2>
+<p>两天后我又翻了一次车，方向相反。</p>
+<p>我提的 PR 在 CI 上红了、本地全绿。第一反应是教科书式的：「平台差异」——Linux 与 macOS 的进程管理差异。我把上游的超时处理、错误分类、kill 升级的时序读了一个小时，越读越觉得每一处都平台无关，但又找不到别的解释。</p>
+<p>真正的突破口不是读代码，是一条 <code>git log</code>：上游早几天合入了一个语义收窄的改动（框架自写文件改登记进内部字段），而 GitHub 的 <code>pull_request</code> 构建的是「分支 ⊕ 最新 main」的合并态——<strong>CI 测的代码和我本地测的，不是同一份</strong>。merge 文本上干干净净，一个冲突标记都没有；语义上，上游把我们断言依赖的行为拆走了。merge 干净只证明两边没改同一行，不证明两边对同一个字段的理解还一致。</p>
+<p>所以「CI 红、本地绿」的第一个问题不该是「平台差在哪」，而是「CI 测的是哪份代码」。我为一个不存在的平台差异读了一个小时源码——那一小时里我离真相的距离，比不看代码还远。修法很轻：断言从「字段」改绑到「字段的职责」——上游重构会让字段贬值，职责才扛得住（Hyrum 定律的标准剧情：可观测行为足够多，就总有人依赖它）。</p>
+<h2 id="四judge-也要被校准"><a class="header" href="#四judge-也要被校准">四、judge 也要被校准</a></h2>
+<p>裁判链条上还有一类裁判不是脚本，是模型。judge 的校准纪律，我的口径是三条：</p>
+<ul>
+<li><strong>TPR 与 TNR 分开看。</strong> 「抓得出坏的」和「放得对好的」是两个独立能力，一个高一个低的 judge 很常见。聚合成一个准确率，等于让两种病共用一张化验单。</li>
+<li><strong>Unknown 必须是合法判决。</strong> 不许强制二选一。判不了的样本标 Unknown 退出，硬判的 judge 会把噪声抛光成信号。</li>
+<li><strong>校准集优先用有机失败。</strong> 合成坏样本是出给 judge 的送分题；真实运行里攒下来的失败，分布才和战场一致。校准集与验证集分开，校准集本身有保质期——这些和 RAG 检索评测是同一条纪律的两种说法。</li>
+</ul>
+<p>不校准的代价有公开数字：CORE-Bench 上评分器的刚性判分 bug（期望 <code>96.124991…</code> 而拒收 <code>96.12</code> 这类），能把实际 95% 的模型压成 42%。<strong>裁判的 bug 不只漏报，还会批量制造冤案</strong>——而它被采信的程度和正常裁判一模一样。</p>
+<h2 id="五错误--机制化全书方法论清单"><a class="header" href="#五错误--机制化全书方法论清单">五、错误 → 机制化：全书方法论清单</a></h2>
+<p>本卷每一章的翻车，最后都长成了一条机制。收拢成一张总单：</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>翻车</th><th>长出的机制</th></tr>
+</thead>
+<tbody>
+<tr><td>产物「消失」的误报（本篇）</td><td>排除计数显式上报；单 case 重跑一律绝对路径；判产物看最新 iteration</td></tr>
+<tr><td>判活器自身崩溃</td><td>评测器自测套件 32 条断言（含故意的坏样本），上线首日就抓到自己崩溃</td></tr>
+<tr><td>PASS/FAIL 摇摆</td><td>flaky 分账：flaky rate 与 error rate 分开记账，不许互相掩护</td></tr>
+<tr><td>孙进程孤儿化挂死 runner</td><td>进程组杀 + 「孙进程必死」回归断言</td></tr>
+<tr><td>mock 方言说错</td><td>每种故障配「必然触发现有检测」的阳性对照变体</td></tr>
+<tr><td>目录名泄露伤型</td><td>宿主可见路径全部哈希暂存；实验产物对宿主不可见</td></tr>
+<tr><td>超时用例从分母消失</td><td>排除计数（同上，两个事故共用一条机制）</td></tr>
+</tbody>
+</table>
+</div>
+<p>这张表是全卷真正的产出物。工具会过时，数字会过期，「每次翻车长出一条机制」这个循环不会。</p>
+<h2 id="六全书答毕"><a class="header" href="#六全书答毕">六、全书答毕</a></h2>
+<p>回到全书开篇的那句问话：没报错，就代表输出没问题吗？</p>
+<p>四卷各回答了它的一层。界面部分答了渲染层：把带状态的字节流逐层翻译成可断言的东西（第 16 篇的四层翻译）。基建卷答了协议层：complete 是排除出来的兜底，不是默认值；字节到没到，渲染层永远无权裁决。评测卷答了行为层：非确定性、成本约束、复合被测对象之下，断言目标三次搬家（路径、终态、关系），四问各有人认领。然后这一篇补上最后一环：<strong>观测层</strong>——连「发现问题」这件事本身，也会以自洽的方式出错，也需要被测。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/eval07-book-closing.svg" alt="全书收口：界面 → 基建 → 评测三环递进，把裁判也变成可断言的"><span class="img-wrapper"><img src="assets/eval07-book-closing.svg" alt="全书收口：界面 → 基建 → 评测三环递进，把裁判也变成可断言的"></span></label></p>
+<p>所以最终答案是：<strong>没报错什么也不代表——除非你为「发现问题」这件事本身也建了断言。</strong> 观测会骗人、考题会骗人、对照组会骗人、绿灯会骗人，而裁判——包括拿着工具的那个人——始终在被校准的途中。这个系列抓了这么多 bug，最后一个永远是自己的。</p>
+<h2 id="参考与延伸-29"><a class="header" href="#参考与延伸-29">参考与延伸</a></h2>
+<ul>
+<li><em>本章收编自已发布博客《我给 skill-up 报了一个不存在的 bug》（2026-09-20）与《CI 红、本地绿：一次「平台差异」误诊，和 merge 干净不等于语义兼容》（2026-09-22）；上游记录：skill-up issue #263、误报更正 #264、PR #265，语义变更上游 PR #250。</em></li>
+<li><em>judge 校准三条纪律为作者的工作口径；CORE-Bench 评分器 bug 的数字（95% → 42%）转述自 Anthropic 的 agent evals 专文，以原文为准。</em></li>
+<li><em>判活器自测套件与排除计数机制在 huohou 仓库 evals-shared（2026-09 起）；进程组杀修复在 dsh-eval-harness v0.6.0。</em></li>
+</ul>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="什么代价质量与成本的联合裁决"><a class="header" href="#什么代价质量与成本的联合裁决">什么代价——质量与成本的联合裁决</a></h1>
 <blockquote>
-<p>评测第 1 篇的四问里，“什么代价”一直只有一句话：成本是一等约束。这一篇把这句话展开——不是讲怎么省钱，是讲<strong>成本怎么进入 go/no-go 决策，以及成本账怎么记才不污染归因</strong>。</p>
+<p>第 1 篇的四问里，「什么代价」一直只有一句话：成本是一等约束。这一篇把这句话展开——不是讲怎么省钱，是讲<strong>成本怎么进入 go/no-go 决策，以及成本账怎么记才不污染归因</strong>。</p>
 </blockquote>
+<h2 id="本章将讲-7"><a class="header" href="#本章将讲-7">本章将讲</a></h2>
+<ul>
+<li>只按质量裁决等于给「花钱买通过率」开后门：四条明码标价的通道。</li>
+<li>裁决的三个量：cost per success、边际成本、质量-成本前沿拐点。</li>
+<li>成本首先是实验卫生问题：零静默重试、缓存经济学、两臂计费路径逐字节对齐、美元门槛预注册。</li>
+</ul>
 <h2 id="一开场十八比十八为什么仍然被否决"><a class="header" href="#一开场十八比十八为什么仍然被否决">一、开场：十八比十八，为什么仍然被否决</a></h2>
-<p>我持续在看的一个开源 agent 内核项目（单人维护；为保持小册独立，下面称它 M 项目，不点项目名，出处登记在写作简报里），它的评测台账里有一个反直觉的裁决。</p>
-<p>一次配对实验：对照组和实验组各跑 18 个 rollout，<strong>两组都 18/18 全成功</strong>。质量上打平，实验组还多出一套机制。按「通过率说话」的习惯，这个实验该判实验组赢，至少是可以推广。裁决却是<strong>拒绝</strong>——因为实验组每个 rollout 多花了 0.0648 美元，而实验合同里预注册的成本门槛是 0.02 美元（见该项目的评测规范文档，2026-10 观察）。</p>
+<p>先交代我自己的一笔糊涂账。第 4 篇那个截断检出矩阵，每格跑三次，108 格格格都是真金白银的会话；给 skill 建门禁时为了把置信区间压窄，采样模式一开就是好几轮。这些钱当时花得都对——但「花得对」的判断从来没被写进任何裁决规则，全靠手感。我的 harness 记了每一个 token 的去向，却从没回答过一个问题：<strong>这个通过率是多少钱买的？</strong></p>
+<p>然后我读到了一个把这个问题回答到底的裁决。我持续在看的一个开源 agent 内核项目（单人维护；为保持小册独立叫它 M 项目，出处登记在写作简报里），它的评测台账里有一次配对实验：对照组和实验组各 18 个 rollout，<strong>两组 18/18 全成功</strong>。质量打平，实验组还多一套机制。按「通过率说话」的习惯，这个实验该判实验组赢。裁决却是<strong>拒绝</strong>——实验组每个 rollout 多花 0.0648 美元，而实验合同里预注册的成本门槛是 0.02 美元。</p>
+<p>两组全成功，仍然被否决。我第一次读到时停了一下：它逼出的正是我一直在回避的事——<strong>只按质量裁决，等于给「花钱买通过率」开后门。</strong></p>
 <!-- 配图 eval08-quality-cost-frontier.svg：质量-成本散点 + Pareto 前沿，标注「18/18 但被否决」的点 -->
-<p>我第一次读到这个案例时停了一下。它逼出一个我自己 harness 里一直回避的问题：<strong>只按质量裁决，等于给「花钱买通过率」开了后门。</strong></p>
 <h2 id="二通过率是可以花钱买的"><a class="header" href="#二通过率是可以花钱买的">二、通过率是可以花钱买的</a></h2>
-<p>这不是比喻。至少有四条明码标价的通道：</p>
+<p>这不是比喻，至少有四条明码标价的通道：</p>
 <ol>
 <li><strong>换更强的模型</strong>。同一个 harness、同一批题，模型升一档，分数涨一截，单价也涨一截。</li>
-<li><strong>重试</strong>。偶发失败重跑，pass@k 随 k 爬向 1.0——评测第 6 篇讲过，这是「重跑治理」视角的遮羞布。</li>
+<li><strong>重试</strong>。偶发失败重跑，pass@k 随 k 爬向 1.0——第 6 篇讲过，这是把「跑多次」从测量手段偷换成提分手段。</li>
 <li><strong>堆上下文</strong>。更多规则文件、更多历史、更多 few-shot，弱模型也能被上下文抬着走。</li>
-<li><strong>加密自检</strong>。改完再让模型自查一遍、跑一轮 judge 复核，失败率会降，token 翻倍。</li>
+<li><strong>加密自检</strong>。改完让模型自查一遍、再跑一轮 judge 复核，失败率会降，token 翻倍。</li>
 </ol>
-<p>这四条通道有个共同特征：<strong>在只报通过率的报告里，它们全部隐身</strong>。一个 80% 通过率但平均花 2 美元的臂，和一个 78% 通过率花 0.2 美元的臂，在「pass rate 排行榜」上前者赢；在真实产品里，后者可能是唯一能上线的那个。</p>
-<p>我自己的数字也能重算一遍。截断检出矩阵（评测第 4 篇）每格跑三次，108 格里每一次复测都是真金白银的会话；skill-up 的 <code>--iteration N</code> 采样模式（《给 skill 建门禁》一篇）为了把置信区间压窄要多跑好几轮——这些钱当时花得都对，但**「花得对」的判断从来没被写进任何裁决规则**，全靠手感。没有成本轴的 pass rate 是单目视觉：看得见高低，看不见远近。</p>
-<h2 id="三裁决的三个量cost-per-success边际成本前沿拐点"><a class="header" href="#三裁决的三个量cost-per-success边际成本前沿拐点">三、裁决的三个量：cost per success、边际成本、前沿拐点</a></h2>
+<p>这四条通道有个共同特征：**在只报通过率的报告里，它们全部隐身。**一个 80% 通过率但平均花 2 美元的臂，和一个 78% 通过率花 0.2 美元的臂，在 pass rate 排行榜上前者赢；在真实产品里，后者可能是唯一能上线的那个。没有成本轴的通过率是单目视觉：看得见高低，看不见远近。</p>
+<h2 id="三裁决的三个量"><a class="header" href="#三裁决的三个量">三、裁决的三个量</a></h2>
 <p>把成本放进裁决，需要三个量，而不是一个总价。</p>
-<p><strong>每个成功结果的成本（cost per successful outcome）。</strong> 分母是成功数，不是运行数。一个臂跑 100 次成 50 次花 100 美元（2.0 美元/成功），另一个跑 100 次成 40 次花 20 美元（0.5 美元/成功）——后者用前者四分之一的「买到一个成功」的价格，只低了 10 个百分点。预算受限的真实运营里，这意味着同样的钱能覆盖四倍的用户量。</p>
-<p><strong>边际成本：下一个百分点多少钱。</strong> 从 60% 买到 70% 可能每个百分点 5 美元，从 85% 买到 86% 可能是 50 美元。决策不是「要不要更强的方案」，是「我现在在曲线的哪一段」。</p>
-<p><strong>质量-成本 Pareto 前沿。</strong> 把每个方案画成散点，连线找出「质量相同我最便宜、成本相同我最好」的前沿。前沿上的方案才有资格被讨论，前沿里面的方案不需要理由就可以淘汰——M 项目那个 18/18 的臂之所以被否，不是因为它差，是因为它落在了前沿的<strong>内</strong>侧：同样的质量，对照组更便宜。</p>
-<p>一个公开的参照系是 typed-decision 模型的第三方榜单 JevBench：它把 Cost 和 Intelligence、Calibration、Speed 做成<strong>等权几何平均</strong>的四个轴，成本按「每 1000 次决策多少美元」计价（不是每 1000 token），每贵 10 倍扣 30 分。计价单位选「每次决策」而不是「每千 token」是有深意的：token 是模型厂商的计费单位，决策才是用户的消费单位——用户要的是「我这个 agent 每做一次判断付多少钱」，不是「它吐了多少字」。</p>
+<p><strong>每个成功结果的成本（cost per successful outcome）。</strong> 分母是成功数，不是运行数。一个臂跑 100 次成 50 次花 100 美元（2.0 美元/成功），另一个跑 100 次成 40 次花 20 美元（0.5 美元/成功）——后者用四分之一的价格买到一个成功，只低 10 个百分点。预算受限的真实运营里，这是四倍的覆盖差距。</p>
+<p><strong>边际成本：下一个百分点多少钱。</strong> 从 60% 买到 70% 可能每个百分点 5 美元，从 85% 到 86% 可能 50 美元。决策不是「要不要更强的方案」，是「我现在在曲线的哪一段」。</p>
+<p><strong>质量-成本 Pareto 前沿。</strong> 每个方案画成散点，前沿上的方案才有资格被讨论，前沿内侧的方案不需要理由就淘汰。M 项目那个 18/18 的臂被否，不是因为它差，是它落在前沿内侧：同样的质量，对照组更便宜。</p>
+<p>一个公开的参照系：第三方榜单 JevBench 把 Cost 与 Intelligence、Calibration、Speed 做成等权几何平均的四个轴，成本按「每 1000 次决策多少美元」计价——不是每千 token。计价单位的选择有深意：token 是模型厂商的计费单位，决策才是用户的消费单位。用户要的是「这个 agent 每做一次判断我付多少钱」，不是「它吐了多少字」。（界面部分第 8 篇讲过 usage 字段是滞后值、界面上怎么显示；这一篇管的是账本，不管显示。）</p>
 <h2 id="四成本首先是实验卫生问题"><a class="header" href="#四成本首先是实验卫生问题">四、成本首先是实验卫生问题</a></h2>
-<p>读到这里容易以为成本是经济话题。不是。在评测里，<strong>成本首先是归因问题</strong>：两臂的计费路径不一致时，效果差 Δ 和成本差同时无法归因。</p>
+<p>读到这里容易以为成本是经济话题。不是。在评测里，<strong>成本首先是归因问题</strong>：两臂的计费路径不一致时，效果差和成本差同时无法归因。</p>
 <h3 id="零静默重试"><a class="header" href="#零静默重试">零静默重试</a></h3>
-<p>最隐蔽的成本失真是静默重试。请求超时了，SDK 默认帮你重试两次；provider 返回 503，代理层悄悄换个节点再发一次。账面上你看到的是「这次成功了、花了这些 token」，实际上你买到的是「三次尝试里有一次成功」——而对照组可能因为没有同样的重试配置，只试了一次。</p>
-<p>M 项目的付费 runner 直接把这个口子焊死：代理层把自动重试次数钉死为零，每次请求单独授权，撞上 503 也写一条「已授权但失败」回执，永不自动重试。它的评测规范文档里把这条写成铁律，理由有两层：重试既<strong>通胀成本</strong>（一个样本实际花了三份钱却记一份），又<strong>抹平差异</strong>（鲁棒性本来就是两个臂的差异之一，重试把这个差异偷偷消掉了）。</p>
-<p>我在 dsh harness 里踩过这个问题的镜像面：失败重跑会被上一次尝试残留的文件副作用污染（《从 trace 到 eval》一篇里写过，连 git history 都能被 agent 翻出来作弊式获利）。重试污染的从来不只是状态，还有账本。</p>
-<h3 id="缓存是长上下文实验最大的隐性变量"><a class="header" href="#缓存是长上下文实验最大的隐性变量">缓存是长上下文实验最大的隐性变量</a></h3>
-<p>第二个失真源是 prompt cache。长上下文会话里，前缀的几万 token 走缓存命中和走全价，成本可以差一个数量级。这制造了一种实验者很难察觉的耦合：<strong>你对干预的任何改动，都可能顺手打穿缓存。</strong></p>
-<p>M 项目在设计停滞熔断（stall gate）时否掉过一个方案——「检测到空转时，限制下一轮的 tool_choice」。否掉的理由里有一条纯经济学的：改 tool_choice 会让 provider 的消息缓存失效，在 400K–850K 上下文的场景里，那是全场最贵的一次 cache miss，而这个方案只是为了发一个模型大概率无视的信号（76% 的进度提醒本来就被无视，评测第 10 篇汇总了这类文本型干预的失效证据）。一次干预的成本不只是它自己的 token，还有它顺手作废的那截缓存。</p>
-<!-- 配图 eval08-cache-miss.svg：长请求条上缓存命中段 vs tool_choice 改动后全段 cache creation 全价重算 -->
-<p>记账时 usage 必须分项：input、output、cache read、cache creation。我自己的 trace 提取层当时定过一个口径——门禁的总量字段排除缓存命中、缓存读写单列观察，那是为漂移检测服务的；算成本账时要反过来，<strong>缓存读按折扣价如实计入</strong>，两个口径不能混用，只报一个 total token 等于瞒账。</p>
+<p>最隐蔽的成本失真是静默重试。请求超时，SDK 默认帮你重试两次；provider 返回 503，代理层悄悄换个节点再发。账面上你看到的是「这次成功了、花了这些 token」，实际买到的是「三次尝试里有一次成功」——而对照组可能没有同样的重试配置，只试了一次。</p>
+<p>M 项目的付费 runner 直接把这个口子焊死：自动重试次数钉死为零，每次请求单独授权，撞上 503 也写一条「已授权但失败」回执，永不自动重试。理由有两层：重试既<strong>通胀成本</strong>（一个样本实际花了三份钱记一份），又<strong>抹平差异</strong>（鲁棒性本来就是两臂差异之一，重试把它偷偷消掉了）。</p>
+<p>我在自己的 harness 里踩过它的镜像面：失败重跑会被上一次尝试的残留文件污染，甚至残留 git history 能被 agent 翻出来获利（第 3 篇）。<strong>重试污染的从来不只是状态，还有账本。</strong></p>
 <!-- 配图 eval08-cost-ledger.svg：预算→逐请求授权→调用→receipt 链条，静默重试画成带叉的分叉 -->
-<h2 id="五对照组的计费路径必须逐字节对齐"><a class="header" href="#五对照组的计费路径必须逐字节对齐">五、对照组的计费路径必须逐字节对齐</a></h2>
-<p>这一节是评测第 9 篇配对手册的预演，但成本侧值得单独点破：<strong>两臂除 treatment 外，计费路径必须一致</strong>。</p>
-<ul>
-<li>同一个模型版本、同样的温度与采样配置；</li>
-<li>同样的重试策略（最稳妥是两臂都零重试）；</li>
-<li>同样的默认功能开关——这是最容易漏的。M 项目的记忆 runner 出过一个真实事故：对照组忘了关默认开启的内置判官，结果对照组「悄悄」用上了和实验组同源的能力，A/B 直接报废；</li>
-<li>同样的缓存条件——两臂的前缀要一样长、一样的内容，否则 cache miss 率的差异会被误记成 treatment 的成本效应。</li>
-</ul>
-<p>他们构建系统里的做法值得抄：每一步测试默认把判官服务的接入地址导出为关闭态，eval harness 给每个 arm 先设关闭，需要判官的臂再显式换成自己的端点。<strong>默认值永远站在「污染」那一边，对照组的「无」必须是强制出来的</strong>——这句话评测第 6 篇立过，成本记账是它的又一个适用面。</p>
+<h3 id="缓存是长上下文实验最大的隐性变量"><a class="header" href="#缓存是长上下文实验最大的隐性变量">缓存是长上下文实验最大的隐性变量</a></h3>
+<p>第二个失真源是 prompt cache。长上下文会话里，前缀的几万 token 走缓存命中和走全价，成本差一个数量级。这制造了一种很难察觉的耦合：<strong>你对干预的任何改动，都可能顺手打穿缓存。</strong></p>
+<p>M 项目在设计停滞熔断时否掉过一个方案——「检测到空转就限制下一轮的 tool_choice」——否掉的理由里有一条纯经济学的：改 tool_choice 会让 provider 侧的消息缓存失效，在 400K–850K 上下文的场景里，那是全场最贵的一次 cache miss，而这个方案只是为了发一个模型大概率无视的信号（其自家长上下文实验里，76% 的文本型进度提醒被模型无视——第 10 篇汇总过这类干预的失效证据）。<strong>一次干预的成本不只是它自己的 token，还有它顺手作废的那截缓存。</strong></p>
+<!-- 配图 eval08-cache-miss.svg：长请求条上缓存命中段 vs tool_choice 改动后全段全价重算 -->
+<p>记账时 usage 必须分项：input、output、cache read、cache creation，只报一个 total 等于瞒账。口径还要和漂移检测分开：我的 trace 提取层为门禁定的总量口径排除缓存命中（那是为漂移检测服务的）；算成本账时反过来，缓存读按折扣价如实计入。两个口径各管各的，混用就是假账。</p>
+<h2 id="五两臂的计费路径必须逐字节对齐"><a class="header" href="#五两臂的计费路径必须逐字节对齐">五、两臂的计费路径必须逐字节对齐</a></h2>
+<p>配对纪律（第 9 篇展开）在成本侧有一个值得单独点破的应用：<strong>两臂除 treatment 外，计费路径必须一致。</strong> 同一个模型版本、同样的温度采样、同样的重试策略（最稳妥是两臂都零重试）、同样的缓存条件（前缀一样长、内容一样，否则 cache miss 率的差异会被误记成 treatment 的成本效应）。</p>
+<p>最容易漏的是默认功能开关。M 项目的记忆实验出过一个真实事故：对照组忘了关默认开启的内置判官，结果对照组悄悄用上了和实验组同源的能力，A/B 直接报废。他们的修法值得抄：评测环境每一步默认把判官接入地址导出为关闭态，需要的臂再显式换回。<strong>默认值永远站在污染那一边，对照组的「无」必须是强制出来的</strong>——第 6 篇立过这条原则，成本记账是它的又一个适用面。</p>
 <h2 id="六美元门槛要在花钱之前写死"><a class="header" href="#六美元门槛要在花钱之前写死">六、美元门槛要在花钱之前写死</a></h2>
-<p>最后一块拼图：预算和停止规则必须<strong>预注册</strong>——在看到任何数据之前写进实验合同。至少五个字段：</p>
-<ol>
-<li>累计授权金额（花完即停，不许边跑边追加）；</li>
-<li>单样本成本上限（异常昂贵的失控样本怎么处理）；</li>
-<li>超支样本的归属（记 invalid 还是计入分母——二选一，先定）；</li>
-<li>成本门槛（每成功结果多少钱以内才算「不更贵」）；</li>
-<li>到达预算后的动作（停止并按已有数据判，还是挂 Blocked 等下次授权）。</li>
-</ol>
-<p>M 项目的记忆排序试点合同里，累计授权就是 15 美元、shard 顺序执行；前面那个 0.02 美元门槛也是在实验开始前写死的，所以 18/18 打平时裁决毫无尴尬——规则先于结果，执行规则不需要勇气。</p>
-<p>这套纪律和评测第 7 篇讲的预注册停止规则是同一回事的两面：统计上的停止规则防止「偷看数据决定要不要继续跑」，美元门槛防止「效果不显著就加钱硬买」。<strong>事后追加的预算和事后追加的样本一样，都会把探索性分析伪装成确认性结论。</strong></p>
+<p>最后一块拼图：预算和停止规则必须<strong>预注册</strong>——看到任何数据之前写进实验合同。至少五个字段：累计授权金额（花完即停，不许边跑边追加）；单样本成本上限；超支样本的归属（记 invalid 还是计入分母，二选一事前定）；成本门槛（每成功结果多少钱以内算「不更贵」）；到达预算后的动作（停止并按已有数据判，还是挂起等下次授权）。</p>
+<p>M 项目的记忆排序试点合同里，累计授权就是 15 美元、shard 顺序执行；开场那个 0.02 美元门槛也是实验开始前写死的——所以 18/18 打平时裁决毫无尴尬：**规则先于结果，执行规则不需要勇气。**这套纪律和第 7 篇的预注册停止规则是一体两面：停止规则防「偷看数据决定要不要继续跑」，美元门槛防「效果不显著就加钱硬买」。事后追加的预算和事后追加的样本一样，都会把探索性分析伪装成确认性结论。</p>
 <h2 id="七四问的闭环"><a class="header" href="#七四问的闭环">七、四问的闭环</a></h2>
-<p>评测第 1 篇的四问到此全部有主：能不能做对（评测第 2–5 篇）、坏了会不会察觉（评测第 3–5 篇）、是不是它的功劳（评测第 6、9 篇）、什么代价（本篇）。</p>
-<p>还有一条刻意留下的缝：本篇讲的是<strong>裁决与记账</strong>——钱花了多少、买到了什么、该不该继续花。但「花掉的上下文有多少真正有效」是另一个问题：800K 上下文里模型实际在认真读的可能只有 20K，有效窗口随长度衰减。这条线（有效窗口横评）本篇不展开——成本是价格问题，有效窗口是质量问题，两个账本分开记；它暂列未来选题、不占编号，等实验数据齐了再独立成章。</p>
-<p><em>本章外部病例来自我持续在看的一个单人维护开源 agent 内核项目的公开评测文档与 PR（观察窗口 2026-10 上半月，含其评测规范、停滞熔断设计文档与记忆试点合同；项目名从略，链接与原文出处登记在写作简报，成书前由我凭链接复核数字），JevBench 为另一个独立的第三方公开榜单；自家病例出自 dsh-eval-harness 与截断检出矩阵（2026-09）。</em></p>
+<p>第 1 篇的四问到此全部有主：能不能做对（第 2–5 篇）、坏了会不会察觉（第 3–5 篇）、是不是它的功劳（第 6、9 篇）、什么代价（本篇）。</p>
+<p>刻意留一条缝：本篇讲的是裁决与记账——钱花了多少、买到了什么、该不该继续花。但「花掉的上下文有多少真正有效」是另一个问题：800K 上下文里模型认真在读的可能只有一小段，有效窗口随长度衰减。那条线是价格之外的质量问题，两个账本分开记；它暂列未来选题、不占编号，等实验数据齐了再独立成章。</p>
+<p><em>本章外部病例来自我持续在看的一个单人维护开源 agent 内核项目的公开评测文档与变更记录（观察窗口 2026-10 上半月，含其评测规范、停滞熔断设计文档与记忆试点合同；项目名从略，链接与原文出处登记在写作简报，成书前由我凭链接复核全部数字）；JevBench 为独立的第三方公开榜单（其四轴计价口径见其公开 METHOD 文档）。自家病例出自 dsh-eval-harness 与截断检出矩阵（2026-09）。</em></p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="配对实验手册让同一道题回答两次"><a class="header" href="#配对实验手册让同一道题回答两次">配对实验手册——让同一道题回答两次</a></h1>
 <blockquote>
-<p>评测第 6 篇回答了「为什么必须对照」，这一篇回答「具体怎么跑」——从 fixture 冻结、顺序平衡、分歧对统计，到无效台账和预注册合同，目标是读完能照着开出一次配对实验。</p>
+<p>第 6 篇回答了「为什么必须对照」，这一篇回答「具体怎么跑」——从 fixture 冻结、顺序平衡、分歧对统计，到无效台账和预注册合同。目标是工具性的：读完能照着开出一次配对实验。</p>
 </blockquote>
+<h2 id="本章将讲-8"><a class="header" href="#本章将讲-8">本章将讲</a></h2>
+<ul>
+<li>为什么独立两组经常不够用；配对 = 每个任务自己跟自己比。</li>
+<li>信息只在分歧对里：2×2 表的 a/d 不提供信息；样本量按预期分歧对倒推。</li>
+<li>无效永远不是失败；规则先于数据的预注册合同；代理指标的消费假设。</li>
+</ul>
 <h2 id="一为什么独立两组经常不够用"><a class="header" href="#一为什么独立两组经常不够用">一、为什么独立两组经常不够用</a></h2>
 <p>agent 任务有两个讨厌的性质。</p>
-<p><strong>任务难度高度异质。</strong> 一批 30 道题里，有 5 道闭着眼都能过、5 道神仙也难救，真正区分方案的是中间 20 道。独立两组各跑一批，组间差异里混着「题不一样难」的噪声，30 个样本量被任务方差吃掉一大半。</p>
-<p><strong>单次行为是概率化的。</strong> 同一道题同一模型跑三遍，25%、75%、100% 都见过（评测系列《给 skill 建门禁》里 skill-up 触发现象的原话），judge 的心情也在抖。</p>
-<p>配对设计的想法只有一句话：<strong>让每个任务自己跟自己比</strong>。同一道题、同一个模型版本，只改 treatment，跑两次——一次开、一次关。两次结果的差，把任务难度这个最大的噪声项从分母里消掉了。这不是什么新发明，医学临床试验里同卵双胞胎/自体前后对照干的就是这件事，区别只是我们的「双胞胎」是同一道冻结的题。</p>
+<p><strong>任务难度高度异质。</strong> 一批 30 道题里，5 道闭着眼都过、5 道神仙难救，真正区分方案的是中间 20 道。独立两组各跑一批，组间差异里混着「题不一样难」的噪声，样本量被任务方差吃掉一大半。</p>
+<p><strong>单次行为是概率化的。</strong> 同一道题同一个模型跑三遍，25%、75%、100% 都出现过（第 2 篇的实测）；judge 的心情也在抖。两个概率化的东西相减，噪声先进分子。</p>
+<p>配对设计的想法只有一句话：<strong>让每个任务自己跟自己比。</strong> 同一道题、同一个模型版本，只改 treatment，跑两次——一次开、一次关。两次结果的差，把任务难度这个最大的噪声项从分母里消掉了。医学上同卵双胞胎对照干的就是这件事，区别只是我们的「双胞胎」是同一道冻结的题。</p>
 <h2 id="二配对实验的最小结构"><a class="header" href="#二配对实验的最小结构">二、配对实验的最小结构</a></h2>
 <p>一次站得住的配对实验，五个部件缺一不可。</p>
-<p><strong>1. fixture 冻结。</strong> 题面、被测仓库 commit、scorer 版本全部钉死。题在两臂之间不许有一个字的差别——连题面里的换行都不行，换行就是 prompt 差异。我的 dsh harness 用 overlay 注入 session 落盘根而不是环境变量，原因之一就是环境变量会泄漏进工具调用，变成两臂之外的第三个变量。</p>
-<p><strong>2. 每臂全新隔离环境。</strong> HOME、工作区、记忆库、session 落盘根全部 per 臂重建。评测第 7 篇收编过的重跑卫生在这里全部适用：残留文件让假通过有地方生长，残留 git history 能被 agent 翻出来作弊，残留的长期记忆更狠——它让两臂共享了一个你完全没在实验设计里声明的「第三臂」。记忆类实验的隔离要求见评测第 10 篇，那里有完整污染清单。</p>
-<p><strong>3. 顺序平衡（AB/BA）。</strong> 一半任务先跑 treatment 再跑对照，另一半反过来。不做平衡，时间会冒充 treatment：provider 的负载随时段波动、模型可能在实验期间被热更新、判官服务自己在漂移。我做截断矩阵时坚持三跑而不是一锤定音，处理的是同一类时间风险，只是配对设计把它从「多跑几次平均」升级成了显式的交叉表。</p>
-<!-- 配图 eval09-ab-balance.svg：AB/BA 交叉时间轴 vs 顺序不做平衡时时间漂移把差异染掉 -->
-<p><strong>4. 确定性参数写明，不确定的也写明。</strong> 温度、top-p、seed 能固定就固定；固定不了的（平台不给 seed 的）在报告里如实写「此项不可复现」。把不可复现项藏起来，配对就退化成了配对形式的独立两组。</p>
-<p><strong>5. 唯一主指标。</strong> 一次配对实验只允许有一个主指标。你当然可以记录十个次要指标，但 go/no-go 只看预注册的那一个——否则十张彩票里挑中奖号码，统计检验全部白做（多重比较的坑，评测第 7 篇的校准纪律里讲过它的近亲）。</p>
+<p><strong>1. fixture 冻结。</strong> 题面、被测仓库 commit、scorer 版本全部钉死。题在两臂之间不许有一个字的差别——连换行都不行，换行就是 prompt 差异。我的 dsh harness 用 overlay 注入会话落盘根而不是环境变量，原因之一就是环境变量会泄漏进工具调用，变成两臂之外的第三个变量。</p>
+<p><strong>2. 每臂全新隔离环境。</strong> HOME、工作区、记忆库、落盘根全部 per 臂重建，跨臂零泄漏。第 3 篇的重跑卫生在这里全部适用：残留文件让假通过有地方生长，残留的 git history 能被 agent 翻出来获利，残留的长期记忆更狠——它让两臂共享了一个你没在设计里声明的「第三臂」（记忆类实验的完整污染清单见第 10 篇）。</p>
+<p><strong>3. 顺序平衡（AB/BA）。</strong> 一半任务先跑 treatment 再跑对照，另一半反过来。不做平衡，时间会冒充 treatment：provider 负载随时段波动、模型可能在实验期间被热更新、判官服务自己也在漂移。我做截断矩阵时坚持每格三跑而不是一锤定音（第 4 篇），处理的是同一类时间风险；配对设计把它从「多跑几次平均」升级成显式的交叉表。</p>
+<!-- 配图 eval09-ab-balance.svg：AB/BA 交叉时间轴 vs 顺序不做平衡时漂移只染一臂 -->
+<p><strong>4. 确定性参数写明，不确定的也写明。</strong> 温度、top-p、seed 能固定就固定；固定不了的（平台不给 seed），在报告里如实写「此项不可复现」。把不可复现项藏起来，配对就退化成披着配对外衣的独立两组。</p>
+<p><strong>5. 唯一主指标。</strong> 一次配对实验只允许一个主指标。次要指标可以记十个，但 go/no-go 只看预注册的那一个——否则等于十张彩票里挑中奖号码，统计检验全部白做。</p>
 <h2 id="三信息只在分歧对里"><a class="header" href="#三信息只在分歧对里">三、信息只在分歧对里</a></h2>
 <p>配对结果画成 2×2 表：</p>
 <div class="table-wrapper">
@@ -3493,59 +3614,51 @@ complete               以上全部排除，才轮到我
 </tbody>
 </table>
 </div>
-<p>关键直觉：<strong>a 和 d 对「两臂有没有差异」不提供任何信息。</strong> 两个都成、两个都败，无论 treatment 有没有用，结果都一样。真正的信号只在 b 和 c 里——两臂产生分歧的对子。如果 b≈c，分歧是随机的，没差异；b 显著多于 c，treatment 在起作用。</p>
-<p>小样本时不用背公式：在「两臂其实没差别」的零假设下，每个分歧对各有一半概率落到 b 或 c，所以 b/(b+c) 应该接近抛硬币。<strong>直接对 b+c 次抛硬币里出现 b 次正面做精确二项检验</strong>（exact McNemar）就够了，不需要正态近似，b+c 只有十几也能判。</p>
-<p>样本量因此要按<strong>预期分歧率</strong>估，不是按总样本量估。这是新手最常踩的坑：计划跑 200 对觉得样本很大，但如果两臂成功率都很高（比如都在 90% 上下），预期分歧对可能只有二十对不到——你的检验实际是个二十个样本级别的小实验。预算和题量要按「能攒出多少个分歧对」倒推。</p>
+<p>关键直觉：<strong>a 和 d 对「两臂有没有差异」不提供任何信息。</strong> 都成、都败，无论 treatment 有没有用结果都一样。真正的信号只在 b 和 c 里——两臂产生分歧的对子。b≈c，分歧是随机的；b 显著多于 c，treatment 在起作用。</p>
+<p>小样本不用背公式：零假设（两臂没差别）下每个分歧对各有一半概率落进 b 或 c，所以<strong>直接对 b+c 次抛硬币里出现 b 次正面做精确二项检验</strong>（exact McNemar）就够了，b+c 只有十几也能判，不需要正态近似。</p>
+<p>样本量因此要按<strong>预期分歧对数</strong>倒推，不按总样本量。这是新手最常踩的坑：计划跑 200 对觉得很大，但如果两臂成功率都在 90% 上下，预期分歧对可能不到二十——你的检验实际是个二十样本级的小实验。预算和题量按「能攒出多少分歧对」倒推。</p>
 <!-- 配图 eval09-pair-table.svg：2×2 配对表，a/d 灰显，b/c 高亮标注「信息只在这里」 -->
-<p>统计工具的分工顺手交代清楚：<strong>Wilson 区间管单比例</strong>（这个臂成功率多高，评测系列《从 trace 到 eval》给过单侧 Wilson 上界的口径），<strong>McNemar 管配对差</strong>（两臂差不差），一个回答水平、一个回答差异，别混用。</p>
+<p>统计工具的分工顺手交代：Wilson 区间管单比例（这个臂成功率多高，下界比点估计诚实），McNemar 管配对差（两臂差不差）。一个回答水平，一个回答差异，各管各的，推导不展开，属统计学通识。</p>
 <h2 id="四无效台账invalid-永远不是-fail"><a class="header" href="#四无效台账invalid-永远不是-fail">四、无效台账：invalid 永远不是 fail</a></h2>
 <p>配对实验的每个 rollout 有三种结局，不是两种：成功、失败、<strong>无效</strong>。</p>
-<p>无效指的是基础设施原因导致这次运行什么都没测到：provider 503 零 token、配额耗尽、被测工具链缺失、超时且无产物。处理纪律只有一条但必须焊死：</p>
+<p>无效是基础设施原因导致这次运行什么都没测到：provider 503 零 token、配额耗尽、被测工具链缺失、超时且无产物。处理纪律只有一条，但必须焊死：</p>
 <ul>
 <li><strong>无效永不允许改判成失败</strong>——失败是 agent 的，无效是我们的；</li>
 <li><strong>未评分（unscored）永不允许改判成通过</strong>——没有证据不能发奖。</li>
 </ul>
-<p>M 项目的外部 benchmark 梯子上有个标注为 Blocked 的阶段：三次尝试全部撞上 provider 503、零 token，他们在文档里写明「这一轮的 scorer 输出是基线噪声，永远不得作为 agent 结果报告」。我特别欣赏「永远」这两个字——它防的不是当时的误判，是三个月后有人翻出旧表格做汇总 PPT。</p>
-<p>评测系列《从 trace 到 eval》里写过镜像的一面：基础设施 bug 修好后基准分从 50 跳到 73 那次事故——infra 问题伪装成推理失败，是「假失败」；无效台账是它在配对实验里的制度化形态。判定前永远先问评测第 7 篇那句：<strong>这次失败真的是 agent 的失败吗？</strong></p>
+<p>M 项目的外部基准梯子上有个挂 Blocked 的阶段：三次尝试全部撞上 provider 503、零 token，文档里写明「这一轮的 scorer 输出是基线噪声，永远不得作为 agent 结果报告」。我特别欣赏「永远」两个字——它防的不是当时的误判，是三个月后有人翻旧表格做汇总 PPT。</p>
+<p>这是第 3 篇「假失败」的制度化形态：基础设施问题伪装成 agent 的失败，是无效台账要拦截的全部内容。判定前永远先问那句：这次失败真的是 agent 的失败吗？</p>
 <h2 id="五先定规则后看数预注册合同"><a class="header" href="#五先定规则后看数预注册合同">五、先定规则，后看数：预注册合同</a></h2>
-<p>无效规则、停止规则、预算、主指标——这些东西如果在看到数据之后再定，实验就退化成了讲故事。解法是把规则写进一份事前合同。本章附录 A 给了一页纸模板，九个字段。</p>
-<p>两个字段值得展开说。</p>
-<p><strong>停止规则。</strong> 跑到什么程度停，必须在开跑前写死：固定对数（攒够 60 个分歧对即停）、固定预算（评测第 8 篇的美元门槛），或二者先到者。<strong>禁止「看一眼中间结果，显著了就停、不显著就再追加」</strong>——这和选择性报告是同一类作弊。顺序平衡的执行表也在开跑前生成，不许跑一对抽一次签。</p>
-<p><strong>无效行规则。</strong> 什么情况算无效、无效对要不要补跑、补跑的配额从哪来，全部事前定义。这个字段不是走形式——下一节的病例里，它就是整个实验的生死线。</p>
+<p>无效规则、停止规则、预算、主指标——这些东西如果在看到数据之后再定，实验就退化成讲故事。解法是把规则写进一份事前合同。本章附录 A 是一页纸模板，九个字段。两个字段值得展开。</p>
+<p><strong>停止规则。</strong> 跑到什么程度停，开跑前写死：固定对数（攒够 60 个分歧对即停）、固定预算（第 8 篇的美元门槛），或二者先到。<strong>禁止「看一眼中间结果，显著了就停、不显著再追加」</strong>——这和选择性报告是同一类作弊。顺序表也在开跑前生成冻结，不许跑一对抽一次签。</p>
+<p><strong>无效行规则。</strong> 什么情况算无效、无效对补不补跑、补跑配额从哪来，全部事前定义。这个字段不是形式——下一节的病例里，它就是整个实验的生死线。</p>
 <h2 id="六病例一百三十九行里八十八行判无效之后"><a class="header" href="#六病例一百三十九行里八十八行判无效之后">六、病例：一百三十九行里八十八行判无效之后</a></h2>
-<p>这是我见过对「规则先于数据」最狠的一次压力测试，仍然来自 M 项目的一次记忆排序试点（2026-10 观察）。</p>
-<p>实验设计见评测第 10 篇，这里只讲事故。treatment 是对检索结果<strong>行的顺序做置换</strong>——不增行、不删行、不改行，只是排序。而实验的完整性校验器有一条旧假设：<strong>两臂的回执行顺序应当一致</strong>。于是 139 个处理行里 88 行因为「回执顺序不一致」被判无效——校验器把 treatment 本身当成了数据损坏。</p>
-<p>团队面前有两条路：</p>
-<ol>
-<li>当场放宽校验器，把 88 行捞回来，实验继续；</li>
-<li>按预注册合同判这 88 行无效，实验结论标注「不可解释、不推广」。</li>
-</ol>
-<p>他们选了第二条。然后<strong>另起一轮探索性分析</strong>——用放宽后的校验器重评了 125 对，并在所有材料上明确标注这是 post hoc exploratory（事后探索），不享受确认性实验的结论地位。探索性结果是 null：金标核实 53→56（分歧 14:17，p=0.72），最终答对 68→67（15:14，p=1.0）。</p>
-<!-- 配图 eval09-proxy-chain.svg：离线指标→注入→打开→采信→答对的代理链，每环标消费假设，在「排第一→被打开」处断裂 -->
-<p>这个病例里有三层教训，一层比一层通用。</p>
-<p><strong>第一层，测量仪器的假设可以和 treatment 正面冲突。</strong> 校验器假设顺序不变，而干预就是改顺序。这和评测第 3 篇的「对测量仪器做消融」是同一个识别模式——当被测系统的变化在测量层表现为「异常」时，先怀疑仪器。</p>
-<p><strong>第二层，规则先于数据时，判无效不需要勇气。</strong> 88/139 无效是个肉疼的结果，等于大头预算白花了。但因为合同写在前面，「不推广」是执行而不是抉择。如果规则允许当场修改，没人能抵抗「再看一眼」的诱惑——而「再看一眼」在统计上永远偏向你想看到的结果。</p>
-<p><strong>第三层，事后分析可以做，但必须穿探索性的衣服。</strong> 他们没有假装那 125 对的重评不存在，也没有把它包装成正式结论——它作为「下一轮实验该修什么」的输入活着：修校验器、重新注册、再跑确认性实验。<strong>确认性实验回答「是不是」，探索性实验回答「下一轮怎么设计」</strong>，两者的产物不许混用。</p>
+<p>这是我见过对「规则先于数据」最狠的一次压力测试，来自 M 项目的一次记忆排序试点（2026-10 观察）。实验设计见第 10 篇，这里只讲事故。</p>
+<p>treatment 是对检索结果的<strong>行序</strong>做置换——不增行、不删行、不改行，只是排序。而实验的完整性校验器有一条旧假设：<strong>两臂的回执顺序应当一致</strong>。于是 139 个处理行里 88 行因「回执顺序不一致」被判无效——校验器把 treatment 本身当成了数据损坏。</p>
+<p>面前两条路：当场放宽校验器把 88 行捞回来，实验继续；或者按预注册合同判无效，结论标注「不可解释、不推广」。他们选了第二条。然后<strong>另起一轮探索性分析</strong>：用放宽后的校验器重评 125 对，所有材料明确标注 post hoc exploratory，不享受确认性实验的结论地位。探索性结果是 null：金标核实 53→56（分歧 14:17，p=0.72），最终答对 68→67（p=1.0）。</p>
+<p>三层教训，一层比一层通用。</p>
+<p><strong>仪器假设可以和 treatment 正面冲突。</strong> 校验器假设顺序不变，而干预就是改顺序。这和第 3 篇「对测量仪器做消融」是同一个识别模式：当被测系统的变化在测量层表现为「异常」，先怀疑仪器。</p>
+<p><strong>规则先于数据时，判无效不需要勇气。</strong> 88/139 无效很肉疼，等于大头预算白花。但合同写在前面，「不推广」是执行不是抉择。如果规则允许当场修改，没人扛得住「再看一眼」的诱惑——而「再看一眼」在统计上永远偏向你想看到的结果。</p>
+<p><strong>事后分析可以做，但必须穿探索性的衣服。</strong> 他们没有假装那 125 对不存在，也没包装成正式结论——它作为「下一轮实验该修什么」的输入活着：修仪器、重新注册、再跑确认性实验。<strong>确认性实验回答「是不是」，探索性实验回答「下一轮怎么设计」</strong>，两者的产物不许混用。</p>
 <h2 id="七两次显著的断层代理指标的消费假设"><a class="header" href="#七两次显著的断层代理指标的消费假设">七、两次显著的断层：代理指标的消费假设</a></h2>
-<p>同一个试点还有另一半事故，这一半更值得做 eval 的人刻在墙上。</p>
-<p>排序方案在<strong>离线</strong>评估里信号极强：金标记忆排第一的比例从 258/288 升到 272/288，配对分歧 15:1，p=0.0005。按常规剧本，这已经是可以写发布通告的数字。但端到端配对实验（真实模型、真实会话）结果是上面的 null。</p>
+<p>上面那次试点其实有前后两幕，合起来是配对实验最容易自欺的地方。第一幕在离线：同一个行序置换方案，在封存题库上跑离线判分，金标排第一的比例显著改善（15:1，p=0.0005）——漂亮得可以发喜报。第二幕就是上面的端到端 null。</p>
 <p>离线到端到端之间隔着一条代理链：</p>
 <blockquote>
-<p>金标排第一 → 结果被注入 → 模型打开第一条 → 模型核实到金标内容 → 最终答对</p>
+<p>金标排第一 → 结果被注入 → 模型打开第一条 → 核实到金标 → 最终答对</p>
 </blockquote>
-<p>每一个箭头都是一个<strong>消费假设</strong>：下游真的按上游的设计消费它吗？这条链在「排第一 → 被打开」处断了——模型并不总是先点开第一条结果，它可能直接看第三条。你把金标从第二行挪到第一行，对一个不按顺序读的消费者毫无作用。而且离线基线已经很强（90% 的金标本来就排第一），留给排序的天花板本来就薄。</p>
-<p>我自己的工作里有同构的教训，而且是同一组三因子（评测第 5 篇）：<strong>「检出」是「挡路」的代理</strong>。agent 报了截断不等于它会停下来，6/30 的检出率与挡路率必须分开报；截断检出矩阵里 L0（无察觉）占六成，讲的就是「中间指标很好看，终点什么都没发生」。M 项目这个病例把它抽象成了通则：</p>
+<p>每一个箭头都是一个<strong>消费假设</strong>：下游真的按上游的设计消费它吗？这条链断在「排第一 → 被打开」——模型并不总是先点开第一条结果。把金标从第二行挪到第一行，对一个不按顺序读的消费者毫无作用。何况离线基线已经很强（九成金标本就排第一），留给排序的天花板本来就薄。</p>
+<!-- 配图 eval09-proxy-chain.svg：离线指标→注入→打开→采信→答对的代理链，每环标消费假设，在「排第一→被打开」处断裂 -->
+<p>我自己的工作里有同构的教训：「检出」是「挡路」的代理——agent 报了截断不等于它会停下来（第 4、5 篇：检出率与挡路率必须分开报，全员申报的一格照样产出残缺交付物）。这个病例把它抽象成通则：</p>
 <ol>
 <li>每设一个代理指标，书面回答一句「下游凭什么消费它」；</li>
 <li>离线显著只批准进入下一轮实验，不批准上线——显著的代理指标和端到端行为之间，永远隔着至少一次确认性配对；</li>
-<li>代理链要逐环可测：注入集合有记录、打开行为有 trace、采信有核实标记，哪一环断的要能定位，不能只看链顶的答对率然后互相甩锅。</li>
+<li>代理链要逐环可测：注入集合有记录、打开行为有 trace、采信有核实标记，哪一环断的要能定位，不能只看链顶的答对率互相甩锅。</li>
 </ol>
 <h2 id="八treatment-的纪律改一句措辞就是换药"><a class="header" href="#八treatment-的纪律改一句措辞就是换药">八、treatment 的纪律：改一句措辞就是换药</a></h2>
-<p>最后一条操作规程，容易被当作文字洁癖：<strong>给模型看的任何文字——judge 的提问、criteria、系统提示里的劝告——都是 treatment 的一部分</strong>。改一句措辞，实验就换了药，旧数据不能和新数据合并。</p>
-<p>M 项目的判官服务有组实测：同一批 18 道判断题，问题里不写判定标准时答对 6/18，把「什么叫相关」的标准写清楚后 17/18。这不是个例，我在 skill 红线上撞到过同型现象：同一条用例，约束写在 description 的「不管」声明里 vs 写进正文的行为指令，FAIL 率 66.7% 对 100%（评测第 2 篇）。措辞差异的效果比很多模型差异都大——所以措辞要像代码一样 pin 版本，改措辞要像改 treatment 一样重新注册。</p>
+<p>最后一条操作规程，容易被当作文字洁癖：<strong>给模型看的任何文字——judge 的提问、criteria、系统提示里的劝告——都是 treatment 的一部分。</strong> 改一句措辞，实验就换了药，旧数据不能和新数据合并。</p>
+<p>M 项目的判官服务有组实测：同一批 18 道判断题，问题里不写判定标准时答对 6/18，把「什么叫相关」写清楚后 17/18。这不是个例——第 2 篇的红线写法实验是同型：约束写在 description 还是正文，同一条用例 66.7% FAIL 对 100% PASS。措辞差异的效果比很多模型差异都大。所以措辞要像代码一样 pin 版本，改措辞要像改 treatment 一样重新注册。</p>
 <h2 id="九收口"><a class="header" href="#九收口">九、收口</a></h2>
-<p>配对不是目的，<strong>可归因</strong>才是。这份手册的全部部件——冻结、隔离、平衡、分歧对、无效台账、预注册、代理链——干的都是同一件事：让实验结束时，你能指着 Δ 说出「这是它干的」，并且这句话扛得住「真的吗」的追问。</p>
-<p>本章的操作性清单连同前八篇长出的机制，统一归档到评测第 7 篇末尾的「错误 → 机制化」总单。</p>
+<p>配对不是目的，<strong>可归因</strong>才是。这份手册的全部部件——冻结、隔离、平衡、分歧对、无效台账、预注册、代理链——干的都是同一件事：让实验结束时，你能指着 Δ 说出「这是它干的」，并且这句话扛得住「真的吗」的追问。本章长出的操作清单，连同前几篇的机制，统一归档到第 7 篇末尾的「错误 → 机制化」总单。</p>
 <h2 id="附录-a--配对实验合同模板一页纸"><a class="header" href="#附录-a--配对实验合同模板一页纸">附录 A · 配对实验合同模板（一页纸）</a></h2>
 <pre><code class="language-yaml">experiment: &lt;实验名，含版本，如 recall-order-2026q4-v1&gt;
 hypothesis:
@@ -3579,24 +3692,26 @@ statistics:
   interval: wilson_95
 preregistered_at: &lt;开跑前的日期与合同 commit&gt;
 </code></pre>
-<p>填好的迷你样例建议用自家 fixture 练手：从 skill-quake 或截断矩阵里挑 10 道题，对照臂关掉所有注入、treatment 臂开一个你确信有效的机制，跑一轮 10 对的配对——重点不是出结论，是把合同的每个字段都填疼一次。</p>
-<p><em>本章外部病例来自我持续在看的那个单人维护开源 agent 内核项目（M 项目，首次出场于评测第 8 篇）的公开试点合同、PR 与评测规范文档（观察窗口 2026-10，含排序方案退役那次变更与试点目录；项目名从略，链接登记在写作简报），精确二项检验与 Wilson 口径属统计学通识；自家病例出自 dsh-eval-harness、skill-quake 与截断检出矩阵（2026-09）。成书前由我凭链接复核全部外部数字。</em></p>
+<p>练手建议用自家 fixture：从 skill-quake 或截断矩阵里挑 10 道题，对照臂关掉所有注入、treatment 臂开一个你确信有效的机制，跑一轮 10 对的配对——重点不是出结论，是把合同的每个字段都填疼一次。</p>
+<p><em>本章外部病例来自我持续在看的那个单人维护开源 agent 内核项目（M 项目，首次出场于第 8 篇）的公开试点合同、变更记录与评测规范文档（观察窗口 2026-10；项目名从略，链接登记在写作简报，成书前凭链接复核）；精确二项检验与 Wilson 区间属统计学通识。自家病例出自 dsh-eval-harness、skill-quake 与截断检出矩阵（2026-09～10）。</em></p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="记忆怎么测从被注入到被采信"><a class="header" href="#记忆怎么测从被注入到被采信">记忆怎么测——从「被注入」到「被采信」</a></h1>
 <blockquote>
-<p>这是我另一本小册《自顶向下拆 RAG》和这本之间欠了很久的一座桥：那本讲检索系统本身的评测，界面第 21 篇讲记忆的产品形态，但 agent 的长期记忆比传统 RAG 多出两层——宿主决定注入哪几条、模型决定真的去读哪几条。这一篇讲这两层怎么测，以及为什么「被注入」根本不是终点。</p>
+<p>这是我另一本小册《自顶向下拆 RAG》和这本之间欠了很久的一座桥：那本讲检索系统本身的评测；而 agent 的长期记忆比传统 RAG 多出两层——宿主决定注入哪几条、模型决定真的去读哪几条。这一篇讲这两层怎么测，以及为什么「被注入」根本不是终点。</p>
 </blockquote>
+<h2 id="本章将讲-9"><a class="header" href="#本章将讲-9">本章将讲</a></h2>
+<ul>
+<li>记忆系统是一条三层乘法链：写入 × 检索 × 采信；任一层断裂，下游失败不能归因给上游。</li>
+<li>召回与精排必须分家：「在不在」与「是哪条」是两个机制；弱判官独任会成片误杀迂回措辞。</li>
+<li>shadow 的字节级同一性、写路径「先造题再开功能」、记忆实验特有的污染清单。</li>
+</ul>
 <h2 id="一开场同一个金标在-agent-身上多了两环"><a class="header" href="#一开场同一个金标在-agent-身上多了两环">一、开场：同一个金标，在 agent 身上多了两环</a></h2>
-<p>传统 RAG 评测的链条很短：检索到、生成对，判分结束。我在 RAG 书里建立的整套纪律——holdout 封存、gold 标注、按位置计的召回指标——在 agent 记忆场景里<strong>仍然必要，但远远不够</strong>。</p>
-<p>因为 agent 和检索框之间隔着两个自主决策：</p>
-<ol>
-<li>检索回来 8 条候选，<strong>宿主</strong>决定把哪几条注入这一轮的上下文；</li>
-<li>注入了 3 条，<strong>模型</strong>决定打开哪一条、信不信它、最终答不答对。</li>
-</ol>
-<p>M 项目（我持续在看的那个单人维护开源 agent 内核项目，评测第 8 篇首次出场）在记忆面上做了两个月付费实验，四个决策面最后只活下来一个，还把一个离线 p=0.0005 的方案在端到端判了死刑。这一篇借它的病例立框架，框架本身从我的 RAG 书和评测系列长出来。</p>
+<p>传统 RAG 评测的链条很短：检索到、生成对，判分结束。我在 RAG 书里建的整套纪律——holdout 封存、金标标注、按位置计的召回指标——迁到 agent 记忆场景，<strong>仍然必要，但远远不够</strong>。</p>
+<p>因为 agent 和检索框之间隔着两个自主决策：检索回来 8 条候选，<strong>宿主</strong>决定把哪几条注入这一轮上下文；注入了 3 条，<strong>模型</strong>决定打开哪一条、信不信它、据此答不答题。金标还是同一个金标，链路多了两环，而多出来的两环恰恰是断裂高发区——这是传统 RAG 评测没有的。</p>
+<p>借谁的病例立框架？M 项目（那个单人维护的开源 agent 内核项目，第 8 篇首次出场）在记忆面上做了两个月付费实验，四个决策面最后只活下来一个，还把一个离线 p=0.0005 的方案在端到端判了死刑。病例用它的，框架从我的 RAG 书和前面九篇长出来。</p>
 <!-- 配图 eval10-three-layer-funnel.svg：写入→检索→采信三层漏斗，每层挂独立指标与折返归因箭头 -->
 <h2 id="二三层乘法链写入--检索--采信"><a class="header" href="#二三层乘法链写入--检索--采信">二、三层乘法链：写入 × 检索 × 采信</a></h2>
-<p>评测第 5 篇的乘法模型（检出率 = 读到 × 愿报 × 挡路）在记忆域原样重演。记忆系统是一条三层乘法链，任何一层断裂，下游失败都不能归因给上游：</p>
+<p>第 5 篇的乘法模型（检出率 = 读到 × 愿报 × 挡路）在记忆域原样重演。记忆系统是一条三层乘法链，任何一层断裂，下游失败都不能归因给上游：</p>
 <div class="table-wrapper">
 <table>
 <thead>
@@ -3609,65 +3724,54 @@ preregistered_at: &lt;开跑前的日期与合同 commit&gt;
 </tbody>
 </table>
 </div>
-<p>归因折返规则也和检出率模型同构：端到端没答对，先看模型有没有打开注入的记忆（采信层断）；打开了但没核实到金标，看金标在不在注入集合里（检索层断）；金标根本没进库，看写入层。<strong>不逐层分开记账，「记忆系统没用」就是一句无法证伪的抱怨。</strong></p>
+<p>归因折返规则与检出率模型同构：端到端没答对，先看模型有没有打开注入的记忆（采信层断）；打开了没核实到金标，看金标在不在注入集合（检索层断）；金标根本没进库，看写入层。<strong>不逐层分开记账，「记忆系统没用」就是一句无法证伪的抱怨。</strong></p>
 <h2 id="三两个题库两种金标必须分报"><a class="header" href="#三两个题库两种金标必须分报">三、两个题库，两种金标，必须分报</a></h2>
-<p>M 项目用的外部题库是 LongMemEval 一类的长期记忆 benchmark（公开学术基准，成书前复核具体版本口径），但它内部把记忆库拆成两种形态，这个拆法值得照搬：</p>
+<p>M 项目用的外部题库是 LongMemEval 一类的长期记忆公开学术基准（成书前复核具体版本口径），它内部把记忆库拆成两种形态，这个拆法值得照搬：</p>
 <ul>
 <li><strong>turn 级原子记忆库</strong>：每条记忆是一次对话里的一个原子事实（「张三的航班是周三」），金标是精确的一条；</li>
-<li><strong>whole-session 会话库</strong>：记忆是整段会话，金标可能散在好几段里，判分要看 top-3 而不是 at-1。</li>
+<li><strong>whole-session 会话库</strong>：记忆是整段会话，金标散在好几段里，判分要看 top-3 而不是 at-1。</li>
 </ul>
-<p>同一个方案在两个库上的成绩可以差出十个百分点（M 项目的迭代表里，弱判官方案在原子库命中 0.730、整段库只有 0.700，而基线在整段库有 0.725）。<strong>把两个库的数字平均成一个「记忆准确率」，等于把两种任务的失败互相抵消着藏起来。</strong> 这就是评测系列里「聚合指标是新形态遮羞布」的记忆域版本——按切片分层看，不许只报聚合。</p>
-<p>金标纪律没有新东西：dev 集调参、holdout 在读题面之前冻结只报聚合统计，校准集和验证集分开（评测第 7 篇、RAG 书同此口径）。记忆题库唯一额外的要求是<strong>写入侧也要有金标</strong>：给定一段对话，「应该沉淀出哪几条事实」需要人工标注，否则写入层永远是一笔糊涂账。</p>
+<p>同一个方案在两个库上的成绩可以差出十个百分点——其迭代表里，弱判官方案在原子库命中 0.495 时整段库 0.450，而基线在整段库有 0.725。<strong>把两个库平均成一个「记忆准确率」，等于让两种任务的失败互相抵消着藏起来。</strong> 按切片分层看，不许只报聚合。</p>
+<p>金标纪律没有新东西：dev 集调参、holdout 在读题面前冻结、校准集与验证集分开（第 7 篇同此口径）。记忆题库唯一额外的要求是<strong>写入侧也要有金标</strong>：给定一段对话，「应该沉淀出哪几条事实」需要人工标注，否则写入层永远是一笔糊涂账。</p>
 <h2 id="四召回与精排必须分家"><a class="header" href="#四召回与精排必须分家">四、召回与精排必须分家</a></h2>
-<p>这是两个月迭代里最贵的一课，先看伤亡数字。他们的第一版方案让一个 4B 判官独自决定「有没有相关记忆 + 注入哪几条」，结果 turn 级命中从基线 0.620 掉到 0.495（p=0.001），整段库从 0.720 掉到 0.450——<strong>加了智能，显著退步。</strong></p>
-<p>死因很清楚：判官读的是每条记忆 480 字节的聚焦窗口，看不到全文；而「有没有」这个判断需要全局视野。判官把大量「措辞迂回但确实相关」的记忆整片枪毙了。它擅长的是在几条候选之间比较「哪条更贴」，不擅长回答「这堆东西里到底有没有答案」。</p>
-<p>定稿方案把两个判断分给两个机制：</p>
-<ol>
-<li><strong>词法检索（BM25）当地板，判「缺席」</strong>：top 分低于阈值时，认定答案不在库里，不注入也不咨询判官。召回是全文视野的活，交给读全文的词法信号。</li>
-<li><strong>判官只在「带」内排序</strong>：候选分数达到 top 一半（band）才允许判官参与，融合分 = 判官相关概率 + 0.5 × 归一化 BM25 分。弱语义信号和词法信号互补，谁也不许单飞。</li>
-</ol>
-<p>band 有个漂亮的自适应性质：程序性记忆的分数分布很陡（第一名远超其余），band 一收，判官可挑的范围自动缩没，退化回纯基线——这防住了「判官自信地选中一条词法分只有第一名九分之一的兄弟任务 diff，然后模型照抄错文件」的真实事故；而事实型记忆分数平，band 覆盖全部候选，判官照常发挥。<strong>一个约束，两种数据形态自动适配。</strong></p>
-<!-- 配图 eval10-recall-rank-split.svg：BM25 地板 + band + 判官带内排序，v1 误杀区画阴影 -->
-<p>我从这一课带走的通则超出记忆域：<strong>「在不在」和「是哪个」永远是两个机制的活。</strong> 触发评测里「该触发吗」和「触发后选哪个 skill」也是两道题（评测第 2 篇的双向口径）；让一个看局部信息的弱判断者同时回答两个问题，它会在需要全局视野的那道上系统性出错。</p>
+<p>两个月迭代里最贵的一课，先看伤亡数字。第一版方案让一个 4B 判官独自决定「有没有相关记忆 + 注入哪几条」：turn 级命中从基线 0.620 掉到 0.495（p=0.001），整段库从 0.720 掉到 0.450——<strong>加了智能，显著退步。</strong></p>
+<p>死因清楚：判官读的是每条记忆 480 字节的聚焦窗口，看不到全文；而「有没有」这个判断需要全局视野。大量「措辞迂回但确实相关」的记忆被整片枪毙。判官擅长的是在几条候选之间比较「哪条更贴」，不擅长回答「这堆东西里到底有没有答案」。</p>
+<p>定稿方案把两个判断分给两个机制：<strong>词法检索（BM25）当地板，判「缺席」</strong>——top 分低于阈值时认定答案不在库，不注入也不咨询判官；召回是全文视野的活，交给读全文的词法信号。<strong>判官只在「带」内排序</strong>——候选分数达到 top 的一半（band）才允许判官参与，融合分 = 判官相关概率 + 0.5 × 归一化 BM25 分。弱语义信号和词法信号互补，谁也不许单飞。</p>
+<p>band 还有个自适应的妙处：分数分布陡的池子（程序性记忆，谁该上场一目了然），band 自动收没、退回基线，判官无权置喙；分数平的池子（事实型记忆，一堆差不多相关），band 全盖，判官尽情发挥。<strong>机制按数据的形状自动决定让不让智能插手。</strong></p>
+<!-- 配图 eval10-recall-rank-split.svg：BM25 地板 + band + 判官带内排序，480 字节窗口的 v1 误杀区画阴影 -->
 <h2 id="五shadow-的字节级同一性"><a class="header" href="#五shadow-的字节级同一性">五、shadow 的字节级同一性</a></h2>
-<p>记忆实验有个其他实验少有的便利条件：记忆干预通常可以在「宿主内部」完成，不改 provider 可见的字节。这给因果归因提供了一块硬地基——<strong>shadow 模式</strong>。</p>
-<ul>
-<li>shadow：判官照咨询、判断照记账，但注入结果与不开功能时<strong>逐字节相同</strong>，模型什么都不知道；</li>
-<li>advisory：判断才真正生效（行序置换、注入筛选）；</li>
-<li>判官故障、超时、返回「都行」时，输出必须保持原始顺序，不许有半生效状态。</li>
-</ul>
-<p>shadow 不是「先观察观察」的客气说法，它要过一个硬测试：<strong>同一输入跑两遍（shadow 开 / 关），diff 必须为空。</strong> 这和评测第 3 篇的「在场与送达证明」是同一种纪律——功能宣称自己没介入，就要拿出逐字节的证据，而不是「应该没影响吧」。</p>
-<p>对照组侧的配套动作评测第 8 篇讲过：实验环境默认导出「判官关闭」，需要的臂再显式换回端点。记忆系统是默认值污染的重灾区——记忆功能一旦成为产品默认，对照组不做显式清除就必然被污染。</p>
+<p>记忆实验有个其他实验少有的便利：记忆干预通常可以在宿主内部完成，不改 provider 可见的字节。这给因果归因一块硬地基——<strong>shadow 模式</strong>：判官照咨询、判断照记账，但注入结果与不开功能时<strong>逐字节相同</strong>，模型什么都不知道；再往上才是 advisory（判断真正生效）；判官故障、超时、返回「都行」时，输出必须保持原始顺序——不许有半生效状态。</p>
+<p>shadow 不是「先观察观察」的客气说法，它要过一个硬测试：<strong>同一输入跑两遍（shadow 开 / 关），diff 必须为空。</strong> 这和第 3 篇的在场与送达证明是同一种纪律：宣称自己没介入，就要拿出逐字节的证据，而不是「应该没影响吧」。</p>
+<p>对照组侧的配套动作第 8 篇讲过：实验环境默认导出「判官关闭」，需要的臂再显式换回端点。记忆系统是默认值污染的重灾区——记忆功能一旦成为产品默认，对照组不做显式清除就必然被污染。</p>
 <!-- 配图 eval10-shadow-identity.svg：shadow/advisory 两轨，diff 为空的同一性闸门 -->
 <h2 id="六写路径先造题再开功能"><a class="header" href="#六写路径先造题再开功能">六、写路径：先造题，再开功能</a></h2>
-<p>检索面热闹了两个月，写路径（判官判断新记忆与旧记忆同义还是矛盾）在整个试点期<strong>一次都没被触发</strong>；另一个决策面（判断用户是不是在要求多方案枚举）咨询了 55 次，0 次越过 80% 的启用阈值。</p>
-<p>这两个功能因此都处于一个尴尬状态：不是被证伪，是<strong>未测</strong>。「未测」和「证伪」必须严格区分——证伪可以下线，未测只能挂着，而挂着的功能不许进默认配置。</p>
-<p>他们文档里写下的后续路线对所有做触发型功能的人都适用：<strong>先造评测，再决定开不开。</strong> 写路径需要的 fixture 要专门构造：同义改写（「我周三走」→「我的航班改到周三了」）、矛盾更新（旧事实被新事实推翻）、枚举请求（明确要求多列几个方案 vs 只是随口一问）。造不出能稳定触发的题，就没有该功能的确认性实验——这与评测第 2 篇「评估器为已发现的错误而建」互为镜像：触发型功能的合法出生证明是一份能触发它的题集。</p>
+<p>检索面热闹了两个月，写路径（判官判断新记忆与旧记忆是同义还是矛盾）在整个试点期<strong>一次都没被触发</strong>；另一个决策面（判断用户是不是在要求多方案枚举）咨询了 55 次，0 次越过 80% 的启用阈值。</p>
+<p>这两个功能因此处在一个尴尬状态：不是被证伪，是<strong>未测</strong>。未测和证伪必须严格区分——证伪可以下线，未测只能挂着，而挂着的功能不许进默认配置。</p>
+<p>其文档里写下的后续路线对所有做触发型功能的人都适用：<strong>先造评测，再决定开不开。</strong> 写路径的 fixture 要专门构造：同义改写（「我周三走」→「我的航班改到周三了」）、矛盾更新（旧事实被新事实推翻）、枚举请求（明确要求多列方案 vs 随口一问）。造不出能稳定触发的题，就没有该功能的确认性实验——这与第 2 篇互为镜像：触发型功能的合法出生证明，是一份能触发它的题集。</p>
 <h2 id="七最重的病例注释有害重排也没用"><a class="header" href="#七最重的病例注释有害重排也没用">七、最重的病例：注释有害，重排也没用</a></h2>
-<p>这一节把三层乘法链的最上层「采信」讲透，因为它是记忆评测最容易自欺的地方，病例分两幕。</p>
-<p><strong>第一幕：给模型看的建议，抵消了选择的收益。</strong> 早期方案会在每条检索结果后面附加相关度百分比、证据充分性评分和使用建议——把判官的判断翻译成给模型看的文字。60 例付费归因实验的结果：纯词法 33/60 核实到金标；只开静默注入筛选的臂 42/60；四面全开、带着注释的臂反而退回 34/60。<strong>注释把注入选择的增益整个抵消了。</strong></p>
-<p>这不是记忆面的孤立事故。同项目的停滞熔断观察到 76% 的进度提醒被模型无视；测试完整性机制发现模型削弱测试后发消息要求恢复，2 个 run 里 0 个服从。三个独立实验指向同一条规律：<strong>在长上下文、弱模型的 regime 下，文本型劝告是系统性失效的干预面。</strong> 这也解释了我自己在截断矩阵里的发现——「检出不难，告知才是缺口」（评测第 4 篇）：告知缺口的存在，不等于「往输出里多塞几句告知」能填上它。</p>
-<p><strong>第二幕：换成静默重排，离线封神，端到端死刑。</strong> 注释方案死后，新方案不再输出任何文字，只在 BM25 band 内对结果<strong>行序</strong>做置换——advised 的结果和 plain 结果字节级一致，只是顺序变了。离线 holdout 极其漂亮：金标排第一 258→272/288，15:1，p=0.0005。</p>
-<p>然后是评测第 9 篇详细讲过的端到端 null：139 行中 88 行因旧校验器判无效；放宽校验的探索性重评里金标核实 53→56（p=0.72）、答对 68→67（p=1.0）。整个决策面退役，分支 hash 保留供复现，名字留着但跳过并告警。</p>
-<p>把两幕合起来，记忆评测的终极教训是：<strong>「被注入」不是终点，「排第一」也不是，终点是模型打开它、核实它、答对题。</strong> 中间指标越靠近机制本身越容易显著，越靠近用户价值越诚实——而层与层之间的断裂点（模型不按顺序读、建议文本被无视）只有端到端实验看得见。评测第 9 篇的代理链消费假设，就是从这个病例里抽象出来的。</p>
+<p>把三层链的最上层「采信」讲透，因为它是记忆评测最容易自欺的地方。病例分两幕。</p>
+<p><strong>第一幕：给模型看的建议，抵消了选择的收益。</strong> 早期方案在每条检索结果后附加相关度百分比、证据评分和使用建议——把判官的判断翻译成给模型看的文字。60 例付费归因实验：纯词法 33/60 核实到金标；只开静默注入筛选 42/60；四面全开、带着注释的臂反而退回 34/60。<strong>注释把注入筛选的增益整个抵消了。</strong></p>
+<p>这不是孤立事故。同一项目的停滞熔断观察到 76% 的进度提醒被模型无视；测试完整性机制发现模型削弱测试后发消息要求恢复，2 个 run 里 0 个服从。三个独立实验指向同一条规律：<strong>在长上下文、弱模型的 regime 下，文本型劝告是系统性失效的干预面。</strong> 这也解释了第 4 篇那句「检出不难，告知才是缺口」的另一面：告知缺口的存在，不等于「往输出里多塞几句告知」能填上它。</p>
+<p><strong>第二幕：换成静默重排，离线封神，端到端死刑。</strong> 注释方案死后，新方案不输出任何文字，只在 band 内对结果行序做置换——advised 与 plain 字节级一致，只是顺序变了。离线封存集极其漂亮：金标排第一 258→272/288，15:1，p=0.0005。然后是第 9 篇详细讲过的端到端 null：139 行里 88 行被旧校验器判无效；放宽校验的探索性重评里金标核实 53→56（p=0.72）、答对 68→67（p=1.0）。<strong>模型不按顺序读。</strong> 整个决策面退役，分支保留供复现，名字留着但跳过并告警。</p>
+<p>两幕合起来，是记忆评测的终极教训：<strong>「被注入」不是终点，「排第一」也不是，终点是模型打开它、核实它、答对题。</strong> 中间指标越靠近机制本身越容易显著，越靠近用户价值越诚实——而层与层之间的断裂点（模型不按顺序读、建议文本被无视）只有端到端实验看得见。</p>
 <h2 id="八记忆实验特有的污染清单"><a class="header" href="#八记忆实验特有的污染清单">八、记忆实验特有的污染清单</a></h2>
-<p>通用配对纪律（评测第 9 篇）之外，记忆实验有几张自己的脏牌：</p>
+<p>通用配对纪律（第 9 篇）之外，记忆实验有几张自己的脏牌：</p>
 <ol>
-<li><strong>跨被试记忆库泄漏</strong>：上一个任务写入的事实被下一个任务检索到。每被试、每任务全新存储，是记忆隔离的底线，比工作区隔离更重要——文件残留还能看见，记忆残留会伪装成「模型真聪明」。</li>
-<li><strong>对照组的默认 advisor</strong>：产品默认开启的记忆功能会在对照组里自动生效，详见评测第 8 篇，不赘述。</li>
-<li><strong>本地服务串扰</strong>：记忆服务按固定端口启动时，两个实验实例可能蹲到同一个端口、连上拒绝自己密钥的服务。M 项目出过真实事故（一个实例的任务因此卡了两天），修复是按状态根哈希分配端口、401 应答绝不认作自己的服务。测试环境里的「基础设施偶发失败」，有一部分是邻居实验。</li>
-<li><strong>判官端点的环境污染</strong>：转发判官请求的代码若读取系统代理设置，「判官不可达」会被染成代理的 503，还会测出一条产品根本不走的网络路径——对照组污染的网络版。</li>
+<li><strong>跨被试记忆库泄漏</strong>：上一个任务写入的事实被下一个任务检索到。每被试、每任务全新存储是底线——文件残留还能看见，记忆残留会伪装成「模型真聪明」。</li>
+<li><strong>对照组的默认 advisor</strong>：产品默认开启的记忆功能会在对照组自动生效，对照组的「无」必须强制出来（第 8 篇）。</li>
+<li><strong>本地服务串扰</strong>：记忆服务按固定端口启动时，两个实验实例可能蹲到同一个端口——M 项目出过一个实例因此卡了两天的真实事故，修复是按状态根哈希分配端口、401 应答绝不认作自己的服务。测试环境里的「基础设施偶发失败」，有一部分是邻居实验。</li>
+<li><strong>判官端点的环境污染</strong>：转发判官请求的代码若读取系统代理设置，「判官不可达」会被染成代理的 503，还会测出一条产品根本不走的网络路径。</li>
 </ol>
 <h2 id="九记忆是第一块能被严格测量的长期状态"><a class="header" href="#九记忆是第一块能被严格测量的长期状态">九、记忆是第一块能被严格测量的长期状态</a></h2>
-<p>收口说回为什么这件事值得做。agent 身上的长期状态正在快速增多：规则文件、托管记忆、技能沉淀、用户画像、任务历史。它们大多数现在都没法测——界面第 21 篇抱怨过「生效配置不可见」是用户侧的黑箱，而<strong>评测侧的对应物是「注入集合必须可记录、可回放、可判分」</strong>。</p>
-<p>记忆是这堆长期状态里第一个拥有干净金标（事实可精确匹配）、天然配对形态（同一道题有记忆 vs 无记忆）、和清晰三层链的东西。它的评测法立住了，规则、画像、技能的评测才有模板可抄。也正因如此，这个战场上长出的纪律——召回精排分家、shadow 同一性、写路径先造题、采信才是终点、文本干预对弱模型失效——会比记忆系统本身活得更久。</p>
-<p><em>本章外部病例来自 M 项目的记忆系统设计文档、排序方案退役相关 PR 与记忆试点合同（观察窗口 2026-10；项目名从略，原文链接与文档路径登记在写作简报），迭代数字（0.620/0.495/0.790、33/34/42 of 60、15:1、55 次咨询 0 越阈等）成书前由我凭链接复核；LongMemEval 为公开学术基准，引用时需核对所用版本与指标定义。自家框架出自《自顶向下拆 RAG》与评测系列（2026-08～10）。</em></p>
+<p>收口说回为什么值得做。agent 身上的长期状态正在快速增多：规则文件、托管记忆、技能沉淀、用户画像、任务历史。它们大多数现在没法测——生效配置对用户不可见，是产品侧的黑箱；而<strong>评测侧的对应物是「注入集合必须可记录、可回放、可判分」</strong>。</p>
+<p>记忆是这堆长期状态里第一个拥有干净金标（事实可精确匹配）、天然配对形态（同一道题有记忆 vs 无记忆）、清晰三层链的东西。它的评测法立住了，规则、画像、技能的评测才有模板可抄。也正因如此，这个战场上长出的纪律——召回精排分家、shadow 同一性、写路径先造题、采信才是终点、文本干预对弱模型失效——会比记忆系统本身活得更久。</p>
+<p><em>本章外部病例来自 M 项目的记忆系统设计文档、排序方案退役相关变更与记忆试点合同（观察窗口 2026-10；项目名从略，原文链接与文档路径登记在写作简报），迭代数字（0.620/0.495、33/34/42 of 60、258→272/288、55 次咨询 0 越阈等）成书前由我凭链接复核；LongMemEval 为公开学术基准，引用时需核对所用版本与指标定义。检索评测方法论出自作者的《自顶向下拆 RAG》，本章互指不搬。产品侧的「生效配置预览」讨论原在界面部分第 21–22 篇，两章已于 2026-10-14 撤稿存档（materials/），本章自含其结论。</em></p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="断言不了输出就断言关系蜕变测试进-agent-评测"><a class="header" href="#断言不了输出就断言关系蜕变测试进-agent-评测">断言不了输出，就断言关系——蜕变测试进 agent 评测</a></h1>
 <blockquote>
 <p>第 1 篇立过断言危机：非确定性系统的断言目标从结果移走，当时登记的去处是路径覆盖与终态。但这两个去处都假定「什么叫对」列得出清单——对开放式输出，这个假定本身就漏。这一篇补第三种移法：**断言不了输出，就断言关系。**界面部分第 16 篇的等价性层早就把它用出来了，只是没叫这个名字；这一篇给它正名，并把它从界面层的测试基建，升级成 agent 评测里的一种断言形态。</p>
 </blockquote>
-<h2 id="本章将讲-6"><a class="header" href="#本章将讲-6">本章将讲</a></h2>
+<h2 id="本章将讲-10"><a class="header" href="#本章将讲-10">本章将讲</a></h2>
 <ul>
 <li>断言危机的第三种解法：断言目标从结果移走之后，除了路径与终态，还可以移到关系——蜕变关系为什么是非确定性系统的天然断言。</li>
 <li>旗舰案例：界面部分第 16 篇的 delta 切分等价性按断言形态重拆——事后形态、全程形态，以及双实现互证这个 oracle 难题的另一种解法。</li>
