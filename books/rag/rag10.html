@@ -1,0 +1,291 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>06 · Rerank 不是瓶颈 - RAG 心得：从一份财报 PDF 到一个能扛的系统</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="favicon-8114d1fc.png">
+        <link rel="stylesheet" href="css/variables-8adf115d.css">
+        <link rel="stylesheet" href="css/general-e96d0476.css">
+        <link rel="stylesheet" href="css/chrome-d279d366.css">
+        <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex-c18298ee.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc-2a99541a.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">RAG 心得：从一份财报 PDF 到一个能扛的系统</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/BiBoyang/BiBoyang.github.io" title="Git repository" aria-label="Git repository">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="rerank-不是瓶颈前面的脏数据才是"><a class="header" href="#rerank-不是瓶颈前面的脏数据才是">Rerank 不是瓶颈，前面的脏数据才是</a></h1>
+<p>系统上线之后，团队做了件“标准动作“：向量检索后面接一个 reranker。接完一测，端到端延迟多了几百毫秒，答对率却几乎没动。第一反应很一致：要么换个更快的 reranker，要么干脆把它砍了。</p>
+<p>先摆两个数字定调，都是经验口径，不是 benchmark 实测：rerank 这一步通常带来 200~500ms 的额外延迟；而初轮召回的 top-k 里，通常有 30%~50% 的候选本来就不相关——token 看起来像，跟用户的问题没有真正对应。这两个数字放在一起，判断其实已经出来了：瓶颈不在 reranker，在它面前的候选集。</p>
+<h2 id="reranker-值多少钱成本从哪来"><a class="header" href="#reranker-值多少钱成本从哪来">reranker 值多少钱，成本从哪来</a></h2>
+<p>先把话说公道：这篇不是来否定 rerank 的。在 RAG 链路里，rerank 是回报最高的单步操作。原因在机制上：向量检索是双塔结构（bi-encoder），query 和 passage 各自独立编码、互不见面，打分天然粗糙；reranker 是 cross-encoder，把 query 和候选同时喂进模型，让两者在注意力里充分交互，判断精度高一截。所以“粗排之后加精排“这笔钱，值得花。</p>
+<p>成本的来源同样清楚。cross-encoder 每判一对 (query, chunk) 就是一次完整推理，成本跟候选数基本线性相关：给它 50 个候选，它做 50 次推理；给它 100 个，就做 100 次。这就是为什么生产链路里几乎没人拿它当第一道筛子——一旦铺到大量候选上，延迟立刻失控。回报最高和最容易变慢，本质是同一件事：它干的是高语义计算密度的活儿，每多一个候选就多一次重型 forward。</p>
+<p>财报场景把这个矛盾又放大了三层。</p>
+<p>一是跨年份文本极度相似。同一家公司 2024 Q2 和 2025 Q2 的管理层讨论、风险因素、经营回顾，常常只换了几个数字，embedding 看谁都像，初轮召回把它们成批拉出来，reranker 面对的是一堆“看起来都对“的候选，工作量天然偏大。</p>
+<p>二是 hybrid 的副作用。财报适合混合检索，但混合的直接后果是候选池更大；不收敛的话，rerank 的负担继续往上涨。</p>
+<p>三是财报 chunk 天然密集。一页摘要里可能同时出现收入、毛利、经营利润、每股盈利、同比、环比——一个 chunk 混着 5 个指标、2 个时间口径是常态。这种 chunk 对初轮检索很“友好“，什么关键词都带一点；对 reranker 极不友好，它得替你判断用户真正关心的是哪个指标，判别难度显著上升。</p>
+<p>又贵又值。这个张力先立在这儿。接下来的问题是：贵的真正原因，到底是模型，还是它面前的世界。</p>
+<h2 id="它救不了什么三个候选集层面的病"><a class="header" href="#它救不了什么三个候选集层面的病">它救不了什么：三个候选集层面的病</a></h2>
+<p>reranker 的工作范围有一条硬边界：它只在候选集里挑。正确答案没进 top-N，精排再好也排不出来。我在财报链路里碰到的三种病，全都病在这条边界之外。</p>
+<p><strong>年份错配。</strong> 用户问 2025 Q4 营收，正确 chunk 排在第 137 位——这个数字是举例，意思是它根本没进 top-100。reranker 看不见它，自然也救不了它。解法不在精排，在检索前的 metadata 硬过滤：<code>report_year != 2025</code> 的 chunk 全部排除，候选集从 10,000 窄到 200（同样是示意量级），正确答案自然进候选。第 6 篇讲时间错配时把这条路展开过，这里只补一句：这是过滤的病，不是排序的病。</p>
+<p><strong>单位缺失。</strong> “营收 184,504（百万元）“和“营收 1,845（亿元）“是同一个数字，差 100 倍。reranker 看到两个 chunk 都有“营收“和数字，但它不认识“百万元“和“亿元“之间的换算关系。这是 chunk 的 metadata 层标 <code>unit</code>、在检索或生成阶段做数值归化的事，精排插不上手。</p>
+<p><strong>口径不同。</strong> “期內盈利 1,150 亿（IFRS）“和“1,320 亿（Non-GAAP）”，语义高度相似，口径完全不同。reranker 只看语义，不会按口径做区分——第 7 篇专讲口径陷阱，这里不展开。</p>
+<p>三个病的共同点：都发生在候选集进入 reranker 之前。</p>
+<h2 id="它面前的世界五层上游优化"><a class="header" href="#它面前的世界五层上游优化">它面前的世界：五层上游优化</a></h2>
+<p>核心思路一句话给掉：输入 200 条低质量候选，reranker 再快也是浪费——200 次推理全是白烧；把候选压到 20 条高质量的，就算每次推理慢一点，总延迟反而可控，精度还更高，因为它不再被低质量样本拖票。</p>
+<p>我在白板上画的处理顺序是：先减少噪声 → 再缩小检索范围 → 再提高首轮候选质量 → 最后才交给 reranker 做精排。对应五层，逐层说。</p>
+<p><strong>第一层，ingest 清洗。</strong> 先看噪声从哪来。目录页如果不单独处理，会把“收入、毛利、现金流、风险因素“这些高频词完整抄一遍，任何营收类查询都先命中目录——第 8 篇讲相似度错觉时，拿目录页当过“满分相似、零分信息“的典型。页脚里的公司全名是另一种污染：它出现在每一页，让所有 chunk 被同一段噪声“拉近“，embedding 空间里区分度整体下降。这些结构噪声混进召回，reranker 就被迫处理一批本不该进来的候选。我的 <code>process_pdf_for_rag.py</code> 里已经做进去了三件事：过滤页脚和纯页码、跳过目录页、用清洗后的正文层数据构建 chunk。解析和 reading order 的细节第 2 篇写过，这里只强调一句：清洗本身不是 rerank，但它直接决定 rerank 的候选分布。</p>
+<p><strong>第二层，metadata 预过滤。</strong> 财报问题天然带强约束：公司、年份、报告类型、期别，常常直接写在用户的问题里。既然检索范围本来就不该是全库，最合理的做法是先过滤、再检索。chunk schema 里通常已经有这些字段：</p>
+<pre><code>company / report_year / report_type / language /
+section / period_type / unit / page_start / page_end
+</code></pre>
+<p>它们的价值不只是生成答案时贴 citation，更重要的是让检索一开始就缩圈。“先 filter 再 retrieve“在财报场景又准又快，因为它直接砍掉了 Dense 检索和 rerank 需要面对的 chunk 总量。代价得认：这个策略依赖 query parsing 足够稳定，问题太模糊、约束抽不出来时，过早过滤可能把正确答案一起挡在门外。第 6 篇的四层解法里它排第一，理由是同一个——财报场景通常满足“问题自带约束“这个前提，所以它在这里特别有效。</p>
+<p><strong>第三层，structure-aware chunking。</strong> 很多“reranker 慢“的表象，根子是 chunk 设计把活儿留给了 reranker。一个 chunk 里同时有 2025H1 和 2024H1、混着表头、正文解释和几个不同指标，reranker 就得先替系统做一遍“语义拆包“，再判断相关性——候选一多，这笔额外认知开销非常贵。我的处理脚本不按固定 token 长度暴力切，而是：识别 heading，让 chunk 继承 <code>section</code>；抽取 <code>period_type</code> 和 <code>unit</code>；period 变化时主动 flush，不让两个时间粒度住进同一个 chunk；长段落再做二次切分，保留少量 overlap。实测数字：腾讯 2025 中报——就是第 1 篇开场进系统的那份——清洗后 119 页，最终产出 345 个 chunk。代价摆在明处：chunk 变多、首轮索引变大。但只要 pre-filter 和 hybrid 跟上，这笔代价通常比让 reranker 处理“大而脏“的候选划算。切分的完整改造记录在第 4 篇。</p>
+<p><strong>第四层，hybrid 提高首轮 precision。</strong> 先说一个我见过的错误操作：怕漏召回，就把 top-k 一路往上加。多出来的候选大多是低质量假阳性，rerank 不会因此更准，只会更慢。正确的方向是让首轮候选本身更像“值得精排的候选“。财报里有两类相关性：lexical 的——术语、指标名、缩写、数字口径，比如资本开支、股份回购、non-GAAP；semantic 的——管理层解释、风险描述、经营表述。只用 Dense，会把各年份“语气相似“的管理层讨论一起拉进来；只用 BM25，又扛不住表达变体。混合召回的目的不是让候选更多，而是让真正有希望进入最终答案的候选更早出现。代价也明码标价：两套索引，加一套融合逻辑。第 9 篇讲过 BM25 和 Dense 怎么分工，这里从 rerank 视角补一句：hybrid 减少的是精排阶段的无效工作量。</p>
+<p><strong>第五层，section-aware retrieval。</strong> section 信息比多数人以为的更有用：问风险，答案更可能在风险因素和附注；问管理层判断，更可能在主席报告和 MD&amp;A；问精确数字，更可能在财务摘要、主表和附注。系统如果能先判断用户在问“数字“、“原因“还是“风险”，就优先去对应 section 里检索，reranker 就不用在完全异质的 section 之间做全量比较，延迟和误判都会下降。这一层的关键句我直接给：不是让模型更聪明，是让模型面对的比较任务更单纯。</p>
+<p>五层之外，还有一类查询要单拎出来：跨期对比。“对比腾讯 2024 和 2025 中期报告里的广告业务变化”——如果当成一个 query 走单跳检索，会把两个时期的高相似 chunk 一次性全塞进候选池，rerank 压力巨大，还很容易出现“语义对、年份错“。更稳的做法是 multi-retrieval + synthesis：2024 检一遍、2025 检一遍，各自精排，最后在生成阶段汇总比较。链路变长了，但每次面对的候选集更小、语义更单纯。对财报这种跨期文本高度相似的数据，分而治之比一次性大上下文硬拼更稳。</p>
+<h2 id="复杂度该花在哪一层"><a class="header" href="#复杂度该花在哪一层">复杂度该花在哪一层</a></h2>
+<p>五层收拢成一本账，其实是同一个取舍。</p>
+<p>我的优化顺序固定为四步：metadata 硬过滤 → 向量检索 + query 改写 → reranker 精排 → LLM prompt 约束。从第一步到第四步，边际收益递减；经验上第一步能解决六成上下的问题——这是我在自己项目里的估算口径，不是统计结论——但不做第一步，后面三步全做也救不回来。</p>
+<p>两种方案并排看更直观：</p>
+<pre><code>方案 A：PDF 转文本 → 固定长度切块 → 全库 dense → 放大 top-K → rerank 兜底
+方案 B：清洗结构噪声 → structure-aware 分片 → 挂 metadata
+        → pre-filter / section-aware → hybrid → 小候选集 rerank
+</code></pre>
+<p>方案 A 实现快，demo 容易跑起来；但随着文档量增大，rerank 越来越慢，而且慢得不值——它精排的大量候选，本来就不该进入精排阶段。方案 B 工程复杂度更高、调试点更多，但 rerank 的成本被控制在真正接近答案的候选上。财报这种强约束、高相似、数字敏感的场景，我几乎只选 B。</p>
+<p>边界也必须划：换成知识库 FAQ 这类场景，chunk 数量小、文档之间差异大，方案 A 完全够用——reranker 处理 200 个候选，按经验也就 200ms 上下。别把财报场景的取舍，直接套到所有 RAG 系统上。</p>
+<h2 id="什么时候才轮到-reranker用武之地与选型"><a class="header" href="#什么时候才轮到-reranker用武之地与选型">什么时候才轮到 reranker：用武之地与选型</a></h2>
+<p>上游五层做完，reranker 不是没用了，是终于轮到它干正事了。三类场景它不可替代：</p>
+<ul>
+<li>语义相近但细节不同的排序。问“腾讯的游戏业务策略“，候选里增值服务、国际游戏、国内游戏、电竞都在，谁排前面需要精细区分，向量检索的排序粒度不够。</li>
+<li>跨语言匹配。中文提问、chunk 中英混合，“revenue“和“收入“在 embedding 空间里有距离，在 cross-encoder 的交互编码里会被连起来。</li>
+<li>短 query 长 chunk。问“腾讯利润“，答案埋在 800 token 的管理层讨论里，短 query 对长 chunk 的 embedding 匹配天然吃亏。</li>
+</ul>
+<p>三类的共同点：正确答案已经在候选集里，只是排名不够高。reranker 干的是把第 15 名提到第 1 名的活儿——这是它的用武之地，也是它的全部边界。</p>
+<p>反过来，什么时候可以不开？我能给的判断只有一半：chunk 少、文档差异大的场景（比如上一节的 FAQ），候选集天然干净，精排的边际收益小。这个结论目前只有延迟一侧的估算撑着，我没做过开/不开 reranker 的答对率对照实测【待补：缺一组开/不开 reranker 的延迟与答对率实测数据，素材中没有，发布前如能补测可替换此句】，所以这条边界按保守口径写：候选集小且干净时可以不开，拿不准就开。</p>
+<p>真要上 reranker，选型看三个指标，都是工程口径。一是推理延迟：cross-encoder 单次推理大约 10-100ms，逐对串行跑 top-100 就是 1-10 秒——但批处理（batching）能把 top-100 压进几百毫秒到 2 秒以内，交互式场景优先选支持 batch 的方案。二是语言支持：bge-reranker-v2-m3（基于 bge-m3 的轻量多语言 reranker）对中文支持好，Cohere 的 rerank 系列多语言好但 API 成本高。三是和 embedding 模型的互补性：向量检索已经用了 multilingual-e5-large，reranker 就不必配同系列，补短板比叠长板值。</p>
+<h2 id="放大器不是净化器"><a class="header" href="#放大器不是净化器">放大器，不是净化器</a></h2>
+<p>收束本篇，两句话。reranker 最合理的位置，不是大规模粗筛，而是小候选集上的精排器；跳过上游直接加 reranker，就像给一座地基不稳的房子装更好的窗户——窗户是真的好，房子还是会歪。它是放大器，你给它什么它就放大什么，包括脏数据；它不是净化器。</p>
+<p>篇章二到这里走完一圈：第 6 篇的时间、第 7 篇的口径、第 8 篇的相似度、第 9 篇的单路、本篇的精排。五个错觉摆在一起，共同点不是“最后的模型不行“，而是检索链路的每个环节都藏着没检验过的假设。</p>
+<p>单市场的检索链路到此讲完了。把镜头拉远一步：A 股、港股、美股的财报一起进系统，格式、准则、货币全不一样，一套向量库还扛得住吗？下一篇《A 股、港股、美股，不能只用一套向量库》讲这个。</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="rag09.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="rag11.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="rag09.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="rag11.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr-ef4e11c1.min.js"></script>
+        <script src="mark-09e88c2c.min.js"></script>
+        <script src="searcher-09f2665d.js"></script>
+
+        <script src="clipboard-1626706a.min.js"></script>
+        <script src="highlight-abc7f01d.js"></script>
+        <script src="book-609e4cb8.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>
