@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="620" viewBox="0 0 960 620" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif">
+  <rect x="0" y="0" width="960" height="620" rx="12" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
+  <text x="28" y="40" font-size="16" fill="#e6edf3" text-anchor="start" font-weight="700">一个 AI 产品的五层壁垒：每层的半衰期都不同</text>
+  <line x1="28" y1="54" x2="932" y2="54" stroke="#30363d" stroke-width="1"/>
+
+  <!-- Row template: y 70 / 174 / 278 / 382 / 486  height 88 -->
+
+  <!-- 1 模型 -->
+  <rect x="28" y="70" width="904" height="88" rx="10" fill="#161b22" stroke="#30363d" stroke-width="1.2"/>
+  <rect x="28" y="70" width="6" height="88" rx="3" fill="#8b949e"/>
+  <text x="56" y="108" font-size="17" fill="#e6edf3" font-weight="700">模型层</text>
+  <text x="56" y="136" font-size="12.5" fill="#8b949e">资本 · 算力 · 数据 · 人才</text>
+  <text x="330" y="120" font-size="13.5" fill="#c9d1d9">壁垒最高，但牌桌不属于大多数人；</text>
+  <text x="330" y="142" font-size="13.5" fill="#c9d1d9">今天的低价是竞争补贴，不是稳态价</text>
+  <rect x="742" y="98" width="168" height="32" rx="16" fill="#161b22" stroke="#8b949e" stroke-width="1.2"/>
+  <text x="826" y="119" font-size="13" fill="#8b949e" text-anchor="middle" font-weight="700">高攀不起</text>
+
+  <!-- 2 agent core -->
+  <rect x="28" y="174" width="904" height="88" rx="10" fill="#161b22" stroke="#30363d" stroke-width="1.2"/>
+  <rect x="28" y="174" width="6" height="88" rx="3" fill="#d29922"/>
+  <text x="56" y="212" font-size="17" fill="#e6edf3" font-weight="700">agent core</text>
+  <text x="56" y="240" font-size="12.5" fill="#8b949e">循环 · 工具调用 · 上下文管理</text>
+  <text x="330" y="224" font-size="13.5" fill="#c9d1d9">通用能力正被训练数据集打包商品化</text>
+  <text x="330" y="246" font-size="13.5" fill="#8b949e">（执行轨迹数据集，谁都可以买）</text>
+  <rect x="742" y="202" width="168" height="32" rx="16" fill="#161b22" stroke="#d29922" stroke-width="1.2"/>
+  <text x="826" y="223" font-size="13" fill="#d29922" text-anchor="middle" font-weight="700">通用部分 ↓ 贬值</text>
+
+  <!-- 3 胶水层 -->
+  <rect x="28" y="278" width="904" height="88" rx="10" fill="#161b22" stroke="#30363d" stroke-width="1.2"/>
+  <rect x="28" y="278" width="6" height="88" rx="3" fill="#58a6ff"/>
+  <text x="56" y="316" font-size="17" fill="#e6edf3" font-weight="700">胶水层</text>
+  <text x="56" y="344" font-size="12.5" fill="#8b949e">UI ↔ core 的协议缝</text>
+  <text x="330" y="328" font-size="13.5" fill="#c9d1d9">协议纪律会被全行业快速学平；</text>
+  <text x="330" y="350" font-size="13.5" fill="#c9d1d9">凭据 / 沙箱 / 权限 / 本地状态归属抄不走</text>
+  <rect x="742" y="306" width="168" height="32" rx="16" fill="#161b22" stroke="#58a6ff" stroke-width="1.2"/>
+  <text x="826" y="327" font-size="13" fill="#58a6ff" text-anchor="middle" font-weight="700">焊死本地 → 可守</text>
+
+  <!-- 4 多端 UI -->
+  <rect x="28" y="382" width="904" height="88" rx="10" fill="#161b22" stroke="#30363d" stroke-width="1.2"/>
+  <rect x="28" y="382" width="6" height="88" rx="3" fill="#bc8cff"/>
+  <text x="56" y="420" font-size="17" fill="#e6edf3" font-weight="700">多端 UI</text>
+  <text x="56" y="448" font-size="12.5" fill="#8b949e">TUI · 桌面 · IDE · 手机 · headless</text>
+  <text x="330" y="432" font-size="13.5" fill="#c9d1d9">同一 core 与胶水全部开源，</text>
+  <text x="330" y="454" font-size="13.5" fill="#c9d1d9">闭源的只有 UI 壳 —— 有人用发布投票</text>
+  <rect x="742" y="410" width="168" height="32" rx="16" fill="#161b22" stroke="#bc8cff" stroke-width="1.2"/>
+  <text x="826" y="431" font-size="13" fill="#bc8cff" text-anchor="middle" font-weight="700">差异化最集中 ★</text>
+
+  <!-- 5 eval -->
+  <rect x="28" y="486" width="904" height="88" rx="10" fill="#161b22" stroke="#30363d" stroke-width="1.2"/>
+  <rect x="28" y="486" width="6" height="88" rx="3" fill="#3fb950"/>
+  <text x="56" y="524" font-size="17" fill="#e6edf3" font-weight="700">eval</text>
+  <text x="56" y="552" font-size="12.5" fill="#8b949e">发现真问题的能力</text>
+  <text x="330" y="536" font-size="13.5" fill="#c9d1d9">行业级稀缺，能力公开可验证、可携带；</text>
+  <text x="330" y="558" font-size="13.5" fill="#c9d1d9">还是平价模型的能力放大器</text>
+  <rect x="742" y="514" width="168" height="32" rx="16" fill="#161b22" stroke="#3fb950" stroke-width="1.2"/>
+  <text x="826" y="535" font-size="13" fill="#3fb950" text-anchor="middle" font-weight="700">稀缺 ↑ 涨价</text>
+
+  <text x="480" y="602" font-size="11.5" fill="#8b949e" text-anchor="middle">通用能力沉进底座（↓），带本地状态与判断力的部分浮上来（★/↑）</text>
+</svg>
