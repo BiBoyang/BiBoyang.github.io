@@ -443,6 +443,14 @@ body .greedy-nav .visible-links a {
   padding: 0.7em 0;
   border-bottom: 1px solid var(--border-soft);
 }
+/* 首页（layout--home）：隐藏自动摘要，只保留标题 + 日期 + 阅读时长；
+   条目间距收紧。分类/标签/归档页不受影响。 */
+.layout--home .archive__item {
+  padding: 0.4em 0;
+}
+.layout--home .archive__item-excerpt {
+  display: none !important;
+}
 .archive__item:last-child {
   border-bottom: none;
 }
