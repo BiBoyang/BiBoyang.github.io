@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>公众号排版预览 - AI 创业观察和思考</title>
+</head>
+<body style="margin:0;padding:24px;background:#ffffff;">
+<section style="max-width:677px;margin:0 auto;font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue','PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;">
+
+<section style="border:2px dashed #d93025;border-radius:8px;padding:14px 16px;margin:0 0 24px;font-size:14px;color:#57606a;line-height:1.8;background:#fffaf5;">
+<p style="margin:0 0 6px;font-weight:700;color:#d93025;">【发布前请删除此框】公众号填写建议</p>
+<p style="margin:0 0 4px;"><b>标题</b>：AI 创业观察和思考</p>
+<p style="margin:0 0 4px;"><b>摘要</b>：近一年 agent 研究（读 Codex 源码、爆破多家开源项目、和局中人聊）之后，我对 AI 创业、择业、个人位置的几个判断：五层壁垒、失效模式评测、高风险决策辅助方向、加入初创的筛选框架与战时姿态。</p>
+<p style="margin:0 0 4px;"><b>封面</b>：已生成，文件在仓库 <code style="font-family:Menlo,Consolas,monospace;">Image/AIBarrier_cover.jpg</code>（2.35:1，左留白可叠标题，右下角 AI 生成标识建议保留）。</p>
+<p style="margin:0 0 4px;"><b>合集</b>：自行选择 AI / Agent 相关合集。</p>
+<p style="margin:0;"><b>使用方式</b>：浏览器打开本文件 → <b>全选正文（从“0. 太长不看”开始，不选本提示框）复制 → 粘贴进公众号编辑器</b>，复制的是渲染后的富文本不是源码。两张内嵌图来自 GitHub 图床，粘贴后确认编辑器已把图片抓取上传；两张表格粘贴后检查边框。</p>
+</section>
+
+<h2 style="font-size:19px;font-weight:700;color:#1f2328;line-height:1.4;margin:1.8em 0 0.9em;padding-left:10px;border-left:4px solid #2f6fdb;">0. 太长不看</h2>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">从去年年底开始，我把主要时间花在 agent 研究上：agent 的顶层 UI 与多端协调、UI 层与 agent core 之间的胶水层、以 agentic RAG 为代表的文档处理，以及 eval。主要学习样本是 Codex 源码。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">今年十一假期我没有休息，集中精力把 eval 又往深里做了一轮：对多个头部开源项目做失效模式测试，提交了一批 issue 和 PR，涉及 Alibaba、DeepSeek、Anthropic、Microsoft 等多家的仓库。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">并且在假期前后这段时间，我在线上线下和大量做 agent 的开发者聊过——大厂的、初创的、国内的、国外的、正在找工作的、正在招人的。这些一手交流，加上我自己动手爆破项目的记录，构成了这篇文章判断的三个来源：<strong style="color:#111;">读源码、动手炸、和局中人聊</strong>。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">这篇不讲技术细节，讲这近一年研究和交流之后，我对“AI 创业、择业、个人位置”的几个判断：</p>
+<ul style="padding-left:1.3em;margin:0 0 1.1em;font-size:16px;color:#3f3f3f;line-height:1.9;">
+<li style="margin-bottom:0.5em;">AI 的壁垒是分层的。我把一个 AI 产品拆成五层：模型、agent core、胶水层、多端 UI、eval。每一层都有壁垒，但形态和半衰期完全不同。模型层壁垒最高但不属于大多数人；agent core 的通用能力正在被训练数据集打包商品化；胶水层的设计纪律会被快速拉平；多端 UI 是连 OpenAI 都自留闭源的一层；eval 则是行业级稀缺的能力。</li>
+<li style="margin-bottom:0.5em;">现在的模型价格是补贴价，不是稳态价。</li>
+<li style="margin-bottom:0.5em;">eval 正在从“测试环节”变成生产资料：它不只能抓 bug，还能把平价模型的使用效果抬到可用线以上。</li>
+<li style="margin-bottom:0.5em;">如果做 agent 创业，我首先推荐高风险决策辅助场景：coding、研报财报、购房指导。因为这些场景里错误代价高、私有状态重，eval 是刚需，通用数据集替代不了。</li>
+<li style="margin-bottom:0.5em;">选初创要靠筛选框架，进去之后没有“保留精力”的选项——战时阶段，位置对了就该当战场打，全力以赴。</li>
+<li style="margin-bottom:0.5em;">加入初创和自己创业一样，先想清楚退路，才敢全力投入。</li>
+</ul>
+
+<h2 style="font-size:19px;font-weight:700;color:#1f2328;line-height:1.4;margin:1.8em 0 0.9em;padding-left:10px;border-left:4px solid #2f6fdb;">1. 壁垒是分层的</h2>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">一种流行的说法是：模型在 commoditize，所以壁垒在上层应用。这个说法太粗糙，害过不少人。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">我把一个 AI 产品拆成五层：模型、agent core、胶水层、多端 UI、eval。每一层都有壁垒，但壁垒的形态和半衰期完全不同。</p>
+
+<h3 style="font-size:16px;font-weight:700;color:#1f2328;margin:1.5em 0 0.8em;">1.1 模型层：壁垒最高，但价格是补贴价</h3>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">模型层的壁垒不仅真实存在，而且是所有层里最高的：资本、算力、数据、人才，一个都不能少。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">但对于做应用的人，模型层有两个必须认清的事实。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;"><strong style="color:#111;">第一，现在的 API 价格是竞争补贴的结果，不一定长期维持。</strong> 各大厂在用价格换开发者、换入口，这和当年的外卖补贴战形似。做商业计划时，如果用今天的 token 价格测算盈亏平衡，等于把对手的补贴算进了自己的收入。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;"><strong style="color:#111;">第二，也是更重要的：AI 产品的边际成本不为零。</strong> AI 产品每生成一个 token 都是真实的算力成本——用户越多，亏损越大。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">所以“亏本换规模”在 AI 里不是更安全，而是结构性地更危险。任何一个 agent 生意，单位经济学都要按 token 的长期成本重算，不能按今天的补贴价。</p>
+
+<h3 style="font-size:16px;font-weight:700;color:#1f2328;margin:1.5em 0 0.8em;">1.2 agent core：发动机，上下文管理是它的硬部分</h3>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">agent core 包括 agent 循环、工具调用、重试与兜底，以及<strong style="color:#111;">上下文管理</strong>——compaction、会话历史的持久化与投影，都在这一层。core 非常重要，它是产品的发动机。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">但要注意一个正在发生的变化：<strong style="color:#111;">通用 agent core 能力正在被商品化成训练数据。</strong></p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">一个标志性的动向：人才平台 Mercor 在为 Cursor 等客户生产代码执行轨迹数据集（他们称之为 Mercor Code，规模在千万条已验证轨迹量级），专门用来训练 coding 模型。也就是说，底层厂商正在把“agent 怎么循环、怎么调工具、怎么管理上下文”这些过去属于产品层的能力，打包成一个谁都可以买的数据集。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">当一项能力从“你独有的产品”变成“谁都能采购的原料”，它的价值曲线就是向下的。如果一家初创的全部卖点是“我们的 agent loop 设计得好”，需要回答一个问题：下一代模型把这类轨迹吃进训练集之后，你还剩什么？</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">能剩下的，是和真实成本曲线、具体场景强关联的那部分。我自己做过一个相关的 eval：长上下文 decode 时 TPS 会随上下文长度衰减，压缩（compaction）阈值如果按固定 token 数拍脑袋设定，要么太早（白付压缩的信息损失），要么太晚（用户已经卡到不能用）。我的做法是用“半速点”——TPS 掉到峰值一半的位置——作为 compaction 阈值的锚点，让阈值由实测的衰减曲线决定，而不是写死一个数字。这类判断数据集买不到，因为它依赖你对自己场景的成本结构的理解。</p>
+
+<h3 style="font-size:16px;font-weight:700;color:#1f2328;margin:1.5em 0 0.8em;">1.3 胶水层：UI 和 core 之间</h3>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">胶水层不是 UI，是 UI 和 core 之间的协议层。很多人把这两层混为一谈，但它们的职责完全不同：胶水层只管对齐多端 UI，UI 层负责将完善的 Agent 输出展现给用户。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">Codex 的胶水层形态是 app-server：即使 TUI 和引擎跑在同一个进程里，通信仍然走 JSON-RPC 协议，不允许函数调用捷径。这是三个硬要求逼出来的：跨语言（IDE 和桌面端前端是 TypeScript）、双向 RPC（工具审批是引擎在执行中途反过来向界面要决定）、生命周期归属（多线程、子 agent 的事件按 thread_id 路由，这套状态不能散落在每个 UI 里）。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">这条缝上的活，具体长这样：</p>
+<ul style="padding-left:1.3em;margin:0 0 1.1em;font-size:16px;color:#3f3f3f;line-height:1.9;">
+<li style="margin-bottom:0.5em;"><strong style="color:#111;">翻译</strong>：core 的事件要逐级翻译成 UI 能消费的通知。Codex 是三级翻译链——core EventMsg → 83 个 ServerNotification → TUI 的 232 个 AppEvent → 界面组件。</li>
+<li style="margin-bottom:0.5em;"><strong style="color:#111;">反向通道</strong>：审批不是弹个窗，是 server 向 client 发的一个反向请求，执行挂起，等一个 oneshot 回填决定。执行审批、文件变更审批、向用户提问、权限申请，走的是同一类消息。</li>
+<li style="margin-bottom:0.5em;"><strong style="color:#111;">状态归属与降级可见性</strong>：这是最容易被忽视、也最容易撕毁承诺的地方。Codex 有一个我读源码时停了很久的分支：TUI 优先连本地 daemon，连不上就静默退回进程内嵌引擎，只有一行 debug 日志。</li>
+</ul>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">这套协议纪律的收益是实证过的：core 做过一次破坏性重构（删掉 <code style="font-family:Menlo,Consolas,monospace;font-size:0.86em;background:#f3f4f6;padding:2px 5px;border-radius:4px;color:#c7254e;">Op::UserTurn</code>，换成 <code style="font-family:Menlo,Consolas,monospace;font-size:0.86em;background:#f3f4f6;padding:2px 5px;border-radius:4px;color:#c7254e;">TurnInput</code> 和 <code style="font-family:Menlo,Consolas,monospace;font-size:0.86em;background:#f3f4f6;padding:2px 5px;border-radius:4px;color:#c7254e;">start_or_steer_turn</code>），TUI 一行没改，因为它对 core 内部类型的引用为零。</p>
+
+<h3 style="font-size:16px;font-weight:700;color:#1f2328;margin:1.5em 0 0.8em;">1.4 多端 UI：独立的一层，有人用闭源为它投票</h3>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">真正使用 agent 的是人，体验全部发生在端上，所以多端 UI 必须独立成层。Codex 有五种客户端：TUI、桌面端、IDE、手机配对端，以及连 UI 都没有的 headless 模式（<code style="font-family:Menlo,Consolas,monospace;font-size:0.86em;background:#f3f4f6;padding:2px 5px;border-radius:4px;color:#c7254e;">codex exec</code>）。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">我拆解过 ChatGPT 桌面端的安装包，结论很说明问题：<strong style="color:#111;">同一个 core、同一套胶水（app-server 和 daemon），全部开源；闭源的只有 Electron UI 壳。</strong></p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">OpenAI 用发布的方式说明了一件事：发动机和传动系统可以公开，驾驶舱是自留地。这就是多端 UI 层价值的直接证据。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">多端协调也不是“把同一个界面搬上手机”。按 UI 在哪、引擎在哪画成四象限，最有意思的一格是“UI 异地、引擎本机”：<strong style="color:#111;">agent 必须靠近的是环境（文件、git、凭据、沙箱），不是人。</strong> 传统架构里 UI 和引擎挤在一台机器上，只是“引擎必须在这、人也凑巧在这”的副作用；Codex 的 remote_control 把这个副作用解开了——家里的 Mac mini 当常驻 agent 主机，手机配对后异地派活。这是拓扑级的产品形态，不是界面适配。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">UI 层的壁垒因此也分两半：通用的交互套路会像 core 能力一样被定期抹平；但多端拓扑的产品判断、用户长期沉淀的本地状态、关键时刻的体验细节（截断能不能被看见、降级有没有被告知、迟到的审批会不会让命令偷跑），抹平不了。</p>
+
+<h3 style="font-size:16px;font-weight:700;color:#1f2328;margin:1.5em 0 0.8em;">1.5 eval 层：从测试环节变成生产资料</h3>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">第五层是 eval。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">它最近成为热点不是偶然——大家逐渐意识到，通过 eval 可以直接提升体验，还可以变相提高平价模型的使用效果。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">五层看完，先给一张总表：</p>
+<table style="border-collapse:collapse;width:100%;margin:1.2em 0;font-size:14px;">
+<tr><th style="background:#f3f6fb;border:1px solid #dfe3e8;padding:8px 10px;color:#1f2328;font-weight:700;text-align:left;">层</th><th style="background:#f3f6fb;border:1px solid #dfe3e8;padding:8px 10px;color:#1f2328;font-weight:700;text-align:left;">壁垒形态</th><th style="background:#f3f6fb;border:1px solid #dfe3e8;padding:8px 10px;color:#1f2328;font-weight:700;text-align:left;">对小团队/个人的含义</th></tr>
+<tr><td style="border:1px solid #dfe3e8;padding:8px 10px;color:#3f3f3f;">模型</td><td style="border:1px solid #dfe3e8;padding:8px 10px;color:#3f3f3f;">资本、算力、数据</td><td style="border:1px solid #dfe3e8;padding:8px 10px;color:#3f3f3f;">高攀不起，但要按长期价格算账</td></tr>
+<tr><td style="border:1px solid #dfe3e8;padding:8px 10px;color:#3f3f3f;">agent core（含上下文管理）</td><td style="border:1px solid #dfe3e8;padding:8px 10px;color:#3f3f3f;">架构工程 + 训练数据</td><td style="border:1px solid #dfe3e8;padding:8px 10px;color:#3f3f3f;">通用能力被数据集化，只剩场景化部分</td></tr>
+<tr><td style="border:1px solid #dfe3e8;padding:8px 10px;color:#3f3f3f;">胶水层</td><td style="border:1px solid #dfe3e8;padding:8px 10px;color:#3f3f3f;">协议纪律 + 状态/权限归属</td><td style="border:1px solid #dfe3e8;padding:8px 10px;color:#3f3f3f;">纪律会被拉平，与本地环境焊死的部分可守</td></tr>
+<tr><td style="border:1px solid #dfe3e8;padding:8px 10px;color:#3f3f3f;">多端 UI</td><td style="border:1px solid #dfe3e8;padding:8px 10px;color:#3f3f3f;">人的体验 + 多端拓扑 + 本地状态</td><td style="border:1px solid #dfe3e8;padding:8px 10px;color:#3f3f3f;">连 OpenAI 都把 UI 留作闭源；差异化最集中的一层</td></tr>
+<tr><td style="border:1px solid #dfe3e8;padding:8px 10px;color:#3f3f3f;">eval</td><td style="border:1px solid #dfe3e8;padding:8px 10px;color:#3f3f3f;">发现真问题的能力</td><td style="border:1px solid #dfe3e8;padding:8px 10px;color:#3f3f3f;">行业级稀缺，且能力可验证、可携带</td></tr>
+</table>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 0.6em;letter-spacing:0.02em;">表格看数据，下图看趋势——通用能力一层层沉进底座，带本地状态和判断力的部分浮在上面：</p>
+<p style="margin:0 0 1.1em;"><img style="max-width:100%;height:auto;margin:0.6em 0 0.2em;border-radius:8px;display:block;" src="https://raw.githubusercontent.com/BiBoyang/BiBoyang.github.io/refs/heads/main/Image/AIBarrier_01.png" alt="AI 产品五层壁垒结构图" /></p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">还有一个这张表没画出来、但我在 Codex 代码里亲眼看到的咬合关系：<strong style="color:#111;">正因为胶水层把协议做成了一等公民（同进程也走协议），eval 的捕获点对所有端一视同仁地存在。</strong> Codex 测试基建里，协议匹配器在处理每个请求时顺带做不变量检查，于是每一次普通测试都自动变成一次协议 fuzz——UI 层的多样化没有制造测试盲区，全靠胶水层没有留特权通道。</p>
+
+<h2 style="font-size:19px;font-weight:700;color:#1f2328;line-height:1.4;margin:1.8em 0 0.9em;padding-left:10px;border-left:4px solid #2f6fdb;">2. eval：被忽视的生产资料</h2>
+
+<h3 style="font-size:16px;font-weight:700;color:#1f2328;margin:1.5em 0 0.8em;">2.1 两种 eval：测上限的，和测怎么崩的</h3>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">先做一个区分。市面上大部分 eval 是<strong style="color:#111;">评分类 benchmark</strong>：MMLU、HumanEval 这类，给一套标准题，看答对多少。它测的是系统的上限。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">我做的主要是另一类，业界还没有统一叫法，我称之为<strong style="color:#111;">失效模式评测</strong>（failure-mode eval）：不是测它能做多好，而是测它会怎么崩、崩的时候会不会有人知道。这个观点源自我做移动端 APM 的经验，有时候很多错误不怕会触发，就怕触发了没人知道，甚至会输出看起来正确、但实际上是由错误延伸出来的答案。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">软件测试领域有成熟的近亲——fuzzing 和 failure mode analysis——但 LLM 圈认真做的人很少。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">为什么这类评测重要？因为 AI 系统里最危险的 bug 不是崩溃，而是<strong style="color:#111;">“假装成功”</strong>。</p>
+
+<h3 style="font-size:16px;font-weight:700;color:#1f2328;margin:1.5em 0 0.8em;">2.2 四家公司，同一种病</h3>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">十一期间我集中做了一轮爆破，加上此前几个月的积累，在多个知名开源项目里找到的 bug，形状惊人地一致。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;"><strong style="color:#111;">病例一：规则拼错名字，静默变成空操作。</strong><br>在一个评测工具里，我写 rule_based 断言时 matcher 名拼错了一个字母。系统不报错，全部 case 通过。我预期该拦的东西没被拦，加调试输出才发现：校验器把不认识的 matcher 静默跳过，那条规则压根没执行——报告里的“全绿”，是零规则执行下的全绿。修复方式是让 validate 拒绝任何不认识的 matcher 名。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;"><strong style="color:#111;">病例二：重跑报 PASS，产物根本没更新。</strong><br>单 case 重跑到一个非空输出目录，报告显示 PASS，但结果文件是旧的——系统没写新产物，只是把旧结果当成新结果报了出来。在 CI 里这意味着你以为在测新代码，实际在看旧成绩。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;"><strong style="color:#111;">病例三：skill 装在软链后面，静默安装零个文件。</strong><br>filepath.Walk 不跟随符号链接根目录，于是选中文件数为零，安装逻辑把零当正常，日志照常打印“installed”。我自己踩这个坑时，三轮全量评测，对照臂和实验臂跑的都是裸模型——报告里所有的 PASS 和 FAIL，都是噪声装扮成的信号。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">这三个病例分别来自不同公司的项目（Alibaba 的 skill-up，以及我在 DeepSeek、Anthropic、Microsoft 相关仓库的同类提交）。<strong style="color:#111;">同一种病，四家都在犯，说明它不是某个团队的水平问题，是整个行业的系统性盲区。</strong></p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">而评分类 benchmark 对这类 bug 是全盲的——benchmark 只看输出分数，不看“规则到底有没有执行”“实验到底有没有发生”“成功是不是旧结果冒充的”。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">我还做过一轮更系统的实验：给四个 CLI 注入六种流式故障，铺成 108 个格子。结果是检出（宿主明确说出“回答被截断”这一级）只有 6/30，六成是完全静默。在另一轮针对 skill 文件物理残缺的注入里，规律更加刺眼：<strong style="color:#111;">挡在执行路径上的伤 8/8 检出，不挡路的伤只有 2/8 检出。</strong> 一个宿主甚至在推理流里精确写下了“文件只读到一半”，然后把这件事合理化，最终交付只字未提。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 0.6em;letter-spacing:0.02em;">我把这类现象拆成一个连乘模型：<strong style="color:#111;">一个伤最终能不能被用户知道，要连过三道闸</strong>——任何一道关上，结果就是零。</p>
+<section style="background:#f3f6fb;border-left:4px solid #2f6fdb;border-radius:0 6px 6px 0;padding:12px 16px;margin:1.2em 0;font-size:16px;color:#1f2328;line-height:1.9;font-weight:700;">检出 = 读到（外壳供给）× 愿报（模型供给）× 挡路（任务供给）</section>
+<p style="margin:0 0 1.1em;"><img style="max-width:100%;height:auto;margin:0.2em 0;border-radius:8px;display:block;" src="https://raw.githubusercontent.com/BiBoyang/BiBoyang.github.io/refs/heads/main/Image/EvalThreeGates_01.png" alt="检出率三道闸门：读到、愿报、挡路" /></p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">三道闸串联，任何一道关上结果就是零。它的实用价值在于：出了问题可以沿闸门往回查——到底是文件没被读到，还是读到了被瞒报，还是伤压根没挡路，每一种的修法完全不同。</p>
+
+<h3 style="font-size:16px;font-weight:700;color:#1f2328;margin:1.5em 0 0.8em;">2.3 eval 不只是裁判，它是能力放大器</h3>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">一种常见的误解是：eval 是考完试才用的东西。这低估了它。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">当生成成本趋近于零，“判断好不好”就成了最稀缺的环节。而判断能力一旦建起来，它有一个直接的经济用途：<strong style="color:#111;">用更便宜的模型达到同样的交付质量。</strong></p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">我跟踪过一个开源 agent 内核项目的评测，里面有一次配对实验：对照组和实验组各 18 个 rollout，两组 18/18 全部成功，质量打平，但实验组每次 rollout 多花 0.0648 美元，而实验合同里预注册的成本门槛是 0.02 美元——实验被否决。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">两组全成功仍然被否决，这件事逼出了一个被回避很久的问题：<strong style="color:#111;">通过率是可以花钱买的。</strong> 换更强的模型、失败重跑、堆更多上下文、加一轮模型自检，四条通道明码标价，而且在只报通过率的报告里全部隐身。一个 80% 通过率但每次 2 美元的方案，和 78% 通过率每次 0.2 美元的方案，排行榜上前者赢，真实生意里后者可能是对的。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">eval 的生产资料意义就在这里：它让你知道每一个百分点的成功率是多少钱买的，让你有能力在<strong style="color:#111;">质量-成本</strong>前沿上做选择，而不是闭眼调最贵的模型。对预算紧张的小团队，这是生死线。</p>
+
+<h3 style="font-size:16px;font-weight:700;color:#1f2328;margin:1.5em 0 0.8em;">2.4 招聘市场的混乱：不是缺几道好考题，是行业还没有共识</h3>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">行业里现在招人很乱。这个判断来自我这段时间在线上线下和两边人的交流——招人的和找工作的，都很困惑。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">线上面试，AI 辅助泛滥，答卷的可信度很低；线下面试，最常见的考法是照搬几个开源 benchmark 的案例，背过题的人和真做过系统的人答出来差很多，面试官却不好分辨。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">但这个混乱不只是 eval 一个环节的问题。<strong style="color:#111;">上下文怎么管、长上下文怎么用、记忆怎么沉淀、工具失败怎么兜底——这些 agent core 的核心开发思路，业界现在都还没对齐，各家做法分歧很大。</strong> 面试官脑子里那套“标准答案”，很可能只是某一家公司在某一个阶段的局部经验，换个技术栈就不成立。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">两个原因叠在一起。一是面试官水平良莠不齐，很多团队自己也还在摸索，没有能力区分“真懂”和“背过”；二是 agent 技术迭代太快，连什么算好架构都在以月为单位变化——上个季度的最佳实践，这个季度可能直接被底座的新能力覆盖了，共识根本来不及沉淀。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">所以招聘乱象的本质，是整个行业还没有一张稳定的能力坐标系。eval 的缺失是其中最尖锐的一环：一个行业连“怎么衡量一个 agent 系统好不好”都还没有共识，自然也就不知道“怎么衡量做 agent 的人”，只能拿现成的 benchmark 当尺子。而这把尺子量出来的是刷题能力，不是定义问题、设计验证、归因定位的能力。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">和我聊过的不少候选人也有对称的迷茫：做了很多 agent 项目，却说不清自己到底强在哪、该怎么准备面试——市场没有给他们坐标系，大家只能对着各种题库刷题。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">这个缺口本身也是信号：<strong style="color:#111;">在一个连标准都还没长出来的行业里，能参与建标准的人——不管是建 eval，还是在 core 的某个方向上拿出被同行认可的实践——几乎没有竞争者，因为考题和答案都还不存在。</strong></p>
+
+<h2 style="font-size:19px;font-weight:700;color:#1f2328;line-height:1.4;margin:1.8em 0 0.9em;padding-left:10px;border-left:4px solid #2f6fdb;">3. 如果我做一家 agent 公司，我会做什么</h2>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">把上面的判断推到底，如果资源充足，我会做的方向有三个：<strong style="color:#111;">coding agent、研报/财报分析 agent、房地产购房指导 agent。</strong></p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">这三个看起来跨得很远，但结构是同一个：<strong style="color:#111;">高风险决策辅助。</strong></p>
+<table style="border-collapse:collapse;width:100%;margin:1.2em 0;font-size:14px;">
+<tr><th style="background:#f3f6fb;border:1px solid #dfe3e8;padding:8px 10px;color:#1f2328;font-weight:700;text-align:left;">方向</th><th style="background:#f3f6fb;border:1px solid #dfe3e8;padding:8px 10px;color:#1f2328;font-weight:700;text-align:left;">用户在为什么付费</th><th style="background:#f3f6fb;border:1px solid #dfe3e8;padding:8px 10px;color:#1f2328;font-weight:700;text-align:left;">为什么通用数据集替代不了</th></tr>
+<tr><td style="border:1px solid #dfe3e8;padding:8px 10px;color:#3f3f3f;">coding agent</td><td style="border:1px solid #dfe3e8;padding:8px 10px;color:#3f3f3f;">代码写对、不引入 bug、符合本仓库的架构约束</td><td style="border:1px solid #dfe3e8;padding:8px 10px;color:#3f3f3f;">代码库上下文、团队规范、历史架构决策都是私有的</td></tr>
+<tr><td style="border:1px solid #dfe3e8;padding:8px 10px;color:#3f3f3f;">研报/财报 agent</td><td style="border:1px solid #dfe3e8;padding:8px 10px;color:#3f3f3f;">投资决策不踩坑</td><td style="border:1px solid #dfe3e8;padding:8px 10px;color:#3f3f3f;">持仓、风险偏好、行业理解因人而异</td></tr>
+<tr><td style="border:1px solid #dfe3e8;padding:8px 10px;color:#3f3f3f;">购房指导 agent</td><td style="border:1px solid #dfe3e8;padding:8px 10px;color:#3f3f3f;">几百万的决策不出错</td><td style="border:1px solid #dfe3e8;padding:8px 10px;color:#3f3f3f;">家庭情况、预算、学区政策全部是本地状态</td></tr>
+</table>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">它们共享三个性质。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;"><strong style="color:#111;">第一，错误代价极高。</strong> 一个 bug、一次误判、一套买错的房，损失远大于订阅费。在这种场景里，失效模式评测不是锦上添花，是产品本身——用户买的就是“它不会一本正经地坑我”。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;"><strong style="color:#111;">第二，决策依赖大量私有/本地状态。</strong> 这正好是 Mercor Code 这类通用数据集覆盖不到的部分。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;"><strong style="color:#111;">第三，用户要的是可信判断，不是流畅回答。</strong> 流畅是入场券，可信才是付费理由。而“可信”在工程上只能靠 eval 一层层钉出来。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">三个方向里，coding 是我积累最深的（Codex 源码研究、胶水层和多端 UI 的实践、大量真实 PR），适合做切入点；研报和购房是同一个方法论在更垂直领域的迁移。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">当然，还有一个躲不开的问题，也是我和开发者交流时最常争论的：<strong style="color:#111;">用户从哪条路来？</strong> 自然流量、垂直社区、工具捆绑、还是企业采购？agent 产品的分发不会因为技术好而自动解决，巨头的补贴战会把没有渠道的获客成本压到无法承受。这个问题在启动之前就必须有答案。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">方向可以晚点选，能力要先攒着。</p>
+
+<h2 style="font-size:19px;font-weight:700;color:#1f2328;line-height:1.4;margin:1.8em 0 0.9em;padding-left:10px;border-left:4px solid #2f6fdb;">4. 加入一家 agent 初创：怎么选，以及怎么干</h2>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">自己做和加入一家公司，在判断逻辑上是同构的：都是拿一段时间下注一个位置。</p>
+
+<h3 style="font-size:16px;font-weight:700;color:#1f2328;margin:1.5em 0 0.8em;">4.1 先排除三类公司</h3>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;"><strong style="color:#111;">排除一：纯套壳调 API 的。</strong><br>模型一升级价值归零，边际成本不为零，规模越大亏越多。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;"><strong style="color:#111;">排除二：只有通用编排、没有本地状态的。</strong><br>理由就是 Mercor Code 动向——通用 agent 能力正在被数据集吸收，“我们 loop 写得好”的保质期以月计。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;"><strong style="color:#111;">排除三：纯做数据标注/人力节点生意的。</strong><br>这类生意的资产是信息差和中立性，而这两样都是短久期的——同行用一个小得多的团队就能在几个月内接走你的位置，说明位置本身没有壁垒。</p>
+
+<h3 style="font-size:16px;font-weight:700;color:#1f2328;margin:1.5em 0 0.8em;">4.2 优先看四个特征</h3>
+<ol style="padding-left:1.3em;margin:0 0 1.1em;font-size:16px;color:#3f3f3f;line-height:1.9;">
+<li style="margin-bottom:0.5em;"><strong style="color:#111;">有本地状态。</strong> 用户的索引、历史、配置、权限沉淀在产品里，时间站在产品一边。</li>
+<li style="margin-bottom:0.5em;"><strong style="color:#111;">有真实分发。</strong> 捆绑在已有工具里、扎根某个垂直社区、或走得通企业采购——获客不依赖临时买量。</li>
+<li style="margin-bottom:0.5em;"><strong style="color:#111;">卡在企业侧的合规与权限入口。</strong> 数据不出域、权限分级、审计留痕，都是巨头不愿做的脏活，但恰是硬壁垒。</li>
+<li style="margin-bottom:0.5em;"><strong style="color:#111;">有垂直纵深。</strong> 不是“通用 coding agent”，而是某个行业工作流里的深度集成。通用能力会被数据集化，垂直深度不会。</li>
+</ol>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">面试公司时，我会问创始人一个问题：</p>
+<section style="background:#f3f6fb;border-left:4px solid #2f6fdb;border-radius:0 6px 6px 0;padding:12px 16px;margin:1.2em 0;font-size:16px;color:#1f2328;line-height:1.9;">“如果明天大模型厂商把你们的核心功能免费做进下一代模型，你们怎么办？”</section>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">答案是“我们技术更好”“我们跑得更快”的，可以礼貌离开了。能活下来的答案只有一种：“我们有他们拿不走的东西。”——而那东西必须能具体指出来是本地状态、分发、合规入口，还是垂直纵深中的哪一个。</p>
+
+<h3 style="font-size:16px;font-weight:700;color:#1f2328;margin:1.5em 0 0.8em;">4.3 进去之后：当战场打，全力以赴</h3>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">筛选是为了保证下注的位置值得。位置一旦确认，我的态度很明确：<strong style="color:#111;">没有“保留精力”这个选项，全力以赴，加班加点，当成战场去干。</strong></p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">这不是被创业文化洗脑，是算过账之后的理性结论，而且和这是个什么行业直接相关。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;"><strong style="color:#111;">第一，这本来就是战时经济阶段，窗口是有保质期的。</strong> 中美博弈把 AI 放进国家战略，厂商在亏本整合资源抢入口，模型能力每半年跳一次。这个阶段的竞争单位不是“年”，是“月”。你在一家正确的初创里省着力气干，等于在炮火最密的时候躲在战壕里保存体力——等战争阶段结束，保存下来的体力没有任何兑付场景。和平时期的努力可以平滑分配，战时的努力是过期作废的。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;"><strong style="color:#111;">第二，先问自己下一章那个问题：假如两年后这家公司不在了，我还回得来吗？</strong> 你在 agent 初创里积累的东西——agent 架构判断、eval 方法论、对一个垂直场景的理解、从 0 到 1 的完整交付经验——全是长在自己身上的手艺，公司不在了也带得走，答案通常是“回得来”。既然退路在，理性的选择反而是毫无保留地投入。真正需要“保住岗位、其余精力留给自己”的是另一种处境：在一家大公司里，日复一日打磨高度绑定内部系统的技能，慢慢让你失去回到市场的能力——那才需要给自己留后手。在正确的初创里 all-in 不是冒险，是因为你清楚自己输得起。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;"><strong style="color:#111;">第三，也是最容易被忽略的：初创付你的薪水是打折的，差额本来就应该用成长密度补回来。</strong> 大厂给钱买你的确定性，初创给钱少、但给你一件大厂花钱都买不到的东西——单位时间内处理的问题密度。在大厂你可能三年碰不到一次“eval 体系从无到有”的机会，在对的初创里这种活每周都在发生。全力以赴不是为了对得起老板，是因为这是你给自己的可携带资产充值的窗口期，偷懒等于自己给自己的资产断供。同样是加班，在错的地方是消耗，在对的地方是充值，区别在于干完之后东西归谁。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;"><strong style="color:#111;">第四，全力以赴还有一个战术含义：拿 ownership，不要拿任务。</strong> agent 架构加 eval 体系是我进去之后一定会要的 ownership——这是当前初创最稀缺、最难外采的组合，也是和我能力结构最匹配的位置。要避开的是纯执行型的 prompt engineer 和纯应用层开发，这两层替代性最高。在战场上，当连长和当传令兵，同样是冲锋，两年后身上留下的东西完全不同。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">当然，这个态度有一个不能省的前提：<strong style="color:#111;">前文说的岗位筛选必须真的做过。</strong> 对三类该排除的公司全力以赴，是纯粹的消耗。</p>
+
+<h2 style="font-size:19px;font-weight:700;color:#1f2328;line-height:1.4;margin:1.8em 0 0.9em;padding-left:10px;border-left:4px solid #2f6fdb;">5. 个人这一层：退路想清楚，路才敢走满</h2>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">上一章讲在一家公司里怎么干，这一章往外退一步，说说怎么安排自己。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">这行有个容易让人上头的地方：每天刷到的都是融资、发布、榜单，好像所有人都在船上。但“行业很好”和“我会很好”之间，其实隔着很长一段路。历史上这种事发生过不止一次——铁路和光纤最后都赢了，世界真的被它们改变了，但当年借钱铺铁轨、埋光缆的公司，成片地破产。技术的胜利和个人的结局，从来不是自动绑定的。承认这件事不是悲观，是别让宏观的热闹替自己做决定。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">那要不要把自己整个人押进去？我自己想下来，发现不用纠结“性格够不够狠”，只需要老老实实回答一个问题：</p>
+<section style="background:#f3f6fb;border-left:4px solid #2f6fdb;border-radius:0 6px 6px 0;padding:12px 16px;margin:1.2em 0;font-size:16px;color:#1f2328;line-height:1.9;font-weight:700;">假如我离开现在这条路两年，还回得来吗？</section>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">如果回得来——手艺是长在自己身上的，换家公司照样用；圈子还在，行业还在招人——那就没什么可怕的，看准了就把力气用足。如果回不来——会的东西只对某家公司的内部系统有效，或者这个位置两年后可能整个消失——那就得一边干，一边给自己留别的路。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">这么一想，上一章说的“全力以赴”其实有个前提：不是闭眼猛冲，是先确认自己攒下的东西带得走，然后才敢把路走满。想清楚退路和全力投入一点都不矛盾，反而是同一件事的两面——退路保证你输得起，投入保证你赢得了。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">再说关系。这个阶段很容易陷入一种焦虑：觉得认识的人不够多，于是到处加微信、进群、换名片。但维护一段关系是要花时间的，而大部分这样的关系，从来不会流动任何真实的东西——既没有信息，也没有协作，只是安静地躺在通讯录里，给你一种“我人脉很广”的错觉。与其这样，不如把时间留给少数几段真的会互通有无的关系：谁在做什么、哪里缺什么样的人、哪条消息值得信，这些东西只在有来有往的关系里才会出现。那些一两年里从未真正帮过彼此、也没带来过任何一次机会的关系，慢慢淡掉就好，不必有心理负担。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">这个阶段还有一件事，是我越做越觉得值的：把想明白的东西写出来，把做过的事留下公开的痕迹。写文章、提 PR，短期看没什么回报，但时间久了，它们会拼成一份谁都能查证的成长记录——你说自己懂什么，都有对应的一篇分析、一个被合并的修复在替你作证。这件事别人替不了，也装不出来。它最大的好处还不是被谁看见，而是写的过程会逼你把“以为懂了”变成“真的懂了”。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">最后说句题外话。这一章前面都在算账，但算账的目的是让心里有底，不是把日子过成账本。越是变数大的时候，越要守住几样完全由自己说了算的东西：身体、作息、和少数不用谈行业也能待在一起的人。它们不产生任何竞争优势，但它们是你能在这张牌桌上一直坐下去的本钱。</p>
+
+<h2 style="font-size:19px;font-weight:700;color:#1f2328;line-height:1.4;margin:1.8em 0 0.9em;padding-left:10px;border-left:4px solid #2f6fdb;">6. 结尾</h2>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">这一年看下来，最深的一个感受是：“把东西做出来”这件事本身，正在飞快地变便宜。模型厂商替整个行业打着价格战，通用能力一层一层沉进底座，过去能拉开差距的很多活，现在几句话就抹平了。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">但与此同时，另一些东西在慢慢变贵：知道系统会在哪里不动声色地骗你，知道多一个百分点的成功率要付出多大代价，知道一个具体的人在一个具体的场景里真正害怕的是什么。这些东西没法被收录进任何训练集，也没法靠刷快讯得到——它们只能从一次次翻车、翻案、事后复盘里长出来，从和真正在做事的人反复争论里长出来，再加上在一个对的位置上实打实干过的密度。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">战争总有打完的一天。补贴会退潮，格局会落定，到那天回头看，很多战时的头衔和位置可能都是临时编制，真正还留在身上的，是手艺、判断，和一批因为你做过的事而愿意相信你的人。</p>
+<p style="font-size:16px;color:#3f3f3f;line-height:1.9;margin:0 0 1.1em;letter-spacing:0.02em;">公司能给的是平台和一份收入，能长在自己身上的东西，才是将来。在一个什么都在降价的行业里，让自己成为那个慢慢升值的部分。</p>
+
+<hr style="border:none;border-top:1px solid #e5e7eb;margin:2em 0;" />
+<p style="font-size:13px;color:#8a8f98;line-height:1.8;margin:0 0 1.1em;">注：文中引用的 Mercor 等公司的商业数据与交易细节，来自我写作时看到的二手行业报道，尚未逐一核验原始出处，仅供参考，不构成投资建议。文中涉及的开源项目病例均有对应的公开 issue/PR 记录可查。</p>
+
+</section>
+</body>
+</html>
