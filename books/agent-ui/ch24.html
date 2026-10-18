@@ -35,10 +35,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-77f28781.js";
+            window.path_to_searchindex_js = "searchindex-bffa2a12.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-0fc35937.js"></script>
+        <script src="toc-14c8d58d.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -219,7 +219,7 @@
 守护      →  钉纪律（防架构退化，随年龄增值）
 </code></pre>
 <p>四层的共同主题是翻译：把不可断言的（字节流、时序、纪律）逐层翻译成可断言的（字节计数、文本快照、不变量、标识符）。</p>
-<p>对我自己的评测工作，这套基建还有一个反向启发。评测注入故障想测出 UI 层缺陷，等价性层指明了最敏感的注入点：delta 切分方式。同一个模型输出，按 token 切、按行切、按随机字节切，收敛性不变量任何一个被破坏，就是渲染层的真 bug——这是把“流式“这个变量本身变成故障注入的旋钮。测试基建与故障注入，在这里是同一件事的两面。这个启发本章只立旗，评测卷第 11 篇展开：那里会给等价性层一个正式的名字——蜕变测试，并把“同一件事的两面“这个判断坐实。</p>
+<p>对我自己的评测工作，这套基建还有一个反向启发。评测注入故障想测出 UI 层缺陷，等价性层指明了最敏感的注入点：delta 切分方式。同一个模型输出，按 token 切、按行切、按随机字节切，收敛性不变量任何一个被破坏，就是渲染层的真 bug——这是把“流式“这个变量本身变成故障注入的旋钮。测试基建与故障注入，在这里是同一件事的两面。这个启发本章只立旗，评测卷第 10 篇展开：那里会给等价性层一个正式的名字——蜕变测试，并把“同一件事的两面“这个判断坐实。</p>
 <hr>
 <h2 id="参考与延伸"><a class="header" href="#参考与延伸">参考与延伸</a></h2>
 <ul>

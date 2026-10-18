@@ -35,10 +35,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-77f28781.js";
+            window.path_to_searchindex_js = "searchindex-bffa2a12.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-0fc35937.js"></script>
+        <script src="toc-14c8d58d.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -215,7 +215,7 @@
 <p>也挂。</p>
 <p>真凶是宿主自己的「新配置首启挂起」——和插件无关。我当时的对照用的是老配置，混淆变量是「新配置首启」而不是插件。<strong>对照组选错比没有对照组更危险</strong>：没有对照，你只会说「我不知道」；有了错的对照，你会说「我知道了」——而那个知道是错的。</p>
 <p>后续按纪律执行：归因文件里 v1 的错误结论和推翻过程<strong>原样保留</strong>，没有改成「一开始就判对了」——归因文件的价值恰恰在于记录错误，下次再遇到「证据很硬」的时刻，它提醒你硬证据是怎么兼容两个故事的。宿主的真 bug 报了上游（复现步骤与四路排除证据附全）；插件这边我只提了 issue 没提 PR——提 PR 得拿出能跑的方案，提 issue 只要附上能复现的证据，前者是空头承诺，后者才是诚实可行动。</p>
-<p>这轮还顺手校准了裁判自己：评测 runner 的超时只杀直接子进程，包装器形态的孙进程被孤儿化，整条 runner 挂死 34 分钟——裁判被它要测的场景打穿了。修复是进程组杀，回归测试专门断言「孙进程必死」。这个故事的完整版归第 11 篇。</p>
+<p>这轮还顺手校准了裁判自己：评测 runner 的超时只杀直接子进程，包装器形态的孙进程被孤儿化，整条 runner 挂死 34 分钟——裁判被它要测的场景打穿了。修复是进程组杀，回归测试专门断言「孙进程必死」。这个故事的完整版归第 10 篇。</p>
 <h2 id="六passk-与-passk单次跑分不作数"><a class="header" href="#六passk-与-passk单次跑分不作数">六、pass@k 与 pass^k：单次跑分不作数</a></h2>
 <p>最后一节是统计口径，不堆公式，只讲两个数讲出的相反故事。</p>
 <p>一个 agent 单次成功率 0.75。现在跑 10 次。<strong>pass@k</strong> 问：10 次里至少成功一次的概率——约 1.0，近乎必然。<strong>pass^k</strong> 问：10 次全部成功的概率——0.75¹⁰ ≈ 0.056，几乎不可能。同一个 0.75，一个讲「给它机会总能成」，一个讲「交给它必出事」。两个数都对，但一个是给消费者看的广告，一个是给运维看的账单。</p>

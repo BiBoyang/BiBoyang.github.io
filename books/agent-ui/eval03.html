@@ -35,10 +35,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-77f28781.js";
+            window.path_to_searchindex_js = "searchindex-bffa2a12.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-0fc35937.js"></script>
+        <script src="toc-14c8d58d.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -211,7 +211,7 @@
 <li><strong>零锻炼</strong>：测试本是这些部件唯一的上场机会，绕过等于零锻炼，第一次真实执行发生在生产。</li>
 <li><strong>筛选效应</strong>：grader 若可被绕过，你就不只是没测它——你在主动筛选「不经过它」的解法。这个压力随模型升级持续恶化，因为更强的优化器找捷径更快。</li>
 </ul>
-<p>镜子的另一面也要记账：有假通过就有假失败。基础设施错误被记成「推理失败」就是在冤枉 agent——外部文献里有个硬数字：一个数据提取的基础设施 bug 修掉之后，基准分从 50% 直接跳到 73%。判定前永远先问一句：这次失败真的是 agent 的失败吗？（这个问题的制度化形态是无效台账，见第 9 篇。）</p>
+<p>镜子的另一面也要记账：有假通过就有假失败。基础设施错误被记成「推理失败」就是在冤枉 agent——外部文献里有个硬数字：一个数据提取的基础设施 bug 修掉之后，基准分从 50% 直接跳到 73%。判定前永远先问一句：这次失败真的是 agent 的失败吗？（这个问题的制度化形态是无效台账，见第 8 篇。）</p>
 <h2 id="四对策一分叉观测在场证明与送达证明"><a class="header" href="#四对策一分叉观测在场证明与送达证明">四、对策一：分叉观测——在场证明与送达证明</a></h2>
 <p>第一个对策方向是让两个世界产出<strong>不同</strong>的记录。</p>
 <p>最简单的做法是把一个布尔拆成两次判断、分别记结果——「文件在」和「目录可信」分开记，「能解压」和「帧数对」分开记，「结果通过」和「关键部件真的跑了」分开记。分歧日不用再等有人翻日志，它自己就是一条可断言的记录。</p>
@@ -230,7 +230,7 @@
 <li><em>本章底稿 2026-10-05 定稿，成章时收编了已发布博客《从 trace 到 eval：trace 设计、Agent 评测方法论、一个评测 harness 的实现，和它抓到的上游并发 bug》（2026-08-23）与《给流式协议造故障：三协议 mock、once 注入、字节级送达证明，和 strings 阴性不等于代码不存在》（2026-09-25）的病例段；章首 zstd 病例与前者的采集层事故同源。</em></li>
 <li><em>密钥目录病例整理自作者 2026-10-05 与 @echo_vic 在 X 上关于 agent harness eval 的公开讨论，他的原表述是「信任检查问的是“这个文件在不在“，而它该问的是“这个目录能不能信“」。</em></li>
 <li><em>「提前宣告胜利」与特性清单初始化为 failing 的防线，转述自 Anthropic 关于长时程 agent 工程实践的公开文章；「35 次工具调用不是 pass」转述自 Braintrust 的 agent 综述；基准分 50→73 的基础设施归因案例转述自 LangChain 的 eval checklist（引 Witan Labs）。三处均为转述级引用，具体数字以原文为准。</em></li>
-<li><em>「仪器假设与 treatment 正面冲突」的完整病例（139 行判无效 88 行）见第 9 篇；「选中零文件照常评估」的完整经过见第 2 篇。</em></li>
+<li><em>「仪器假设与 treatment 正面冲突」的完整病例（139 行判无效 88 行）见第 8 篇；「选中零文件照常评估」的完整经过见第 2 篇。</em></li>
 </ul>
 
                     </main>
