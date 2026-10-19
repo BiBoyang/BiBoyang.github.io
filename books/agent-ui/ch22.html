@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-bffa2a12.js";
+            window.path_to_searchindex_js = "searchindex-8bc3fbe1.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-14c8d58d.js"></script>
@@ -186,9 +186,9 @@
 <p>终端能力没法靠 <code>$TERM</code> 问出来——环境变量会撒谎（SSH 之后它是远端机器的猜测），所以严肃的 TUI 都在启动时做一次实况探测：向终端发查询序列，等回应，按回应决定启用哪些增强。</p>
 <p>但“等回应“本身就是设计难题：等多久？等来的字节和用户的按键混在同一条 stdin 里，怎么分？三家的答案几乎是一个光谱。</p>
 <p><strong>Codex：有预算的轮询，加一条哨兵捷径。</strong>
-<code>terminal_probe</code> 模块存在的原因是注释里的一句话：crossterm 的公共查询 API 最长会等两秒——“对启动和恢复来说太久，不支持的终端应该干脆退回保守默认”。所以 Codex 自己写探测：每组查询 100ms 预算，探光标位置、OSC 10/11 默认前景背景色、kitty 键盘增强支持；探测消耗掉的字节会回放进 crossterm 的解析器，保证探测期间用户的真实按键不丢。kitty 探测里还藏着一条捷径：查询后面跟着一个主设备属性（DA）请求，终端按序应答，DA 到了而键盘标志没到，就<strong>立即</strong>判定不支持，不必等满 100ms。整个过程带耗时埋点（“terminal startup probes completed”），探测是启动链路里被当成功耗来管理的正式公民。</p>
+<code>terminal_probe</code> 模块存在的原因是注释里的一句话：crossterm 的公共查询 API 最长会等两秒——“对启动和恢复来说太久，不支持的终端应该干脆退回保守默认”。所以 Codex 自己写探测：每组查询 250ms 预算（研究时为 100ms，Codex 于 2026-09 上调至 250ms，#46855），探光标位置、OSC 10/11 默认前景背景色、kitty 键盘增强支持；探测消耗掉的字节会回放进 crossterm 的解析器，保证探测期间用户的真实按键不丢。kitty 探测里还藏着一条捷径：查询后面跟着一个主设备属性（DA）请求，终端按序应答，DA 到了而键盘标志没到，就<strong>立即</strong>判定不支持，不必等满 250ms。整个过程带耗时埋点（“terminal startup probes completed”），探测是启动链路里被当成功耗来管理的正式公民。</p>
 <p><strong>Claude Code：用顺序代替超时。</strong>
-同一条哨兵，Claude Code 押得更彻底—— <code>terminal-querier</code> <strong>不设超时</strong> 。技巧叫 DA1 哨兵：每批查询末尾追加一个 DA1 查询（主设备属性），而 VT100 以来的每个终端都会回答 DA1，且终端按顺序应答。于是判定变成纯顺序问题：你的响应先于 DA1 到，说明支持；DA1 先到了，说明不支持。超时这个维度被从设计里删掉了，换成对一个老旧但普适的协议不变量的信任。探测目录里的清单也值得看：DECRQM 问同步输出（2026）与 grapheme 聚簇（2027）模式、OSC 11 问背景色、kitty 键盘查询、XTVERSION 问终端名——XTVERSION 的注释点破了为什么环境变量不可靠：查询走 pty（伪终端）不走环境，<strong>能穿透 SSH</strong>，而 <code>TERM_PROGRAM</code> 不能。</p>
+同一条哨兵，Claude Code 押得更彻底—— <code>terminal-querier</code> <strong>不设超时</strong> 。技巧叫 DA1 哨兵：每批查询末尾追加一个 DA1 查询（主设备属性），而 VT100 以来的每个终端都会回答 DA1，且终端按顺序应答。于是判定变成纯顺序问题：你的响应先于 DA1 到，说明支持；DA1 先到了，说明不支持。超时这个维度被从判定机制里删掉了，换成对一个老旧但普适的协议不变量的信任。探测目录里的清单也值得看：DECRQM 问同步输出（2026）与 grapheme 聚簇（2027）模式、OSC 11 问背景色、kitty 键盘查询、XTVERSION 问终端名——XTVERSION 的注释点破了为什么环境变量不可靠：查询走 pty（伪终端）不走环境，<strong>能穿透 SSH</strong>，而 <code>TERM_PROGRAM</code> 不能。（Claude Code 以打包形式发布、未公开源码；本段的模块名与注释引自其 <code>terminal-querier.ts</code> 源码镜像。）</p>
 <p><strong>Kimi：协商式握手。</strong>
 kitty 键盘协议的完整三件套一次发出：推入目标标志位、查询当前标志、追加设备属性查询（<code>ESC[&gt;7u</code> <code>ESC[?u</code> <code>ESC[c</code>），然后按 150ms 分片超时收集回应。另有一个容易漏的收尾细节：退出前先排空 stdin——否则 kitty 协议下按过的键会留下“释放事件“，终端在你退出后还在吐字节。</p>
 <p>还有第四种哲学，是我自己设计出来的：ForgeLoopTUI <strong>不探测</strong>。<code>RawTTY.enter()</code> 无条件推入 kitty 消歧标志和 bracketed paste 开关，注释写明理由——“不支持的终端会静默吸收这些序列”。这是拿终端生态的一个经验事实当赌注：未知序列无害。</p>
@@ -217,7 +217,7 @@ kitty 键盘协议的完整三件套一次发出：推入目标标志位、查�
 <tr><th>输入侧能力</th><th>Codex</th><th>Claude Code</th><th>Kimi Code</th><th>ForgeLoopTUI</th></tr>
 </thead>
 <tbody>
-<tr><td>能力探测</td><td>100ms 预算 + DA 哨兵提前判定，字节回放</td><td>DA1 哨兵为唯一机制，无超时</td><td>协商序列 + 150ms 分片超时</td><td>不探测，乐观推送</td></tr>
+<tr><td>能力探测</td><td>250ms 预算 + DA 哨兵提前判定，字节回放</td><td>DA1 哨兵为唯一机制，无超时</td><td>协商序列 + 150ms 分片超时</td><td>不探测，乐观推送</td></tr>
 <tr><td>kitty 键盘</td><td>探测启用 + 环境变量逃生门</td><td>只解析不推送，兼收 modifyOtherKeys</td><td>推 flags 7 + 原生修饰键兜底</td><td>无条件推 <code>ESC[&gt;1u</code>，只映射 Enter</td></tr>
 <tr><td>bracketed paste</td><td>支持，缺标记时走 paste-burst</td><td>支持，缺标记时 \r 启发式归一</td><td>支持，缺标记时走 paste-burst</td><td>支持（<code>ESC[?2004h</code>）</td></tr>
 <tr><td>挂起恢复</td><td>resume 重上 raw mode</td><td>—（未见对应机制）</td><td>退出前排空 stdin</td><td>—（引擎层不持有进程模型）</td></tr>
