@@ -1,0 +1,32 @@
+{
+  "scope": "exploratory two-phase pilot; not a long-horizon rate estimate and not a strict cross-model replication",
+  "environment": {
+    "runner": "codex-cli 0.160.0 exec/resume with JSONL",
+    "configured_provider": "kimi",
+    "configured_model": "k3.1-pro",
+    "reasoning_effort": "max",
+    "sessions": 6,
+    "phases_per_session": 2
+  },
+  "oracle": {
+    "known_good": "14/14 passed",
+    "known_bad": "rejected: 7/14 passed",
+    "positive_initial": "rejected"
+  },
+  "runs": {
+    "baseline": {"visible": "7/7", "oracle": "14/14", "status": "qualified"},
+    "positive": {"visible": "7/7", "oracle": "14/14", "status": "correction channel confirmed"},
+    "self-1": {"file_delivery": true, "exposure_observed": false, "visible": "7/7", "oracle": "14/14", "grade": "N/A — no effective exposure witness"},
+    "self-2": {"file_delivery": true, "exposure_observed": false, "visible": "7/7", "oracle": "14/14", "grade": "N/A — no effective exposure witness"},
+    "external-1": {"file_delivery": true, "exposure_observed": true, "detection_command_index": 1, "detection_before_first_code_change": true, "visible": "7/7", "oracle": "14/14", "grade": "rejected contradiction before implementation"},
+    "external-2": {"file_delivery": true, "exposure_observed": true, "detection_command_index": 6, "detection_before_first_code_change": true, "visible": "7/7", "oracle": "14/14", "grade": "rejected contradiction before implementation"}
+  },
+  "raw_evidence": "/tmp/agent-trajectory-pilot-A-20261027/evidence",
+  "limitations": [
+    "N=1 per fault arm; no rate or significance inference",
+    "self arms injected into an agent-owned plan artifact, not naturally self-generated falsehood",
+    "short two-phase task, not a long-horizon compounding test",
+    "self arms did not reread the injected plan, so they cannot establish absence of drift",
+    "different B session is not a strict replication because no shared frozen task package was used"
+  ]
+}
