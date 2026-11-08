@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-c3e247bc.js";
+            window.path_to_searchindex_js = "searchindex-a7ff6577.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-b31dbc0b.js"></script>
@@ -179,7 +179,7 @@
                     <main>
                         <h1 id="双模渲染同一引擎里的两种所有权"><a class="header" href="#双模渲染同一引擎里的两种所有权">双模渲染——同一引擎里的两种所有权</a></h1>
 <blockquote>
-<p>第 13 篇讲了 TUI 渲染的两条路线，以及头部 Agent TUI 没有一家押注单边。这一篇解剖一个样本：月之暗面 2026 年开源的 Kimi Code（MIT）——它的渲染引擎在同一个接口、同一棵组件树后面同时实现两种所有权模型，运行时二选一，代码里处处留着两派交锋的事故记录。</p>
+<p>第 13 篇讲了 TUI 渲染的两条路线，以及头部 Agent TUI 没有一家押注单边。这一篇解剖一个样本：月之暗面 2026 年开源的 Kimi Code（MIT）。它的渲染引擎在同一个接口、同一棵组件树后面同时实现两种所有权模型，运行时二选一，代码里处处留着两派交锋的事故记录。</p>
 </blockquote>
 <hr>
 <h2 id="一基本面一个-vendored-fork两个渲染器"><a class="header" href="#一基本面一个-vendored-fork两个渲染器">一、基本面：一个 vendored fork，两个渲染器</a></h2>
@@ -196,12 +196,12 @@
 <li><code>TuiMainScreen</code>（629 行）：渲染进终端主屏 + scrollback。<strong>inline 派，但是差分变种。</strong></li>
 <li><code>TuiAltScreen</code>（1302 行）：alt screen 全屏，应用自管视口。<strong>全屏自管派，工业级形态。</strong></li>
 </ul>
-<p>也就是说，第 13 篇那条我以为只存在于不同公司之间的分界线，在这个仓库里是同一个 <code>if</code> 的两个分支。这给了我一个前所未有的对照机会：<strong>同一棵组件树、同一份组件代码，喂给两种所有权模型，各自的账单会开在哪里。</strong></p>
+<p>也就是说，第 13 篇那条我以为只存在于不同公司之间的分界线，在这个仓库里是同一个 <code>if</code> 的两个分支。这给了我一个难得的对照机会：<strong>同一棵组件树、同一份组件代码，喂给两种所有权模型，各自的账单会开在哪里。</strong></p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch12-one-interface-two-engines.svg" alt="一个 vendored fork，两个渲染器：同一接口，两种所有权"><span class="img-wrapper"><img src="assets/ch12-one-interface-two-engines.svg" alt="一个 vendored fork，两个渲染器：同一接口，两种所有权"></span></label></p>
 <hr>
 <h2 id="二主屏渲染器inline-派的差分变种"><a class="header" href="#二主屏渲染器inline-派的差分变种">二、主屏渲染器：inline 派的差分变种</a></h2>
 <h3 id="21-模型全量渲染增量落地"><a class="header" href="#21-模型全量渲染增量落地">2.1 模型：全量渲染，增量落地</a></h3>
-<p><code>TuiMainScreen.doRender()</code> 的模型一句话：每帧把<strong>整棵组件树</strong>（全部历史消息 + 编辑器）渲染成一个扁平行数组 <code>newLines</code>，和上一帧 <code>previousLines</code> 逐行比较，只把变化补丁写入终端。</p>
+<p><code>TuiMainScreen.doRender()</code> 的模型是：每帧把<strong>整棵组件树</strong>（全部历史消息 + 编辑器）渲染成一个扁平行数组 <code>newLines</code>，和上一帧 <code>previousLines</code> 逐行比较，只把变化补丁写入终端。</p>
 <p>等等，每帧重渲整棵树？这和 Grok Build 的“发射即脱手“不一样。关键在它对历史的处理方式：历史行渲染一次之后，靠<strong>引用相等缓存</strong>摊薄成本。组件的渲染缓存对未变化内容返回同一个字符串引用，于是稳态帧的成本是 O（总行数） 次指针比较，只为真正变化的行付处理费（<code>tui-main-screen.ts:237-261</code>，注释原文：“a steady frame only pays for the lines that actually changed”）。</p>
 <p>所以准确地说，它和 Grok 那种“定型后彻底不管“的区别在于：<strong>逻辑上整棵树都活着，物理上只补丁视口可达的部分。</strong></p>
 <h3 id="22-所有权分界线被压缩成一个整数"><a class="header" href="#22-所有权分界线被压缩成一个整数">2.2 所有权分界线被压缩成一个整数</a></h3>
@@ -256,7 +256,7 @@ block 不到 committed frontier 不发射，发射即归终端，从架构上保
 <li><strong>滚动</strong>：<code>ScrollView</code> 抽象（<code>scrollTop</code>、<code>follow: "end"</code>、<code>overscroll: "contain"</code>），而且是<strong>嵌套滚动</strong>，滚轮事件按坐标在布局树里命中测试，命中最内层 ScrollView，滚不动的余量溢出给外层（<code>routeWheel</code>）。这是 GUI 的 nested scroll view 语义，在字符网格上重建了一份；</li>
 <li><strong>搜索</strong>（Ctrl+Shift+F）：匹配在<strong>数据层</strong>做（对完整文档行全文查找），高亮在<strong>绘制层</strong>做，<code>applySearchHighlights</code> 把命中文段从渲染好的行里切出来、包上样式、再拼回去，数据一个字不动。跳转有 anchor 保持和 next/previous 环绕；</li>
 <li><strong>选择复制</strong>：alt screen 里终端的原生选择是废的（你在不停重绘），于是实现了应用级选择：SGR 鼠标事件、单击拖选、<strong>双击选词、三击选行</strong>（<code>getClickCount</code> 按 500ms 窗口计次）、拖到视口边缘 50ms 定时器自动滚屏、反色高亮同样是绘制层拼接（还会小心地保留原行的 ANSI 序列）、松手时 OSC 52 写系统剪贴板。这一段占了文件将近一半的行数；</li>
-<li><strong>语义锚点（OSC 133）</strong>：transcript 的消息带着 OSC 133 区域标记下发，绘制时剥掉，但滚动导航用它实现“上一个/下一个 prompt“跳转，<strong>用终端的 shell 集成协议，给应用级滚动加了语义站点</strong>。这个设计我觉得是全文件最优雅的一笔；</li>
+<li><strong>语义锚点（OSC 133）</strong>：transcript 的消息带着 OSC 133 区域标记下发，绘制时剥掉，但滚动导航用它实现“上一个/下一个 prompt“跳转，<strong>用终端的 shell 集成协议，给应用级滚动加了语义站点</strong>。这个设计我觉得是全文件最巧妙的一笔；</li>
 <li><strong>kitty 图片预算缓存</strong>：滚出视口的图片不删会泄漏终端显存，于是屏外缓存带预算上限（16 张 / 32MB 传输字节 / 64MB 解码字节），超预算逐出。</li>
 </ul>
 <p>还有一处环境妥协值得记：鼠标默认开全量移动追踪，但检测到 tmux/zellij/screen 就降级为“仅按键时追踪“，复用器转发鼠标事件会卡。<strong>每个免费能力的赎回价里，都包含一笔兼容性成本。</strong></p>

@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-c3e247bc.js";
+            window.path_to_searchindex_js = "searchindex-a7ff6577.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-b31dbc0b.js"></script>
@@ -188,7 +188,7 @@
 <hr>
 <h2 id="二六端--api-的定位"><a class="header" href="#二六端--api-的定位">二、六端 + API 的定位</a></h2>
 <p>在展开六个端之前，先给“端“定个坐标。六个端是产品形态，底下其实是两条正交的技术轴。</p>
-<p><strong>第一条轴：应用和 UI 平台之间用什么契约说话。</strong> 一边是结构化对象：AppKit/UIKit 的 view、浏览器的 DOM，应用改界面就是改对象，布局、命中测试、遮挡恢复由平台负责；另一边是 ANSI 字节流：程序面对 PTY（伪终端）只能向前写，改已显示的内容要自己定位、擦除、重写（第 2 篇）。第 2–4 篇的渲染税、第 13、14、17 篇的记账之争、第 19 篇的信任面，全是这条轴上的事。</p>
+<p><strong>第一条轴：应用和 UI 平台之间用什么契约说话。</strong> 一边是结构化对象：AppKit/UIKit 的 view、浏览器的 DOM，应用改界面就是改对象，布局、命中测试、遮挡恢复由平台负责；另一边是 ANSI 字节流：程序面对 PTY（伪终端）只能向前写，改已显示的内容要自己定位、擦除、重写（第 2 篇）。第 2–4 篇的渲染成本、第 13、14、17 篇的记账之争、第 19 篇的信任面，全是这条轴上的事。</p>
 <p><strong>第二条轴：UI 平台跑在哪、能碰到什么资源。</strong> 本机原生平台能直接继承 shell 和文件系统；浏览器是带沙箱的运行时，默认碰不到本机的 cwd、PATH、git 凭证；终端模拟器则两种身份都有，iTerm2 是本机原生 app，xterm.js 是浏览器里的 JS 模拟器。</p>
 <p>两条轴切出四格：</p>
 <div class="table-wrapper">
@@ -213,7 +213,7 @@
 <p>CLI 是最薄的投影。它的核心能力是“执行“，不是“展示“：继承 cwd/PATH/env/git/SSH 全部上下文，直接把 Agent 接入工程现场。</p>
 <p>适合承载：全量事件流，但以最原始的方式（文本输出）。适合 CI/CD 集成（<code>./agent fix --auto</code>）、管道组合（<code>cat error.log | agent diagnose</code>）、远程执行（SSH + tmux）。</p>
 <p>不适合承载：diff 审查、权限管理、多任务队列。</p>
-<p>CLI 永远不会被“替代“，因为管道的价值是结构性的，不依赖任何 UI 框架。</p>
+<p>CLI 不会被“替代“，管道的价值是结构性的，不依赖任何 UI 框架。</p>
 <h3 id="tui本地工作台"><a class="header" href="#tui本地工作台">TUI：本地工作台</a></h3>
 <p>TUI 是 CLI 往上走一层，在终端里提供结构化面板，但保留键盘优先和远程可用的特性。第 2–4 篇拆解的渲染引擎、Markdown 降级和 Agent 事件展平，构成了 TUI 的完整技术栈。</p>
 <p>适合承载：执行时间线、工具调用状态、流式输出、权限确认、文件变更列表。适合长时间运行的 Agent 会话（tmux 断线恢复）、低配机器和远程开发场景。</p>
@@ -255,7 +255,7 @@
 </tbody>
 </table>
 </div>
-<p>这里有一个反直觉的结论：<strong>原生端（CoreText）做流式 Agent 聊天反而是最脆弱的。</strong> 同样的 3000 字流式 Markdown，iPhone 上 CoreText 全量 layout 每次 20-60ms，WebView 增量 reflow 的代价远低于此。所以“Web 适合协作“不只是因为它有多用户能力，还因为它的渲染引擎天生能消化高频事件更新。而 Mobile 原生端只适合做 Companion（通知 + 轻量审批），屏幕小还在其次，真正的原因是被动散热的手机上，CoreText 全量 invalidate 的高频布局实测很容易顶到 thermal throttling，形成恶性循环。</p>
+<p>这里有一个反直觉的结论：<strong>原生端（CoreText）做流式 Agent 聊天反而是最脆弱的。</strong> 同样的 3000 字流式 Markdown，iPhone 上 CoreText 全量 layout 每次 20-60ms，WebView 增量 reflow 的代价远低于此。所以“Web 适合协作“不只是因为它有多用户能力，还因为它的渲染引擎天生能消化高频事件更新。而 Mobile 原生端只适合做 Companion（通知 + 轻量审批），屏幕小还在其次，主要原因是在被动散热的手机上，CoreText 全量 invalidate 的高频布局实测很容易顶到 thermal throttling，形成恶性循环。</p>
 <p>这不意味着原生端不该做 Agent GUI。但要看清：<strong>如果你用原生 CoreText 做流式 Agent 客户端，性能天花板比 WebView 低。</strong> 选择技术栈的时候，这比“哪个平台用户多“更根本。</p>
 <hr>
 <h2 id="四每个端的交互契约不同"><a class="header" href="#四每个端的交互契约不同">四、每个端的交互契约不同</a></h2>
@@ -273,10 +273,10 @@
 </tbody>
 </table>
 </div>
-<p>Mobile 的“仅摘要“来自推送通知和任务卡片，对应前面说的“任务状态查看“；副作用流（diff）则完全不投影到手机。没有一个端需要消费全部事件。CLI 和 Mobile 在消费的事件类型上几乎没有交集——但它们消费的是同一条事件流。</p>
+<p>Mobile 的“仅摘要“来自推送通知和任务卡片，对应前面说的“任务状态查看“；副作用流（diff）则完全不投影到手机。没有一个端需要消费全部事件。CLI 和 Mobile 在消费的事件类型上几乎没有交集，但它们消费的是同一条事件流。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch09-event-matrix.svg" alt="三层事件 × 六端的消费矩阵"><span class="img-wrapper"><img src="assets/ch09-event-matrix.svg" alt="三层事件 × 六端的消费矩阵"></span></label></p>
 <blockquote>
-<p>补记（2026.09）：这张表写成后，“离场处理“一行开始在头部产品里过时——而且是以印证本文的方式。Claude Code 现在有后台会话（<code>/bg</code>）和独立的 agent 视图，配合 Remote Control 和“Push when Claude decides“配置，Agent 可以在用户离开后继续跑、必要时直接往手机推通知，第 12 篇说的“用户离开电脑后，Mobile 是唯一能触达用户的端”，已经是出货的功能，不是设想。“CLI/TUI 离场 = 挂起“从此只是默认行为，不再是能力上限。</p>
+<p>补记（2026.09）：这张表写成后，“离场处理“一行开始在头部产品里过时，而且是以印证本文的方式过时的。Claude Code 现在有后台会话（<code>/bg</code>）和独立的 agent 视图，配合 Remote Control 和“Push when Claude decides“配置，Agent 可以在用户离开后继续跑、必要时直接往手机推通知，第 12 篇说的“用户离开电脑后，Mobile 是唯一能触达用户的端”，已经是出货的功能，不是设想。“CLI/TUI 离场 = 挂起“从此只是默认行为，不再是能力上限。</p>
 </blockquote>
 <hr>
 <h2 id="五统一-runtime统一-event-log统一-permission-engine统一-workspace-model"><a class="header" href="#五统一-runtime统一-event-log统一-permission-engine统一-workspace-model">五、统一 Runtime，统一 Event Log，统一 Permission Engine，统一 Workspace Model</a></h2>
@@ -293,7 +293,7 @@
 <p>端多不多不是关键，关键是每加一个端，是不是只需要写投影层，不用重写 Agent 核心。如果每次加端都要重构事件模型和权限引擎，说明架构还没到位。</p>
 <hr>
 <h2 id="七后续"><a class="header" href="#七后续">七、后续</a></h2>
-<p>最后一篇。从具体的技术和架构回到人：一个大前端开发者，在 Agent 时代的能力地图是什么？移动端、桌面端、TUI、全栈，这些经验怎么迁移到 Agent Workflow Engineer 这个新方向上。</p>
+<p>下一篇从具体的技术和架构回到人：一个大前端开发者，在 Agent 时代的能力地图是什么？移动端、桌面端、TUI、全栈，这些经验怎么迁移到 Agent Workflow Engineer 这个新方向上。</p>
 <hr>
 <h2 id="参考与延伸"><a class="header" href="#参考与延伸">参考与延伸</a></h2>
 <p><em>本文的多端架构框架参考了 ForgeLoopTUI 的 CoreRenderEvent 设计、Zacp 的 ACP 多 Agent WebUI 架构，以及第 7 篇提出的 Event Sourcing 模型。</em></p>

@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-c3e247bc.js";
+            window.path_to_searchindex_js = "searchindex-a7ff6577.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-b31dbc0b.js"></script>
@@ -179,7 +179,7 @@
                     <main>
                         <h1 id="中场event-sourcingagent-ui-的底层模型"><a class="header" href="#中场event-sourcingagent-ui-的底层模型">中场——Event Sourcing，Agent UI 的底层模型</a></h1>
 <blockquote>
-<p>正篇的中场。前五篇完成了 TUI 侧的完整深潜，这一篇先不往前冲，往上走一层：输出侧三篇暴露的所有麻烦，到底有没有一个统一的理论解释？</p>
+<p>正篇的中场。前六篇完成了 TUI 侧的完整深潜，这一篇先不往前冲，往上走一层：输出侧三篇暴露的所有麻烦，到底有没有一个统一的理论解释？</p>
 </blockquote>
 <hr>
 <h2 id="一中场为什么有必要"><a class="header" href="#一中场为什么有必要">一、中场为什么有必要</a></h2>
@@ -193,7 +193,7 @@
 <blockquote>
 <p><strong>Agent 的执行过程本身不是任何 UI 的“内部状态“。它是一组独立于界面的、按时间顺序发生的事件集合。TUI 的困境（脆弱的状态记忆、防御逻辑、索引追踪）根子不在“终端难用“，在“把事件树强行投影成线性输出“这个投影操作本身的结构性代价。</strong></p>
 </blockquote>
-<p>换一个投影方式（比如 GUI），这些代价会消失吗？不会！它们会以不同的形态重新出现。</p>
+<p>换一个投影方式（比如 GUI），这些代价也不会消失，只会以不同的形态重新出现。</p>
 <hr>
 <h2 id="二agent-的执行本质一条事件流"><a class="header" href="#二agent-的执行本质一条事件流">二、Agent 的执行本质：一条事件流</a></h2>
 <p>如果你把 Agent 的一次完整执行记录下来，去掉所有 UI 相关的渲染细节，底层是什么？</p>
@@ -212,7 +212,7 @@
   | { type: "notification"; text: string }
 </code></pre>
 <p>这是一条 append-only 的事件流。Agent 的每一次推理、每一个工具调用、每一次权限请求、每一次文件变更，都只是这条流上的一个新事件。</p>
-<p>关键洞察：<strong>这条事件流独立于任何 UI 而存在。</strong> 无论你用 CLI、TUI、GUI、IDE 还是 Web，底层都是同一件事：Agent 在做它的工作，产生事件。UI 的职责只是把这些事件投影到用户的感知空间。</p>
+<p><strong>这条事件流独立于任何 UI 而存在。</strong> 无论你用 CLI、TUI、GUI、IDE 还是 Web，底层都是同一件事：Agent 在做它的工作，产生事件。UI 的职责只是把这些事件投影到用户的感知空间。</p>
 <p>这就是 Event Sourcing 在 Agent 领域的应用：<strong>Agent Runtime 是事件生产者，各种 UI 是事件消费者。不同 UI 是同一事件流的不同投影（projection）。</strong></p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch05-event-projections.svg" alt="Event Sourcing：Agent Runtime 产生一条 append-only 事件流，各端 UI 是不同投影"><span class="img-wrapper"><img src="assets/ch05-event-projections.svg" alt="Event Sourcing：Agent Runtime 产生一条 append-only 事件流，各端 UI 是不同投影"></span></label></p>
 <hr>
@@ -241,11 +241,11 @@
 <p>当前关于 Agent UI 的讨论里，有两种极端的说法。</p>
 <p><strong>说法一：CLI/TUI 只是早期原型，GUI 必然到来。</strong>
 这个观点假设 CLI/TUI 和 GUI 是线性进化关系：卵 → 幼虫 → 成虫。但用 event-sourcing 的框架看，这不是进化，是<strong>共存</strong>。</p>
-<p>SSH 到远程服务器跑 agent、在 tmux 里恢复一个跑了 3 小时的会话，这些场景里 CLI/TUI 不是“过渡方案“，是最优投影。GUI 在 diff 审查和多模态展示上有结构性优势，但这不是“替代“，是“分工“。</p>
-<p>再往下推一层：这个说法还隐含一个成本假设：GUI 的投影成本会随着框架成熟趋近于零，所以“替代“只是时间问题。但 Agent GUI 的成本大头跟“画界面“关系不大，真正贵的是两个媒介基线差异带来的子系统数量：diff 审查面板、权限弹窗、多模态附件，每一个都是独立子系统（第 8 篇会逐一拆解）。这个成本由 Agent 场景的需求决定，不随框架成熟收敛。</p>
+<p>SSH 到远程服务器跑 agent、在 tmux 里恢复一个跑了 3 小时的会话，这些场景里 CLI/TUI 不是“过渡方案“，是最优投影。GUI 在 diff 审查和多模态展示上有结构性优势，两者是分工关系。</p>
+<p>再往下推一层：这个说法还隐含一个成本假设：GUI 的投影成本会随着框架成熟趋近于零，所以“替代“只是时间问题。但 Agent GUI 的成本大头跟“画界面“关系不大，贵在两个媒介基线差异带来的子系统数量：diff 审查面板、权限弹窗、多模态附件，每一个都是独立子系统（第 8 篇会逐一拆解）。这个成本由 Agent 场景的需求决定，不随框架成熟收敛。</p>
 <p><strong>说法二：GUI Agent 方向可能从根本上就是错的，Agent 就应该走 CLI 原生路线。</strong>
 这是港大 CLI-Anything 项目（2026.06）的立场。这个说法正确的一面是：为 Agent 设计结构化接口、输出 JSON 而非 UI 界面，确实比让 Agent 模仿人类操作 GUI 更可靠。但它错误的一面是：把“Agent 的核心接口应该是结构化的“和“用户界面应该全是 CLI“混为一谈了。event-sourcing 框架下，Agent 核心走结构化协议，用户界面走多端投影，这两件事不互斥。</p>
-<p>再往下推一层：CLI-Anything 回答的是“Agent 如何可靠地操作软件“，这是接口层的问题，结构化协议确实是正确答案。但“人如何可靠地监督 Agent“是另一个问题：审查 diff、批准权限、审计历史，这些事情的载体是视觉界面，不是 JSON。把接口层的正确结论外推到界面层，就是这个说法越界的地方。</p>
+<p>CLI-Anything 回答的是“Agent 如何可靠地操作软件“，这是接口层的问题，结构化协议确实是正确答案。但“人如何可靠地监督 Agent“是另一个问题：审查 diff、批准权限、审计历史，这些事情的载体是视觉界面，不是 JSON。把接口层的正确结论外推到界面层，就是这个说法越界的地方。</p>
 <p>两种说法的共同盲区：<strong>把 UI 当成了 Agent 的本体，而不是 Agent 的投影。</strong></p>
 <hr>
 <h2 id="五从-forgelooptui-的-corerenderevent-到-gui-的-diffable-snapshot"><a class="header" href="#五从-forgelooptui-的-corerenderevent-到-gui-的-diffable-snapshot">五、从 ForgeLoopTUI 的 CoreRenderEvent 到 GUI 的 diffable snapshot</a></h2>
@@ -257,17 +257,17 @@ case operationEnd(id: "A", isError: false, result: "...")
 // → 定位 lineIndex 42，替换状态行
 // → shiftIndices 偏移后续所有引用
 </code></pre>
-<p><code>pendingTools</code> 本质上是一个<strong>在内存中维护的事件关联索引</strong>。它做的事就是：把分散到达的 <code>operationStart</code> 和 <code>operationEnd</code> 重新配对，确保渲染结果在视觉上是连续的。</p>
+<p><code>pendingTools</code> 其实是一个<strong>在内存中维护的事件关联索引</strong>：它把分散到达的 <code>operationStart</code> 和 <code>operationEnd</code> 重新配对，让渲染结果在视觉上连续。</p>
 <p>现在把这个思路映射到 GUI。在 <code>UICollectionView</code> 或者 <code>LazyColumn</code> 的世界里，你不需要手写 <code>shiftIndices</code>。你需要的是：</p>
 <pre><code>event stream → diffable data source → snapshot → cell 复用
 </code></pre>
 <p><code>operationStart</code> → 插入一个新的 tool card cell（pending 状态）。<code>operationEnd</code> → 找到对应 cell，更新为 done/error 状态，触发局部重绘。框架帮你处理索引偏移，这是 <code>UICollectionViewDiffableDataSource</code> 的内置能力。</p>
 <p>同一个数据结构，不同的投影成本。TUI 要手写 200 行索引追踪；GUI 框架内置。但反过来，GUI 要为“tool card 的 pending → running → done 状态动画“写一套完整的 cell 生命周期管理，TUI 只需要换一行文本。</p>
 <p>这套 cell 生命周期管理拆开看并不轻松。状态迁移要走批量更新才能保证动画连贯，不能这个 cell 已经翻牌、那个 cell 还在旋转；内容高度随流式更新不断变化，每条事件都可能触发一次局部 relayout；cell 被回收复用时必须完整重置：进度动画、展开状态、错误样式，漏重置一个，就是“新消息显示上一条的旋转图标“这种经典 bug。TUI 侧的对应物是第 2 篇那 8 个帧状态字段，集中在一处、错一处全盘可见；GUI 侧的对应物是分散在每个 cell 里的状态机，单点错、局部错，但排查时要面对的是几十种 cell 类型各自的生命周期。</p>
-<p><strong>投影成本不消失，只是换了形态。</strong></p>
+<p>投影成本不会消失，只是换了形态。</p>
 <hr>
 <h2 id="六append-only-event-log-的长期价值"><a class="header" href="#六append-only-event-log-的长期价值">六、append-only event log 的长期价值</a></h2>
-<p>事件流不只是渲染层的技术选型。它在 Agent 产品的几个关键维度上都有结构性的价值：</p>
+<p>事件流不只是渲染层的技术选型，在 Agent 产品的几个方面都有长期价值：</p>
 <p><strong>恢复。</strong></p>
 <p>用户关闭客户端、Agent 继续执行。重连时，客户端从 event log 的最后一条已知事件开始消费，所有状态重建，不需要存储“当时的 UI 状态“，只需要回放事件。第 2 篇讲的帧状态记忆（8 个字段、resize 全盘失效）之所以脆弱，正是因为 TUI 存的是“渲染结果“而不是“事件源头“。</p>
 <p><strong>审计。</strong></p>
@@ -284,9 +284,9 @@ case operationEnd(id: "A", isError: false, result: "...")
 <p><strong>第二，交互流的响应契约怎么设计？</strong> <code>permission.requested</code> 是阻塞还是非阻塞？超时时间多少？哪些权限可以批量预批，哪些必须逐个确认？这些不是事件类型的字段问题，是产品设计问题。Event Sourcing 能告诉你“这里需要一个 permission 事件“，但不能告诉你“这个事件应该在 UI 上存活多久“。</p>
 <hr>
 <h2 id="八总结"><a class="header" href="#八总结">八、总结</a></h2>
-<p>这篇文章试图证明一件事：</p>
+<p>这一篇想说明一件事：</p>
 <blockquote>
-<p><strong>Agent UI 的问题，本质上无关 CLI/TUI 和 GUI 的形态之争，真正的问题是如何为一条不确定、乱序、可中断的事件流设计多端投影。</strong></p>
+<p><strong>Agent UI 的问题和 CLI/TUI、GUI 的形态之争关系不大，要解决的是如何为一条不确定、乱序、可中断的事件流设计多端投影。</strong></p>
 </blockquote>
 <p>前五篇（02–06）的 TUI 深入研究，展示的是“线性投影“这种特定投影方式的完整成本。接下来三篇（08–10）转向 GUI，展示同一套事件在像素世界里的投影成本：同样的结构性矛盾，不同的表现形式。</p>
 <p>一条事件流，多种投影。</p>

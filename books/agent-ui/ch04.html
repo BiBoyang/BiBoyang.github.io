@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-c3e247bc.js";
+            window.path_to_searchindex_js = "searchindex-a7ff6577.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-b31dbc0b.js"></script>
@@ -194,7 +194,7 @@
   ├── thinking（基于工具结果继续推理）
   └── 最终回复（流式输出）
 </code></pre>
-<p>这不是一条线，是一棵树。而且节点到达顺序不是拓扑序。工具调用 2 可能比工具调用 1 先返回，thinking 块可能在流式输出的中途插入，用户随时按取消键。</p>
+<p>这是一棵树，而且节点的到达顺序不是拓扑序：工具调用 2 可能比工具调用 1 先返回，thinking 块可能在流式输出的中途插入，用户随时可能按取消键。</p>
 <p>CLI 看起来“适配“，靠的是 <strong>TUI 渲染引擎在背后做了一套复杂的展平机制：把一棵乱序到达的树强行投影成线性输出。</strong> Agent 的输出本身并不是 1D 的。这套机制就是本文要拆解的东西。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch04-tree-flatten.svg" alt="事件树经渲染引擎展平为线性输出"><span class="img-wrapper"><img src="assets/ch04-tree-flatten.svg" alt="事件树经渲染引擎展平为线性输出"></span></label></p>
 <hr>
@@ -233,7 +233,7 @@
 ⎿ done: 3 matches    ← 应该替换 B 的 running 行，却被追加到了帧尾
 ⎿ done: fn main()... ← A 的结果同样追加在最后
 </code></pre>
-<p>B 的 <code>done</code> 行本应替换掉 B 自己的 <code>⎿ running...</code>，但按到达顺序渲染只会把结果追加到帧尾——B 的 running 行残留成僵尸状态，结果行却落到了离自己 header 两行开外的位置。</p>
+<p>B 的 <code>done</code> 行本应替换掉 B 自己的 <code>⎿ running...</code>，但按到达顺序渲染只会把结果追加到帧尾：B 的 running 行残留成僵尸状态，结果行却落到了离自己 header 两行开外的位置。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch04-out-of-order-slots.svg" alt="按到达顺序渲染的事故现场，对比稳定槽位队列的原地替换"><span class="img-wrapper"><img src="assets/ch04-out-of-order-slots.svg" alt="按到达顺序渲染的事故现场，对比稳定槽位队列的原地替换"></span></label></p>
 <h3 id="32-稳定槽位队列"><a class="header" href="#32-稳定槽位队列">3.2 稳定槽位队列</a></h3>
 <p>ForgeLoopTUI 的解法是 <code>pendingTools</code> 数组：按 operationStart 到达顺序维护槽位。</p>
@@ -316,7 +316,7 @@ private func appendNotification(_ line: String) {
 <p>超过上限（默认 3 条）时，最旧的通知行从 Transcript 中删除，后续所有索引偏移 -1。这里没有折叠机制，直接删除：通知是瞬态的，过时即无用。</p>
 <hr>
 <h2 id="六blockcancel用户按下取消键"><a class="header" href="#六blockcancel用户按下取消键">六、blockCancel：用户按下取消键</a></h2>
-<p>Agent 正在流式输出一段很长的代码，用户按了 Esc 取消。这时不能只是停止发送新内容——已经显示在屏幕上的流式内容需要被清除，换成 <code>[cancelled]</code> 标记。</p>
+<p>Agent 正在流式输出一段很长的代码，用户按了 Esc 取消。这时不能只停止发送新内容，已经显示在屏幕上的流式内容也要清除，换成 <code>[cancelled]</code> 标记。</p>
 <pre><code class="language-swift">case .blockCancel:
     replaceStreaming(with: ["[cancelled]"])
     streamingRange = nil
@@ -366,12 +366,12 @@ private func appendNotification(_ line: String) {
 <p><strong>事件类型不可预测。</strong> 你无法预知下一个事件是 thinking、tool call、streaming text、还是 error。渲染器必须正确响应所有事件组合，包括之前没见过的组合。比如某些模型的 thinking 块可以在流式回复的中间穿插出现，这不是规范行为，但实际发生了。</p>
 <p><strong>中断时机不可预测。</strong> 用户可能在流式输出的任何时刻取消。取消时 Markdown 引擎可能处于任何状态——代码块中间、表格中间、列表中间。<code>blockCancel</code> 必须无条件 reset 引擎、清空 streaming 状态、写取消标记，不能假定 Markdown 结构完整。</p>
 <p>这三个“不可预测“叠加在一起，意味着 Agent TUI 的渲染系统不能对事件序列做任何结构性假设。每个事件到达时，只根据当前 Transcript 的索引状态做局部替换，不依赖“前一个事件是什么“，不假设“下一个事件什么时候到“。</p>
-<p>这不是“无状态“。恰恰相反，渲染器的全部正确性都系于一份共享的可变状态：<code>lines</code>（Transcript 的内容数组）和几个 Range（streaming/thinking/completed 的位置追踪）。准确的说法是<strong>事件处理无会话假设</strong>。这也是为什么 <code>applyCore</code> 是一个巨大的 switch 语句：每个 case 独立处理一个事件类型，不依赖前序事件的种类，只依赖那份共享索引状态。</p>
+<p>这不等于“无状态“。渲染器的全部正确性都系于一份共享的可变状态：<code>lines</code>（Transcript 的内容数组）和几个 Range（streaming/thinking/completed 的位置追踪）。准确的说法是<strong>事件处理无会话假设</strong>。这也是为什么 <code>applyCore</code> 是一个巨大的 switch 语句：每个 case 独立处理一个事件类型，不依赖前序事件的种类，只依赖那份共享索引状态。</p>
 <hr>
 <blockquote>
 <p>补记（2026.10）：本篇的槽位队列是扁平行数组上的坐标手术；第三节末尾的补记提过，inline 派把乱序配对提前到数据层，坐标手术退化为字典查找。最近读 Codex 的 TUI 源码（<code>codex-rs/tui/src/chatwidget/streaming.rs</code> 一带），见到了这个论断的一种完整实现形态，补在这里作为证据。</p>
 <p>Codex 的 transcript 不是行数组，是<strong>定稿 cell 序列 + 唯一一个 active 槽位</strong>。cell 是类型化的：<code>AgentMessageCell</code> 承载流式放行的行、<code>StreamingAgentTailCell</code> 是活动尾部、<code>ExecCell</code> 是工具调用、回答定稿后整段换成由原始源支撑的 <code>AgentMarkdownCell</code>（resize 时可从源重渲染）。流式期间尾部 cell 反复重建进 active 槽位，但内容没变就不触动编号——<code>sync_active_stream_tail</code> 先比较、相等就直接返回，避免无效重绘；commit tick 放行的行则固化为新 cell，追加进定稿序列。</p>
-<p>对照本篇，三个观察。其一，乱序与偏移问题在结构上消失：cell 有类型和身份，定位是查表而非坐标运算，<code>shiftIndices</code> 那样的连带偏移没有存在必要。其二，“原地可改写“的范围被压缩到一个槽位：本篇里流式块、thinking、工具槽位、通知都在同一份 <code>lines</code> 上做手术，正确性系于全局索引的同步偏移；Codex 把所有可变性收进唯一一个 active cell，定稿区连索引都不必维护。其三，权威来源的取舍：流式 delta 可能因传输饱和丢失，Codex 在 item 完成事件到达时用完成文本与流式累积源对账，注释写得很白——“item completion is authoritative”，传输丢 delta 不能让 transcript 截断。这个设计前提本篇没有对应物：ForgeLoopTUI 假定事件流本身可靠。</p>
+<p>对照本篇，三个观察。其一，乱序与偏移问题在结构上消失：cell 有类型和身份，定位是查表而非坐标运算，<code>shiftIndices</code> 那样的连带偏移没有存在必要。其二，“原地可改写“的范围被压缩到一个槽位：本篇里流式块、thinking、工具槽位、通知都在同一份 <code>lines</code> 上做手术，正确性系于全局索引的同步偏移；Codex 把所有可变性收进唯一一个 active cell，定稿区连索引都不必维护。其三，权威来源的取舍：流式 delta 可能因传输饱和丢失，Codex 在 item 完成事件到达时用完成文本与流式累积源对账，注释原话是“item completion is authoritative”，意思是传输丢了 delta，也不能让 transcript 截断。这个设计前提本篇没有对应物：ForgeLoopTUI 假定事件流本身可靠。</p>
 </blockquote>
 <hr>
 <h2 id="十总结"><a class="header" href="#十总结">十、总结</a></h2>
@@ -380,15 +380,15 @@ private func appendNotification(_ line: String) {
 第3篇: 降级映射 + Stable Prefix Cache + 流式检测 → Markdown 层
 第4篇: 事件乱序 + 工具渲染 + 状态管理    → Agent 层
 </code></pre>
-<p>这三层之间有一个递进关系：每一层都建立在下一层之上，每一层的问题都因为底层的限制而更难解决。Agent 的树状事件在终端里变成线性输出——这个“树展平“的过程，就是 TUI 渲染引擎存在的全部意义。</p>
-<p>但展平只是手段。真正的问题是：<strong>凭什么树状事件一定要被展平成线性？如果终端不是唯一的投影介质呢？</strong></p>
-<p>不过在继续讲这个问题之前，还差最后一块。第 2 到第 4 篇讲的全是输出侧——怎么把内容画对、画快、画不崩；而输入侧——键盘事件怎么进来、弹窗怎么不打架、终端能力怎么探测还一页未写。接下来两篇（第 5、6 篇）补上这一半，然后才是系列的中场：<strong>Event Sourcing，Agent UI 的底层模型</strong>。中场会解释 CLI/TUI 的纠结为什么不是终端的锅：真正有结构性矛盾的是“树状事件 → 线性输出“这个投影方式本身。</p>
+<p>这三层之间有一个递进关系：每一层都建立在下一层之上，每一层的问题都因为底层的限制而更难解决。Agent 的树状事件在终端里变成线性输出，这个“树展平“的过程，就是 TUI 渲染引擎存在的意义。</p>
+<p>但展平只是手段。更值得问的是：<strong>树状事件为什么一定要展平成线性？如果终端不是唯一的投影介质呢？</strong></p>
+<p>不过在继续讲这个问题之前，还差一块。第 2 到第 4 篇讲的全是输出侧，怎么把内容画对、画快、画不崩；输入侧还一页没写，包括键盘事件怎么进来、弹窗怎么不打架、终端能力怎么探测。接下来两篇（第 5、6 篇）补上这一半，然后才是系列的中场：<strong>Event Sourcing，Agent UI 的底层模型</strong>。中场会解释，CLI/TUI 的纠结不是终端的锅，结构性矛盾在“树状事件 → 线性输出“这个投影方式本身。</p>
 <p>一旦把 Agent 的执行抽象为事件流，CLI/TUI/GUI/IDE/Web/Mobile 各自应该站在哪里，就不再是形态之争了。</p>
 <hr>
 <h2 id="参考与延伸"><a class="header" href="#参考与延伸">参考与延伸</a></h2>
 <ul>
 <li><em>本文所有技术细节基于 <a href="https://github.com/BiBoyang/ForgeLoopTUI">ForgeLoopTUI</a> v1.2.0 的实际源码。其中 thinking 替换的 <code>shiftIndices</code> 调用为 v1.2.1 的索引偏移修复，v1.2.0 及更早版本中不存在。</em></li>
-<li><em>补记部分基于 <a href="https://github.com/openai/codex">Codex</a>。</em></li>
+<li><em>补记部分基于 <a href="https://github.com/openai/codex">Codex</a> 本地源码 2026-10 的阅读：<code>codex-rs/tui/src/chatwidget/streaming.rs</code> 一带，快照 main <code>6b9826e3</code>（2026-09-09）。</em></li>
 </ul>
 
                     </main>
