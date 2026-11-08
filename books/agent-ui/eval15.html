@@ -1,0 +1,339 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>14 · 断言不了输出，就断言关系 - 自顶向下拆 Agent：从界面到地基</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="favicon-8114d1fc.png">
+        <link rel="stylesheet" href="css/variables-8adf115d.css">
+        <link rel="stylesheet" href="css/general-e96d0476.css">
+        <link rel="stylesheet" href="css/chrome-d279d366.css">
+        <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex-c3e247bc.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc-b31dbc0b.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">自顶向下拆 Agent：从界面到地基</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/BiBoyang/BiBoyang.github.io" title="Git repository" aria-label="Git repository">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="断言不了输出就断言关系蜕变测试进-agent-评测"><a class="header" href="#断言不了输出就断言关系蜕变测试进-agent-评测">断言不了输出，就断言关系——蜕变测试进 agent 评测</a></h1>
+<blockquote>
+<p>本卷卷首语立过断言危机：非确定性系统的断言目标从结果移走，当时登记的去处是路径覆盖与终态。但这两个去处都假定「什么叫对」列得出清单——对开放式输出，这个假定本身就漏。这一篇补第三种移法：**断言不了输出，就断言关系。**界面部分第 16 篇的等价性层早就把它用出来了，只是没叫这个名字；这一篇给它正名，并把它从界面层的测试基建，升级成 agent 评测里的一种断言形态。</p>
+</blockquote>
+<h2 id="本章将讲"><a class="header" href="#本章将讲">本章将讲</a></h2>
+<ul>
+<li>断言危机的第三种解法：断言目标从结果移走之后，除了路径与终态，还可以移到关系——蜕变关系为什么是非确定性系统的天然断言。</li>
+<li>旗舰案例：界面部分第 16 篇的 delta 切分等价性按断言形态重拆——事后形态、全程形态，以及双实现互证这个 oracle 难题的另一种解法。</li>
+<li>与故障注入合流：每一条蜕变关系反过来都是一张注入地图，切分方式本身就是旋钮——收回第 4 篇。</li>
+<li>下半场：裁判也要被校准——一次公开误报的完整一生、judge 校准的三条纪律，以及全书的「错误 → 机制化」总单。</li>
+</ul>
+<h2 id="一断言目标的三次搬家"><a class="header" href="#一断言目标的三次搬家">一、断言目标的三次搬家</a></h2>
+<p>卷首语把 agent 的断言难拆成三件事，第一件就是非确定性：同一输入不同输出，精确断言必死，断言目标只能从结果移走。当时登记的去处有两个：<strong>路径</strong>（不管输出是什么，该走的步骤走了没有）和<strong>终态</strong>（不管过程怎么抖，最后落库的状态对不对）。</p>
+<p>这两个去处解了一大批问题，但都还带着 oracle 的影子：路径覆盖要求你预先知道「合法路径长什么样」，终态断言要求你预先知道「什么终态算对」。对结构化的任务——订票、改库、跑测试——这两个清单列得出；对开放式的输出，一段回答、一次渲染、一份计划，列不出。你没法为「这次回答该说什么」写预期值，正如你没法为「这段 Markdown 渲染出来该是什么样」逐帧写预期值。</p>
+<p>还有第三种移法，这一篇的主角：<strong>移到关系</strong>。不断言输出是什么，断言输出与输出之间必须保持的关系——对输入做一个你选定的变换，输出必须满足一个你指定的关系。正确答案依然不知道，但<strong>不需要知道</strong>了。</p>
+<h2 id="二蜕变关系没有-oracle-时的断言形态"><a class="header" href="#二蜕变关系没有-oracle-时的断言形态">二、蜕变关系：没有 oracle 时的断言形态</a></h2>
+<p>这个手法在软件测试里有正式名字：<strong>蜕变测试</strong>（metamorphic testing），核心概念是蜕变关系（metamorphic relation，MR）。它通常追溯到 Chen、Cheung、Yiu 1998 年的一篇技术报告，动机被叫作 test oracle problem：很多程序事实上没有预言机——要么正确答案不存在（画图、排序检索），要么独立算一遍正确答案和被测程序本身一样贵。教科书例子是三角函数：没有表可查，怎么测 sin 的实现？你不需要知道 sin(x) 的具体值，只需要知道 sin(x) 必须等于 sin(π − x)——同一个程序，喂 x 和喂 π − x，两个输出必须相等。变换是考题，关系是判卷标准，预期值全程没有出场。</p>
+<p>一句话定义：<strong>与其断言 f(x) = y，不如断言 f(x) 与 f(g(x)) 之间满足关系 R</strong>——g 是你选的变换，R 是你对系统的理解。源用例跑一遍，把输入按 g 变出后继用例再跑一遍，断言的不是两个输出各自是什么，而是它们之间的关系。</p>
+<p>这个形态和 agent 评测是天作之合，理由有三：</p>
+<ol>
+<li><strong>oracle 缺位是常态，不是例外。</strong> agent 的产出是开放文本，「正确答案」要么不存在、要么写不起；MR 从设计上就不需要它。</li>
+<li><strong>变换是你控制的。</strong> 模型的非确定性在输出侧，而你选 g 的手在输入侧——非确定性还在，但它被关进了「关系必须保持」的笼子：输出可以抖，关系不许破。</li>
+<li><strong>一个关系顶一整个用例矩阵。</strong> 切分方式是无限的，逐帧断言永远覆盖不完；关系只有一个，断言一次管所有变换——这正是界面部分第 16 篇说的「一次断言，覆盖无限切分」。</li>
+</ol>
+<p>诚实义务也要尽：MR 只能证伪，不能证明。关系被破坏，一定有 bug；关系保持，只是没抓到。这个不对称和第 4 篇故障注入的检出逻辑同构——检出是证据，未检出只是没证据。蜕变测试不是 oracle 的替代品，是 oracle 缺位时的次优制度：次优，但成文。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/eval15-metamorphic-relation.svg" alt="源用例整段渲染 vs 三种切分变换的后继用例，四路输出汇入 ≡ 闸门；旁边传统断言「预期输出 y」画成缺位空框"><span class="img-wrapper"><img src="assets/eval15-metamorphic-relation.svg" alt="源用例整段渲染 vs 三种切分变换的后继用例，四路输出汇入 ≡ 闸门；旁边传统断言「预期输出 y」画成缺位空框"></span></label></p>
+<h2 id="三旗舰案例delta-切分是一条教科书级-mr"><a class="header" href="#三旗舰案例delta-切分是一条教科书级-mr">三、旗舰案例：delta 切分是一条教科书级 MR</a></h2>
+<p>界面部分第 16 篇讲过 Codex TUI 的四层断言框架，这里不重复，只把第三层（等价性层）单独抽出来，用 MR 的眼光重新拆一遍。它把流式渲染的正确性钉成一句话：「任意 delta 切分下，流式渲染的可见输出必须收敛于一次性全量渲染」——这句话的结构就是教科书级的蜕变关系：</p>
+<ul>
+<li><strong>源用例</strong>：模型输出整段、一次性渲染；</li>
+<li><strong>变换 g</strong>：同一段输出的切分方式——按 token 切、按行切、按随机字节切；</li>
+<li><strong>关系 R</strong>：可见输出收敛相等。</li>
+</ul>
+<p>注意这个断言从头到尾没有说「这段 Markdown 渲染出来该是什么样」——它不需要知道。它说的是<strong>切不许改变结果</strong>。正确答案缺位的地方，关系上岗。</p>
+<p><code>streaming/controller.rs</code> 里的三个测试（2026-10-14 按快照 commit 6b9826e3 复核行号），按断言形态可以分成两类。</p>
+<p><strong>事后形态</strong>：<code>controller_loose_vs_tight_with_commit_ticks_matches_full</code>（L1143）。关系只钉在终点——全部喂完才和全量渲染比一次。一次断言覆盖整个变换，便宜；但失败时你只知道「破了」，不知道在哪一步破的。</p>
+<p><strong>全程形态</strong>：<code>controller_live_view_matches_render_during_interleaved_table_streaming</code>（L1619）。关系钉在路径上的每一步——每喂一个 delta 就断言一次「已上屏内容 + 待放行 tail ≡ 全量渲染」。我尤其喜欢它断言失败时的报错设计：报出来的是<strong>出事的那个 delta</strong>，不是预期画面。失败定位的单位从「哪一帧错了」变成了「哪种切法把它切错了」——变换成了第一公民。</p>
+<p>两种形态之间是一个工程旋钮：<strong>断言密度</strong>。事后形态便宜、定位粗；全程形态贵、定位到 delta。写 MR 测试时这不是实现细节，是设计决策——关系钉得越密，抓得越早，跑得越贵。和卷首语那句「成本是一等约束」接得上：关系的断言密度，同样要用预算裁决。</p>
+<h2 id="四双实现互证oracle-难题的另一种解法"><a class="header" href="#四双实现互证oracle-难题的另一种解法">四、双实现互证：oracle 难题的另一种解法</a></h2>
+<p>第三个测试要单独立一类，因为它把 MR 推到了更激进的位置。</p>
+<p><code>incremental_holdback_matches_stateless_scan_per_chunk</code>（L1852）：一份有状态的增量实现、一份无状态的全量实现，逐 chunk 断言两者状态相等。用 MR 的语言说：变换 g 是「换一份独立实现」，关系 R 是「两份实现输出相等」。这个形态在文献里有自己的名字，叫伪 oracle（pseudo-oracle）；界面部分第 16 篇的大白话更直接：<strong>用实现验证实现</strong>。</p>
+<p>它回答的是 oracle 难题的另一面。MR 的主形态解的是「正确答案不存在」；双实现解的是「正确答案存在，但你信不过任何一份计算」——把绝对正确性问题降级为一致性问题。降级的收益来自独立性：<strong>bug 必须同时以同样的方式污染两份独立实现，才能漏网。</strong></p>
+<p>残余风险也要写明：两份实现共享的错误理解会双双漏过——同一个作者对 Markdown 表格规则的同一个误读，会同时长进两份代码里，一致性全绿，错误隐身。所以双实现不取代真 oracle，它取代的是「手工列预期值」那一层；规格级的误读，最终得靠本章下半场的裁判校准去抓。</p>
+<p>顺手和第 6 篇划一下界，免得两种「参照物」混为一谈：双臂对照（with / without）回答「是不是它的功劳」，参照物是被测物自己的另一臂；双实现互证回答「没有 oracle 拿什么当尺子」，参照物是另一份实现。两者的共同祖先是同一条原则——<strong>没有绝对答案时，用参照物替代绝对答案</strong>——分工只在参照物站在哪一侧。</p>
+<h2 id="五与故障注入合流关系是断言也是注入地图"><a class="header" href="#五与故障注入合流关系是断言也是注入地图">五、与故障注入合流：关系是断言，也是注入地图</a></h2>
+<p>界面部分第 16 篇末段留过一个反向启发：等价性层指明了最敏感的注入点——delta 切分方式。这一篇把它兑现，而且可以说得更强：<strong>每一条蜕变关系，反过来都是一张故障注入的地图。</strong></p>
+<p>逻辑是这样的。MR 断言「变换 g 下关系 R 必须保持」，等于宣布了系统在哪类扰动下许过承诺；而注入测试要找的最敏感的注入点，恰恰是被许下承诺的地方——承诺越硬，破坏承诺的注入越毒。既然「切分不许改变结果」是承诺，切分方式就是旋钮：按 token 切、按行切、按随机字节切；再往毒里做——在多字节 UTF-8 字符中间切、在表格分隔行中间切、在代码围栏的围栏线中间切。每一种切法都是一颗指名道姓的炸弹，炸的都是同一个不变量。随机扰动只能告诉你「系统可能会坏」；MR 指导的注入告诉你「系统承诺过不会这样坏」——后者才是回归套件里该常驻的东西。</p>
+<p>这给了故障注入一个和第 4 篇互补的选题方法。第 4 篇的内容完整性炸弹测的是「坏了会不会察觉」，伤型来自对物理失效模式的枚举；蜕变注入测的是「变换下还守不守承诺」，伤型来自对系统承诺的枚举。两份清单最后往往指向同一批部件，但后者多了一层「违约」的语义——检出的 bug 自带呈堂证供：不是「这里坏了」，是「你承诺过这里不会坏」。<strong>不知道往哪注入的时候，先问系统承诺过什么。</strong></p>
+<p>所以合流是字面意义的：造得出变换，才写得出 MR；写得出 MR，变换才不只是随机扰动，而是带着承诺条款的考题。第 4 篇从注入一侧到过这个交界，这一篇从断言一侧再走一遍——交界还在原地：断言不了输出，就断言关系；而关系画出的地图，测试与注入共用。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/eval15-injection-knob.svg" alt="切分旋钮分叉两轨——作为测试进 ≡ 闸门、作为注入进变换空间挑最毒的切法，两岔汇入「同一件事的两面」"><span class="img-wrapper"><img src="assets/eval15-injection-knob.svg" alt="切分旋钮分叉两轨——作为测试进 ≡ 闸门、作为注入进变换空间挑最毒的切法，两岔汇入「同一件事的两面」"></span></label></p>
+<h2 id="下半场裁判也要被校准"><a class="header" href="#下半场裁判也要被校准">下半场：裁判也要被校准</a></h2>
+<p>前五节把断言目标搬到了关系上。但断言再精巧，举着断言的仍是人写的评测系统——而评测系统自己也是软件，也会坏。上半场答「拿什么当判据」，下半场问「判错了怎么办」：这个系列翻过的每一次案，最后都指向同一件事——裁判本身也要被校准，评测系统的 bug 比被测对象的更隐蔽。这既是本卷收口，也是全书收口。</p>
+<h2 id="六一个误报的完整一生"><a class="header" href="#六一个误报的完整一生">六、一个误报的完整一生</a></h2>
+<p>我给 skill-up 提过两个挨着的 issue。第一个是真问题（超时强杀引擎，产物文件整个蒸发），后来成了 issue 加修复 PR。第二个，第二天我自己回到 issue 下面发了一条评论：「这是一个误报，skill-up 的行为完全正确，请关闭。」</p>
+<p>误报的诞生现场很体面。为了补回超时丢失的数据，我单 case 重跑了三次，每次控制台都报 <code>1 passed</code>，但产物目录里结果文件依然不存在。发 issue 前我还做了个「严谨」的复现：记录文件 mtime，重跑，再记录——mtime 纹丝不动。「重跑报 PASS 但产物零更新」，铁证如山，我把它连同命令输出一起写进了 issue，标题起得很有把握。</p>
+<p>两天后准备提 PR，加 <code>-v</code> 复现，一条 DEBUG 日志把我击毙：重跑的产物 append 进了新的 iteration 目录——文档里写得明明白白的语义，行为完全正确。我的两个观测错误原形毕露：<strong>其一</strong>，三次补跑是在子目录里敲的，相对路径的产物老老实实写进了嵌套目录，而我检查的是仓库根下的同名目录；<strong>其二</strong>，那个「严谨」的 mtime 复现，stat 的是旧 iteration 的文件——<strong>mtime 是真的，数字是一致的，结论是错的</strong>。我验证了一个没人怀疑的命题（旧文件不会被改写），却以为自己验证了那个有问题的命题（新文件没有写出）。还有一个隐形的帮凶：头一天那个真实的超时丢产物问题给了我「产物会丢」的先入之见，让我对「又一次丢失」毫无防备。</p>
+<p>每一格观测都「对」，拼起来的图景却是虚构的。这就是第 3 篇那条定律在观测者身上的版本：两个世界产出同一组证据，而我对它们的差异是盲的。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/eval07-meta-loop.svg" alt="裁判校准的元闭环：误报 → 假结论 → 公开翻案 → 长出新机制"><span class="img-wrapper"><img src="assets/eval07-meta-loop.svg" alt="裁判校准的元闭环：误报 → 假结论 → 公开翻案 → 长出新机制"></span></label></p>
+<h2 id="七公开翻案的成本与收益"><a class="header" href="#七公开翻案的成本与收益">七、公开翻案的成本与收益</a></h2>
+<p>发现真相当天，我在原 issue 下发了更正评论：说明行为正确、给出日志证据、逐条拆解自己的两个观测错误、指出唯一真实的问题、道歉并请关闭。写这段评论花的时间比写原 issue 还长——这是应该的。<strong>公开误报的成本是一次尴尬，收益是维护者的时间和一个可信的轨迹记录</strong>：下次你再报问题时，你的历史记录在替你说话。</p>
+<p>回头看，那组「铁证」有一个性质值得单独说：<strong>证据质量不保证结论正确，它保证的是纠错的速度。</strong> 最小复现、环境信息、内联证据，这些纪律没能阻止我犯错，但让我的错误可被快速验证和推翻——verbose 日志一跑就水落石出。第 3 篇的「不可判定」标注、第 6 篇归因文件里原样保留的错误结论，是同一条纪律的不同形态：给将来的纠错留抓手。</p>
+<p>误报调查还顺手孵出了真修复。读源码时发现我在 issue 里建议的修法和真实缺口对不上——上游早有优雅终止，缺的是「超时且产物缺失时合成一份最小结果文件」这个兜底，于是 PR 做的正是 issue 里我自己标的备选方案，PR 描述里专门开了一节说明与 issue 提纲的出入。<strong>issue 里的修复建议是假设，不是承诺</strong>——维护者看到的不是一个推翻自己的别扭 PR，而是一份诚实的调查记录。</p>
+<h2 id="八绿灯也会骗人"><a class="header" href="#八绿灯也会骗人">八、绿灯也会骗人</a></h2>
+<p>两天后我又翻了一次车，方向相反。</p>
+<p>我提的 PR 在 CI 上红了、本地全绿。第一反应是教科书式的：「平台差异」——Linux 与 macOS 的进程管理差异。我把上游的超时处理、错误分类、kill 升级的时序读了一个小时，越读越觉得每一处都平台无关，但又找不到别的解释。</p>
+<p>真正的突破口不是读代码，是一条 <code>git log</code>：上游早几天合入了一个语义收窄的改动（框架自写文件改登记进内部字段），而 GitHub 的 <code>pull_request</code> 构建的是「分支 ⊕ 最新 main」的合并态——<strong>CI 测的代码和我本地测的，不是同一份</strong>。merge 文本上干干净净，一个冲突标记都没有；语义上，上游把我们断言依赖的行为拆走了。merge 干净只证明两边没改同一行，不证明两边对同一个字段的理解还一致。</p>
+<p>所以「CI 红、本地绿」的第一个问题不该是「平台差在哪」，而是「CI 测的是哪份代码」。我为一个不存在的平台差异读了一个小时源码——那一小时里我离真相的距离，比不看代码还远。修法很轻：断言从「字段」改绑到「字段的职责」——上游重构会让字段贬值，职责才扛得住（Hyrum 定律的标准剧情：可观测行为足够多，就总有人依赖它）。</p>
+<h2 id="九judge-也要被校准"><a class="header" href="#九judge-也要被校准">九、judge 也要被校准</a></h2>
+<p>裁判链条上还有一类裁判不是脚本，是模型。judge 的校准纪律，我的口径是三条：</p>
+<ul>
+<li><strong>TPR 与 TNR 分开看。</strong> 「抓得出坏的」和「放得对好的」是两个独立能力，一个高一个低的 judge 很常见。聚合成一个准确率，等于让两种病共用一张化验单。</li>
+<li><strong>Unknown 必须是合法判决。</strong> 不许强制二选一。判不了的样本标 Unknown 退出，硬判的 judge 会把噪声抛光成信号。</li>
+<li><strong>校准集优先用有机失败。</strong> 合成坏样本是出给 judge 的送分题；真实运行里攒下来的失败，分布才和战场一致。校准集与验证集分开，校准集本身有保质期——这些和 RAG 检索评测是同一条纪律的两种说法。</li>
+</ul>
+<p>这三条管的是怎么校；校多少条才算数，是第 13 篇算过的另一笔账：全对的三十条，撑得起的误判率上界仍有一成。</p>
+<p>不校准的代价有公开数字：CORE-Bench 上评分器的刚性判分 bug（期望 <code>96.124991…</code> 而拒收 <code>96.12</code> 这类），能把实际 95% 的模型压成 42%。<strong>裁判的 bug 不只漏报，还会批量制造冤案</strong>——而它被采信的程度和正常裁判一模一样。</p>
+<h2 id="十错误--机制化全书方法论清单"><a class="header" href="#十错误--机制化全书方法论清单">十、错误 → 机制化：全书方法论清单</a></h2>
+<p>本卷每一章的翻车，最后都长成了一条机制。收拢成一张总单：</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>翻车</th><th>长出的机制</th></tr>
+</thead>
+<tbody>
+<tr><td>产物「消失」的误报（本篇）</td><td>排除计数显式上报；单 case 重跑一律绝对路径；判产物看最新 iteration</td></tr>
+<tr><td>判活器自身崩溃</td><td>评测器自测套件 32 条断言（含故意的坏样本），上线首日就抓到自己崩溃</td></tr>
+<tr><td>PASS/FAIL 摇摆</td><td>flaky 分账：flaky rate 与 error rate 分开记账，不许互相掩护</td></tr>
+<tr><td>孙进程孤儿化挂死 runner</td><td>进程组杀 + 「孙进程必死」回归断言</td></tr>
+<tr><td>mock 方言说错</td><td>每种故障配「必然触发现有检测」的阳性对照变体</td></tr>
+<tr><td>目录名泄露伤型</td><td>宿主可见路径全部哈希暂存；实验产物对宿主不可见</td></tr>
+<tr><td>超时用例从分母消失</td><td>排除计数（同上，两个事故共用一条机制）</td></tr>
+</tbody>
+</table>
+</div>
+<p>第 10–13 篇的病例不在表里：那几篇翻车的是公开 benchmark，不是我的工具链，它们长出的机制是各篇末尾那张读分数之前的检查清单。</p>
+<p>这张表是全卷真正的产出物。工具会过时，数字会过期，「每次翻车长出一条机制」这个循环不会。</p>
+<h2 id="十一全书答毕"><a class="header" href="#十一全书答毕">十一、全书答毕</a></h2>
+<p>回到全书开篇的那句问话：没报错，就代表输出没问题吗？</p>
+<p>一路走来，每一卷都回答了它的一层。界面部分答了渲染层：把带状态的字节流逐层翻译成可断言的东西（第 16 篇的四层翻译）。本卷卷首答了协议层：complete 是排除出来的兜底，不是默认值；字节到没到，渲染层永远无权裁决。本卷其余各篇答了行为层：非确定性、成本约束、复合被测对象之下，断言目标三次搬家（路径、终态、关系），四问各有人认领。第 10–13 篇把尺子掉过头，去读别人量出来的数：被测的到底是谁，分数在哪里说谎，「会学」到底测到了没有，评测本身又由谁来验收。然后这一篇补上最后一环：<strong>观测层</strong>——连「发现问题」这件事本身，也会以自洽的方式出错，也需要被测。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/eval07-book-closing.svg" alt="全书收口：界面 → 胶水层 → 基建 → 评测四环递进，把裁判也变成可断言的"><span class="img-wrapper"><img src="assets/eval07-book-closing.svg" alt="全书收口：界面 → 胶水层 → 基建 → 评测四环递进，把裁判也变成可断言的"></span></label></p>
+<p>所以最终答案是：<strong>没报错什么也不代表——除非你为「发现问题」这件事本身也建了断言。</strong> 观测会骗人、考题会骗人、对照组会骗人、绿灯会骗人，而裁判——包括拿着工具的那个人——始终在被校准的途中。这个系列抓了这么多 bug，最后一个永远是自己的。</p>
+<hr>
+<p><em>本章源码事实基于 Codex 本地源码 2026-10-14 的复核：<code>codex-rs/tui/src/streaming/controller.rs</code> 三个测试分别位于 L1143、L1619、L1852，快照 main <code>6b9826e3</code>（2026-09-09）；四层断言框架与三个测试的行为细节见界面部分第 16 篇，本章只取断言形态视角，不重复展开。蜕变测试的概念定性（property-based 测试技术、应对 test oracle problem）2026-10-14 经 Wikipedia 词条核验；具体出处（Chen、Cheung、Yiu 1998 年技术报告）为教科书通识，按转述口径引用，未逐字核对原文。</em></p>
+<ul>
+<li><em>本章收编自已发布博客《我给 skill-up 报了一个不存在的 bug》（2026-09-20）与《CI 红、本地绿：一次「平台差异」误诊，和 merge 干净不等于语义兼容》（2026-09-22）；上游记录：skill-up issue #263、误报更正 #264、PR #265，语义变更上游 PR #250。</em></li>
+<li><em>judge 校准三条纪律为作者的工作口径；CORE-Bench 评分器 bug 的数字（95% → 42%）转述自 Anthropic 的 agent evals 专文，以原文为准。</em></li>
+<li><em>判活器自测套件与排除计数机制在 huohou 仓库 evals-shared（2026-09 起）；进程组杀修复在 dsh-eval-harness v0.6.0。</em></li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="eval14.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="eval14.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr-ef4e11c1.min.js"></script>
+        <script src="mark-09e88c2c.min.js"></script>
+        <script src="searcher-09f2665d.js"></script>
+
+        <script src="clipboard-1626706a.min.js"></script>
+        <script src="highlight-abc7f01d.js"></script>
+        <script src="book-609e4cb8.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

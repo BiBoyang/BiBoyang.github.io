@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="500" viewBox="0 0 960 500">
+<defs>
+<marker id="mk-3fb950" markerWidth="9" markerHeight="9" refX="7.4" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L9,4.5 L0,9 z" fill="#3fb950"/></marker><marker id="mk-8b949e" markerWidth="9" markerHeight="9" refX="7.4" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L9,4.5 L0,9 z" fill="#8b949e"/></marker><marker id="mk-d29922" markerWidth="9" markerHeight="9" refX="7.4" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L9,4.5 L0,9 z" fill="#d29922"/></marker>
+</defs>
+<rect x="0" y="0" width="960" height="500" rx="12" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
+<text x="28" y="38" font-size="15.5" fill="#e6edf3" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="700">配对的无状态基线：把「学会了」从「本来就会」里分出来</text>
+<line x1="28" y1="52" x2="932" y2="52" stroke="#30363d" stroke-width="1"/>
+<rect x="28" y="160" width="150" height="90" rx="6" fill="#161b22" stroke="#58a6ff" stroke-width="1"/>
+<text x="103" y="198" font-size="13" fill="#e6edf3" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="700">同一个系统</text>
+<text x="103" y="220" font-size="11" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="400">同一批实例</text>
+<line x1="178" y1="190" x2="236" y2="130" stroke="#3fb950" stroke-width="1.4" marker-end="url(#mk-3fb950)"/>
+<line x1="178" y1="222" x2="236" y2="286" stroke="#d29922" stroke-width="1.4" marker-end="url(#mk-d29922)"/>
+<rect x="240" y="80" width="380" height="104" rx="6" fill="#161b22" stroke="#3fb950" stroke-width="1"/>
+<text x="258" y="112" font-size="12.5" fill="#3fb950" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="700">保留状态（stateful）</text>
+<rect x="262" y="128" width="54" height="32" rx="4" fill="#3fb950" fill-opacity="0.12" stroke="#3fb950" stroke-width="1"/>
+<text x="289" y="149" font-size="10.5" fill="#c9d1d9" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="400">实例1</text>
+<line x1="316" y1="144" x2="332" y2="144" stroke="#3fb950" stroke-width="1"/>
+<rect x="332" y="128" width="54" height="32" rx="4" fill="#3fb950" fill-opacity="0.12" stroke="#3fb950" stroke-width="1"/>
+<text x="359" y="149" font-size="10.5" fill="#c9d1d9" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="400">实例2</text>
+<line x1="386" y1="144" x2="402" y2="144" stroke="#3fb950" stroke-width="1"/>
+<rect x="402" y="128" width="54" height="32" rx="4" fill="#3fb950" fill-opacity="0.12" stroke="#3fb950" stroke-width="1"/>
+<text x="429" y="149" font-size="10.5" fill="#c9d1d9" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="400">实例3</text>
+<line x1="456" y1="144" x2="472" y2="144" stroke="#3fb950" stroke-width="1"/>
+<rect x="472" y="128" width="54" height="32" rx="4" fill="#3fb950" fill-opacity="0.12" stroke="#3fb950" stroke-width="1"/>
+<text x="499" y="149" font-size="10.5" fill="#c9d1d9" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="400">实例4</text>
+<line x1="526" y1="144" x2="542" y2="144" stroke="#3fb950" stroke-width="1"/>
+<rect x="542" y="128" width="54" height="32" rx="4" fill="#3fb950" fill-opacity="0.12" stroke="#3fb950" stroke-width="1"/>
+<text x="569" y="149" font-size="10.5" fill="#c9d1d9" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="400">实例5</text>
+<text x="258" y="176" font-size="10" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="400">经验一路累积</text>
+<rect x="240" y="234" width="380" height="104" rx="6" fill="#161b22" stroke="#d29922" stroke-width="1"/>
+<text x="258" y="266" font-size="12.5" fill="#d29922" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="700">每个实例前清空（stateless）</text>
+<rect x="262" y="282" width="54" height="32" rx="4" fill="#d29922" fill-opacity="0.1" stroke="#d29922" stroke-width="1"/>
+<text x="289" y="303" font-size="10.5" fill="#c9d1d9" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="400">实例1</text>
+<rect x="332" y="282" width="54" height="32" rx="4" fill="#d29922" fill-opacity="0.1" stroke="#d29922" stroke-width="1"/>
+<text x="359" y="303" font-size="10.5" fill="#c9d1d9" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="400">实例2</text>
+<rect x="402" y="282" width="54" height="32" rx="4" fill="#d29922" fill-opacity="0.1" stroke="#d29922" stroke-width="1"/>
+<text x="429" y="303" font-size="10.5" fill="#c9d1d9" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="400">实例3</text>
+<rect x="472" y="282" width="54" height="32" rx="4" fill="#d29922" fill-opacity="0.1" stroke="#d29922" stroke-width="1"/>
+<text x="499" y="303" font-size="10.5" fill="#c9d1d9" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="400">实例4</text>
+<rect x="542" y="282" width="54" height="32" rx="4" fill="#d29922" fill-opacity="0.1" stroke="#d29922" stroke-width="1"/>
+<text x="569" y="303" font-size="10.5" fill="#c9d1d9" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="400">实例5</text>
+<text x="258" y="330" font-size="10" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="400">每次都从零开始</text>
+<line x1="620" y1="130" x2="676" y2="196" stroke="#8b949e" stroke-width="1.2" marker-end="url(#mk-8b949e)"/>
+<line x1="620" y1="286" x2="676" y2="222" stroke="#8b949e" stroke-width="1.2" marker-end="url(#mk-8b949e)"/>
+<rect x="680" y="176" width="252" height="66" rx="6" fill="#58a6ff" fill-opacity="0.08" stroke="#58a6ff" stroke-width="1"/>
+<text x="806" y="202" font-size="12.5" fill="#58a6ff" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="700">逐实例相减</text>
+<text x="806" y="226" font-size="12" fill="#c9d1d9" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" text-anchor="middle" font-weight="400">gain = r有状态 − r无状态</text>
+<rect x="680" y="362" width="252" height="26" rx="5" fill="#3fb950" fill-opacity="0.1" stroke="#3fb950" stroke-width="1"/>
+<text x="694" y="380" font-size="11.5" fill="#3fb950" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" text-anchor="start" font-weight="700">gain &gt; 0</text>
+<text x="772" y="380" font-size="11" fill="#c9d1d9" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="400">经验帮上了忙</text>
+<rect x="680" y="396" width="252" height="26" rx="5" fill="#8b949e" fill-opacity="0.1" stroke="#8b949e" stroke-width="1"/>
+<text x="694" y="414" font-size="11.5" fill="#8b949e" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" text-anchor="start" font-weight="700">gain ≈ 0</text>
+<text x="772" y="414" font-size="11" fill="#c9d1d9" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="400">看不出学习</text>
+<rect x="680" y="430" width="252" height="26" rx="5" fill="#f85149" fill-opacity="0.1" stroke="#f85149" stroke-width="1"/>
+<text x="694" y="448" font-size="11.5" fill="#f85149" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" text-anchor="start" font-weight="700">gain &lt; 0</text>
+<text x="772" y="448" font-size="11" fill="#c9d1d9" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="400">遗忘、干扰、记住了错的状态</text>
+<text x="28" y="380" font-size="11.5" fill="#c9d1d9" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="400">题目难或容易，会同时进入两项；</text>
+<text x="28" y="400" font-size="11.5" fill="#c9d1d9" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="400">相减之后，剩下的就是累积状态的贡献。</text>
+<text x="28" y="432" font-size="11.5" fill="#c9d1d9" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="400">跨任务汇总再归一：</text>
+<text x="28" y="452" font-size="11.5" fill="#c9d1d9" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" text-anchor="start" font-weight="400">gain ÷（任务上限 − 无状态得分）</text>
+<text x="28" y="484" font-size="10" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="400">据 CL-Bench 网站的 Metrics 与 Concepts 页（2026-11-07 抓取）</text>
+</svg>

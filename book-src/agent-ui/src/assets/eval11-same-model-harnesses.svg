@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="560" viewBox="0 0 960 560">
+<defs>
+
+</defs>
+<rect x="0" y="0" width="960" height="560" rx="12" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
+<text x="28" y="38" font-size="15.5" fill="#e6edf3" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="700">同一个模型，换个 harness：变了什么，没变什么</text>
+<line x1="28" y1="52" x2="932" y2="52" stroke="#30363d" stroke-width="1"/>
+<rect x="28" y="72" width="360" height="460" rx="6" fill="#161b22" stroke="#30363d" stroke-width="1"/>
+<text x="48" y="100" font-size="13" fill="#e6edf3" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="700">CL-Bench · GPT-5.4 的综合名次</text>
+<text x="48" y="120" font-size="11" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="400">同一个模型，只换 harness</text>
+<line x1="120" y1="150" x2="120" y2="480" stroke="#6e7681" stroke-width="2"/>
+<line x1="114" y1="150" x2="126" y2="150" stroke="#6e7681" stroke-width="1"/>
+<text x="100" y="154" font-size="10.5" fill="#6e7681" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" text-anchor="end" font-weight="400">1</text>
+<line x1="114" y1="180" x2="126" y2="180" stroke="#6e7681" stroke-width="1"/>
+<text x="100" y="184" font-size="10.5" fill="#6e7681" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" text-anchor="end" font-weight="400">2</text>
+<line x1="114" y1="210" x2="126" y2="210" stroke="#6e7681" stroke-width="1"/>
+<text x="100" y="214" font-size="10.5" fill="#6e7681" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" text-anchor="end" font-weight="400">3</text>
+<line x1="114" y1="240" x2="126" y2="240" stroke="#6e7681" stroke-width="1"/>
+<text x="100" y="244" font-size="10.5" fill="#6e7681" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" text-anchor="end" font-weight="400">4</text>
+<line x1="114" y1="270" x2="126" y2="270" stroke="#6e7681" stroke-width="1"/>
+<text x="100" y="274" font-size="10.5" fill="#6e7681" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" text-anchor="end" font-weight="400">5</text>
+<line x1="114" y1="300" x2="126" y2="300" stroke="#6e7681" stroke-width="1"/>
+<text x="100" y="304" font-size="10.5" fill="#6e7681" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" text-anchor="end" font-weight="400">6</text>
+<line x1="114" y1="330" x2="126" y2="330" stroke="#6e7681" stroke-width="1"/>
+<text x="100" y="334" font-size="10.5" fill="#6e7681" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" text-anchor="end" font-weight="400">7</text>
+<line x1="114" y1="360" x2="126" y2="360" stroke="#6e7681" stroke-width="1"/>
+<text x="100" y="364" font-size="10.5" fill="#6e7681" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" text-anchor="end" font-weight="400">8</text>
+<line x1="114" y1="390" x2="126" y2="390" stroke="#6e7681" stroke-width="1"/>
+<text x="100" y="394" font-size="10.5" fill="#6e7681" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" text-anchor="end" font-weight="400">9</text>
+<line x1="114" y1="420" x2="126" y2="420" stroke="#6e7681" stroke-width="1"/>
+<text x="100" y="424" font-size="10.5" fill="#6e7681" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" text-anchor="end" font-weight="400">10</text>
+<line x1="114" y1="450" x2="126" y2="450" stroke="#6e7681" stroke-width="1"/>
+<text x="100" y="454" font-size="10.5" fill="#6e7681" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" text-anchor="end" font-weight="400">11</text>
+<line x1="114" y1="480" x2="126" y2="480" stroke="#6e7681" stroke-width="1"/>
+<text x="100" y="484" font-size="10.5" fill="#6e7681" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" text-anchor="end" font-weight="400">12</text>
+<circle cx="120" cy="180" r="7" fill="#3fb950" fill-opacity="0.35" stroke="#3fb950" stroke-width="1.6"/>
+<line x1="130" y1="180" x2="170" y2="180" stroke="#3fb950" stroke-width="1.2"/>
+<text x="178" y="184" font-size="12" fill="#3fb950" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="700">第 2 名 · ICL（上下文学习）</text>
+<circle cx="120" cy="270" r="7" fill="#58a6ff" fill-opacity="0.35" stroke="#58a6ff" stroke-width="1.6"/>
+<line x1="130" y1="270" x2="170" y2="270" stroke="#58a6ff" stroke-width="1.2"/>
+<text x="178" y="274" font-size="12" fill="#58a6ff" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="700">第 5 名 · Mem0</text>
+<circle cx="120" cy="390" r="7" fill="#d29922" fill-opacity="0.35" stroke="#d29922" stroke-width="1.6"/>
+<line x1="130" y1="390" x2="170" y2="390" stroke="#d29922" stroke-width="1.2"/>
+<text x="178" y="394" font-size="12" fill="#d29922" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="700">第 9 名 · ACE</text>
+<circle cx="120" cy="420" r="7" fill="#f85149" fill-opacity="0.35" stroke="#f85149" stroke-width="1.6"/>
+<line x1="130" y1="420" x2="170" y2="420" stroke="#f85149" stroke-width="1.2"/>
+<text x="178" y="424" font-size="12" fill="#f85149" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="700">第 10 名 · Codex</text>
+<text x="48" y="516" font-size="10.5" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="400">名次越往下越差；左轴为综合排名</text>
+<text x="412" y="92" font-size="13" fill="#e6edf3" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="700">harness 改变了什么</text>
+<rect x="412" y="108" width="520" height="66" rx="6" fill="#161b22" stroke="#d29922" stroke-width="1"/>
+<text x="428" y="134" font-size="13" fill="#e6edf3" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="700">名次</text>
+<text x="428" y="154" font-size="11" fill="#c9d1d9" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="400">WorkBuddy 安全子集：两个 harness 间平均位移 8.6 分</text>
+<rect x="846" y="122" width="70" height="22" rx="11" fill="#d29922" fill-opacity="0.14" stroke="#d29922" stroke-width="1"/>
+<text x="881.0" y="137" font-size="11" fill="#d29922" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="700">变</text>
+<rect x="412" y="184" width="520" height="66" rx="6" fill="#161b22" stroke="#d29922" stroke-width="1"/>
+<text x="428" y="210" font-size="13" fill="#e6edf3" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="700">拒答</text>
+<text x="428" y="230" font-size="11" fill="#c9d1d9" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="400">同一个 Claude Opus 4.8：</text>
+<text x="428" y="246" font-size="11" fill="#c9d1d9" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="400">Claude Code 下拒答 13 次，CodeBuddy Code 下 0 次</text>
+<rect x="846" y="198" width="70" height="22" rx="11" fill="#d29922" fill-opacity="0.14" stroke="#d29922" stroke-width="1"/>
+<text x="881.0" y="213" font-size="11" fill="#d29922" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="700">变</text>
+<rect x="412" y="260" width="520" height="66" rx="6" fill="#161b22" stroke="#d29922" stroke-width="1"/>
+<text x="428" y="286" font-size="13" fill="#e6edf3" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="700">成本</text>
+<text x="428" y="306" font-size="11" fill="#c9d1d9" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="400">Terminal-Bench Pro 50 题：每解一题的 token 最多差 40 倍</text>
+<rect x="846" y="274" width="70" height="22" rx="11" fill="#d29922" fill-opacity="0.14" stroke="#d29922" stroke-width="1"/>
+<text x="881.0" y="289" font-size="11" fill="#d29922" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="700">变</text>
+<rect x="412" y="336" width="520" height="66" rx="6" fill="#161b22" stroke="#d29922" stroke-width="1"/>
+<text x="428" y="362" font-size="13" fill="#e6edf3" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="700">失败方式</text>
+<text x="428" y="382" font-size="11" fill="#c9d1d9" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="400">Goose 多败在推理；OpenHands-SDK 多败在验证与轮数；</text>
+<text x="428" y="398" font-size="11" fill="#c9d1d9" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="400">OpenCode 多是空转与超时</text>
+<rect x="846" y="350" width="70" height="22" rx="11" fill="#d29922" fill-opacity="0.14" stroke="#d29922" stroke-width="1"/>
+<text x="881.0" y="365" font-size="11" fill="#d29922" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="700">变</text>
+<rect x="412" y="412" width="520" height="66" rx="6" fill="#161b22" stroke="#30363d" stroke-width="1"/>
+<text x="428" y="438" font-size="13" fill="#e6edf3" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="700">通过率</text>
+<text x="428" y="458" font-size="11" fill="#c9d1d9" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="400">逐题配对只差 0–8 个百分点；除差距最大的一组，95% 区间都含 0</text>
+<rect x="846" y="426" width="70" height="22" rx="11" fill="#8b949e" fill-opacity="0.14" stroke="#8b949e" stroke-width="1"/>
+<text x="881.0" y="441" font-size="11" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="700">未必变</text>
+<text x="412" y="540" font-size="10" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="400">数据：CL-Bench 排行榜（2026-07-18）；WorkBuddy Bench；The Scaffold Effect in Coding Agents</text>
+</svg>

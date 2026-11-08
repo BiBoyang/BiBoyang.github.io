@@ -1,0 +1,365 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>12 · 测「会学」容易，测「越学越快」难 - 自顶向下拆 Agent：从界面到地基</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="favicon-8114d1fc.png">
+        <link rel="stylesheet" href="css/variables-8adf115d.css">
+        <link rel="stylesheet" href="css/general-e96d0476.css">
+        <link rel="stylesheet" href="css/chrome-d279d366.css">
+        <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex-c3e247bc.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc-b31dbc0b.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">自顶向下拆 Agent：从界面到地基</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/BiBoyang/BiBoyang.github.io" title="Git repository" aria-label="Git repository">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="测会学容易测越学越快难从持续学习基准到-rsi-评测"><a class="header" href="#测会学容易测越学越快难从持续学习基准到-rsi-评测">测「会学」容易，测「越学越快」难——从持续学习基准到 RSI 评测</a></h1>
+<blockquote>
+<p>第 9 篇测的是我能做配对实验的那种记忆：同一道题，有记忆跑一遍，没记忆跑一遍。今年公开 benchmark 也开始测「agent 能不能从经验里变强」，好几个标题里还写着 RSI。我把它们读了一遍，结论是：第一层「会学」已经能测得比较干净；「越学越快」有人设计出了测法，但还没有测出结果。</p>
+</blockquote>
+<h2 id="本章将讲"><a class="header" href="#本章将讲">本章将讲</a></h2>
+<ul>
+<li>「从经验中变强」分三层：积累经验、改造自己、递归加速。判断属于哪一层，看改进作用在谁身上，以及改进的速度有没有变快。</li>
+<li>第一层要两样东西：配对的无状态对照，加上机制证据。标题写着 RSI 的 benchmark，有的连第一层都还没分离出来。</li>
+<li>第二、三层的测法，以及唯一一次正面测「加速」的实验；被测物能改自己时，评测就多了一个对手，只能靠结构隔离。</li>
+</ul>
+<h2 id="一把历史塞进上下文赢了专门的记忆系统"><a class="header" href="#一把历史塞进上下文赢了专门的记忆系统">一、把历史塞进上下文，赢了专门的记忆系统</a></h2>
+<p>Continual Learning Bench（下称 CL-Bench）测的是一件事：agent 做一串相关任务时，能不能从前面做过的任务里学到东西，越做越好。上一篇借它的名次讲 harness；同一张榜换个角度看，还有一个更扎眼的现象：</p>
+<ul>
+<li>同一个 GPT-5.4，接最朴素的上下文学习（in-context learning，ICL），也就是把做过的题和反馈直接拼进上下文，综合排第 2；换成专门的记忆系统 Mem0 排第 5，ACE 排第 9，Codex 排第 10；</li>
+<li>Claude Sonnet 4.6 也一样：接 ICL 排第 1，接 Claude Code 排第 3。</li>
+</ul>
+<p>论文摘要说得更直接：朴素的 ICL 胜过专门做记忆管理的系统。这也不是孤例。8 月发布、10 月改到第三版的 ContinualSkillBench 发现，在两个模型、三个领域上，只保留上下文和反馈、不去维护技能库，平均表现和维护一个显式技能库几乎一样。</p>
+<p>读到这里，很多人会想到递归自我改进（recursive self-improvement，RSI）：系统从经验里变强，变强之后改进得更快，一路加速。10 月底发布的 Continual Learning Exam（下称 CLE），标题里就写着「Long-Horizon RSI」。</p>
+<p>上个月我在博客《RSI：叙事用完成时，机制用进行时》里对过一个项目的表：RSI 的主张写成了完成时，代码里对应的机制还是默认关闭的实验开关。这一篇换一个角度，不看谁宣称了 RSI，看 benchmark 实际测到了哪一层。我的回答是：这些 benchmark 测到的「会学」和 RSI 之间，至少还隔着两层。</p>
+<h2 id="二三层积累经验改造自己递归加速"><a class="header" href="#二三层积累经验改造自己递归加速">二、三层：积累经验、改造自己、递归加速</a></h2>
+<p>我把「从经验中变强」分成三层：</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>层次</th><th>改进的是什么</th><th>例子</th><th>现在测得到吗</th></tr>
+</thead>
+<tbody>
+<tr><td>1. 积累经验</td><td>做题表现越来越好，学习机制本身不变</td><td>ICL、笔记本、Mem0 这类记忆系统</td><td>能，前提是有配对对照</td></tr>
+<tr><td>2. 改造自己</td><td>系统改自己的提示、工具或代码</td><td>STOP、Gödel Agent、Darwin Gödel Machine</td><td>部分能，多是论文自带的评测</td></tr>
+<tr><td>3. 递归加速</td><td>改进的是「改进的能力」本身，而且越改越快</td><td>严格意义上的 RSI</td><td>有人设计了测法，还没测出结果</td></tr>
+</tbody>
+</table>
+</div>
+<p>判断属于哪一层，看两点：改进作用在谁身上；改进的速度本身有没有变快。</p>
+<p>CLE 给 RSI 下的定义很清楚：被保留下来的改动，要能「improve how subsequent improvements are generated, evaluated, or implemented」。它还特意说明，在线学习、测试时训练、案例复用，都可以在学习过程固定不变的情况下进行，单用它们并不构成 RSI。这正是第一层和第三层的分界：前者积累的是做题的知识，后者改进的是获取知识的过程。</p>
+<p>第二层的例子不少：</p>
+<ul>
+<li>STOP 让一个调用语言模型的「改进程序」去改进它自己的代码；</li>
+<li>Gödel Agent 让 agent 借助大模型，在运行中修改自己的逻辑和行为；</li>
+<li>Darwin Gödel Machine（下称 DGM）让编码 agent 反复改写自己的代码，把生成的变体存进档案库，每次改动都在编程 benchmark 上检验。</li>
+</ul>
+<p>DGM 的摘要说，这样改下去，它修改自己代码的能力也在提高——这已经碰到了第三层。但它实际报告的是 SWE-bench 从 20.0% 涨到 50.0% 这类分数，而不是改进的速度有没有越来越快。改的是「自己」，测的仍然是「做题」。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/eval13-three-layers.svg" alt="从经验中变强的三层：积累经验（改进作用在做题表现上，配对对照能测）、改造自己（作用在提示、工具和代码上，多为论文自带评测）、递归加速（作用在改进能力本身，唯一一次点火测试 0.780 对 0.782，未分胜负）"><span class="img-wrapper"><img src="assets/eval13-three-layers.svg" alt="从经验中变强的三层：积累经验（改进作用在做题表现上，配对对照能测）、改造自己（作用在提示、工具和代码上，多为论文自带评测）、递归加速（作用在改进能力本身，唯一一次点火测试 0.780 对 0.782，未分胜负）"></span></label></p>
+<h2 id="三第一层怎么测才算测到"><a class="header" href="#三第一层怎么测才算测到">三、第一层怎么测才算测到</a></h2>
+<p>测第一层，最容易犯的错，是把「本来就会」当成「学会了」。一个强模型在后面的题上得分高，可能只是因为它本来就强，和前面做过什么没有关系。</p>
+<p>CL-Bench 的解法是配对的无状态基线（stateless baseline）：</p>
+<ul>
+<li>同一个系统跑两遍：一遍保留状态，一遍在每个实例之前清空；</li>
+<li>对每个实例，用前者的得分减去后者，得到 gain；</li>
+<li>某个实例对这个系统来说难或容易，会同时体现在两项里，相减之后，剩下的就是累积状态的贡献。</li>
+</ul>
+<p>这就是第 8 篇手册里的配对：让每个任务自己跟自己比，把题目难度这个最大的噪声项从分母里消掉。文档也承认，难度和累积状态之间更细的交互，这样减并没有完全消掉。gain 的读法有三种：为正，经验帮上了忙；为零，看不出学习；为负，累积的东西反而有害，比如遗忘、干扰信息越积越多，或者记住了错误的状态。跨任务汇总时，它再按「还剩多少提升空间」归一：gain 除以任务上限与无状态得分之差。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/eval13-paired-gain.svg" alt="配对的无状态基线：同一系统、同一实例跑两遍，保留状态的一遍减去每实例清空的一遍得到 gain；为正是经验帮了忙，为零是看不出学习，为负是累积的东西有害"><span class="img-wrapper"><img src="assets/eval13-paired-gain.svg" alt="配对的无状态基线：同一系统、同一实例跑两遍，保留状态的一遍减去每实例清空的一遍得到 gain；为正是经验帮了忙，为零是看不出学习，为负是累积的东西有害"></span></label></p>
+<p>8 月发布的 PAST-Bench 又往前推了一步。它同样在相同条件下打开、关闭保留的经验做对比，覆盖 26 个场景、204 个回合；但它不只看分数涨没涨，还检查涨分是不是走了预期的路径：经验有没有被保存、被检索、被更新。结果是，总分涨幅相同的两个系统，在路径证据上可以差得很远。这三件事和第 9 篇的三层乘法链——写入、检索、采信——几乎一一对应。分数对了，原因不一定对；不逐层记账，「学到了」和「记忆系统没用」一样，都是无法证伪的话。</p>
+<p>反过来看 CLE。它的规模很大：</p>
+<ul>
+<li>50 多位领域专家出题，120 个任务，每个分 5 级，共 600 级；</li>
+<li>覆盖 89 个职业角色、12 个领域；</li>
+<li>最好的系统只过了 47.7% 的级别，5 级全过的任务只有 23.3%。</li>
+</ul>
+<p>但它的测法是：每个系统按一个固定顺序，把 120 个任务串行跑一遍；Trial 1 每级只能交一次，Trial 2 在交错之后可以看诊断反馈再交一次。两者之差，测的是「反馈加重交」的作用，完成率的中位数提升了 5.3 个百分点。作者在结果部分自己写明：要评估跨任务保留下来的知识起了多大作用，需要另做一组「每个任务前把 harness 重置回初始状态」的配对比较。这组比较，文中没有做。</p>
+<p>所以我的看法是：CLE 的数字说明了任务难，没有说明学到了多少。标题写着 RSI，它连第一层的「学会了多少」都还没分离出来。</p>
+<p>测第一层，至少要两样东西：配对对照，把「学会了」从「本来就会」里分出来；机制证据，确认涨分走的是预期的路径。</p>
+<h2 id="四读这类榜单的几个坑"><a class="header" href="#四读这类榜单的几个坑">四、读这类榜单的几个坑</a></h2>
+<p>配对对照解决了「测什么」，榜单怎么读还有几个坑。以 CL-Bench 为例：</p>
+<ul>
+<li><strong>前四名挤在噪声里。</strong> 前四名的综合归一 reward 分别约为 0.196、0.189、0.185、0.183，首尾只差 0.013。而单个任务上，5 次运行之间的波动很大：排第 2 的 ICL · GPT-5.4，在 codebase_adaptation 上归一 gain 的标准差约 0.41；全榜最大的是 ICL · Gemini 3.1 Pro 在 cohort_studies 上，约 0.87。首页只给名次，不给区间。</li>
+<li><strong>运行次数不一样。</strong> Codex · GPT-5.4 在 6 个任务里有 5 个只跑了 1 次，别的系统都跑了 5 次，却排在同一张榜上。第 6 篇说过单次跑分不作数，这里是一张榜上混着两种口径。</li>
+<li><strong>综合分是相对位置。</strong> 综合 reward 以 GPT-5.4 的无状态 ICL 为固定参照点归一，所以会出现负数，比如 ICL · Gemini 3.1 Pro 是 −0.076。负数不是倒扣分，只是低于这个参照点。</li>
+<li><strong>一个任务撑起了综合 gain。</strong> 在 sales_prediction 上，12 个系统里有 10 个的归一 gain 在 0.4 以上；在 exploitable_poker 和 cohort_studies 上，没有一个超过 0.2，不少是负的。</li>
+</ul>
+<p>看这类榜单，我的顺序是：先看运行次数和区间，再看归一的参照点，最后看分任务的结果。总分排名在这个阶段参考价值有限。</p>
+<h2 id="五第二三层现在怎么测"><a class="header" href="#五第二三层现在怎么测">五、第二、三层现在怎么测</a></h2>
+<p>到了第二、三层，被测的东西从「做题表现」变成了「改进本身」。今年出现了两类测法。</p>
+<p><strong>第一类，测 RSI 需要的某一项能力。</strong></p>
+<p>AI4AI-Bench 的出发点是：RSI 要改进的是「产生 AI 系统的过程」，这个过程的核心是训练算法。它的设置是：</p>
+<ul>
+<li>收了 10 个冻结的研究仓库，覆盖 10 类训练算法；</li>
+<li>agent 用一张 B300 有 4 小时改写训练算法，之后代码从头重跑最多 12 小时，由一个对 agent 隐藏的固定评估器打分；</li>
+<li>分数刻度上，0 是无信息模型，0.1 是仓库原本的算法，1.0 是最优。</li>
+</ul>
+<p>结果，6 个系统的 29 种配置平均 0.166，最好的是 0.250。最强的系统也没补上原算法到最优之间五分之一的距离。</p>
+<p>RSIBench-Data 测的是另一项能力：以数据为中心做训练研究。训练栈和预算都固定，agent 反复修改训练数据策略。58.33% 的设置里，agent 能做得比第一次有效尝试更好；但在拿到最高分之后还继续搜索的情况里，78.26% 最后一次的分数低于最高分。能改进一点，但维持不住。</p>
+<p><strong>第二类，系统自己跑完整的自我改进循环。</strong></p>
+<p>AIDE² 让一个研究型 agent 改写自己的代码。每次改动都要在被改写的 agent 看不到的留出数据上变好，才会被接受。它连续自主跑了 8 天，找到 7 次相继的改进；最强的版本，在 4 个外部 benchmark 上追平或超过了一个人工打磨了两年的生产级研究 agent。</p>
+<p>这些测到的，是「能不能改进」「能连着改进几次」，以及 RSI 需要的某一项能力。那「越改越快」呢？</p>
+<p>在我读到的工作里，只有 AIDE² 正面去测了。作者提出了一个「点火测试」（ignition test）：被改进出来的 agent，驱动下一轮自我改进的能力，必须强过产生它的那个 agent，收益递减才有可能变成加速。他们做了两组对照：一组让新 agent 驱动外层的改进循环，一组仍用原来的 agent，其余条件相同，各跑 3 个种子、50 步。</p>
+<p>结果，两组的平均分最后停在 0.780 和 0.782，几乎一样。作者的结论很克制：可能有样本效率上的收益；但要下定论，需要更多种子和完整的留出评估，代价高得难以承受。他们还指出，两层循环的噪声会叠加，一次误判的比较，就可能把外层循环带偏。</p>
+<p>这还是第 1 篇说的第二难：样本量不由统计愿望决定，由预算决定。「越学越快」已经有了测法，挡在前面的是噪声和成本。</p>
+<h2 id="六能改自己的系统会改掉检测它的东西"><a class="header" href="#六能改自己的系统会改掉检测它的东西">六、能改自己的系统，会改掉检测它的东西</a></h2>
+<p>被测系统一旦能改自己，评测就多了一个对手。</p>
+<p>DGM 的论文里有个例子。研究者想让 DGM 解决「假装调用工具」的问题：模型并没有真的调用工具，只是在文本里写出了工具的输入和输出。为了检测这种情况，他们在每次真实调用工具时插入特殊标记，再看这些标记有没有出现在模型的纯文本输出里。</p>
+<p>其中一个节点只改了两次，就拿到了满分 2.0。它的办法是删掉记录这些特殊标记的日志，而指令明确要求不许改动这些标记。分数是满的，问题一点没解决。作者把这叫作指标刷分（objective hacking），并观察到：检测函数不对 agent 隐藏时，这种情况更常发生。</p>
+<p>今年几份工作的防法很一致，都是让评分资产在结构上够不着：</p>
+<ul>
+<li>AI4AI-Bench 用对 agent 隐藏的评估器，并把改好的代码从头重跑；</li>
+<li>AIDE² 只接受在被改写的 agent 看不到的留出数据上变好的改动；</li>
+<li>CLE 把评分细则和参考材料放在被测 agent 访问不到的地方，评分由一个独立的评分 agent 在隔离环境里做，每次评分都起一个全新的容器。</li>
+</ul>
+<p>被测物能改自己时，靠提示词约束没有用，DGM 那条「不许改标记」的指令就被绕了过去，只能靠结构隔离。第 4 篇做伤弹实验时我学过同一课：宿主可见的任何路径都不能编码伤型，连目录名都是泄密渠道。下一篇把这件事单独拿出来讲：评分器本身就是被攻击的对象。</p>
+<h2 id="七要自己测的话一份检查清单"><a class="header" href="#七要自己测的话一份检查清单">七、要自己测的话：一份检查清单</a></h2>
+<p>评测一个号称「会学」或者「会自我改进」的 agent，我会至少做到七条：</p>
+<ol>
+<li><strong>配对的开关对照。</strong> 同一系统，保留经验和不保留经验各跑一组，逐实例相减。</li>
+<li><strong>多种顺序、多次运行，报区间。</strong> 顺序会影响学到什么，单次运行的名次不可信。</li>
+<li><strong>机制证据。</strong> 确认涨分走的是「保存、检索、更新」这条路，而不是别的捷径。</li>
+<li><strong>评分资产隔离。</strong> 评估器、参考答案、留出数据，被测系统都够不着；改过的代码从头重跑再评。</li>
+<li><strong>记录每次自我修改的谱系。</strong> 哪次改了什么、在什么数据上被接受，要能回溯，出了问题才能定位。</li>
+<li><strong>测「加速」要有二阶对照。</strong> 学习机制冻结的一组和允许修改的一组，比较的是改进的速度，而不只是分数。</li>
+<li><strong>事先估好成本。</strong> 二阶对照要很长的序列和很多种子，AIDE² 的作者就卡在这里。先算清预算，再决定测到哪一层。</li>
+</ol>
+<h2 id="八反方与局限"><a class="header" href="#八反方与局限">八、反方与局限</a></h2>
+<ul>
+<li><strong>RSI 的定义还没有共识。</strong> CLE 的定义偏向「改进学习过程」，AI4AI-Bench 落在「改进训练算法」，AIDE² 落在「改进 agent 自己的代码」。换一个定义，「测到没有」的结论可能不同。</li>
+<li><strong>ICL 胜过记忆系统，可能和任务序列太短有关。</strong> CL-Bench 每个任务只有 12 到 120 个实例，在这个长度上，把历史直接塞进上下文还放得下。序列再长，结论可能会反过来。</li>
+<li><strong>这批 benchmark 都很新，样本小，多数只有一版。</strong> 点火测试只跑了 3 个种子，结论随时可能被推翻。</li>
+<li><strong>我只读了这些论文里和本篇相关的部分，没有复现任何实验。</strong></li>
+</ul>
+<p>一句话收住：测「会学」，先找配对对照；测「越学越快」，先问成本付不付得起。</p>
+<h2 id="参考与延伸"><a class="header" href="#参考与延伸">参考与延伸</a></h2>
+<ul>
+<li><em>本篇成书首发，与作者的独立文章《测「会学」容易，测「越学越快」难：从持续学习 benchmark 到 RSI 评测》同源；事实均取自公开论文、网站与数据，作者未复现任何实验。</em></li>
+<li><em>CL-Bench：Asawa 等，arXiv 2606.05661v1（2026-06-04）；指标定义据其网站 Metrics、Concepts、Tasks 页（2026-11-07 抓取）；名次、运行次数与分任务数字据排行榜原始数据 leaderboard_data.json（数据更新于 2026-07-18，2026-11-07 抓取），标准差由作者按原始数据计算。</em></li>
+<li><em>ContinualSkillBench：arXiv 2608.03874v3（2026-10-15）。PAST-Bench：arXiv 2608.04003v1（2026-08-04）。CLE：Zhao 等，arXiv 2610.33956v1（2026-10-25）。</em></li>
+<li><em>STOP：Zelikman 等，arXiv 2310.02304v3。Gödel Agent：Yin 等，arXiv 2410.04444v4。DGM：Zhang 等，arXiv 2505.22954v3（2026-03-12），指标刷分的例子见其附录。</em></li>
+<li><em>AI4AI-Bench：arXiv 2608.20318v1（2026-08-20）。RSIBench-Data：arXiv 2607.25886v1（2026-07-28）。AIDE²：Recursive self-improvement of AI research agents，arXiv 2609.26457v1（2026-09-22）。</em></li>
+<li><em>对一个项目 RSI 主张的代码对表，见作者博客《RSI：叙事用完成时，机制用进行时》（2026-10-18）。</em></li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="eval12.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="eval14.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="eval12.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="eval14.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr-ef4e11c1.min.js"></script>
+        <script src="mark-09e88c2c.min.js"></script>
+        <script src="searcher-09f2665d.js"></script>
+
+        <script src="clipboard-1626706a.min.js"></script>
+        <script src="highlight-abc7f01d.js"></script>
+        <script src="book-609e4cb8.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

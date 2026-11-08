@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="520" viewBox="0 0 960 520">
+<defs>
+<marker id="mk-58a6ff" markerWidth="9" markerHeight="9" refX="7.4" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L9,4.5 L0,9 z" fill="#58a6ff"/></marker>
+</defs>
+<rect x="0" y="0" width="960" height="520" rx="12" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
+<text x="28" y="38" font-size="15.5" fill="#e6edf3" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="700">从经验中变强的三层：测到了哪一层</text>
+<line x1="28" y1="52" x2="932" y2="52" stroke="#30363d" stroke-width="1"/>
+<rect x="28" y="76" width="760" height="118" rx="6" fill="#161b22" stroke="#8b949e" stroke-width="1"/>
+<circle cx="62" cy="112" r="18" fill="#8b949e" fill-opacity="0.25" stroke="#8b949e" stroke-width="1.6"/>
+<text x="62" y="118" font-size="15" fill="#8b949e" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" text-anchor="middle" font-weight="700">3</text>
+<text x="92" y="118" font-size="15" fill="#e6edf3" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="700">递归加速</text>
+<text x="92" y="144" font-size="11.5" fill="#c9d1d9" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="400">改进作用在：改进的能力本身，而且越改越快</text>
+<text x="92" y="168" font-size="11" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="400">AIDE² 点火测试：0.780 对 0.782（各 3 个种子、50 步）</text>
+<rect x="666" y="100" width="108" height="22" rx="11" fill="#8b949e" fill-opacity="0.14" stroke="#8b949e" stroke-width="1"/>
+<text x="720.0" y="115" font-size="11" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="700">有测法，未测出</text>
+<rect x="108" y="212" width="680" height="118" rx="6" fill="#161b22" stroke="#d29922" stroke-width="1"/>
+<circle cx="142" cy="248" r="18" fill="#d29922" fill-opacity="0.25" stroke="#d29922" stroke-width="1.6"/>
+<text x="142" y="254" font-size="15" fill="#d29922" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" text-anchor="middle" font-weight="700">2</text>
+<text x="172" y="254" font-size="15" fill="#e6edf3" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="700">改造自己</text>
+<text x="172" y="280" font-size="11.5" fill="#c9d1d9" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="400">改进作用在：提示、工具、代码</text>
+<text x="172" y="304" font-size="11" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="400">STOP、Gödel Agent、DGM（SWE-bench 20.0% → 50.0%，测的仍是做题）</text>
+<rect x="702" y="236" width="72" height="22" rx="11" fill="#d29922" fill-opacity="0.14" stroke="#d29922" stroke-width="1"/>
+<text x="738.0" y="251" font-size="11" fill="#d29922" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="700">部分能测</text>
+<rect x="188" y="348" width="600" height="118" rx="6" fill="#161b22" stroke="#3fb950" stroke-width="1"/>
+<circle cx="222" cy="384" r="18" fill="#3fb950" fill-opacity="0.25" stroke="#3fb950" stroke-width="1.6"/>
+<text x="222" y="390" font-size="15" fill="#3fb950" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" text-anchor="middle" font-weight="700">1</text>
+<text x="252" y="390" font-size="15" fill="#e6edf3" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="700">积累经验</text>
+<text x="252" y="416" font-size="11.5" fill="#c9d1d9" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="400">改进作用在：做题表现；学习机制本身不变</text>
+<text x="252" y="440" font-size="11" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="400">ICL、Mem0、ACE；CL-Bench 的配对无状态基线</text>
+<rect x="606" y="372" width="168" height="22" rx="11" fill="#3fb950" fill-opacity="0.14" stroke="#3fb950" stroke-width="1"/>
+<text x="690.0" y="387" font-size="11" fill="#3fb950" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="700">能测：配对对照＋机制证据</text>
+<rect x="808" y="76" width="124" height="390" rx="6" fill="#58a6ff" fill-opacity="0.06" stroke="#58a6ff" stroke-width="1" stroke-dasharray="5 4"/>
+<text x="870" y="106" font-size="13" fill="#58a6ff" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="700">判据</text>
+<text x="870" y="140" font-size="11.5" fill="#c9d1d9" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="400">改进作用</text>
+<text x="870" y="162" font-size="11.5" fill="#c9d1d9" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="400">在谁身上</text>
+<text x="870" y="206" font-size="11.5" fill="#c9d1d9" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="400">改进的速度</text>
+<text x="870" y="228" font-size="11.5" fill="#c9d1d9" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="400">有没有</text>
+<text x="870" y="250" font-size="11.5" fill="#c9d1d9" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="400">变快</text>
+<line x1="870" y1="400" x2="870" y2="300" stroke="#58a6ff" stroke-width="1.6" marker-end="url(#mk-58a6ff)"/>
+<text x="870" y="426" font-size="11" fill="#58a6ff" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="400">越往上</text>
+<text x="870" y="444" font-size="11" fill="#58a6ff" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="400">越难测</text>
+<text x="28" y="500" font-size="10.5" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="400">CLE 的 RSI 定义：保留下来的改动，要能改进后续改进的产生、评估或实施方式</text>
+</svg>
