@@ -35,10 +35,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-a5d36529.js";
+            window.path_to_searchindex_js = "searchindex-561dc826.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-b31dbc0b.js"></script>
+        <script src="toc-235d8387.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -190,6 +190,7 @@
 <ul>
 <li>注：拿这个项目做参照，是因为它是我用 Swift 做的一个实验性质的产品。一开始并没打算做成实验品，但 Swift 生态里缺各种 TUI 基础组件，想实现什么功能都得手搓，这个过程让我学到了很多更底层的知识。</li>
 </ul>
+<p>先交代一下坐标。本篇拆的是“全屏自管“这一派：屏幕上每一行都归引擎管，写完的内容也一直管着。另一派叫 inline viewport，内容一写完就交给终端自己的 scrollback，引擎只管底部一小块活区。下面拆的零件两派大多都要用，分歧只在写完的内容归谁管。这一点第十节先给坐标，完整对照在第 13 篇。</p>
 <hr>
 <h2 id="二字符网格一切困境的根源也是一切优势的根源"><a class="header" href="#二字符网格一切困境的根源也是一切优势的根源">二、字符网格：一切困境的根源，也是一切优势的根源</a></h2>
 <p>TUI 的渲染介质是终端。终端输出的不是像素，是等宽字符网格。你可以把任何一个字符放在任何一个格子里——但放不下一个像素。</p>

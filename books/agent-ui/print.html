@@ -36,10 +36,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-a5d36529.js";
+            window.path_to_searchindex_js = "searchindex-561dc826.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-b31dbc0b.js"></script>
+        <script src="toc-235d8387.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -386,6 +386,7 @@ agent 的工作流是动态的、不确定的、会中断和恢复的。CLI 用�
 <ul>
 <li>注：拿这个项目做参照，是因为它是我用 Swift 做的一个实验性质的产品。一开始并没打算做成实验品，但 Swift 生态里缺各种 TUI 基础组件，想实现什么功能都得手搓，这个过程让我学到了很多更底层的知识。</li>
 </ul>
+<p>先交代一下坐标。本篇拆的是“全屏自管“这一派：屏幕上每一行都归引擎管，写完的内容也一直管着。另一派叫 inline viewport，内容一写完就交给终端自己的 scrollback，引擎只管底部一小块活区。下面拆的零件两派大多都要用，分歧只在写完的内容归谁管。这一点第十节先给坐标，完整对照在第 13 篇。</p>
 <hr>
 <h2 id="二字符网格一切困境的根源也是一切优势的根源"><a class="header" href="#二字符网格一切困境的根源也是一切优势的根源">二、字符网格：一切困境的根源，也是一切优势的根源</a></h2>
 <p>TUI 的渲染介质是终端。终端输出的不是像素，是等宽字符网格。你可以把任何一个字符放在任何一个格子里——但放不下一个像素。</p>
@@ -899,19 +900,7 @@ if stableSource.count &gt; maxStableSourceChars { reset() }
 </blockquote>
 <hr>
 <h2 id="一回到那个直觉1d--1d"><a class="header" href="#一回到那个直觉1d--1d">一、回到那个直觉：“1D → 1D”</a></h2>
-<p>第 1 篇提过一个观点：有人说 LLM 输出是 1D 的线性 token 流，CLI 也是 1D 的，所以天然匹配。</p>
-<p>现在可以完整回应这句话了。</p>
-<p>对于最简单的“用户问 → AI 答“，确实如此。但 Agent 的真实输出结构是这样的：</p>
-<pre><code>用户消息
-  ├── thinking（模型推理过程，可能很长）
-  ├── 工具调用 1（开始 → 运行中 → 完成/失败）
-  │     └── 工具结果回传
-  ├── 工具调用 2（可能与工具 1 并行，且可能比工具 1 先返回）
-  ├── thinking（基于工具结果继续推理）
-  └── 最终回复（流式输出）
-</code></pre>
-<p>这是一棵树，而且节点的到达顺序不是拓扑序：工具调用 2 可能比工具调用 1 先返回，thinking 块可能在流式输出的中途插入，用户随时可能按取消键。</p>
-<p>CLI 看起来“适配“，靠的是 <strong>TUI 渲染引擎在背后做了一套复杂的展平机制：把一棵乱序到达的树强行投影成线性输出。</strong> Agent 的输出本身并不是 1D 的。这套机制就是本文要拆解的东西。</p>
+<p>第 1 篇第三节拆过一个直觉：LLM 输出是 1D 的 token 流，CLI 也是 1D 的，所以天然匹配。那一节的回答是，Agent 的真实输出是一棵乱序到达的事件树，工具调用 2 可能比工具调用 1 先返回，thinking 块可能在流式输出中途插入，用户随时可能按取消键。CLI 看起来“适配“，靠的是 <strong>TUI 渲染引擎在背后做了一套复杂的展平机制：把一棵乱序到达的树强行投影成线性输出。</strong> 第 1 篇只给了结论，这一篇拆机制本身。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch04-tree-flatten.svg" alt="事件树经渲染引擎展平为线性输出"><span class="img-wrapper"><img src="assets/ch04-tree-flatten.svg" alt="事件树经渲染引擎展平为线性输出"></span></label></p>
 <hr>
 <h2 id="二corerenderevent去掉会话角色语义的事件系统"><a class="header" href="#二corerenderevent去掉会话角色语义的事件系统">二、CoreRenderEvent：去掉会话角色语义的事件系统</a></h2>
@@ -1936,14 +1925,14 @@ tick 90: parse(3000字)+ build(3000字)+ layout(3000字)
 <p>端多不多不是关键，关键是每加一个端，是不是只需要写投影层，不用重写 Agent 核心。如果每次加端都要重构事件模型和权限引擎，说明架构还没到位。</p>
 <hr>
 <h2 id="七后续"><a class="header" href="#七后续">七、后续</a></h2>
-<p>下一篇从具体的技术和架构回到人：一个大前端开发者，在 Agent 时代的能力地图是什么？移动端、桌面端、TUI、全栈，这些经验怎么迁移到 Agent Workflow Engineer 这个新方向上。</p>
+<p>下一篇把移动端单独拿出来讲：它为什么不适合做 Agent 的主执行入口，又在哪个位置不可替代。讲完之后，给到这里为止的十一篇画一张地图。</p>
 <hr>
 <h2 id="参考与延伸-10"><a class="header" href="#参考与延伸-10">参考与延伸</a></h2>
 <p><em>本文的多端架构框架参考了 ForgeLoopTUI 的 CoreRenderEvent 设计、Zacp 的 ACP 多 Agent WebUI 架构，以及第 7 篇提出的 Event Sourcing 模型。</em></p>
 <div style="break-before: page; page-break-before: always;"></div>
-<h1 id="移动端的位置--从大前端到-agent-workflow-engineer"><a class="header" href="#移动端的位置--从大前端到-agent-workflow-engineer">移动端的位置 + 从大前端到 Agent Workflow Engineer</a></h1>
+<h1 id="移动端的位置"><a class="header" href="#移动端的位置">移动端的位置</a></h1>
 <blockquote>
-<p>「界面」卷的中场。写作时本想在这里收束，后来没收住。前十一篇从 ANSI 序列一路讲到多端架构，这一篇收束到个人：做移动端、桌面端、TUI、全栈这些经验，在 Agent 时代到底意味着什么。</p>
+<p>「界面」卷的中场。写作时本想在这里收束，后来没收住。前十一篇从 ANSI 序列一路讲到多端架构。这一篇先说移动端在 Agent 产品里的位置，再回头给这十一篇画一张地图。原先接在后面的个人经验部分，成书时挪到了本卷卷末。</p>
 </blockquote>
 <hr>
 <h2 id="一移动端在-agent-产品中的位置"><a class="header" href="#一移动端在-agent-产品中的位置">一、移动端在 Agent 产品中的位置</a></h2>
@@ -1964,24 +1953,7 @@ tick 90: parse(3000字)+ build(3000字)+ layout(3000字)
 <p>从移动端交互经验里带过来的一个观点：<strong>在手机这个受限屏幕上，要考虑的是取舍：什么信息值得放上去，什么该砍掉。</strong></p>
 <p>这种克制，在做 Agent 的任何一端时都用得上。</p>
 <hr>
-<h2 id="二一个全栈开发者的经验怎么迁移"><a class="header" href="#二一个全栈开发者的经验怎么迁移">二、一个全栈开发者的经验怎么迁移</a></h2>
-<p>这几项我都做过，移动端、桌面端、TUI、全栈。回头看，每一项在 Agent 时代都有直接的迁移路径：</p>
-<p><strong>移动端 → 权限和通知 UX。</strong><br>移动端的天性就是处理权限：相机、定位、通讯录、通知。授权粒度怎么分（以定位权限为例：授权状态其实只有“使用期间 / 始终“两级，弹窗上那个“允许一次“是临时的“使用期间“，App 停止使用后失效；而且首次弹窗根本没有“始终“选项）、授权疲劳长什么样、推送通知的触达率和骚扰率之间怎么平衡，这些是移动端开发者的日常。</p>
-<p><strong>桌面端 → 本地集成和系统交互。</strong><br>文件系统权限、shell 环境继承、code signing、auto update、crash recovery，第 1 篇和第 8 篇反复提到的 GUI 额外成本，做桌面端的时候我已经交过学费了。Agent Desktop App 是这些经验的直接应用场景。</p>
-<p><strong>TUI → 高密度文本信息架构。</strong><br>写 ForgeLoopTUI 的过程，就是在一个只有字符的终端里把信息组织清晰的过程，靠的不是像素能力，是信息优先级。什么该放 committed 区、什么该放 live 区，通知超过 3 条就该移除，这些判断是在字符网格里逼出来的，框架给不了。这套判断力在 GUI 上同样适用，信息多了，Panel 不会帮你自动排优先级。</p>
-<p><strong>全栈 → Runtime 和持久化设计。</strong><br>Event log 的 append-only 模型、权限引擎的信任规则持久化、Workspace 状态管理，这些不是 UI 问题，是后端问题。全栈经验让我能同时理解 Agent 的 Runtime 层和投影层，不用只做其中一半。</p>
-<p><strong>大前端 → 复杂交互状态管理。</strong><br>大前端的核心能力不是“会写多个平台“，是<strong>管理复杂交互状态</strong>：一个操作触发多个副作用、多个异步事件并发到达、用户中途介入改变状态流向。这和第 4 篇拆解的 Agent 事件处理模型是同一种能力。我在 ForgeLoopTUI 里手写的 <code>pendingTools</code> 稳定槽位队列 +  <code>shiftIndices</code> 偏移追踪，回头看就是一个手动实现的响应式状态管理系统。</p>
-<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch10-skill-migration.svg" alt="五项经验的迁移路径，汇聚到 Agent Workflow Engineer"><span class="img-wrapper"><img src="assets/ch10-skill-migration.svg" alt="五项经验的迁移路径，汇聚到 Agent Workflow Engineer"></span></label></p>
-<hr>
-<h2 id="三新岗位方向"><a class="header" href="#三新岗位方向">三、新岗位方向</a></h2>
-<p>如果“Agent 时代的开发者界面“成为一个独立的专业领域，这些岗位可能会出现或已经在出现：</p>
-<p><strong>Agent Workflow Engineer。</strong><br>不设计聊天框，设计 Agent 的工作流界面：工具调用时间线、权限审批流、diff 审查面板、多任务编排。需要同时理解 Agent 的执行模型和 GUI 的交互模式。</p>
-<p><strong>AI DevTools Product Engineer。</strong><br>介于产品经理和工程师之间，不需要手写 ANSI 状态机，但需要知道物理行计算为什么让增量 diff 翻倍复杂。在工程约束和用户体验之间做判断。</p>
-<p><strong>Local-first Agent Platform Engineer。</strong><br>Agent 核心跑在用户机器上，event log 本地持久化，隐私和延迟优于云端方案。需要桌面端开发经验 + Runtime 设计能力。</p>
-<p><strong>IDE / CLI Integration Engineer。</strong><br>把 Agent 嵌入开发者的现有工具链，不另起 Agent 专属界面，让 Agent 在 VS Code、终端、git 工作流里自然出现。</p>
-<p>这些方向现在还处于早期。但回头看第 1 篇列的那个名单（Claude Code、Codex CLI、Gemini CLI、Goose、Aider、Devin CLI、Qwen Code），每个项目背后都需要这样的人（名单的时间锚点、以及到 2026 年秋天各家 GUI 的进展，见第 1 篇的补记：界面在变多，这类岗位的需求只多不少）。他们写的是 Agent 的界面，但做的不是传统意义上的“前端“。</p>
-<hr>
-<h2 id="四中场地图"><a class="header" href="#四中场地图">四、中场地图</a></h2>
+<h2 id="二中场地图"><a class="header" href="#二中场地图">二、中场地图</a></h2>
 <p>界面这一卷走到中场，回到系列的开头看一眼。前十一篇，从 ANSI 转义序列写到多端架构，回答的是同一个问题：</p>
 <blockquote>
 <p><strong>从 LLM 输出 token 到用户看到的画面，中间到底经历了什么，以及这个经历在不同介质里有怎样完全不同的形态。</strong></p>
@@ -1994,9 +1966,9 @@ tick 90: parse(3000字)+ build(3000字)+ layout(3000字)
 <p>**Agent 的界面是为一种全新的执行体（不确定、长运行、可中断、可审计、会调用工具）设计的工作流界面，不是聊天框的变体。**这个领域需要的是同时理解终端渲染、事件系统、权限模型、diff 审查和本地开发环境的工程师，而不只是会写聊天 UI 的前端。</p>
 </blockquote>
 <hr>
-<h2 id="五中场总结"><a class="header" href="#五中场总结">五、中场总结</a></h2>
+<h2 id="三中场总结"><a class="header" href="#三中场总结">三、中场总结</a></h2>
 <p>写到这里，界面这一卷的中场到了：问题域从像素一路摊到多端。但内容本身还有很多可以深入的点，当时列了一张清单：权限模型的信任规则 DSL、diff 审查面板的具体交互稿、多端 event log 的同步协议、Mobile Companion 的推送通道设计。</p>
-<p>成书时回头看，清单上已有两项兑现，而且都不在界面这一卷：多端 event log 的同步与重连，写成了基建卷的《连接与会话》；推送通道和移动端的架构条款，写成了《一条消息的生命线》与《移动端的架构代价》上下篇。界面层提的问题，答案长在下面一层。本卷中场之后也没停在原地：第 13 到 19 篇从渲染的所有权一路写到状态行、回归测试和渲染的信任边界；再往下，胶水层、基建、评测各自成卷。</p>
+<p>成书时回头看，清单上已有两项兑现，而且都不在界面这一卷：多端 event log 的同步与重连，写成了基建卷的《连接与会话》；推送通道和移动端的架构条款，写成了《一条消息的生命线》与《移动端的架构代价》上下篇。界面层提的问题，答案长在下面一层。本卷中场之后也没停在原地：第 13 到 19 篇从渲染的所有权一路写到状态行、回归测试和渲染的信任边界，卷末再回到人；再往下，胶水层、基建、评测各自成卷。</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="渲染的所有权模型已完成的内容归谁管"><a class="header" href="#渲染的所有权模型已完成的内容归谁管">渲染的所有权模型——已完成的内容归谁管</a></h1>
 <h2 id="一一个我以为不存在的问题"><a class="header" href="#一一个我以为不存在的问题">一、一个我以为不存在的问题</a></h2>
@@ -2615,6 +2587,30 @@ block 不到 committed frontier 不发射，发射即归终端，从架构上保
 <li><em>引擎排查基于本地源码：kimi-code <code>1e553fc</code>（<code>packages/pi-tui/src/utils.ts</code>）、grok-build <code>9fabade</code>（全仓库检索）、ForgeLoopTUI <code>f99367b</code>（<code>Sources/ForgeLoopTUI/Markdown/MarkdownEngine.swift</code>）。</em></li>
 <li><em>方法局限：grep 加人工阅读命中处，不能排除存在未被这两种方式覆盖的防线，结论以“未发现“为准，不断言“不存在“。</em></li>
 </ul>
+<div style="break-before: page; page-break-before: always;"></div>
+<h1 id="从大前端到-agent-workflow-engineer"><a class="header" href="#从大前端到-agent-workflow-engineer">从大前端到 Agent Workflow Engineer</a></h1>
+<blockquote>
+<p>界面卷的最后一篇。前面十九篇讲的是界面怎么做，这一篇回到人：做移动端、桌面端、TUI、全栈这些经验，在 Agent 时代到底意味着什么。这部分原本是第 12 篇的后半，成书时挪到了卷末。</p>
+</blockquote>
+<hr>
+<h2 id="一一个全栈开发者的经验怎么迁移"><a class="header" href="#一一个全栈开发者的经验怎么迁移">一、一个全栈开发者的经验怎么迁移</a></h2>
+<p>这几项我都做过，移动端、桌面端、TUI、全栈。回头看，每一项在 Agent 时代都有直接的迁移路径：</p>
+<p><strong>移动端 → 权限和通知 UX。</strong><br>移动端的天性就是处理权限：相机、定位、通讯录、通知。授权粒度怎么分（以定位权限为例：授权状态其实只有“使用期间 / 始终“两级，弹窗上那个“允许一次“是临时的“使用期间“，App 停止使用后失效；而且首次弹窗根本没有“始终“选项）、授权疲劳长什么样、推送通知的触达率和骚扰率之间怎么平衡，这些是移动端开发者的日常。</p>
+<p><strong>桌面端 → 本地集成和系统交互。</strong><br>文件系统权限、shell 环境继承、code signing、auto update、crash recovery，第 1 篇和第 8 篇反复提到的 GUI 额外成本，做桌面端的时候我已经交过学费了。Agent Desktop App 是这些经验的直接应用场景。</p>
+<p><strong>TUI → 高密度文本信息架构。</strong><br>写 ForgeLoopTUI 的过程，就是在一个只有字符的终端里把信息组织清晰的过程，靠的不是像素能力，是信息优先级。什么该放 committed 区、什么该放 live 区，通知超过 3 条就该移除，这些判断是在字符网格里逼出来的，框架给不了。这套判断力在 GUI 上同样适用，信息多了，Panel 不会帮你自动排优先级。</p>
+<p><strong>全栈 → Runtime 和持久化设计。</strong><br>Event log 的 append-only 模型、权限引擎的信任规则持久化、Workspace 状态管理，这些不是 UI 问题，是后端问题。全栈经验让我能同时理解 Agent 的 Runtime 层和投影层，不用只做其中一半。</p>
+<p><strong>大前端 → 复杂交互状态管理。</strong><br>大前端的核心能力不是“会写多个平台“，是<strong>管理复杂交互状态</strong>：一个操作触发多个副作用、多个异步事件并发到达、用户中途介入改变状态流向。这和第 4 篇拆解的 Agent 事件处理模型是同一种能力。我在 ForgeLoopTUI 里手写的 <code>pendingTools</code> 稳定槽位队列 +  <code>shiftIndices</code> 偏移追踪，回头看就是一个手动实现的响应式状态管理系统。</p>
+<p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch10-skill-migration.svg" alt="五项经验的迁移路径，汇聚到 Agent Workflow Engineer"><span class="img-wrapper"><img src="assets/ch10-skill-migration.svg" alt="五项经验的迁移路径，汇聚到 Agent Workflow Engineer"></span></label></p>
+<hr>
+<h2 id="二新岗位方向"><a class="header" href="#二新岗位方向">二、新岗位方向</a></h2>
+<p>如果“Agent 时代的开发者界面“成为一个独立的专业领域，这些岗位可能会出现或已经在出现：</p>
+<p><strong>Agent Workflow Engineer。</strong><br>不设计聊天框，设计 Agent 的工作流界面：工具调用时间线、权限审批流、diff 审查面板、多任务编排。需要同时理解 Agent 的执行模型和 GUI 的交互模式。</p>
+<p><strong>AI DevTools Product Engineer。</strong><br>介于产品经理和工程师之间，不需要手写 ANSI 状态机，但需要知道物理行计算为什么让增量 diff 翻倍复杂。在工程约束和用户体验之间做判断。</p>
+<p><strong>Local-first Agent Platform Engineer。</strong><br>Agent 核心跑在用户机器上，event log 本地持久化，隐私和延迟优于云端方案。需要桌面端开发经验 + Runtime 设计能力。</p>
+<p><strong>IDE / CLI Integration Engineer。</strong><br>把 Agent 嵌入开发者的现有工具链，不另起 Agent 专属界面，让 Agent 在 VS Code、终端、git 工作流里自然出现。</p>
+<p>这些方向现在还处于早期。但回头看第 1 篇列的那个名单（Claude Code、Codex CLI、Gemini CLI、Goose、Aider、Devin CLI、Qwen Code），每个项目背后都需要这样的人（名单的时间锚点、以及到 2026 年秋天各家 GUI 的进展，见第 1 篇的补记：界面在变多，这类岗位的需求只多不少）。他们写的是 Agent 的界面，但做的不是传统意义上的“前端“。</p>
+<hr>
+<p>界面卷到这里结束。下一卷是胶水层，从界面往下走一层，看界面和引擎之间怎么对话。</p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="第四条边界当主语是引擎"><a class="header" href="#第四条边界当主语是引擎">第四条边界——当主语是引擎</a></h1>
 <blockquote>

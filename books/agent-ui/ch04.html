@@ -35,10 +35,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-a5d36529.js";
+            window.path_to_searchindex_js = "searchindex-561dc826.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-b31dbc0b.js"></script>
+        <script src="toc-235d8387.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -183,19 +183,7 @@
 </blockquote>
 <hr>
 <h2 id="一回到那个直觉1d--1d"><a class="header" href="#一回到那个直觉1d--1d">一、回到那个直觉：“1D → 1D”</a></h2>
-<p>第 1 篇提过一个观点：有人说 LLM 输出是 1D 的线性 token 流，CLI 也是 1D 的，所以天然匹配。</p>
-<p>现在可以完整回应这句话了。</p>
-<p>对于最简单的“用户问 → AI 答“，确实如此。但 Agent 的真实输出结构是这样的：</p>
-<pre><code>用户消息
-  ├── thinking（模型推理过程，可能很长）
-  ├── 工具调用 1（开始 → 运行中 → 完成/失败）
-  │     └── 工具结果回传
-  ├── 工具调用 2（可能与工具 1 并行，且可能比工具 1 先返回）
-  ├── thinking（基于工具结果继续推理）
-  └── 最终回复（流式输出）
-</code></pre>
-<p>这是一棵树，而且节点的到达顺序不是拓扑序：工具调用 2 可能比工具调用 1 先返回，thinking 块可能在流式输出的中途插入，用户随时可能按取消键。</p>
-<p>CLI 看起来“适配“，靠的是 <strong>TUI 渲染引擎在背后做了一套复杂的展平机制：把一棵乱序到达的树强行投影成线性输出。</strong> Agent 的输出本身并不是 1D 的。这套机制就是本文要拆解的东西。</p>
+<p>第 1 篇第三节拆过一个直觉：LLM 输出是 1D 的 token 流，CLI 也是 1D 的，所以天然匹配。那一节的回答是，Agent 的真实输出是一棵乱序到达的事件树，工具调用 2 可能比工具调用 1 先返回，thinking 块可能在流式输出中途插入，用户随时可能按取消键。CLI 看起来“适配“，靠的是 <strong>TUI 渲染引擎在背后做了一套复杂的展平机制：把一棵乱序到达的树强行投影成线性输出。</strong> 第 1 篇只给了结论，这一篇拆机制本身。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch04-tree-flatten.svg" alt="事件树经渲染引擎展平为线性输出"><span class="img-wrapper"><img src="assets/ch04-tree-flatten.svg" alt="事件树经渲染引擎展平为线性输出"></span></label></p>
 <hr>
 <h2 id="二corerenderevent去掉会话角色语义的事件系统"><a class="header" href="#二corerenderevent去掉会话角色语义的事件系统">二、CoreRenderEvent：去掉会话角色语义的事件系统</a></h2>

@@ -24,6 +24,7 @@
 - [17 · 回到自己的引擎：ForgeLoopTUI 改造实录](ch14.md)
 - [18 · 终端之外：GUI 与移动端的映射](ch15.md)
 - [19 · 渲染的信任边界](ch16.md)
+- [卷末 · 从大前端到 Agent Workflow Engineer](ch25.md)
 
 # 胶水层
 

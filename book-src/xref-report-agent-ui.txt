@@ -1,27 +1,28 @@
-== agent-ui 互指审计 ==  目录条目 41（编号章 39 + 前置 2），部分：界面 / 胶水层 / 基建 / 评测
+== agent-ui 互指审计 ==  目录条目 42（编号章 39 + 前置 3），部分：界面 / 胶水层 / 基建 / 评测
 
-[A] 「第 N 篇」互指：389 条可解析，0 条可疑
+[A] 「第 N 篇」互指：391 条可解析，0 条可疑
   ch01.md:3  「第一篇」  OK → 界面 01 · 为什么 Agent 从 CLI/TUI 开始
   ch01.md:85  「第 4 篇」  OK → 界面 04 · Agent TUI：当事件树撞上线性终端
   ch02.md:9  「第 1 篇」  OK → 界面 01 · 为什么 Agent 从 CLI/TUI 开始
-  ch02.md:355  「第 4 篇」  OK → 界面 04 · Agent TUI：当事件树撞上线性终端
-  ch02.md:365  「第一篇」  OK → 界面 01 · 为什么 Agent 从 CLI/TUI 开始
+  ch02.md:357  「第 4 篇」  OK → 界面 04 · Agent TUI：当事件树撞上线性终端
+  ch02.md:367  「第一篇」  OK → 界面 01 · 为什么 Agent 从 CLI/TUI 开始
   ch03.md:52  「第 2 篇」  OK → 界面 02 · TUI 不是低配 GUI
   ch03.md:160  「第 2 篇」  OK → 界面 02 · TUI 不是低配 GUI
   ch03.md:280  「第 2 篇」  OK → 界面 02 · TUI 不是低配 GUI
   ch03.md:280  「第 9 篇」  OK → 界面 09 · GUI 上的 Markdown 流式渲染
   ch03.md:338  「第 1 篇」  OK → 界面 01 · 为什么 Agent 从 CLI/TUI 开始
   ch04.md:9  「第 1 篇」  OK → 界面 01 · 为什么 Agent 从 CLI/TUI 开始
-  ch04.md:131  「第 2 篇」  OK → 界面 02 · TUI 不是低配 GUI
-  ch04.md:258  「第 2 篇」  OK → 界面 02 · TUI 不是低配 GUI
-  ch04.md:262  「第 2 篇」  OK → 界面 02 · TUI 不是低配 GUI
-  ch04.md:270  「第 2 篇」  OK → 界面 02 · TUI 不是低配 GUI
-  ch04.md:295  「第2篇」  OK → 界面 02 · TUI 不是低配 GUI
-  ch04.md:296  「第3篇」  OK → 界面 03 · Markdown 在 TUI 上的流式地狱
-  ch04.md:297  「第4篇」  OK → 界面 04 · Agent TUI：当事件树撞上线性终端
-  ch04.md:304  「第 4 篇」  OK → 界面 04 · Agent TUI：当事件树撞上线性终端
-  ch04.md:304  「第 5、6 篇」  OK → 界面 05 · 输入框：agent TUI 最被低估的组件
-  ch04.md:304  「第 5、6 篇」  OK → 界面 06 · 输入的地狱：终端能力探测与降级
+  ch04.md:9  「第 1 篇」  OK → 界面 01 · 为什么 Agent 从 CLI/TUI 开始
+  ch04.md:113  「第 2 篇」  OK → 界面 02 · TUI 不是低配 GUI
+  ch04.md:240  「第 2 篇」  OK → 界面 02 · TUI 不是低配 GUI
+  ch04.md:244  「第 2 篇」  OK → 界面 02 · TUI 不是低配 GUI
+  ch04.md:252  「第 2 篇」  OK → 界面 02 · TUI 不是低配 GUI
+  ch04.md:277  「第2篇」  OK → 界面 02 · TUI 不是低配 GUI
+  ch04.md:278  「第3篇」  OK → 界面 03 · Markdown 在 TUI 上的流式地狱
+  ch04.md:279  「第4篇」  OK → 界面 04 · Agent TUI：当事件树撞上线性终端
+  ch04.md:286  「第 4 篇」  OK → 界面 04 · Agent TUI：当事件树撞上线性终端
+  ch04.md:286  「第 5、6 篇」  OK → 界面 05 · 输入框：agent TUI 最被低估的组件
+  ch04.md:286  「第 5、6 篇」  OK → 界面 06 · 输入的地狱：终端能力探测与降级
   ch21.md:3  「第 4 篇」  OK → 界面 04 · Agent TUI：当事件树撞上线性终端
   ch21.md:12  「第 2 篇」  OK → 界面 02 · TUI 不是低配 GUI
   ch21.md:12  「第 4 篇」  OK → 界面 04 · Agent TUI：当事件树撞上线性终端
@@ -85,22 +86,17 @@
   ch09.md:118  「第 7 篇」  OK → 界面 07 · 中场：Event Sourcing，Agent UI 的底层模型
   ch09.md:131  「第 12 篇」  OK → 界面 12 · 移动端的位置
   ch09.md:169  「第 7 篇」  OK → 界面 07 · 中场：Event Sourcing，Agent UI 的底层模型
-  ch10.md:41  「第 1 篇」  OK → 界面 01 · 为什么 Agent 从 CLI/TUI 开始
-  ch10.md:41  「第 8 篇」  OK → 界面 08 · 为什么 Agent GUI 这么难
-  ch10.md:50  「第 4 篇」  OK → 界面 04 · Agent TUI：当事件树撞上线性终端
-  ch10.md:72  「第 1 篇」  OK → 界面 01 · 为什么 Agent 从 CLI/TUI 开始
-  ch10.md:72  「第 1 篇」  OK → 界面 01 · 为什么 Agent 从 CLI/TUI 开始
-  ch10.md:82  「第 1 篇」  OK → 界面 01 · 为什么 Agent 从 CLI/TUI 开始
-  ch10.md:84  「第 2–4 篇」  OK → 界面 02 · TUI 不是低配 GUI
-  ch10.md:84  「第 2–4 篇」  OK → 界面 03 · Markdown 在 TUI 上的流式地狱
-  ch10.md:84  「第 2–4 篇」  OK → 界面 04 · Agent TUI：当事件树撞上线性终端
-  ch10.md:84  「第 5–6 篇」  OK → 界面 05 · 输入框：agent TUI 最被低估的组件
-  ch10.md:84  「第 5–6 篇」  OK → 界面 06 · 输入的地狱：终端能力探测与降级
-  ch10.md:84  「第 7 篇」  OK → 界面 07 · 中场：Event Sourcing，Agent UI 的底层模型
-  ch10.md:84  「第 8–9 篇」  OK → 界面 08 · 为什么 Agent GUI 这么难
-  ch10.md:84  「第 8–9 篇」  OK → 界面 09 · GUI 上的 Markdown 流式渲染
-  ch10.md:84  「第 10 篇」  OK → 界面 10 · 权限 UX 与 Diff UX
-  ch10.md:84  「第 11 篇」  OK → 界面 11 · 多端 Agent 架构
+  ch10.md:39  「第 1 篇」  OK → 界面 01 · 为什么 Agent 从 CLI/TUI 开始
+  ch10.md:41  「第 2–4 篇」  OK → 界面 02 · TUI 不是低配 GUI
+  ch10.md:41  「第 2–4 篇」  OK → 界面 03 · Markdown 在 TUI 上的流式地狱
+  ch10.md:41  「第 2–4 篇」  OK → 界面 04 · Agent TUI：当事件树撞上线性终端
+  ch10.md:41  「第 5–6 篇」  OK → 界面 05 · 输入框：agent TUI 最被低估的组件
+  ch10.md:41  「第 5–6 篇」  OK → 界面 06 · 输入的地狱：终端能力探测与降级
+  ch10.md:41  「第 7 篇」  OK → 界面 07 · 中场：Event Sourcing，Agent UI 的底层模型
+  ch10.md:41  「第 8–9 篇」  OK → 界面 08 · 为什么 Agent GUI 这么难
+  ch10.md:41  「第 8–9 篇」  OK → 界面 09 · GUI 上的 Markdown 流式渲染
+  ch10.md:41  「第 10 篇」  OK → 界面 10 · 权限 UX 与 Diff UX
+  ch10.md:41  「第 11 篇」  OK → 界面 11 · 多端 Agent 架构
   ch11.md:5  「第 2 篇」  OK → 界面 02 · TUI 不是低配 GUI
   ch11.md:19  「第 2 篇」  OK → 界面 02 · TUI 不是低配 GUI
   ch11.md:28  「第 14 篇」  OK → 界面 14 · 双模渲染
@@ -199,6 +195,12 @@
   ch16.md:69  「第 13、14、17、18 篇」  OK → 界面 14 · 双模渲染
   ch16.md:69  「第 13、14、17、18 篇」  OK → 界面 17 · 回到自己的引擎：ForgeLoopTUI 改造实录
   ch16.md:69  「第 13、14、17、18 篇」  OK → 界面 18 · 终端之外：GUI 与移动端的映射
+  ch25.md:3  「第 12 篇」  OK → 界面 12 · 移动端的位置
+  ch25.md:15  「第 1 篇」  OK → 界面 01 · 为什么 Agent 从 CLI/TUI 开始
+  ch25.md:15  「第 8 篇」  OK → 界面 08 · 为什么 Agent GUI 这么难
+  ch25.md:24  「第 4 篇」  OK → 界面 04 · Agent TUI：当事件树撞上线性终端
+  ch25.md:46  「第 1 篇」  OK → 界面 01 · 为什么 Agent 从 CLI/TUI 开始
+  ch25.md:46  「第 1 篇」  OK → 界面 01 · 为什么 Agent 从 CLI/TUI 开始
   glue01.md:9  「基建第 3 篇」  OK → 基建 03 · 协议三边界
   glue01.md:15  「界面部分第 7 篇」  OK → 界面 07 · 中场：Event Sourcing，Agent UI 的底层模型
   glue01.md:15  「第 11 篇」  OK → 界面 11 · 多端 Agent 架构
