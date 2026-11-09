@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-a7ff6577.js";
+            window.path_to_searchindex_js = "searchindex-a5d36529.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-b31dbc0b.js"></script>
@@ -196,7 +196,7 @@
 <li><code>TuiMainScreen</code>（629 行）：渲染进终端主屏 + scrollback。<strong>inline 派，但是差分变种。</strong></li>
 <li><code>TuiAltScreen</code>（1302 行）：alt screen 全屏，应用自管视口。<strong>全屏自管派，工业级形态。</strong></li>
 </ul>
-<p>也就是说，第 13 篇那条我以为只存在于不同公司之间的分界线，在这个仓库里是同一个 <code>if</code> 的两个分支。这给了我一个难得的对照机会：<strong>同一棵组件树、同一份组件代码，喂给两种所有权模型，各自的账单会开在哪里。</strong></p>
+<p>也就是说，第 13 篇那条我以为只存在于不同公司之间的分界线，在这个仓库里是同一个 <code>if</code> 的两个分支。这给了我一个难得的对照机会：<strong>同一棵组件树、同一份组件代码，喂给两种所有权模型，各自的代价会落在哪里。</strong></p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch12-one-interface-two-engines.svg" alt="一个 vendored fork，两个渲染器：同一接口，两种所有权"><span class="img-wrapper"><img src="assets/ch12-one-interface-two-engines.svg" alt="一个 vendored fork，两个渲染器：同一接口，两种所有权"></span></label></p>
 <hr>
 <h2 id="二主屏渲染器inline-派的差分变种"><a class="header" href="#二主屏渲染器inline-派的差分变种">二、主屏渲染器：inline 派的差分变种</a></h2>
@@ -225,7 +225,7 @@ if (firstChanged &lt; prevViewportTop) {
 <li>以上都不命中，才进入差分主路：扫描出 <code>firstChanged</code>/<code>lastChanged</code>，只重绘<strong>变化区间</strong>而非“变化行到末尾“，注释明说动机：“reduces flicker when only a single line changes (e.g., spinner animation)”；</li>
 <li>纯追加（流式输出的常态）走 append 快速路径：光标滚到底直接写。</li>
 </ol>
-<p>外加两个通用工程点：所有写包在 <code>\x1b[?2026h/l</code> 同步输出里（原子帧，防撕裂）；kitty 图片协议有一整套影子账本（图片行占位行数、changed-range 膨胀、按 id 删除），因为图片在终端里是字节流之外的第二套状态。</p>
+<p>外加两个通用工程点：所有写包在 <code>\x1b[?2026h/l</code> 同步输出里（原子帧，防撕裂）；kitty 图片协议有一整套影子记录（图片行占位行数、changed-range 膨胀、按 id 删除），因为图片在终端里是字节流之外的第二套状态。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch12-dorender-decision-tree.svg" alt="doRender 的决策树：一串快速失败路径，每条都对应一类真实事故"><span class="img-wrapper"><img src="assets/ch12-dorender-decision-tree.svg" alt="doRender 的决策树：一串快速失败路径，每条都对应一类真实事故"></span></label></p>
 <h3 id="24-和-grok-的哲学分野预防-vs-检测"><a class="header" href="#24-和-grok-的哲学分野预防-vs-检测">2.4 和 Grok 的哲学分野：预防 vs 检测</a></h3>
 <p>把两家并排，inline 派内部其实有两个档位：</p>

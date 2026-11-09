@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-a7ff6577.js";
+            window.path_to_searchindex_js = "searchindex-a5d36529.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-b31dbc0b.js"></script>
@@ -207,12 +207,12 @@
 <p>最上面一层防的不是 bug，是<strong>架构退化</strong>。第 13 篇详细讲过 Grok 的 guard.rs：用 <code>include_str!</code> 扫描全部源码，断言 minimal 模式里不出现 <code>emit_to_scrollback</code> 这类标识符，口头纪律由此升级为挂了就算构建失败的测试。Codex 有同构物：<code>alternate_screen_auto_uses_alt_screen</code> 把“Zellij 特判已删除“之后的新行为钉成测试。功能错误自有功能测试去抓，它防的是有人哪天把特判加回来。</p>
 <p>守护测试的价值随代码库年龄增长。功能测试保护“现在对“，守护测试保护“对的结构不被未来的善意修改破坏“。第 13 篇那句“纪律比天才便宜“，在构建系统里的字面形态就是这一层。</p>
 <hr>
-<h2 id="三测试密度的账单"><a class="header" href="#三测试密度的账单">三、测试密度的账单</a></h2>
+<h2 id="三测试密度的代价"><a class="header" href="#三测试密度的代价">三、测试密度的代价</a></h2>
 <p>这套基建的规模值得量化一下。<code>streaming/controller.rs</code> 一共 1976 行，其中约 1200 行是测试——被测逻辑与测试的体积比接近 2:3。密度花在哪儿很说明问题：resize 与 partial drain 的组合有约十个专测，覆盖丢失、重复、换行余量三类回归，每类都有专名。这些是流式渲染历史上真实坑过人的 bug 类型，每一个都进了专名测试。</p>
 <p>这也向我们回答了“值不值“的问题。流式渲染的正确性涉及时序、布局、状态机的组合爆炸，人工回归不可能覆盖；而一旦基建就位，等价性层的单个测试能顶掉一整个手工测试矩阵。测试在这里从成本中心变成了让“事前状态机“这类精巧设计<strong>敢存在</strong>的前提：没有等价性测试盯着，任何后来者的“优化“都可能悄悄破坏收敛性，而且没有人会发现。</p>
 <hr>
 <h2 id="四总结"><a class="header" href="#四总结">四、总结</a></h2>
-<p>回头看，这个系列里关于可测试性的判断一直是散点：第 2 篇列举 CLI/TUI 优势时提过“管道可测试“，第 13 篇把可测试性列为 inline 派的优点之一（“系统越聪明，证明它正确的基础设施越贵”）而把这个优点兑现得最彻底的，反倒是默认全屏的 Codex：双模产品的测试账单要付两份。Codex 的四层实践把这些散点收成了一个框架：</p>
+<p>回头看，这个系列里关于可测试性的判断一直是散点：第 2 篇列举 CLI/TUI 优势时提过“管道可测试“，第 13 篇把可测试性列为 inline 派的优点之一（“系统越聪明，证明它正确的基础设施越贵”）而把这个优点兑现得最彻底的，反倒是默认全屏的 Codex：双模产品的测试成本要付两份。Codex 的四层实践把这些散点收成了一个框架：</p>
 <pre><code>字节断言  →  钉契约（贵而硬，只钉关键行为）
 快照      →  钉形态（配归一化，防抖动失效）
 等价性    →  钉不变量（一次断言，覆盖无限切分）

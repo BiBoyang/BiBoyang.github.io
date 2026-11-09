@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-a7ff6577.js";
+            window.path_to_searchindex_js = "searchindex-a5d36529.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-b31dbc0b.js"></script>
@@ -203,7 +203,7 @@
 <p>“用户粘贴了一段东西“在实现层至少是四种不同的东西：</p>
 <p><strong>其一，bracketed paste 事件。</strong> 终端用 <code>ESC[200~</code>/<code>ESC[201~</code> 包裹粘贴内容，TUI 收到一个完整的 Paste 事件，做 CRLF 归一化后进 composer。这是最干净的路径，前提是终端支持并开启了括号粘贴模式，下一篇会讲这个前提有多不牢靠。</p>
 <p><strong>其二，系统剪贴板直读。</strong> 图片粘贴走的是另一条路：直接读系统剪贴板，探测图片数据、编码、存临时文件、在文本里留占位。Codex 有专门的 <code>clipboard_paste.rs</code> 和一整组 <code>PasteImageError</code> 类型；Claude Code 的发布产物里也有独立的图片粘贴快捷键处理。</p>
-<p><strong>其三，大粘贴占位符。</strong> 粘贴几万字符的日志，不该把输入框撑爆。Claude Code 的做法：超过一万字符，显示时只留头 500 字符和尾 500 字符，中间折叠成一个占位引用（<code>inputPaste.ts</code>）。Codex 同构：大粘贴替换为占位符，提交时才还原展开（composer 头注释里的 “expands pending paste placeholders”）。两家独立收敛到同一个形态：<strong>显示层是占位符，数据层是全文，提交时对账。</strong></p>
+<p><strong>其三，大粘贴占位符。</strong> 粘贴几万字符的日志，不该把输入框撑爆。Claude Code 的做法：超过一万字符，显示时只留头 500 字符和尾 500 字符，中间折叠成一个占位引用（<code>inputPaste.ts</code>）。Codex 同构：大粘贴替换为占位符，提交时才还原展开（composer 头注释里的 “expands pending paste placeholders”）。两家独立收敛到同一个形态：<strong>显示层是占位符，数据层是全文，提交时展开。</strong></p>
 <p>**其四，paste-burst：没有括号粘贴时的湍流识别。**这是我最喜欢的一个，因为我自己做的时候深受其扰。</p>
 <p>有些终端（特别是 Windows 上）不发 bracketed paste 标记，粘贴到达时就是一串<strong>极快的普通按键</strong>：人打字到不了那个速度，机器可以。于是识别粘贴变成了湍流识别：Codex 的 <code>paste_burst.rs</code> 和 Kimi 的 <code>paste-burst.ts</code> 是同一个启发式状态机的两次独立实现。字符间隔在毫秒级（Kimi 的参数：连续 ≥8 个字符、间隔 ≤8ms）就怀疑是粘贴；粘贴流里的 Enter 必须当换行而不是提交（Kimi 的 Enter 抑制窗口是 120ms）。两家的文件头注释写着同一个动机：防止粘贴里的回车把半截内容提交出去。</p>
 <p>第四种的启示超出粘贴本身：<strong>当协议信号缺失时，行为信号（速度分布）可以顶替。</strong> 这在终端输入里是通用技法。</p>

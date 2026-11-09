@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-a7ff6577.js";
+            window.path_to_searchindex_js = "searchindex-a5d36529.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-b31dbc0b.js"></script>
@@ -203,7 +203,7 @@
 </ul>
 <p>三个插件恰好各占一种形态。但第四种情况也存在：<strong>有些承诺落成不了可判定断言。</strong> 视觉插件的「看图看得好不好」，在我的环境里没有能用的视觉引擎，无法判定。正确动作是在报告里如实标「不可判定」。写一条永远通过的橡皮图章断言假装覆盖到了，比没有断言更坏：它给「没测」配了证据。</p>
 <h2 id="四双臂归因的最低配置"><a class="header" href="#四双臂归因的最低配置">四、双臂：归因的最低配置</a></h2>
-<p>韧性层的做法是 chaos：把插件挂进故障环境跑四格（对照 + 三种协议故障）。判定口径是：<strong>挂载后宿主行为变了，账才算到插件头上。</strong> 两个可测插件全绿，与裸基线逐格一致。</p>
+<p>韧性层的做法是 chaos：把插件挂进故障环境跑四格（对照 + 三种协议故障）。判定口径是：<strong>挂载后宿主行为变了，才算到插件头上。</strong> 两个可测插件全绿，与裸基线逐格一致。</p>
 <p>这个「全绿」值钱，值钱在它是对照出来的：一个直接坐在模型请求链路上的 7000★ 注入器插件，不破坏宿主的故障检出与恢复。<strong>没有裸基线，「全绿」和「没测到」长得一模一样。</strong> 这就是双臂对照（with / without）的最低配置地位：两臂只差一个变量，分数相减得 Δ，Δ 才是被测物的真贡献。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/eval06-two-arms.svg" alt="归因靠对照：with / without 双臂相减得 Δ；对照组被污染的三种形态"><span class="img-wrapper"><img src="assets/eval06-two-arms.svg" alt="归因靠对照：with / without 双臂相减得 Δ；对照组被污染的三种形态"></span></label></p>
 <p>这个设计不是私家偏方。Anthropic 官方的 Claude Code plugin evals 把 with/without 双臂默认打开、裸基线内置，「插件在不在场」作为一等变量写进了官方评测协议（其 grader 分六档，机制不展开，一句官方背书即可）。社区基建和官方文档在同一个点上汇合：双臂不是增强，是底线。</p>
@@ -218,7 +218,7 @@
 <p>这轮还顺手校准了裁判自己：评测 runner 的超时只杀直接子进程，包装器形态的孙进程被孤儿化，整条 runner 挂死 34 分钟，裁判被它要测的场景打穿了。修复是进程组杀，回归测试专门断言「孙进程必死」。这个故事的完整版归第 14 篇。</p>
 <h2 id="六passk-与-passk单次跑分不作数"><a class="header" href="#六passk-与-passk单次跑分不作数">六、pass@k 与 pass^k：单次跑分不作数</a></h2>
 <p>最后一节是统计口径，不堆公式，只讲两个数讲出的相反故事。</p>
-<p>一个 agent 单次成功率 0.75。现在跑 10 次。<strong>pass@k</strong> 问 10 次里至少成功一次的概率：约 1.0，近乎必然。<strong>pass^k</strong> 问 10 次全部成功的概率：0.75¹⁰ ≈ 0.056，几乎不可能。同一个 0.75，一个讲「给它机会总能成」，一个讲「交给它必出事」。两个数都对，但一个是给消费者看的广告，一个是给运维看的账单。</p>
+<p>一个 agent 单次成功率 0.75。现在跑 10 次。<strong>pass@k</strong> 问 10 次里至少成功一次的概率：约 1.0，近乎必然。<strong>pass^k</strong> 问 10 次全部成功的概率：0.75¹⁰ ≈ 0.056，几乎不可能。同一个 0.75，一个讲「给它机会总能成」，一个讲「交给它必出事」。两个数都对，但一个是给消费者看的广告，一个是给运维看的风险清单。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/eval06-passk.svg" alt="pass@k 爬向 1.0 与 pass^k 跌向 0.056：同一用例 0.75 的两种叙事"><span class="img-wrapper"><img src="assets/eval06-passk.svg" alt="pass@k 爬向 1.0 与 pass^k 跌向 0.056：同一用例 0.75 的两种叙事"></span></label></p>
 <p>选哪个数取决于你回答什么问题：「这个 agent 有没有可能做对」用 pass@k，「这个 agent 靠不靠得住」用 pass^k。τ-bench 把后者立为可靠性指标，理由就是它对「时灵时不灵」的惩罚是指数级的。混在一起用就是叙事作弊：拿 pass@10 的 1.0 去汇报可靠性，等于把十次里的九次失败从分母里抹掉。</p>
 <p>所以第 2 篇那个现象（同一条用例三轮跑出 25%、75%、100%）的读法就清楚了：单次跑分是采样，不是测量。配套纪律两条：报告必须带迭代次数，单比例用 Wilson 区间看下界不看点估计。点估计的 3/3 和 30/30 在报告里长得一样，区间不会撒谎。</p>

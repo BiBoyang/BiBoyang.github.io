@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-a7ff6577.js";
+            window.path_to_searchindex_js = "searchindex-a5d36529.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-b31dbc0b.js"></script>
@@ -200,10 +200,10 @@
 <li><strong>幂等 request id</strong>：每条消息带客户端生成的唯一 id。重发时服务器凭 id 去重，“我可能发过“和“我肯定没发过“从此可区分。这是基建第 1 篇说的 at-least-once 世界的入场费。</li>
 <li><strong>宽限的用法</strong>：几十秒的后台宽限，够把一条消息推出网络栈，不够流完一场回复。宽限期该做的事是“把发件箱清空“，不是“把会话跑完“，认清时间常数，才知道宽限该花在哪。</li>
 </ol>
-<p>一个旁证：本机 Claude Code 的会话 JSONL 里，<code>type: "queue-operation"</code> 的第一行就是 <code>"operation": "enqueue"</code>，用户输入在一开始就被记成排队事件，而不是“即发即忘“的网络动作。把输入当事件记账，是单机版的发件箱；移动端要做的只是让它穿过网络还成立。</p>
+<p>一个旁证：本机 Claude Code 的会话 JSONL 里，<code>type: "queue-operation"</code> 的第一行就是 <code>"operation": "enqueue"</code>，用户输入在一开始就被记成排队事件，而不是“即发即忘“的网络动作。把输入当事件记下来，是单机版的发件箱；移动端要做的只是让它穿过网络还成立。</p>
 <h2 id="站点三已发出还没开始流式在排队或预处理"><a class="header" href="#站点三已发出还没开始流式在排队或预处理">站点三：已发出、还没开始流式（在排队或预处理）</a></h2>
 <p>消息确认送达之后、回复开始之前，客户端切走，这一站的问题最少，但有一个硬前提：<strong>服务端的 ack 必须是落过盘的</strong>。“收到“不能只存在于那台连接着的进程内存里，否则部署重启的瞬间，用户以为已发出的消息就进了量子态。</p>
-<p>ack 落账之后，这一站的完整性责任就整体移交给服务端了。这正是基建第 1 篇那条第一原则的移动端兑现：<strong>agent loop 不能拥有 socket</strong>，执行归执行，连接归连接，客户端的生死从这一刻起与会话解耦。</p>
+<p>ack 落盘之后，这一站的完整性责任就整体移交给服务端了。这正是基建第 1 篇那条第一原则的移动端兑现：<strong>agent loop 不能拥有 socket</strong>，执行归执行，连接归连接，客户端的生死从这一刻起与会话解耦。</p>
 <h2 id="站点四流式输出到一半切走"><a class="header" href="#站点四流式输出到一半切走">站点四：流式输出到一半切走</a></h2>
 <p>用户看着半个表格，进电梯，切走。接下来必然发生的事按剧本走：数十秒内进程挂起，连接断掉。记住，这是<strong>确定事件</strong>，设计时当日程处理，不当异常处理。</p>
 <p>断掉之后，责任分两半。服务端那一半：agent 继续跑，产出的事件继续落 log（基建第 1 篇的全部内容）。客户端这一半小得惊人：<strong>只欠一个游标</strong>，记住自己最后收到的事件位置（last event id / seq），其余什么都不用做。回放、补齐、续传，全是回来之后的事。</p>
@@ -215,15 +215,15 @@
 <p>第三步是<strong>弱网下的流畅降级</strong>。完整性和流畅性在这一站公开打架：带宽和电量都告急时，把事件粒度降下来（低频刷新、只更新尾部摘要行、折叠中间过程），先把“活着且最新“保住，带宽宽裕再补全渲染。通知要背压（下篇展开），会话内更新同样要背压，这是同一个原则的两个方向。</p>
 <p>这一站还有个配角值得记：FlowDown 在流式期间把收到的字符增量累计喂给 Live Activity（<code>countIncomingTokens</code>），锁屏和灵动岛上有一个实时跳动的字数。用户切走了，锁屏上那行小字就是整个会话在“离开期间“的最小投影：不完整，但诚实，且免费。</p>
 <h2 id="站点六完成之后回看"><a class="header" href="#站点六完成之后回看">站点六：完成之后回看</a></h2>
-<p>最好的一站，如果前三站都做对了，这一站几乎是免费的。回复完成后，内容由服务端结算落盘（界面部分第 18 篇拆过 FlowDown 的修补序列与 <code>save()</code>），客户端回看时读到的就是档案而不是直播。<strong>完整性在这一站不是客户端的功能，是前五站工程的总和。</strong></p>
+<p>最好的一站，如果前三站都做对了，这一站几乎是免费的。回复完成后，内容由服务端定稿落盘（界面部分第 18 篇拆过 FlowDown 的修补序列与 <code>save()</code>），客户端回看时读到的就是档案而不是直播。<strong>完整性在这一站不是客户端的功能，是前五站工程的总和。</strong></p>
 <h2 id="总结"><a class="header" href="#总结">总结</a></h2>
 <p>把六站排回去看，每站的答案其实都是同一句话的变体：<strong>把“必须记住的事“从连接和进程里搬出来，搬进比它们活得久的东西</strong>，草稿进 UserDefaults，输入进发件箱，消息进服务端 log，位置进游标，进度进锁屏投影，成品进档案。连接、进程、甚至前台界面，都只是这些事实的临时租客。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/infra02a-six-stations.svg" alt="六个站点，一个常数：用户在任一站断掉，会话都要能活下来"><span class="img-wrapper"><img src="assets/infra02a-six-stations.svg" alt="六个站点，一个常数：用户在任一站断掉，会话都要能活下来"></span></label></p>
-<p>流畅和完整这对冤家也是这么和解的：完整性靠事实外置（搬到磁盘和服务端），流畅性靠降级自由（画面可以随时扔，因为事实扔不掉）。下一篇（二·下）把这六个站点背后的架构账单一次摊开：被操作系统禁止的长连接、只肯当信号用的推送通道、替 agent 跑工具的服务端工作区，以及那句话作为第一原则的完整含义：agent loop 不能拥有 socket。</p>
+<p>流畅和完整这对冤家也是这么和解的：完整性靠事实外置（搬到磁盘和服务端），流畅性靠降级自由（画面可以随时扔，因为事实扔不掉）。下一篇（二·下）把这六个站点背后的架构代价一次摊开：被操作系统禁止的长连接、只肯当信号用的推送通道、替 agent 跑工具的服务端工作区，以及那句话作为第一原则的完整含义：agent loop 不能拥有 socket。</p>
 <hr>
 <h2 id="参考与延伸"><a class="header" href="#参考与延伸">参考与延伸</a></h2>
 <ul>
-<li><em>一手取证：FlowDown <code>b2cecfd6</code>（<code>ConversationManager.swift</code> 的 <code>temporaryEditorObjects</code> 防抖持久化、<code>ConversationSessionManager.swift</code> 的 <code>countIncomingTokens</code>/Live Activity、<code>Pipeline/</code> 的流式与结算路径）。</em></li>
+<li><em>一手取证：FlowDown <code>b2cecfd6</code>（<code>ConversationManager.swift</code> 的 <code>temporaryEditorObjects</code> 防抖持久化、<code>ConversationSessionManager.swift</code> 的 <code>countIncomingTokens</code>/Live Activity、<code>Pipeline/</code> 的流式与定稿路径）。</em></li>
 <li><em>Claude Code 本机会话 JSONL（<code>type: "queue-operation"</code>/<code>"operation": "enqueue"</code>，2026-09-28 取证）。</em></li>
 <li><em>平台行为（iOS 后台宽限为数十秒量级、挂起与杀死可能无回调、网络切换导致 TCP 半开）为移动端工程常识，按量级表述未引具体数字。</em></li>
 <li><em>快照+尾部增量与游标机制的工程细节引自基建第 1 篇的核查（kimi-code <code>1e553fc</code>）。</em></li>

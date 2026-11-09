@@ -59,7 +59,7 @@
   <text x="356" y="356" font-size="9" fill="#e6edf3" font-family="ui-monospace,'SF Mono',Menlo,Consolas,monospace" text-anchor="start">thread_history 投影器</text>
   <text x="356" y="378" font-size="8.5" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start">客户端看到的是投影，不是真相</text>
   <rect x="652" y="314" width="260" height="82" rx="8" fill="#161b22" stroke="#3fb950" stroke-width="1.2"/>
-  <text x="668" y="338" font-size="9.5" fill="#3fb950" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start">kill -9 恢复对账</text>
+  <text x="668" y="338" font-size="9.5" fill="#3fb950" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start">kill -9 恢复核对</text>
   <text x="668" y="358" font-size="8.5" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start">正常退出与崩溃两条路径分别验</text>
   <text x="668" y="376" font-size="8.5" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start">多客户端并发视图一致</text>
   <line x1="288" y1="355" x2="332" y2="355" stroke="#58a6ff" stroke-width="1.6" marker-end="url(#mk-blue)"/>

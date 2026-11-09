@@ -4,7 +4,7 @@
 <marker id="mk-f85149" markerWidth="9" markerHeight="9" refX="7.4" refY="4.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L9,4.5 L0,9 z" fill="#f85149"/></marker>
 </defs>
 <rect x="0" y="0" width="960" height="620" rx="12" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
-<text x="28" y="38" font-size="15.5" fill="#e6edf3" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="700">成本台账：从预算池到回执，每一分钱都有记账</text>
+<text x="28" y="38" font-size="15.5" fill="#e6edf3" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="700">成本记录：从预算池到回执，每一分钱都有记录</text>
 <line x1="28" y1="52" x2="932" y2="52" stroke="#30363d" stroke-width="1"/>
 
 <!-- 废弃旁路：静默重试 -->
@@ -67,5 +67,5 @@
 <text x="705" y="493" font-size="11" fill="#f85149" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="700">静默重试的代价 ②：抹平差异</text>
 <text x="705" y="513" font-size="10" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="middle" font-weight="400">鲁棒性差异被偷消</text>
 
-<text x="40" y="592" font-size="10" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="400">授权先于调用；任何失败路径都必须留下回执，不许账外支出。</text>
+<text x="40" y="592" font-size="10" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="400">授权先于调用；任何失败路径都必须留下回执，不许漏记支出。</text>
 </svg>

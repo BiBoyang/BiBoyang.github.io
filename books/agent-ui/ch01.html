@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-a7ff6577.js";
+            window.path_to_searchindex_js = "searchindex-a5d36529.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-b31dbc0b.js"></script>
@@ -215,8 +215,8 @@ cargo test 2&gt;&amp;1 | head -40                # 跑测试，看失败输出
 <li>diff：需要并排对比视图 + 行级高亮 + 部分采纳/拒绝交互</li>
 <li>日志：需要虚拟滚动 + 搜索过滤 + 级别着色</li>
 </ul>
-<p>每一项在 TUI 里是 <code>print()</code>，在 GUI 里是一个子系统。当然，<code>print()</code> 只是输出的起点，如果想让输出在流式场景下保持可读、可排版，是另一套引擎的成本，下一节就会看到。GUI 并非做不了，只是在 agent 还在快速迭代、工具调用协议还在变化、权限模型还在试探的阶段，每加一个 GUI 子系统就是一笔债务。</p>
-<p>我之前看一个说法：做 GUI 要么 VSCode 换皮（功能上限被封死），要么自研（至少半年以上）。而 CLI 是每个 agent 无论如何都要提供的核心功能——SSH 进去、WSL 里跑、CI 里执行，CLI 是唯一通用解。这笔账算下来很朴素：GUI 太贵，CLI 绕不开。</p>
+<p>每一项在 TUI 里是 <code>print()</code>，在 GUI 里是一个子系统。当然，<code>print()</code> 只是输出的起点，如果想让输出在流式场景下保持可读、可排版，是另一套引擎的成本，下一节就会看到。GUI 并非做不了，只是在 agent 还在快速迭代、工具调用协议还在变化、权限模型还在试探的阶段，每加一个 GUI 子系统就多一份维护负担。</p>
+<p>我之前看一个说法：做 GUI 要么 VSCode 换皮（功能上限被封死），要么自研（至少半年以上）。而 CLI 是每个 agent 无论如何都要提供的核心功能——SSH 进去、WSL 里跑、CI 里执行，CLI 是唯一通用解。算下来结论很朴素：GUI 太贵，CLI 绕不开。</p>
 <hr>
 <h2 id="三1d--1d这个说法对吗"><a class="header" href="#三1d--1d这个说法对吗">三、“1D → 1D“这个说法对吗？</a></h2>
 <p>我看有人提过一个简洁的直觉判断：<strong>LLM 的输出是 1D 的（线性 token 流），CLI 也是 1D 的（线性文本输出），所以天然匹配。</strong></p>

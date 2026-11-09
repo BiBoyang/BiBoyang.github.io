@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-a7ff6577.js";
+            window.path_to_searchindex_js = "searchindex-a5d36529.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-b31dbc0b.js"></script>
@@ -185,9 +185,9 @@
 <h2 id="一三条国境线都没有覆盖的那个对话者"><a class="header" href="#一三条国境线都没有覆盖的那个对话者">一、三条国境线都没有覆盖的那个对话者</a></h2>
 <p>先给一张十秒钟的地图。一个 agent 今天要和三类对话者说话，行业为每条边界造了一套协议：跟工具说话用 MCP，主语是 agent，它去征用外界的能力；跟编辑器说话用 ACP，主语是编辑器，它去征用一个 agent；跟浏览器前端说话用 AG-UI，前端是消费者，它订阅 agent 的事件流。这三条边界各自怎么划、各欠谁的债，基建第 3 篇会逐条讲；这一篇只需要它们的朝向，因为 Codex 的 app-server 协议不在这张地图上。</p>
 <p>它当然不是 MCP：能力方向反了，是引擎被界面征用，不是引擎去征用工具。它有点像 ACP 的镜像：ACP 里编辑器把 agent 当子进程拉起，编辑器是主语；Codex 的 app-server 里<strong>引擎把界面当客户端服务</strong>，引擎是 server，TUI、桌面端、IDE、手机、连 UI 都没有的 <code>codex exec</code>，全是 client。三条边界里主语最强势的是“编辑器征用 agent“，这里是“agent 征用一切界面“。</p>
-<p>方向反过来，债务清单跟着换。编辑器当主语时，最难的问题是“agent 的权限请求怎么嵌进我的 UI“；引擎当主语时，最难的问题变成：<strong>一个 server，怎么向自己的 client 开口要东西</strong>。审批不是界面弹个窗那么简单：server 在 turn 跑到一半时，向 client 发一条反向 request，挂起执行，等一个 oneshot 回填决定。Codex 把这个“反向通道“做成了一个枚举：执行审批、文件变更审批、向用户提问、MCP elicitation、权限申请、甚至宿主代管 token 时的刷新请求，全部走同一类 server→client request。“宿主怎么反问用户“这个 ACP 边界上最难的设计点，在引擎当主语的世界里不是一个 UI 问题，是<strong>协议里的一类消息</strong>。</p>
+<p>方向反过来，难题清单跟着换。编辑器当主语时，最难的问题是“agent 的权限请求怎么嵌进我的 UI“；引擎当主语时，最难的问题变成：<strong>一个 server，怎么向自己的 client 开口要东西</strong>。审批不是界面弹个窗那么简单：server 在 turn 跑到一半时，向 client 发一条反向 request，挂起执行，等一个 oneshot 回填决定。Codex 把这个“反向通道“做成了一个枚举：执行审批、文件变更审批、向用户提问、MCP elicitation、权限申请、甚至宿主代管 token 时的刷新请求，全部走同一类 server→client request。“宿主怎么反问用户“这个 ACP 边界上最难的设计点，在引擎当主语的世界里不是一个 UI 问题，是<strong>协议里的一类消息</strong>。</p>
 <p>server 身份带来的第二件事是<strong>历史的归属</strong>。编辑器当主语时，会话历史跟着编辑器的项目走；引擎当 server 之后，thread 的历史归引擎持久：append-only 的 rollout 文件是事实源，客户端看到的 turn/item 视图是投影器的产物。<code>thread_history.rs</code> 这个 5024 行的文件，把 rollout 逐行译成增量 ChangeSet。协议注释已经宣布全量水合废弃（“Full-history hydration is deprecated for paginated threads”），往回翻页走 opaque cursor。界面部分第 7 篇的 Event Sourcing、第 11 篇的统一 Event Log，在这里不是主张，是一个每天被好几种客户端消费的真实部件；“换一台设备接着聊“是出厂设置，因为历史从来不在任何一台设备上。记住这个承诺，§四会回来看它在哪里被打破。</p>
-<p>server 身份还带来一件 ACP/AG-UI 都没有的事：<strong>多 client 共存，且版本不一</strong>。daemon 让一个引擎进程同时服务多个客户端。桌面端走 alpha 发布线、落后五个 minor 这种事（本机实证：桌面 0.155.0-alpha、CLI 0.160.0），在“编辑器养 agent“的世界里几乎不存在，在“引擎养界面“的世界里是日常。于是每条连接建立时都要重新对账一次能力，这就是下一节的握手。</p>
+<p>server 身份还带来一件 ACP/AG-UI 都没有的事：<strong>多 client 共存，且版本不一</strong>。daemon 让一个引擎进程同时服务多个客户端。桌面端走 alpha 发布线、落后五个 minor 这种事（本机实证：桌面 0.155.0-alpha、CLI 0.160.0），在“编辑器养 agent“的世界里几乎不存在，在“引擎养界面“的世界里是日常。于是每条连接建立时都要重新核对一次能力，这就是下一节的握手。</p>
 <h2 id="二协议里没有版本号"><a class="header" href="#二协议里没有版本号">二、协议里没有版本号</a></h2>
 <p>先给结论再给证据：Codex 的 initialize 握手有 clientInfo（名字、版本）和 capabilities（实验性 API opt-in、通知 opt-out、MCP 扩展声明），<strong>唯独没有 protocolVersion 字段</strong>。全文 grep 无结果，不是藏得深，是没有。</p>
 <p>它用什么替代数字协商？三件套：</p>
@@ -217,7 +217,7 @@
 <p>三个问题三个归属：**能做什么由宿主决定，允许做什么由引擎决定，怎么做由模型目录决定。**界面在这套结构里拿到的承诺也因此分层：权限弹窗里显示什么、要不要拦，是引擎和策略面定死的；而弹窗背后那个动作具体怎么执行，界面不需要知道，也不必信任。这正是“协议给说什么、不给怎么画“在能力层的版本。</p>
 <p>对想自建 glue 的人，这条比任何机制都可迁移：<strong>核心不长手，手永远可替换；但缰绳必须长在核心身上。</strong></p>
 <h2 id="七总结"><a class="header" href="#七总结">七、总结</a></h2>
-<p>把本篇的账合到最后一张表里。基建篇会反复验证两句话：承诺的真假取决于事实源在哪一层，承诺往下挖两层碰到协议条款；本篇从引擎内侧补上第三步——<strong>承诺的兑现还要穿过一个方向选择、一次握手、一个降级分支</strong>：</p>
+<p>把本篇的结论合到最后一张表里。基建篇会反复验证两句话：承诺的真假取决于事实源在哪一层，承诺往下挖两层碰到协议条款；本篇从引擎内侧补上第三步——<strong>承诺的兑现还要穿过一个方向选择、一次握手、一个降级分支</strong>：</p>
 <div class="table-wrapper">
 <table>
 <thead>

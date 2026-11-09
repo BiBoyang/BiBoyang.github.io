@@ -11,12 +11,12 @@
   <text x="48" y="156" font-size="9.5" fill="#3fb950" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="700">断言</text>
   <text x="48" y="176" font-size="9.5" fill="#e6edf3" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start">存在用户可见的信号</text>
   <text x="48" y="194" font-size="8.5" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start">——是界面里的一行，不是 debug 日志</text>
-  <text x="48" y="220" font-size="9.5" fill="#e6edf3" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start">线程列表与 daemon 存储对账一致</text>
+  <text x="48" y="220" font-size="9.5" fill="#e6edf3" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start">线程列表与 daemon 存储核对一致</text>
   <text x="48" y="238" font-size="8.5" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start">——降级之后，昨天的线程还在</text>
   <line x1="48" y1="258" x2="292" y2="258" stroke="#30363d" stroke-width="1"/>
   <text x="48" y="280" font-size="9.5" fill="#f85149" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="700">漏检形态</text>
   <text x="48" y="300" font-size="9.5" fill="#f85149" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start">界面一切正常，历史悄悄少一块</text>
-  <text x="48" y="318" font-size="8.5" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start">state_db 被重初始化，对账直接对不上</text>
+  <text x="48" y="318" font-size="8.5" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start">state_db 被重初始化，核对直接对不上</text>
   <text x="48" y="336" font-size="8.5" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start">（今天的 Codex 会在第二条上红）</text>
 
   <!-- Panel 2 -->
@@ -52,7 +52,7 @@
   <text x="648" y="280" font-size="9.5" fill="#f85149" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start" font-weight="700">漏检形态</text>
   <text x="648" y="300" font-size="9.5" fill="#f85149" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start">换了一间空房子，</text>
   <text x="648" y="318" font-size="9.5" fill="#f85149" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start">功能测试一条都不红</text>
-  <text x="648" y="338" font-size="8.5" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start">——只有对账抓得住它</text>
+  <text x="648" y="338" font-size="8.5" fill="#8b949e" font-family="-apple-system,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif" text-anchor="start">——只有核对抓得住它</text>
 
   <rect x="28" y="496" width="884" height="34" rx="8" fill="#d29922" opacity="0.12"/>
   <rect x="28" y="496" width="884" height="34" rx="8" fill="none" stroke="#d29922" stroke-width="1.4"/>

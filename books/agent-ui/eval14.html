@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-a7ff6577.js";
+            window.path_to_searchindex_js = "searchindex-a5d36529.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-b31dbc0b.js"></script>
@@ -228,7 +228,7 @@
 <li><strong>强制复核判「通过」的样本。</strong> 审计界面要对称地呈现两侧，而不是只把失败的格子标红。</li>
 </ul>
 <h2 id="四llm-评审门槛撑不起它的数字"><a class="header" href="#四llm-评审门槛撑不起它的数字">四、LLM 评审：门槛撑不起它的数字</a></h2>
-<p>拿 LLM 当评审，问题更多。judge 怎么校（TPR 与 TNR 分开看、Unknown 是合法判决、校准集优先用有机失败），是第 14 篇收口时的三条纪律。这一节只算另一笔账：门槛和样本量撑不撑得起「已校准」这几个字。</p>
+<p>拿 LLM 当评审，问题更多。judge 怎么校（TPR 与 TNR 分开看、Unknown 是合法判决、校准集优先用有机失败），是第 14 篇收口时的三条纪律。这一节只看另一个问题：门槛和样本量撑不撑得起「已校准」这几个字。</p>
 <p>先看一个「最有利条件」下的结果。Who Validates the Validators 的作者自己设计任务、自己标注全部标准答案，最后选出的判定集合在医疗任务上覆盖率只有 0.33，也就是三分之二的坏输出没被抓到；在产品描述任务上，好输出被误判为失败的比例高达 0.39。这只是两条单轮文本流水线，不能当基线，但它说明这件事很难。</p>
 <p><strong>门槛的口径不统一。</strong> 几个来源都给了准入门槛，但互相翻译不了：</p>
 <ul>

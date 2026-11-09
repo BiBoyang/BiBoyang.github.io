@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-a7ff6577.js";
+            window.path_to_searchindex_js = "searchindex-a5d36529.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-b31dbc0b.js"></script>
@@ -206,7 +206,7 @@
 </tbody>
 </table>
 </div>
-<p>归因折返规则与检出率模型同构：端到端没答对，先看模型有没有打开注入的记忆（采信层断）；打开了没核实到金标，看金标在不在注入集合（检索层断）；金标根本没进库，看写入层。<strong>不逐层分开记账，「记忆系统没用」就是一句无法证伪的抱怨。</strong></p>
+<p>归因折返规则与检出率模型同构：端到端没答对，先看模型有没有打开注入的记忆（采信层断）；打开了没核实到金标，看金标在不在注入集合（检索层断）；金标根本没进库，看写入层。<strong>不逐层分开记录，「记忆系统没用」就是一句无法证伪的抱怨。</strong></p>
 <h2 id="三两个题库两种金标必须分报"><a class="header" href="#三两个题库两种金标必须分报">三、两个题库，两种金标，必须分报</a></h2>
 <p>M 项目用的外部题库是 LongMemEval 一类的长期记忆公开学术基准（成书前复核具体版本口径），它内部把记忆库拆成两种形态，这个拆法值得照搬：</p>
 <ul>
@@ -214,7 +214,7 @@
 <li><strong>whole-session 会话库</strong>：记忆是整段会话，金标散在好几段里，判分要看 top-3 而不是 at-1。</li>
 </ul>
 <p>同一个方案在两个库上的成绩可以差出十个百分点：其迭代表里，弱判官方案在原子库命中 0.495 时整段库 0.450，而基线在整段库有 0.725。<strong>把两个库平均成一个「记忆准确率」，等于让两种任务的失败互相抵消着藏起来。</strong> 按切片分层看，不许只报聚合。</p>
-<p>金标纪律没有新东西：dev 集调参、holdout 在读题面前冻结、校准集与验证集分开（第 14 篇同此口径）。记忆题库唯一额外的要求是<strong>写入侧也要有金标</strong>：给定一段对话，「应该沉淀出哪几条事实」需要人工标注，否则写入层永远是一笔糊涂账。</p>
+<p>金标纪律没有新东西：dev 集调参、holdout 在读题面前冻结、校准集与验证集分开（第 14 篇同此口径）。记忆题库唯一额外的要求是<strong>写入侧也要有金标</strong>：给定一段对话，「应该沉淀出哪几条事实」需要人工标注，否则写入层的对错永远说不清。</p>
 <h2 id="四召回与精排必须分家"><a class="header" href="#四召回与精排必须分家">四、召回与精排必须分家</a></h2>
 <p>两个月迭代里最贵的一课，先看伤亡数字。第一版方案让一个 4B 判官独自决定「有没有相关记忆 + 注入哪几条」：turn 级命中从基线 0.620 掉到 0.495（p=0.001），整段库从 0.720 掉到 0.450。<strong>加了智能，显著退步。</strong></p>
 <p>死因清楚：判官读的是每条记忆 480 字节的聚焦窗口，看不到全文；而「有没有」这个判断需要全局视野。大量「措辞迂回但确实相关」的记忆被整片枪毙。判官擅长的是在几条候选之间比较「哪条更贴」，不擅长回答「这堆东西里到底有没有答案」。</p>
@@ -222,7 +222,7 @@
 <p>band 还有个自适应的妙处：分数分布陡的池子（程序性记忆，谁该上场一目了然），band 自动收没、退回基线，判官无权置喙；分数平的池子（事实型记忆，一堆差不多相关），band 全盖，判官尽情发挥。<strong>机制按数据的形状自动决定让不让智能插手。</strong></p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/eval10-recall-rank-split.svg" alt="BM25 地板 + band + 判官带内排序，480 字节窗口的 v1 误杀区画阴影"><span class="img-wrapper"><img src="assets/eval10-recall-rank-split.svg" alt="BM25 地板 + band + 判官带内排序，480 字节窗口的 v1 误杀区画阴影"></span></label></p>
 <h2 id="五shadow-的字节级同一性"><a class="header" href="#五shadow-的字节级同一性">五、shadow 的字节级同一性</a></h2>
-<p>记忆实验有个其他实验少有的便利：记忆干预通常可以在宿主内部完成，不改 provider 可见的字节。这给因果归因打下了一块硬地基，也就是 <strong>shadow 模式</strong>：判官照咨询、判断照记账，但注入结果与不开功能时<strong>逐字节相同</strong>，模型什么都不知道；再往上才是 advisory（判断真正生效）；判官故障、超时、返回「都行」时，输出必须保持原始顺序，不许有半生效状态。</p>
+<p>记忆实验有个其他实验少有的便利：记忆干预通常可以在宿主内部完成，不改 provider 可见的字节。这给因果归因打下了一块硬地基，也就是 <strong>shadow 模式</strong>：判官照咨询、判断照记录，但注入结果与不开功能时<strong>逐字节相同</strong>，模型什么都不知道；再往上才是 advisory（判断真正生效）；判官故障、超时、返回「都行」时，输出必须保持原始顺序，不许有半生效状态。</p>
 <p>shadow 不是「先观察观察」的客气说法，它要过一个硬测试：<strong>同一输入跑两遍（shadow 开 / 关），diff 必须为空。</strong> 这和第 3 篇的在场与送达证明是同一种纪律：宣称自己没介入，就要拿出逐字节的证据，而不是「应该没影响吧」。</p>
 <p>对照组侧的配套动作第 7 篇讲过：实验环境默认导出「判官关闭」，需要的臂再显式换回端点。记忆系统是默认值污染的重灾区：记忆功能一旦成为产品默认，对照组不做显式清除就必然被污染。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/eval10-shadow-identity.svg" alt="shadow/advisory 两轨，diff 为空的同一性闸门"><span class="img-wrapper"><img src="assets/eval10-shadow-identity.svg" alt="shadow/advisory 两轨，diff 为空的同一性闸门"></span></label></p>
