@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-3c58fa40.js";
+            window.path_to_searchindex_js = "searchindex-ca30757f.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-235d8387.js"></script>
@@ -191,9 +191,9 @@
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch21-popup-priority.svg" alt="按键的旅程：弹窗优先级链"><span class="img-wrapper"><img src="assets/ch21-popup-priority.svg" alt="按键的旅程：弹窗优先级链"></span></label></p>
 <p>这个设计的要点不在链本身（任何 GUI 的响应链都长这样），在于它把“哪个弹窗优先“从运行时状态变成了<strong>代码顺序</strong>：弹窗之间的优先级不靠注册表、不靠 z-index，靠 if-else 的书写顺序，这是最显式、最不容易被配置改坏的形式。考虑到这些弹窗涉及文件引用和 skill 调用这种直接影响上下文组装的功能，“优先级不可配置“是刻意的保守。</p>
 <p>Kimi Code 走了另一条路，而且走得更远：它的 <code>editor-component.ts</code> 把整个编辑器定义成一个可替换接口（<code>EditorComponent</code>），注释明说动机——让扩展可以提供自己的编辑器实现，比如 vim 模式、emacs 模式、自定义键位。Codex 把优先级固化在代码顺序里，Kimi 把整个输入行为做成扩展点。一个防的是“被改坏“，一个赌的是“被扩展“。</p>
-<ul>
-<li>笔者注：这一点上我更倾向 Kimi Code，Codex 有些过于保守了。</li>
-</ul>
+<blockquote>
+<p>笔者注：这一点上我更倾向 Kimi Code，Codex 有些过于保守了。</p>
+</blockquote>
 <hr>
 <h2 id="三这段输入是什么在-composer-内部裁决"><a class="header" href="#三这段输入是什么在-composer-内部裁决">三、“这段输入是什么“在 composer 内部裁决</a></h2>
 <p>回车之后发生什么，答案不是一个字符串，是一个枚举。Codex 的 <code>InputResult</code> 把提交裁决为几类：<code>Submitted{text, text_elements}</code>（普通消息，附带已解析的元素区间）、<code>Command</code>（slash 命令）、<code>CommandWithArgs</code> 等。“这是消息还是命令“的判断在 composer 内部完成，上游拿到的已经是结构化的裁决结果。</p>

@@ -99,6 +99,6 @@ PydanticAI 的替身模型允许截获框架发给模型的全部 payload，零�
 ## 参考与延伸
 
 - *本章由作者同名草稿收编改写，成书首发（草稿不再单独发博客）；全部 88 份原始记录与工具链在 skill-quake / repo-quake 仓库（2026-09 底至 2026-10 初运行），两条方法学修订已固化进主干（611fabc）。*
-- *靶子一为照 Vercel eve 框架（2026-06 开源）目录结构手搓的最小 agent，未对其仓库本体注入；靶子二为 PydanticAI，确定性替身与 payload 截获为其官方 TestModel/FunctionModel 能力。*
+- *靶子一为照 [Vercel eve](https://github.com/vercel/eve) 框架（2026-06 开源）目录结构手搓的最小 agent，未对其仓库本体注入；靶子二为 PydanticAI，确定性替身与 payload 截获为其官方 [TestModel/FunctionModel](https://pydantic.dev/docs/ai/guides/testing/) 能力。*
 - *pi 宿主的 reread_any 绊线数字（TP=8/FP=0/TN=23/FN=3）为 2026-10-03 pi v1.0.0 实测。*
 - *「外壳假说」对照格中 k3-256k 路的推理档位未与对照格显式对齐，强度结论按文中 caveat 降格理解。*

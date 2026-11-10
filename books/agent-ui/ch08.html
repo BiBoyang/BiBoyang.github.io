@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-3c58fa40.js";
+            window.path_to_searchindex_js = "searchindex-ca30757f.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-235d8387.js"></script>
@@ -230,7 +230,7 @@
 <p>GUI 的优势在这里：同一个权限请求，可以做非阻塞的 toast + badge，用户喝咖啡回来再处理。但这也引入了一个新问题：如果用户不在，Agent 就一直等着？超时策略和默认行为（超时拒绝 vs 超时自动批准低风险操作）是权限 UX 里最需要产品判断力的部分，也是最容易被忽视的。</p>
 <p>信任等级还要在界面上被“表达“出来，而不只是存在于配置里。常见的做法是把 2.2 的四层风险映射到视觉层级：只读操作用中性色、默认按钮聚焦“允许“；难回滚和外部副作用换警示色、去掉“总是允许“选项、默认聚焦“拒绝“，让用户在误触场景下落在安全的一侧。信任等级表达得好的界面，用户不读完整段描述也能判断“这个请求值不值得停下来细看“；表达得差的界面，所有请求长一个样，用户要么全部无脑点允许，要么全部停下来读，上面说的授权疲劳和过度打断，一半原因在这里。</p>
 <blockquote>
-<p>补记（2026.09）：本篇定稿后的第二天，这个取舍就有了新的行业答案。8 月 14 日起，Claude Code 的 auto mode 成为 Pro/Max/Team 计划的默认（3 月上线，此前只是可选项）：一个 AI 分类器替用户批准常规操作、拦下不可逆和危险的命令。Anthropic 给出的依据是分类器能抓住约 80–89% 的危险命令，而审批疲劳的人类只有 13–14%。这等于在“逐条确认“和“无脑放行“之间插进了第三个审批者，把授权疲劳工程化地绕开了。但它同时造出一个新问题：程序员要的是可观察，分类器自己的判断过程却是一个新的黑箱，第 1 篇的信任模型在这里遇到了新的考题。</p>
+<p>补记（2026.09）：本篇定稿后的第二天，这个取舍就有了新的行业答案。8 月 14 日起，Claude Code 的 <a href="https://claude.com/resources/articles/auto-mode">auto mode</a> 成为 Pro/Max/Team 计划的默认（3 月上线，此前只是可选项）：一个 AI 分类器替用户批准常规操作、拦下不可逆和危险的命令。Anthropic 给出的依据是分类器拦下了 89% 的危险命令，人工审批只拦下 13.6%。这等于在“逐条确认“和“无脑放行“之间插进了第三个审批者，把授权疲劳工程化地绕开了。但它同时造出一个新问题：程序员要的是可观察，分类器自己的判断过程却是一个新的黑箱，第 1 篇的信任模型在这里遇到了新的考题。</p>
 </blockquote>
 <h3 id="25-三种界面上的权限-ux-差异"><a class="header" href="#25-三种界面上的权限-ux-差异">2.5 三种界面上的权限 UX 差异</a></h3>
 <div class="table-wrapper">
@@ -243,11 +243,11 @@
 <tr><td><strong>阻塞性</strong></td><td>完全阻塞</td><td>可非阻塞（toast + badge）</td><td>取决于实现</td></tr>
 <tr><td><strong>批量批准</strong></td><td><code>y</code> 或 <code>a</code>（全部）</td><td>多选列表</td><td>多选列表</td></tr>
 <tr><td><strong>信任规则持久化</strong></td><td>配置文件（如 Claude Code 的 <code>.claude/settings.json</code>）</td><td>本地存储 + UI 管理面板</td><td>服务端存储</td></tr>
-<tr><td><strong>离场处理</strong></td><td>不支持（用户离开 = Agent 挂起）</td><td>超时策略 + 后台通知</td><td>移动端推送</td></tr>
+<tr><td><strong>离场处理</strong></td><td>默认挂起（用户离开 = Agent 停在原地）</td><td>超时策略 + 后台通知</td><td>移动端推送</td></tr>
 </tbody>
 </table>
 </div>
-<p>TUI 最简单但最脆弱，用户离开终端，Agent 就卡在权限请求上。GUI 有能力做得更好，但设计复杂度也更高。</p>
+<p>TUI 最简单但最脆弱，用户离开终端，Agent 就卡在权限请求上（到 2026 年秋天，头部产品已经补上了后台会话和推送，见第 11 篇的补记）。GUI 有能力做得更好，但设计复杂度也更高。</p>
 <h3 id="26-操作路径长度同一个权限请求两种界面的真实差距"><a class="header" href="#26-操作路径长度同一个权限请求两种界面的真实差距">2.6 操作路径长度：同一个权限请求，两种界面的真实差距</a></h3>
 <p>衡量 UI 好坏有一个直接的方法：别看“展示多少信息“，看<strong>从看到请求到完成决策需要几步操作</strong>。</p>
 <p>同一个场景，Agent 请求读取 <code>~/.ssh/config</code>：</p>
@@ -279,7 +279,7 @@
 <li><strong>测试关联</strong>：每个变更旁边标注“这个改动使得测试 X 从失败变成通过“，建立 diff 和测试结果之间的因果关系。</li>
 </ul>
 <p>按语义组织的价值在量大时最明显：一次修 10 个文件的 diff 里，可能 7 个文件只是 import 跟随调整，需要决策的只有 3 个 hunk。把机械变更折叠成一组（“另外 7 个文件的 import 同步，共 42 行”），审查的认知负载从 O(文件数) 降到 O(决策点数)。这需要从 Agent 的事件流里提取意图信息，<code>file.changed</code> 事件本身不告诉你“这个改动是跟着哪个改动来的“，聚类是 diff UX 层要补的工作。</p>
-<p>这些不是新发明，Code Review 工具（Gerrit、Reviewable、GitHub PR review）已经做了很多年。但 Agent 产出的 diff 有两个独特的约束：一是量可能很大（一次修 10 个文件的 bug），二是上下文信息需要从 Agent 的事件流里提取，不是从 git log 里提取。</p>
+<p>这些不是新发明，Code Review 工具（<a href="https://gerrit-review.googlesource.com/Documentation/">Gerrit</a>、<a href="https://reviewable.io/">Reviewable</a>、<a href="https://docs.github.com/en/pull-requests/how-tos/review-pull-requests">GitHub PR review</a>）已经做了很多年。但 Agent 产出的 diff 有两个独特的约束：一是量可能很大（一次修 10 个文件的 bug），二是上下文信息需要从 Agent 的事件流里提取，不是从 git log 里提取。</p>
 <h3 id="34-diff-ux-是-cli-和-gui-分工最清晰的点"><a class="header" href="#34-diff-ux-是-cli-和-gui-分工最清晰的点">3.4 Diff UX 是 CLI 和 GUI 分工最清晰的点</a></h3>
 <p>CLI/TUI：适合<strong>快速扫一眼</strong>。<code>git diff</code> 在终端里看 20 行变更，半秒判断“没问题“。适合小任务、小改动。</p>
 <p>CLI/TUI 还有一个容易被低估的位置：<strong>过程展示</strong>。Agent 工作过程中，每产生一个 <code>file.changed</code>，终端里就实时追加一段 <code>+/-</code> 行，用户在 Agent 边干的时候边看 diff 逐步成形，发现方向不对可以立即打断，不用等它写完 10 个文件再审。GUI 的 diff 面板通常按“完成后集中审查“设计，实时流式展示反而是它的弱项，并排视图在中间态下频繁重排，阅读体验很差。过程展示用 CLI/TUI，集中审查用 GUI，这是两种介质在 diff 上的分工。</p>

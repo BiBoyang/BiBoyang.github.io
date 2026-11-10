@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-3c58fa40.js";
+            window.path_to_searchindex_js = "searchindex-ca30757f.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-235d8387.js"></script>
@@ -181,6 +181,7 @@
 <blockquote>
 <p>前面各篇讲的都是“大”问题：渲染所有权、双模、事件树展平。这一篇讲一个“小”东西：状态行。每个人都写过 spinner，没人写过“什么时候显示什么、什么时候必须消失”。它的难点不在动画，在防闪烁。</p>
 </blockquote>
+<hr>
 <h2 id="一状态行的两种所有权"><a class="header" href="#一状态行的两种所有权">一、状态行的两种所有权</a></h2>
 <p>第 4 篇讲过 ForgeLoopTUI 的 <code>operationStart/operationEnd</code>：工具开始时追加一行“⎿ running…“，工具结束时用结果行<strong>替换</strong>它。状态行的所有权属于那个工具：它因事件而生、因事件而灭，生命周期和一次工具调用对齐。</p>
 <p>Codex 的状态指示器是另一个物种。它的所有权属于<strong>整个 turn</strong>：从回车到 turn 收敛，不管中间经过几次工具调用、几段流式输出，底部都是同一个指示器实例，显示的内容在变（“Thinking”/“Working“加一行细节），实例不变。它从不被“结果“替换，只会被流式内容<strong>压制</strong>，然后再被<strong>恢复</strong>。</p>
@@ -190,7 +191,7 @@
 <p>第一个设计有点反直觉：reasoning（模型的推理流）<strong>不进 transcript</strong>。</p>
 <p>Codex 的 ChatWidget 收到 reasoning delta 时只往一个 buffer 里累积，然后从 buffer 里提取第一个 <code>**加粗**</code> 片段，作为状态行的标题显示。模型在推理块里写的“我先分析用户的需求“这类句子，只有被加粗的那一句能登上状态行；整个推理过程在 transcript 里不留痕迹（推理块结束时只落一条摘要记录）。</p>
 <p>配套的降级同样是静默的：如果 buffer 里还没有出现加粗片段，就保持现有标题不动，不显示“正在提取标题“之类的中间态。还有一条优先级细则：如果正在等一个 unified exec 的结果，执行等待的状态优先于推理标题，后者直接让位。</p>
-<p>这套“从内容里蒸馏状态“的做法，把状态行从“系统播报“变成了“内容摘要“。它还顺带决定了终端窗口标题：Thinking 和 Working 两种状态会映射到窗口标题上，用户在 Dock 或窗口列表里就能分辨 agent 是在想还是在动手。状态行的信息层次因此是：窗口标题 &lt; 状态行标题 &lt; 状态行细节，同一状态的三档投影。</p>
+<p>这套“从内容里蒸馏状态“的做法，把状态行从“系统播报“变成了“内容摘要“。它还顺带决定了终端窗口标题：Thinking 和 Working 两种状态会映射到窗口标题上，用户在标签页或窗口列表里就能分辨 agent 是在想还是在动手。状态行的信息层次因此是：窗口标题 &lt; 状态行标题 &lt; 状态行细节，同一状态的三档投影。</p>
 <hr>
 <h2 id="三防闪烁三闸门"><a class="header" href="#三防闪烁三闸门">三、防闪烁三闸门</a></h2>
 <p>状态行和流式内容共享同一块屏幕底部区域，两者共存会闪：一帧里既有新放行的内容，又有“正在工作“，视觉上就是抽搐。Codex 的解法是三道相当保守的闸门。</p>
@@ -198,11 +199,11 @@
 <p><strong>闸门二：恢复看空闲。</strong><br>一段 commentary（前言性输出）结束时，不立刻把状态行放回来。先置一个“待恢复“标记，然后等三个条件同时成立：turn 还在运行、两个流式队列（回答流与计划流）全部 idle、标记置位，才恢复。缺任何一个条件就继续压着。没有这个闸门，“前言结束→工具即将开始“的间隙里状态行会闪现一下又被压掉，形成“显示→隐藏→显示“的三连闪。</p>
 <p><strong>闸门三：收尾看队列。</strong><br>最终回答完成时，状态行是否恢复，取决于输入队列里有没有用户插进来的 steer 消息。如果用户已经插了话，turn 马上又要忙起来，恢复那一帧就是多余的闪烁，所以不恢复，直接保持隐藏等下一波。</p>
 <p>三道闸门串起来的判断标准是同一个：<strong>状态行的每一次显隐都必须对应用户心智模型里的一次真实状态切换</strong>，任何“技术上正确但感知上是噪声“的显隐都要被闸门吃掉。</p>
-<hr>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch23-status-gates.svg" alt="状态行的防闪烁三闸门"><span class="img-wrapper"><img src="assets/ch23-status-gates.svg" alt="状态行的防闪烁三闸门"></span></label></p>
+<hr>
 <h2 id="四中断偏序另一条隐藏的状态机"><a class="header" href="#四中断偏序另一条隐藏的状态机">四、中断偏序：另一条隐藏的状态机</a></h2>
 <p>还有一个相邻机制值得在这里记一笔。流式写入进行中，ExecBegin/ExecEnd 这类生命周期事件不允许立刻上屏，而是先进一个 FIFO 队列延后，等流式写入的空窗再处理（<code>defer_or_handle</code>）。</p>
-<p>理由和防闪烁同源：状态区与流内容如果交错落笔，两者的时间线都会乱。生命周期事件是<strong>状态</strong>，流式内容是<strong>正文</strong>，正文正在流动时，状态必须排队。这等于承认了一个调度原则：底部状态区是单写的，两个写者之间用偏序关系串行化，而不是靠运气。</p>
+<p>理由和防闪烁同源：状态区与流内容如果交错落笔，两者的时间线都会乱。生命周期事件是<strong>状态</strong>，流式内容是<strong>正文</strong>，正文正在流动时，状态必须排队。这等于承认了一个调度原则：底部状态区同一时刻只许一个写者落笔，两个写者之间用偏序关系串行化，而不是靠运气。</p>
 <hr>
 <h2 id="五动画是自驱动的"><a class="header" href="#五动画是自驱动的">五、动画是自驱动的</a></h2>
 <p>最后一块拼图是帧从哪来。spinner 不需要等内容事件，它在自己的渲染里通过 <code>schedule_frame_in</code> 主动预约下一帧（有动画时约 32ms 后，只有计时器时 1 秒后）；shimmer 那道扫过文字的渐变高光同理，是按已流逝时间计算的纯函数。第 9 篇补记讲的全局帧调度只管内容放行，状态行动画自请帧，两条帧请求线在同一个渲染循环里合流。</p>

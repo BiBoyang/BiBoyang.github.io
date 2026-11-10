@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-3c58fa40.js";
+            window.path_to_searchindex_js = "searchindex-ca30757f.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-235d8387.js"></script>
@@ -183,17 +183,17 @@
 </blockquote>
 <hr>
 <h2 id="一探测启动时的第一次核对"><a class="header" href="#一探测启动时的第一次核对">一、探测：启动时的第一次核对</a></h2>
-<p>终端能力没法靠 <code>$TERM</code> 问出来，环境变量会撒谎（SSH 之后它是远端机器的猜测）。所以严肃的 TUI 都在启动时做一次实况探测：向终端发查询序列，等回应，按回应决定启用哪些增强。</p>
+<p>终端能力没法靠 <code>$TERM</code> 问出来，环境变量会撒谎（SSH 默认只把 TERM 带过去，TERM_PROGRAM 这类变量到远端就没了；进了 tmux，TERM 又换成 tmux 自己的值）。所以严肃的 TUI 都在启动时做一次实况探测：向终端发查询序列，等回应，按回应决定启用哪些增强。</p>
 <p>但“等回应“本身就是设计难题：等多久？等来的字节和用户的按键混在同一条 stdin 里，怎么分？三家的答案几乎是一个光谱。</p>
 <p><strong>Codex：有预算的轮询，加一条哨兵捷径。</strong>
 <code>terminal_probe</code> 模块存在的原因是注释里的一句话：crossterm 的公共查询 API 最长会等两秒，“对启动和恢复来说太久，不支持的终端应该干脆退回保守默认”。所以 Codex 自己写探测：每组查询 250ms 预算（研究时为 100ms，Codex 于 2026-09 上调至 250ms，#46855），探光标位置、OSC 10/11 默认前景背景色、kitty 键盘增强支持；探测消耗掉的字节会回放进 crossterm 的解析器，保证探测期间用户的真实按键不丢。kitty 探测里还藏着一条捷径：查询后面跟着一个主设备属性（DA）请求，终端按序应答，DA 到了而键盘标志没到，就<strong>立即</strong>判定不支持，不必等满 250ms。整个过程带耗时埋点（“terminal startup probes completed”），探测在启动链路里是被当作正式开销来管理的一环。</p>
 <p><strong>Claude Code：用顺序代替超时。</strong>
-同一条哨兵，Claude Code 押得更彻底：<code>terminal-querier</code> <strong>不设超时</strong>。技巧叫 DA1 哨兵：每批查询末尾追加一个 DA1 查询（主设备属性），而 VT100 以来的每个终端都会回答 DA1，且终端按顺序应答。于是判定变成纯顺序问题：你的响应先于 DA1 到，说明支持；DA1 先到了，说明不支持。超时这个维度被从判定机制里删掉了，换成对一个老旧但普适的协议不变量的信任。探测目录里的清单也值得看：DECRQM 问同步输出（2026）与 grapheme 聚簇（2027）模式、OSC 11 问背景色、kitty 键盘查询、XTVERSION 问终端名——XTVERSION 的注释点破了为什么环境变量不可靠：查询走 pty（伪终端）不走环境，<strong>能穿透 SSH</strong>，而 <code>TERM_PROGRAM</code> 不能。（Claude Code 以打包形式发布、未公开源码；本段的模块名与注释引自其 <code>terminal-querier.ts</code> 源码镜像。）</p>
+同一条哨兵，Claude Code 押得更彻底：<code>terminal-querier</code> <strong>不设超时</strong>。技巧叫 DA1 哨兵：每批查询末尾追加一个 DA1 查询（主设备属性），而 VT100 以来的每个终端都会回答 DA1，且终端按顺序应答。于是判定变成纯顺序问题：你的响应先于 DA1 到，说明支持；DA1 先到了，说明不支持。超时这个维度被从判定机制里删掉了，换成对一个老旧但普适的协议不变量的信任。探测目录里的清单也值得看：DECRQM 问同步输出（模式 2026）与 grapheme 聚簇（模式 2027）、OSC 11 问背景色、kitty 键盘查询、XTVERSION 问终端名——XTVERSION 的注释点破了为什么环境变量不可靠：查询走 pty（伪终端）不走环境，<strong>能穿透 SSH</strong>，而 <code>TERM_PROGRAM</code> 不能。（Claude Code 以打包形式发布、未公开源码；本段的模块名与注释引自其 <code>terminal-querier.ts</code> 源码镜像。）</p>
 <p><strong>Kimi：协商式握手。</strong>
 kitty 键盘协议的完整三件套一次发出：推入目标标志位、查询当前标志、追加设备属性查询（<code>ESC[&gt;7u</code> <code>ESC[?u</code> <code>ESC[c</code>），然后按 150ms 分片超时收集回应。另有一个容易漏的收尾细节：退出前先排空 stdin——否则 kitty 协议下按过的键会留下“释放事件“，终端在你退出后还在吐字节。</p>
 <p>还有第四种哲学，是我自己设计出来的：ForgeLoopTUI <strong>不探测</strong>。<code>RawTTY.enter()</code> 无条件推入 kitty 消歧标志和 bracketed paste 开关，注释写明理由——“不支持的终端会静默吸收这些序列”。这是拿终端生态的一个经验事实当赌注：未知序列无害。</p>
-<hr>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch22-terminal-probe.svg" alt="启动探测的四种姿态"><span class="img-wrapper"><img src="assets/ch22-terminal-probe.svg" alt="启动探测的四种姿态"></span></label></p>
+<hr>
 <h2 id="二一个键为什么不是一个键"><a class="header" href="#二一个键为什么不是一个键">二、一个键为什么不是一个键</a></h2>
 <p>探测的主要对象之一是键盘协议，因为传统终端键盘编码是歧义丛生的：Esc 键和 Alt 前缀共用 <code>0x1b</code>，Ctrl+I 和 Tab 是同一个字节，Ctrl+M 和回车是同一个字节。kitty 键盘协议（CSI-u）的存在意义就是消歧：给每个按键事件完整的键码与修饰符。</p>
 <p>启用它是改善，也是新的维护负担。Codex 留了显式逃生门（<code>CODEX_TUI_DISABLE_KEYBOARD_ENHANCEMENT</code> 环境变量）；Kimi 除协议外还备了一条原生侧通路——通过原生 helper 直接轮询真实修饰键状态（<code>native-modifiers.ts</code>），协议报不上来的时候问操作系统；Claude Code 则同时解析两套编码——CSI-u 和 xterm 的 modifyOtherKeys——并注释了两者的参数顺序相反（<code>ESC[13;2u</code> vs <code>ESC[27;2;13~</code>），后者主要在 SSH 场景出现，因为“TERM 嗅探认不出 Ghostty，而我们从不主动推 kitty 模式“。</p>
@@ -220,7 +220,7 @@ kitty 键盘协议的完整三件套一次发出：推入目标标志位、查�
 <tr><td>能力探测</td><td>250ms 预算 + DA 哨兵提前判定，字节回放</td><td>DA1 哨兵为唯一机制，无超时</td><td>协商序列 + 150ms 分片超时</td><td>不探测，乐观推送</td></tr>
 <tr><td>kitty 键盘</td><td>探测启用 + 环境变量逃生门</td><td>只解析不推送，兼收 modifyOtherKeys</td><td>推 flags 7 + 原生修饰键兜底</td><td>无条件推 <code>ESC[&gt;1u</code>，只映射 Enter</td></tr>
 <tr><td>bracketed paste</td><td>支持，缺标记时走 paste-burst</td><td>支持，缺标记时 \r 启发式归一</td><td>支持，缺标记时走 paste-burst</td><td>支持（<code>ESC[?2004h</code>）</td></tr>
-<tr><td>挂起恢复</td><td>resume 重上 raw mode</td><td>—（未见对应机制）</td><td>退出前排空 stdin</td><td>—（引擎层不持有进程模型）</td></tr>
+<tr><td>挂起恢复与退出清理</td><td>resume 重上 raw mode</td><td>—（未见对应机制）</td><td>退出前排空 stdin</td><td>—（引擎层不持有进程模型）</td></tr>
 <tr><td>终端身份</td><td>OSC 10/11 默认颜色、光标位置</td><td>XTVERSION（穿透 SSH）</td><td>OSC 颜色判明暗主题</td><td>不探测</td></tr>
 </tbody>
 </table>
@@ -231,7 +231,7 @@ kitty 键盘协议的完整三件套一次发出：推入目标标志位、查�
 <h2 id="六总结"><a class="header" href="#六总结">六、总结</a></h2>
 <p>输出侧的降级链有一个舒服的终点：颜色退到 16 色，内容还在。</p>
 <p>输入侧没有这个终点：按键的含义错了就是<strong>错了</strong>，谈不上降级。所以输入侧的工程主题是“核对“，不是“降级“：启动时探测核对、模式开关三态核对、挂起恢复核对、复用器在场核对。终端是上世纪七十年代的协议，每一家 agent 都在为它重新核对一次。</p>
-<p>输出侧讲完了，输入侧也讲完了。现在可以去中场了：第 7 篇的 Event Sourcing 会回答一个这两篇不断逼近的问题——为什么输入输出两侧的挣扎，最后都收敛到“事件“这个抽象上。</p>
+<p>输出侧讲完了，输入侧也讲完了。现在可以去中场了。第 7 篇的 Event Sourcing 往上走一层，回答输出侧那几篇不断逼近的问题：为什么这些挣扎最后都收敛到“事件“这个抽象上。</p>
 <hr>
 <h2 id="参考与延伸"><a class="header" href="#参考与延伸">参考与延伸</a></h2>
 <ul>

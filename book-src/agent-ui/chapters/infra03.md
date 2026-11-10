@@ -18,15 +18,15 @@
 
 ## 二、工具边界：MCP 和它的无状态豪赌
 
-MCP 管的是能力发现和结构化 IO：工具怎么声明自己的 schema、结果怎么以结构化形态返回（`structuredContent` 明说是给模型的）。这条边界上，基建第 1 篇已经核查过 2026-07-28 那次激进的无状态化重写：会话头删了，断线恢复删了，官方 changelog 的措辞是把这些"从传输里移除"，流断在半路，结果作废，客户端在应用层重试。
+MCP 管的是能力发现和结构化 IO：工具怎么声明自己的 schema、结果怎么以结构化形态返回（`structuredContent` 明说是给模型的）。这条边界上，基建第 1 篇已经核查过 2026-07-28 那次激进的无状态化重写：会话头删了，断线恢复删了，[官方 changelog](https://modelcontextprotocol.io/specification/2026-07-28/changelog) 的措辞是把这些"从传输里移除"，流断在半路，结果作废，客户端在应用层重试。
 
-当时把它当传输层新闻讲，这里补上边界层的解读：**MCP 敢这么做，是因为工具这个对话者近似纯函数**。调用、返回、结束，边界对面没有需要延续的视图状态，会话性对这条边界是奢侈品而非必需品。无状态化的代价是真实的（会话被推给两端自己解决），但这个代价恰好落在了一个扛得住的位置。
+当时把它当传输层新闻讲，这里补上边界层的解读：**MCP 敢这么做，是因为多数工具调用近似纯函数**。调用、返回、结束，边界对面没有需要延续的视图状态，会话性对这条边界是奢侈品而非必需品。无状态化的代价是真实的（会话被推给两端自己解决），但这个代价恰好落在了一个扛得住的位置。
 
 ## 三、编辑器边界：ACP 的"LSP 时刻"
 
 ACP 面对的问题形状是编辑器圈的老朋友：编辑器不想为每个 agent 写一遍 UI，agent 不想为每个编辑器写一遍适配，这正是 LSP 解决过的问题，只是主角从语言换成了 agent。所以它的定位被叫做"AI coding agent 的 LSP 时刻"：开放标准，JSON-RPC over stdio/WebSocket，agent 作为子进程被编辑器拉起，编辑器从此是一个能装任何 agent 的通用投影面。
 
-生态现状（2026-09 核实）：Zed 的 ACP Registry 已上线，入驻名单包括 Claude Code、Codex CLI、GitHub Copilot CLI、OpenCode、Cursor、Pi；JetBrains 在 2026 年 1 月开了自家的 ACP Agent Registry，覆盖 Gemini CLI、Claude Code、Auggie、OpenCode、Copilot。接入深度不一：Copilot CLI 和 Gemini CLI 是原生支持，Claude Code 和 Codex 走适配器。
+生态现状（2026-09 核实）：Zed 的 [ACP Registry](https://zed.dev/blog/acp-registry) 已上线，入驻名单包括 Claude Code、Codex CLI、GitHub Copilot CLI、OpenCode、Cursor、Pi；JetBrains 在 2026 年 1 月开了自家的 [ACP Agent Registry](https://blog.jetbrains.com/ai/2026/01/acp-agent-registry/)，覆盖 Gemini CLI、Claude Code、Auggie、OpenCode、Copilot。接入深度不一：Copilot CLI 和 Gemini CLI 是原生支持，Claude Code 和 Codex 走适配器。
 
 一手注脚来自 kimi-code：仓库里有一个专门的 `packages/acp-adapter` 包，依赖 `@agentclientprotocol/sdk@0.23.0`，月之暗面给自家 agent 配的早期周边里，编辑器适配层占了一个正式包位。测试文件名把适配的难点泄露得很直白：`tool-call-stream`（流式工具调用怎么过桥）、`set-session-config-option`（会话配置怎么映射）。**过协议边界的从来不只是事件，还有两侧各自的会话语义。**
 
@@ -67,7 +67,7 @@ AG-UI（CopilotKit 出品）管 agent 和浏览器前端的对话：SSE 传输�
 ## 参考与延伸
 
 - *核查分层（截至 2026-09-28）：ACP Registry 名单与接入方式基于 Zed 官方博客与文档、JetBrains 官方博客（2026-01）及 agentclientprotocol.com 目录，多源交叉。*
-- *AG-UI 事件分组基于 CopilotKit 官方资料与第三方教程（事件计数 16–17 存在版本差异，按量级表述）。*
+- *AG-UI 事件分组基于 [CopilotKit 官方资料](https://docs.ag-ui.com/introduction)与第三方教程（事件计数 16–17 存在版本差异，按量级表述）。*
 - *MCP 无状态化修订引自基建第 1 篇核查过的官方 changelog。*
 - *kimi-code 一手（`1e553fc`：`packages/acp-adapter`、`@agentclientprotocol/sdk@0.23.0`、测试文件名）。*
-- *zacp 为系列既有引用（helloxz/zacp）。*
+- *zacp 为系列既有引用（[helloxz/zacp](https://github.com/helloxz/zacp)）。*

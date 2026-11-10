@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-3c58fa40.js";
+            window.path_to_searchindex_js = "searchindex-ca30757f.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-235d8387.js"></script>
@@ -191,12 +191,12 @@
 <li><strong>2026 年 5 月，jqwik 1.10.0</strong>：一个百万级下载的 Java 测试库，作者本人在新版本里埋了用 ANSI 序列隐藏的注入指令：人眼看构建输出干净，AI 编码代理（Cursor、Claude Code 这类会读终端输出的）会读到并可能执行。Snyk 六月初出了分析。注意这个细节：埋码的不是黑产，是库作者本人的抗议行为。连正经作者都意识到，这条信道开箱即用。</li>
 </ul>
 <p>把四件事叠起来，pattern 很清楚：<strong>攻击面不在模型，在“内容如何到达眼睛和上下文“这一层</strong>。模型侧防御是概率性的，渲染边界是确定性的，概率性的那层已经被 EchoLeak 证明会漏，确定性的这层至今没人建。</p>
-<p>用户指令、模型输出、工具输出，三种信任级别的内容，被 Agent UI 铺在同一张渲染面上，不做任何区分。浏览器在九十年代为同样的问题发明了同源策略、HTML 转义和 CSP；Agent UI 现在处于“把别人家的 HTML 直接 innerHTML“的年代。</p>
+<p>用户指令、模型输出、工具输出，三种信任级别的内容，被 Agent UI 铺在同一张渲染面上，不做任何区分。浏览器在九十年代为同样的问题发明了同源策略和 HTML 转义，后来又有了 CSP；Agent UI 现在处于“把别人家的 HTML 直接 innerHTML“的年代。</p>
 <h2 id="二终端的-xss一次确认框劫持的解剖"><a class="header" href="#二终端的-xss一次确认框劫持的解剖">二、终端的 XSS：一次确认框劫持的解剖</a></h2>
 <p>具体到字符终端，攻击的零件库其实很小：</p>
 <ul>
 <li><code>ESC[A</code>（光标上移）+ <code>ESC[2K</code>（擦行）：<strong>改写已经输出的内容</strong>。第 2 篇说过终端没有 undo、喷出去的内容管不着，这个对引擎的约束，对攻击者是福利：他也可以擦掉真提示、画一个假的。</li>
-<li><strong>OSC 52</strong>：一段转义序列直接写用户剪贴板。配合钓鱼话术（“请粘贴你的恢复码检查配置”），是零交互的凭证收割。</li>
+<li><strong>OSC 52</strong>：一段转义序列就能改写用户剪贴板，用户下一次粘贴的就是攻击者准备的命令；有些终端还允许用 OSC 52 读剪贴板，那就是零交互的窃取。</li>
 <li><strong>OSC 8</strong>：超链接的文字和目标可以分离，显示 <code>github.com/foo</code>，指向别处。</li>
 <li>模式开关滥用：开关括号粘贴、键盘协议、同步输出，都可能让客户端行为错乱。</li>
 </ul>
@@ -219,7 +219,7 @@
 </table>
 </div>
 <p>除了 Codex，三家（算上我）全部裸奔。Codex 也只防了用户输入、命令输出、链接和标题；时间线里 Trail of Bits 和 Terminal DiLLMa 那两条攻击走的 MCP 工具结果和模型输出，在 Codex 里照样原样上屏。Claude Code 是发布产物，没做同等排查，如实声明。</p>
-<p>为什么那三家都没有？原因是结构性的，不是哪家疏忽。这几家引擎都把<strong>样式和内容混在同一条字符串流</strong>里，第 14 篇拆过的段落模型，引擎自己的颜色、重置、链接序列和用户内容交织在同一个数组里。在这个表示法上做“清洗内容里的控制码“是自相矛盾的：你分不清哪个 <code>ESC</code> 是自己人。所以没人做，等于谁都没做。Codex 正好是旁证：它的样式存在 ratatui 的 span 属性里，不和内容挤在一个字符串里，所以能对内容单独动手，用户输入那一路就是这么清洗的。</p>
+<p>为什么那三家都没有？原因是结构性的，不是哪家疏忽。这几家引擎都把<strong>样式和内容混在同一条字符串流</strong>里，第 14 篇拆过的行数组，引擎自己的颜色、重置、链接序列和用户内容交织在同一个数组里。在这个表示法上做“清洗内容里的控制码“是自相矛盾的：你分不清哪个 <code>ESC</code> 是自己人。所以没人做，等于谁都没做。Codex 正好是旁证：它的样式存在 ratatui 的 span 属性里，不和内容挤在一个字符串里，所以能对内容单独动手，用户输入那一路就是这么清洗的。</p>
 <p>这和 Web 早期“HTML 与数据混流“导致 XSS 泛滥是同一个病，解药也是同一个：<strong>结构化分离</strong>。</p>
 <h2 id="四防线应该长在哪几层"><a class="header" href="#四防线应该长在哪几层">四、防线应该长在哪几层</a></h2>
 <p><strong>转义层：终端版的 HTML escaping。</strong> 不可信文本（工具输出、文件内容、网页摘要）在进入行数组之前，中和全部 CSI/OSC 序列：剥除，或可见地转义成 <code>␛[A</code>。OSC 52、OSC 8、光标码、模式开关，零容忍。这件事的前提是内容与样式的结构化分离，恰好是第 7 篇说过的“渲染输入应该是结构化事件，投影发生在边界上“：转义就发生在投影边界，不用在 ANSI 字符串里做外科手术。这个系列写到这里，安全问题和架构问题在第 7 篇的地基上会师了。</p>
@@ -231,13 +231,12 @@
 <h2 id="五总结"><a class="header" href="#五总结">五、总结</a></h2>
 <p>第 10 篇问“批不批“，这一篇问“看到的真的吗“。前者是决策设计，后者是感知前提，感知层失守，决策层的一切精巧（分级、超时、auto mode 的信任衰减）都建在沙地上。human-in-the-loop 的完整拼写从来不是 approve what you see，是 <strong>see what you approve</strong>。</p>
 <p>放到系列坐标里：渲染所有权四部曲（第 13、14、17、18 篇）讲的是“屏幕上的像素归谁管“；这一篇讲“像素本身能不能被信任“。两件事在终端上还是两个问题，到了 GUI 时代会合成一个：信任边界必须和渲染边界同构，否则就是给 innerHTML 写文档。</p>
-<p>还有一件事要记在这里：感知的反面是记忆。引擎开始替你忘掉上下文的那一刻，没有对话框，没有提示音，只有一行灰字：context low。谁授权了这次遗忘，丢掉了什么，能不能审计，本篇回答不了，先记在这里。</p>
+<p>还有一件事要记在这里：感知的反面是记忆。引擎开始替你忘掉上下文的那一刻，没有对话框，没有提示音，只有一行灰字：context low。谁授权了这次遗忘，丢掉了什么，能不能审计，这几个问题本篇回答不了，留作开放题。</p>
 <hr>
 <h2 id="参考与延伸"><a class="header" href="#参考与延伸">参考与延伸</a></h2>
 <ul>
 <li><em>事件部分核实状态（截至 2026-09-28）：Terminal DiLLMa（<a href="https://embracethered.com/blog/posts/2024/terminal-dillmas-prompt-injection-ansi-sequences/">Embrace The Red</a>，2024-12-06）、Trail of Bits《Deceiving users with ANSI terminal codes in MCP》（2025-04-29）、EchoLeak CVE-2025-32711（Aim Security 2025-06 披露，多源交叉）、jqwik 1.10.0 事件（2026-05，Snyk 2026-06-02 分析）均经多源检索核实。Terminal DiLLMa 的出处初版误标为一个无关的 arXiv 编号，2026-11 更正；2003 年的 xterm 漏洞是 CVE-2003-0063（H D Moore 披露）。</em></li>
 <li><em>Invariant Labs tool poisoning 未复核原文，按公开报道转述。</em></li>
-<li><em>编号为 CVE-2026-21852 的条目始终未能核实到原始记录，本文不引用。</em></li>
 <li><em>引擎排查基于本地源码：kimi-code <code>1e553fc</code>（<code>packages/pi-tui/src/utils.ts</code>）、grok-build <code>9fabade</code>（全仓库检索）、ForgeLoopTUI <code>f99367b</code>（<code>Sources/ForgeLoopTUI/Markdown/MarkdownEngine.swift</code>）。</em></li>
 <li><em>Codex 部分为 2026-11-10 补查，口径同上（grep 加读命中处），快照 <code>6b9826e3</code>：<code>tui/src/history_cell/messages.rs</code>（<code>sanitize_user_text</code>）、<code>history_cell/mcp.rs</code>（MCP 结果直接成行）、<code>insert_history.rs</code>（<code>write_spans</code> 原样写出）、<code>terminal_hyperlinks.rs</code>、<code>terminal_title.rs</code>；命令输出经 ansi-to-tui 8.0.1 解析，非颜色的转义序列被 <code>any_escape_sequence</code> 丢弃。底部活动区经 ratatui 缓冲区绘制，ratatui-core 0.1.2 的 <code>set_stringn</code> 会丢掉含控制字符的字形，这是库的副作用，不是 Codex 专门做的防线。同日对照 main（<code>c875667</code>）：<code>sanitize_user_text</code> 又用到了侧边对话、异步问答等几处，历史里的模型输出和 MCP 工具结果仍原样写给终端，结论不变。</em></li>
 <li><em>方法局限：grep 加人工阅读命中处，不能排除存在未被这两种方式覆盖的防线，结论以“未发现“为准，不断言“不存在“。</em></li>

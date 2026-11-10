@@ -14,7 +14,7 @@
 
 - 在 τ-bench 的 airline 子集上，一个立刻返回、什么都不做的 agent 拿了 38 分，比 GPT-4o agent 的 35 分还高；
 - 一个把所有可能答案和数据全列出来的 agent，在 airline 上拿了 40%；
-- SWE-Lancer 把测试放在带密码的 ZIP 里，看起来是隔离了，可不知道密码也能列出目录、覆盖文件。agent 把测试换成 `assert 1 == 1`，不解题就拿了 100%。
+- [SWE-Lancer](https://arxiv.org/abs/2502.12115) 把测试放在带密码的 ZIP 里，看起来是隔离了，可不知道密码也能列出目录、覆盖文件。agent 把测试换成 `assert 1 == 1`，不解题就拿了 100%。
 
 ABC 用自己的清单审了 10 个热门的 agentic benchmark：7 个违反任务效度，7 个违反结果效度，10 个全都有报告缺陷，80% 没有承认自己的弱点。有意思的是，τ-bench 的任务效度十条在附录里全部满分：题本身没问题，出问题的是判分。这就是第 3 篇第一种谎言的公开版：检查问的是「终态里有没有这个状态」，该问的是「这个状态是不是 agent 造成的」。什么都不做的时候，两个问题的答案恰好一样。
 
@@ -109,10 +109,10 @@ WorkBuddy 里，GLM-5.2 的办公总分换了 harness 几乎不变，79.60 对 7
 ## 参考与延伸
 
 - *本篇成书首发，与作者的独立文章《分数在说谎的四种方式：空跑、总分、分母与终态》同源；事实均取自公开论文、代码与文档，作者未复现任何实验。*
-- *空跑 38 分、穷举答案 40%、SWE-Lancer 的 100%、10 个 benchmark 的审计结果与两类数字的区分，见 Zhu 等，Establishing Best Practices for Building Rigorous Agentic Benchmarks（ABC 清单），arXiv 2507.02825v5（2025-08-07）。*
-- *τ-bench 的奖励定义与 pass^k 公式见 arXiv 2406.12045v1；τ²-bench 的十种结束方式、步数上限与剔除逻辑据 sierra-research/tau2-bench 仓库 commit da0835f（2026-10-29）。*
-- *Terminal-Bench 第一版的门禁据 harbor-framework/terminal-bench-1 仓库 .github/workflows/test-tasks.yaml（2026-10-31 读取）；Harbor 的异常分类据其文档 /jobs/error-classification（2026-10-31 读取）。*
-- *AppWorld 的判定方式与性能见 arXiv 2407.18901v1；no_op 标注、差集抵消、全局忽略表与异常吞没据 StonyBrookNLP/appworld 仓库 commit 42b5bcf（2026-09-03）。其中「评分器异常被记成普通失败」是读代码的推论，未实际触发。*
-- *WorkBuddy 的子集分数与不出综合分的说明见 arXiv 2607.20911v1；评分脚本改写与 never_ran 记录据 Tencent/workbuddy-bench 仓库（2026-10-31 读取）。*
-- *二元判定与 pass-all rate 见 Husain 与 Shankar 的 AI Evals FAQ（hamel.dev，2026-10-31 读取）。*
+- *空跑 38 分、穷举答案 40%、SWE-Lancer 的 100%、10 个 benchmark 的审计结果与两类数字的区分，见 Zhu 等，Establishing Best Practices for Building Rigorous Agentic Benchmarks（ABC 清单），[arXiv 2507.02825v5](https://arxiv.org/abs/2507.02825v5)（2025-08-07）。*
+- *τ-bench 的奖励定义与 pass^k 公式见 [arXiv 2406.12045v1](https://arxiv.org/abs/2406.12045v1)；τ²-bench 的十种结束方式、步数上限与剔除逻辑据 [sierra-research/tau2-bench](https://github.com/sierra-research/tau2-bench) 仓库 commit da0835f（2026-10-29）。*
+- *Terminal-Bench 第一版的门禁据 harbor-framework/terminal-bench-1 仓库 [.github/workflows/test-tasks.yaml](https://github.com/harbor-framework/terminal-bench-1/blob/main/.github/workflows/test-tasks.yaml)（2026-10-31 读取）；Harbor 的异常分类据其文档 [/jobs/error-classification](https://docs.harborframework.com/jobs/error-classification)（2026-10-31 读取）。*
+- *AppWorld 的判定方式与性能见 [arXiv 2407.18901v1](https://arxiv.org/abs/2407.18901v1)；no_op 标注、差集抵消、全局忽略表与异常吞没据 [StonyBrookNLP/appworld](https://github.com/StonyBrookNLP/appworld) 仓库 commit 42b5bcf（2026-09-03）。其中「评分器异常被记成普通失败」是读代码的推论，未实际触发。*
+- *WorkBuddy 的子集分数与不出综合分的说明见 [arXiv 2607.20911v1](https://arxiv.org/abs/2607.20911v1)；评分脚本改写与 never_ran 记录据 [Tencent/workbuddy-bench](https://github.com/Tencent/workbuddy-bench) 仓库（2026-10-31 读取）。*
+- *二元判定与 pass-all rate 见 Husain 与 Shankar 的 [AI Evals FAQ](https://hamel.dev/blog/posts/evals-faq/)（hamel.dev，2026-10-31 读取）。*
 - *pass² 从 0.167 到 0.333 的例子是作者按公式算的。*

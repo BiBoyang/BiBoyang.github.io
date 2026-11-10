@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-3c58fa40.js";
+            window.path_to_searchindex_js = "searchindex-ca30757f.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-235d8387.js"></script>
@@ -198,7 +198,7 @@
 <p>于是我去翻了几个比较熟悉的开源项目的代码，看看它们是怎么做的，结果发现了一些很有意思的事。</p>
 <p>先把结论放这：<strong>判定一条流式回答完不完整，在内容层永远做不出来，必须下沉到协议层。</strong> 下面讲为什么，以及三个真实项目各自是怎么（没有）解决它的。</p>
 <h2 id="二为什么看起来完整是常态"><a class="header" href="#二为什么看起来完整是常态">二、为什么“看起来完整“是常态</a></h2>
-<p>先交代背景。做过 Markdown 相关应用的人都知道，Markdown 的格式是后置的，代码块要看到收尾的三个反引号才知道代码结束了，表格要看到下一行才知道上一行是不是最后一行。这一点系列后面会展开，这里只说它和截断的关系：</p>
+<p>先交代背景。做过 Markdown 相关应用的人都知道，Markdown 的格式是后置的，代码块要看到收尾的三个反引号才知道代码结束了，表格要看到下一行才知道上一行是不是最后一行。这一点界面部分第 3、9 篇讲过，这里只说它和截断的关系：</p>
 <p><strong>因为格式后置，很多时候截断的回答渲染出来毫无破绽。</strong></p>
 <p>模型通过 SSE 流式吐内容，每个事件大概长这样：</p>
 <pre><code>data: {"choices":[{"delta":{"content":"## 结"},"finish_reason":null}]}
@@ -248,7 +248,7 @@ complete               以上全部排除，才轮到我
 <p><strong>codex（Rust）——四层检查，做成了协议层不变量。</strong> 它走的协议不同，等价信号是 <code>response.completed</code> 事件。这个检查它不是做了一层，是四层：SSE 层、WebSocket 层、turn 主循环、事件映射层，各自独立校验“流关了但终止事件没见过“。前三层命中就显式注入错误；事件映射层不拦截，但把这个失败单独记进 inference trace，连“这种事发生过几次“都要留下记录。compaction 的两条流式路径也各自复制了同一个检查。注入的错误默认重试数次，重试期间 TUI 显示重连计数且<strong>不写入聊天历史</strong>。底层 SSE 库对流关闭但无终止标记的情况什么都不做，所以这四层是手工固化的。在 codex 里，“流断了、回合却看似正常结束“这条路径不存在。</p>
 <p>吐槽一句，codex 不愧是成熟的产品，在其他方面的对比研究里，codex 在各种边界处理上也明显更好。</p>
 <p>三个数据点放在一起，规律很清楚了：<strong>完整性判定不是“有或没有“的问题，是“在多少个边界上装了多少个检查“的问题。</strong> 而比数量更难得的是质量：装在正确的边界上，写给正确的读者看。装检查不难，这才是难的部分。</p>
-<p>我把 kimi-code 那个不对称整理成了 <a href="https://github.com/MoonshotAI/kimi-code/issues/4012">一个 issue</a> 提给官方，附了复现和修法建议，等 approve 后提 PR。</p>
+<p>我把 kimi-code 那个不对称整理成了 <a href="https://github.com/MoonshotAI/kimi-code/issues/4012">一个 issue</a> 提给官方，附了复现和修法建议。截至 2026 年 11 月，这个 issue 还开着。</p>
 <h2 id="五核实先于判断"><a class="header" href="#五核实先于判断">五、核实先于判断</a></h2>
 <p>这次从发现问题到发出 issue，最大的教训不在技术层面：<strong>一句不实的描述足以让整个报告的可信度归零。</strong></p>
 <p>如果我按最初的口径发出去——<strong>“主循环对截断零防护”</strong>——维护者第一次打开 TUI 代码就能证伪我。是复查推翻了两个假设之后，论点才站得住的。而好的缺陷报告还有一个技巧：<strong>论点落在不对称上。</strong>“这里坏了“不如“同一个故障模式在 A 处硬检查、在 B 处静默“有说服力：后者把项目自己已有的价值判断当成了标尺，维护者很难拒绝补平自己的逻辑。</p>

@@ -22,9 +22,9 @@
 
 「从真实失败长出来」在工程上有一个精确的判定：**先红，后绿**。一个 bug 被修好之后，配一条在修复前 FAIL、修复后 PASS 的用例，这条用例就是这次修复的出生证明。没有先红过的用例没有资格进套件，因为它没证明过自己抓得住任何东西。
 
-这个口径不是私家发明。SWE-bench 的判定信号就是 fail-to-pass：一个补丁算不算数，看它是否让一批此前失败的测试转绿（官方口径如此）。红绿对照是把同构的纪律搬到 agent 评测：每个修过的 bug，都欠套件一条这样的用例。
+这个口径不是私家发明。[SWE-bench](https://www.swebench.com/) 的判定信号就是 fail-to-pass：一个补丁算不算数，看它是否让一批此前失败的测试转绿（官方口径如此）。红绿对照是把同构的纪律搬到 agent 评测：每个修过的 bug，都欠套件一条这样的用例。
 
-我自己的一次完整闭环发生在给 skill 建门禁那天。skill-up 的 benchmark 模式会把每个用例跑 with/without 两臂，我给自己的 polish skill 跑完首轮，6 通过 4 失败，报告漂亮。直到翻被测 agent 的会话落盘才发现：**所有 with 臂的会话里，这个 skill 的名字出现次数是零**。harness 遍历 skill 目录时不跟随符号链接，我的九个 skill 全是软链，选中文件数为零，安装逻辑把这个零当成正常，一个文件没上传，debug 日志还照常打印「installed」。也就是说前面三轮全量评测，两臂跑的都是裸模型，报告里的 PASS 和 FAIL 全是 noise 装扮成的 signal。
+我自己的一次完整闭环发生在给 skill 建门禁那天。skill-up（阿里开源的 skill 评测工具链）的 benchmark 模式会把每个用例跑 with/without 两臂，我给自己的 polish skill 跑完首轮，6 通过 4 失败，报告漂亮。直到翻被测 agent 的会话落盘才发现：**所有 with 臂的会话里，这个 skill 的名字出现次数是零**。harness 遍历 skill 目录时不跟随符号链接，我的九个 skill 全是软链，选中文件数为零，安装逻辑把这个零当成正常，一个文件没上传，debug 日志还照常打印「installed」。也就是说前面三轮全量评测，两臂跑的都是裸模型，报告里的 PASS 和 FAIL 全是 noise 装扮成的 signal。
 
 （「实验根本没发生」是第 3 篇的主角，那里会把这类绕行通道整个编目；这里只取它的后半段。）
 
@@ -83,5 +83,5 @@ skill 这类「按 description 自主加载」的扩展，还有一层最容易�
 
 - *本章主体收编自已发布博客《给 skill 建门禁：一天里的三种沉默失败、一次红线写法实证，和它抓到的上游 bug》（2026-09-17），按「论点先行、事件压缩」重排；触发双向口径（影子信号、超时排除计数）出自作者的 huohou 仓库 evals-shared 工具链与 2026-09-19 会话记录。*
 - *SWE-bench 以 fail-to-pass 测试为判定信号，见其官方站点口径。*
-- *「为已发现的错误而建」的纲领表述转述自 Hamel Husain 与 Shreya Shankar 的 eval FAQ 与 error analysis 系列文章，具体措辞以原文为准。*
-- *符号链接零文件事故的后续：skill-up issue #253 与修复 PR #257（含三条回归测试）。*
+- *「为已发现的错误而建」的纲领表述转述自 Hamel Husain 与 Shreya Shankar 的 [eval FAQ](https://hamel.dev/blog/posts/evals-faq/) 与 [error analysis 系列文章](https://hamel.dev/notes/llm/ai-product-engineering/evals-error-analysis.html)，具体措辞以原文为准。*
+- *符号链接零文件事故的后续：skill-up [issue #253](https://github.com/alibaba/skill-up/issues/253) 与修复 [PR #257](https://github.com/alibaba/skill-up/pull/257)（含三条回归测试）。*

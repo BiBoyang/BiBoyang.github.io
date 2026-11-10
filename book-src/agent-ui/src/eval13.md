@@ -152,8 +152,8 @@ DGM 的论文里有个例子。研究者想让 DGM 解决「假装调用工具�
 ## 参考与延伸
 
 - *本篇成书首发，与作者的独立文章《测「会学」容易，测「越学越快」难：从持续学习 benchmark 到 RSI 评测》同源；事实均取自公开论文、网站与数据，作者未复现任何实验。*
-- *CL-Bench：Asawa 等，arXiv 2606.05661v1（2026-06-04）；指标定义据其网站 Metrics、Concepts、Tasks 页（2026-11-07 抓取）；名次、运行次数与分任务数字据排行榜原始数据 leaderboard_data.json（数据更新于 2026-07-18，2026-11-07 抓取），标准差由作者按原始数据计算。*
-- *ContinualSkillBench：arXiv 2608.03874v3（2026-10-15）。PAST-Bench：arXiv 2608.04003v1（2026-08-04）。CLE：Zhao 等，arXiv 2610.33956v1（2026-10-25）。*
-- *STOP：Zelikman 等，arXiv 2310.02304v3。Gödel Agent：Yin 等，arXiv 2410.04444v4。DGM：Zhang 等，arXiv 2505.22954v3（2026-03-12），指标刷分的例子见其附录。*
-- *AI4AI-Bench：arXiv 2608.20318v1（2026-08-20）。RSIBench-Data：arXiv 2607.25886v1（2026-07-28）。AIDE²：Recursive self-improvement of AI research agents，arXiv 2609.26457v1（2026-09-22）。*
+- *CL-Bench：Asawa 等，[arXiv 2606.05661v1](https://arxiv.org/abs/2606.05661v1)（2026-06-04）；指标定义据其网站 [Metrics](https://continual-learning-bench.com/docs/metrics/)、[Concepts](https://continual-learning-bench.com/docs/concepts/)、[Tasks](https://continual-learning-bench.com/tasks.html) 页（2026-11-07 抓取）；名次、运行次数与分任务数字据排行榜原始数据 [leaderboard_data.json](https://continual-learning-bench.com/leaderboard_data.json)（数据更新于 2026-07-18，2026-11-07 抓取），标准差由作者按原始数据计算。*
+- *ContinualSkillBench：[arXiv 2608.03874v3](https://arxiv.org/abs/2608.03874v3)（2026-10-15）。PAST-Bench：[arXiv 2608.04003v1](https://arxiv.org/abs/2608.04003v1)（2026-08-04）。CLE：Zhao 等，[arXiv 2610.33956v1](https://arxiv.org/abs/2610.33956v1)（2026-10-25）。*
+- *STOP：Zelikman 等，[arXiv 2310.02304v3](https://arxiv.org/abs/2310.02304v3)。Gödel Agent：Yin 等，[arXiv 2410.04444v4](https://arxiv.org/abs/2410.04444v4)。DGM：Zhang 等，[arXiv 2505.22954v3](https://arxiv.org/abs/2505.22954v3)（2026-03-12），指标刷分的例子见其附录。*
+- *AI4AI-Bench：[arXiv 2608.20318v1](https://arxiv.org/abs/2608.20318v1)（2026-08-20）。RSIBench-Data：[arXiv 2607.25886v1](https://arxiv.org/abs/2607.25886v1)（2026-07-28）。AIDE²：Recursive self-improvement of AI research agents，[arXiv 2609.26457v1](https://arxiv.org/abs/2609.26457v1)（2026-09-22）。*
 - *对一个项目 RSI 主张的代码对表，见作者博客《RSI：叙事用完成时，机制用进行时》（2026-10-18）。*

@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-3c58fa40.js";
+            window.path_to_searchindex_js = "searchindex-ca30757f.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-235d8387.js"></script>
@@ -242,9 +242,9 @@
 <p><strong>说法一：CLI/TUI 只是早期原型，GUI 必然到来。</strong>
 这个观点假设 CLI/TUI 和 GUI 是线性进化关系：卵 → 幼虫 → 成虫。但用 event-sourcing 的框架看，这不是进化，是<strong>共存</strong>。</p>
 <p>SSH 到远程服务器跑 agent、在 tmux 里恢复一个跑了 3 小时的会话，这些场景里 CLI/TUI 不是“过渡方案“，是最优投影。GUI 在 diff 审查和多模态展示上有结构性优势，两者是分工关系。</p>
-<p>再往下推一层：这个说法还隐含一个成本假设：GUI 的投影成本会随着框架成熟趋近于零，所以“替代“只是时间问题。但 Agent GUI 的成本大头跟“画界面“关系不大，贵在两个媒介基线差异带来的子系统数量：diff 审查面板、权限弹窗、多模态附件，每一个都是独立子系统（第 8 篇会逐一拆解）。这个成本由 Agent 场景的需求决定，不随框架成熟收敛。</p>
+<p>再往下推一层：这个说法还隐含一个成本假设：GUI 的投影成本会随着框架成熟趋近于零，所以“替代“只是时间问题。但 Agent GUI 的成本大头跟“画界面“关系不大，贵在两个媒介基线差异带来的子系统数量：diff 审查面板、权限弹窗、多模态附件，每一个都是独立子系统（第 8、10 篇会逐一拆解）。这个成本由 Agent 场景的需求决定，不随框架成熟收敛。</p>
 <p><strong>说法二：GUI Agent 方向可能从根本上就是错的，Agent 就应该走 CLI 原生路线。</strong>
-这是港大 CLI-Anything 项目（2026.06）的立场。这个说法正确的一面是：为 Agent 设计结构化接口、输出 JSON 而非 UI 界面，确实比让 Agent 模仿人类操作 GUI 更可靠。但它错误的一面是：把“Agent 的核心接口应该是结构化的“和“用户界面应该全是 CLI“混为一谈了。event-sourcing 框架下，Agent 核心走结构化协议，用户界面走多端投影，这两件事不互斥。</p>
+港大的 CLI-Anything 项目（2026.03）常被拿来当这一派的论据，它主张用 CLI 化的接口整体取代操作 GUI 的 agent。这个说法正确的一面是：为 Agent 设计结构化接口、输出 JSON 而非 UI 界面，确实比让 Agent 模仿人类操作 GUI 更可靠。但说法二错误的一面是：把“Agent 的核心接口应该是结构化的“和“用户界面应该全是 CLI“混为一谈了。event-sourcing 框架下，Agent 核心走结构化协议，用户界面走多端投影，这两件事不互斥。</p>
 <p>CLI-Anything 回答的是“Agent 如何可靠地操作软件“，这是接口层的问题，结构化协议确实是正确答案。但“人如何可靠地监督 Agent“是另一个问题：审查 diff、批准权限、审计历史，这些事情的载体是视觉界面，不是 JSON。把接口层的正确结论外推到界面层，就是这个说法越界的地方。</p>
 <p>两种说法的共同盲区：<strong>把 UI 当成了 Agent 的本体，而不是 Agent 的投影。</strong></p>
 <hr>

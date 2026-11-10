@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-3c58fa40.js";
+            window.path_to_searchindex_js = "searchindex-ca30757f.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-235d8387.js"></script>
@@ -202,7 +202,7 @@
 <h2 id="二主屏渲染器inline-派的差分变种"><a class="header" href="#二主屏渲染器inline-派的差分变种">二、主屏渲染器：inline 派的差分变种</a></h2>
 <h3 id="21-模型全量渲染增量落地"><a class="header" href="#21-模型全量渲染增量落地">2.1 模型：全量渲染，增量落地</a></h3>
 <p><code>TuiMainScreen.doRender()</code> 的模型是：每帧把<strong>整棵组件树</strong>（全部历史消息 + 编辑器）渲染成一个扁平行数组 <code>newLines</code>，和上一帧 <code>previousLines</code> 逐行比较，只把变化补丁写入终端。</p>
-<p>等等，每帧重渲整棵树？这和 Grok Build 的“发射即脱手“不一样。关键在它对历史的处理方式：历史行渲染一次之后，靠<strong>引用相等缓存</strong>摊薄成本。组件的渲染缓存对未变化内容返回同一个字符串引用，于是稳态帧的成本是 O（总行数） 次指针比较，只为真正变化的行付处理费（<code>tui-main-screen.ts:237-261</code>，注释原文：“a steady frame only pays for the lines that actually changed”）。</p>
+<p>等等，每帧重渲整棵树？这和 Grok Build 的“发射即脱手“不一样。关键在它对历史的处理方式：历史行渲染一次之后，靠<strong>引用相等缓存</strong>摊薄成本。组件的渲染缓存对未变化内容返回同一个字符串引用，于是稳态帧的成本是 O(总行数) 次指针比较，只为真正变化的行付处理费（<code>tui-main-screen.ts:237-261</code>，注释原文：“a steady frame only pays for the lines that actually changed”）。</p>
 <p>所以准确地说，它和 Grok 那种“定型后彻底不管“的区别在于：<strong>逻辑上整棵树都活着，物理上只补丁视口可达的部分。</strong></p>
 <h3 id="22-所有权分界线被压缩成一个整数"><a class="header" href="#22-所有权分界线被压缩成一个整数">2.2 所有权分界线被压缩成一个整数</a></h3>
 <p>渲染器维护一个 <code>previousViewportTop</code>：逻辑行数组里，这个下标以上的行已经滚进 scrollback，归终端；以下的行在屏幕上，光标可达，归引擎。</p>
@@ -219,7 +219,7 @@ if (firstChanged &lt; prevViewportTop) {
 <p><code>doRender()</code> 的主体是一串按优先级排列的兜底分支（319-455 行），每条都对应一类真实事故：</p>
 <ol>
 <li><strong>首帧</strong>：<code>fullRender(false)</code>，不清屏直接写，假设屏幕是干净的；</li>
-<li><strong>宽度变化</strong>：核平重印。换行全变，没有局部解，和 Grok Build 的 <code>resize_purge_rerender</code> 逐字相同；</li>
+<li><strong>宽度变化</strong>：核平重印。换行全变，没有局部解，和 Grok Build 的 <code>resize_purge_rerender</code> 做法相同；</li>
 <li><strong>高度变化</strong>：原则上也核平，<strong>但 Termux 除外</strong>。注释写着：Android 软键盘弹出/收起会改高度，如果每次核平，“the entire history to replay on every toggle”（整个历史在每次键盘切换时重播）。一条特例就是一份事故报告；</li>
 <li><strong>内容收缩到历史峰值以下</strong>：核平（否则残留的空行清不掉）；</li>
 <li>以上都不命中，才进入差分主路：扫描出 <code>firstChanged</code>/<code>lastChanged</code>，只重绘<strong>变化区间</strong>而非“变化行到末尾“，注释明说动机：“reduces flicker when only a single line changes (e.g., spinner animation)”；</li>
@@ -249,7 +249,7 @@ block 不到 committed frontier 不发射，发射即归终端，从架构上保
 <p><code>TuiAltScreen</code> 是我那派的实现，但它的成熟度远超我自己的 ForgeLoopTUI，值得逐块拆。</p>
 <h3 id="31-模型文档--scrolltop--视口重绘"><a class="header" href="#31-模型文档--scrolltop--视口重绘">3.1 模型：文档 + scrollTop + 视口重绘</a></h3>
 <p>进 alt screen（<code>\x1b[?1049h</code>），关自动换行，开鼠标。文档是完整行数组，<code>ScrollView</code> 持有 <code>scrollTop</code>；每帧经 <code>renderLayoutFrame</code> 只排出<strong>可见的 height 行</strong>，然后逐行和上一屏 <code>previousScreen</code> 比较，变化的行用光标寻址覆写（<code>\x1b[row;1H\x1b[2K</code> + 新行）。没有 scrollback 参与，没有任何“发射“。</p>
-<p>先看我那派的核心优势在代码里的直接兑现：<strong>resize</strong>。尺寸变化只是把 <code>fullRedraw</code> 置真，代价是 <code>\x1b[2J</code> + 重画一屏 height 行（<code>tui-alt-screen.ts:1270-1276</code>）。没有 <code>3J</code>，没有历史重印，没有 I/O 爆发。主屏那条路的“核平“在这里是 O（屏高） 的平价操作。第 13 篇说全屏自管派的 resize 成本是 CPU 且量级是一屏，这里是逐字的证据。</p>
+<p>先看我那派的核心优势在代码里的直接兑现：<strong>resize</strong>。尺寸变化只是把 <code>fullRedraw</code> 置真，代价是 <code>\x1b[2J</code> + 重画一屏 height 行（<code>tui-alt-screen.ts:1270-1276</code>）。没有 <code>3J</code>，没有历史重印，没有 I/O 爆发。主屏那条路的“核平“在这里是 O(屏高) 的平价操作。第 13 篇说全屏自管派的 resize 成本是 CPU 且量级是一屏，这里是逐字的证据。</p>
 <h3 id="32-补齐清单终端免费给的全部自建"><a class="header" href="#32-补齐清单终端免费给的全部自建">3.2 补齐清单：终端免费给的，全部自建</a></h3>
 <p>第 13 篇说 inline 派“终端免费给的能力“是现成的便利，反过来说，全屏派要把这些能力一件件自己补回来。这份清单在 <code>tui-alt-screen.ts</code> 里一项项都看得见：</p>
 <ul>
@@ -283,7 +283,7 @@ block 不到 committed frontier 不发射，发射即归终端，从架构上保
 <p><strong>1. 上一篇的分界线被复用了，但没有被推翻。</strong>
 那条分界是真实的结构，真实到四家的开关都压在同一条线上，而 Kimi Code 是在同一个接口后面把两边都实现得最完整的一个。默认主屏（inline 派）说明：对一个要集成进用户日常终端的 CLI，“历史归终端“仍是站得住的默认答案（第 13 篇的记分牌上，四家有两家这么选）；实验性全屏说明：会话内体验（滚动、搜索、选择、resize）的诉求强到值得再养一套引擎。</p>
 <p><strong>2. inline 派内部要分两档。</strong>
-第 13 篇把 inline 派写成一种做法（发射即定型），Kimi 主屏的差分变种给出了第二种：全量渲染 + 增量落盘 + 越界检测 + 核平兜底。两档的不变式相同（scrollback 不可触碰），但维持不变式的方式一个是数据层纪律、一个是渲染层检查。这个区分应该补进第 13 篇的框架里。</p>
+第 13 篇把 inline 派写成一种做法（发射即定型），Kimi 主屏的差分变种给出了第二种：全量渲染 + 增量落盘 + 越界检测 + 核平兜底。两档的不变式相同（scrollback 不可触碰），但维持不变式的方式一个是数据层纪律、一个是渲染层检查。第 13 篇的框架可以据此再细分一档。</p>
 <p><strong>3. 我那派的“补齐清单“有了工业参照。</strong>
 第 2 篇我写的是引擎的渲染核心；Kimi 的 alt 模式展示了渲染核心之外，把一个全屏 TUI 做到产品级还需要什么：嵌套滚动、应用级选择、数据层搜索、OSC 133 锚点、图片显存预算、复用器降级。每一项都是“终端免费给的“对照项。</p>
 <p><strong>4. “退出归还 scrollback“是一个新的架构选项。</strong>

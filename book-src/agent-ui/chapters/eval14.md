@@ -129,11 +129,11 @@ SWE-bench Verified 的来历就是一个例子。OpenAI 请 93 名开发者标�
 ## 参考与延伸
 
 - *本篇成书首发，与作者的独立文章《谁来验收评测本身：隔离、双向校准与 LLM 评审的门槛》同源；除第五节的亲历一例，事实均取自公开文档、论文与代码，作者未复现任何实验。*
-- *Harbor 的事故、独立评分容器、产物净化与执行被测代码的做法，见其文档与新闻页 /news/reward-hacking、/tasks/separate-verifier、/rewardkit/quick-start 及 issue #3741（2026-10-31 读取）。*
-- *BenchJack：Wang、Li、Mang 等，Do Androids Dream of Breaking the Game? Systematically Auditing AI Agent Benchmarks with BenchJack，arXiv 2605.12673v1（2026-05-12）。*
-- *WorkBuddy 的打包隔离、隐藏测试的公开方式与前端子集的计分构成，见 arXiv 2607.20911v1 与 Tencent/workbuddy-bench 仓库 datasets/README.md（2026-10-31 读取）。*
-- *SWE-bench Verified 的标注比例出自 OpenAI《Introducing SWE-bench Verified》（2024-08-13），经 ABC 清单论文转引，作者未逐字复核原文；τ-bench 标注阶段的例子见 ABC 清单，arXiv 2507.02825v5。*
-- *Who Validates the Validators：Shankar 等，arXiv 2404.12272v1。SPADE：Shankar 等，arXiv 2401.03038v2。*
-- *τ²-bench 的评审门槛与「验证待定」标注据 sierra-research/tau2-bench 仓库 commit da0835f 的 docs/judge-validation.md；FAQ 的样本建议见 Husain 与 Shankar 的 AI Evals FAQ（hamel.dev，2026-10-31 读取）。*
-- *Terminal-Bench 的评审回归与对抗加固据 harbor-framework/terminal-bench 仓库 scripts/rubric-regression/README.md 与 scripts/fortify/README.md（2026-10-31 读取）。*
+- *Harbor 的事故、独立评分容器、产物净化与执行被测代码的做法，见其文档与新闻页 [/news/reward-hacking](https://docs.harborframework.com/news/reward-hacking)、[/tasks/separate-verifier](https://docs.harborframework.com/tasks/separate-verifier)、[/rewardkit/quick-start](https://docs.harborframework.com/rewardkit/quick-start) 及 [issue #3741](https://github.com/harbor-framework/harbor/issues/3741)（2026-10-31 读取）。*
+- *BenchJack：Wang、Li、Mang 等，Do Androids Dream of Breaking the Game? Systematically Auditing AI Agent Benchmarks with BenchJack，[arXiv 2605.12673v1](https://arxiv.org/abs/2605.12673v1)（2026-05-12）。*
+- *WorkBuddy 的打包隔离、隐藏测试的公开方式与前端子集的计分构成，见 [arXiv 2607.20911v1](https://arxiv.org/abs/2607.20911v1) 与 [Tencent/workbuddy-bench](https://github.com/Tencent/workbuddy-bench) 仓库 [datasets/README.md](https://github.com/Tencent/workbuddy-bench/blob/main/datasets/README.md)（2026-10-31 读取）。*
+- *SWE-bench Verified 的标注比例出自 OpenAI《[Introducing SWE-bench Verified](https://openai.com/index/introducing-swe-bench-verified/)》（2024-08-13），经 ABC 清单论文转引，作者未逐字复核原文；τ-bench 标注阶段的例子见 ABC 清单，[arXiv 2507.02825v5](https://arxiv.org/abs/2507.02825v5)。*
+- *Who Validates the Validators：Shankar 等，[arXiv 2404.12272v1](https://arxiv.org/abs/2404.12272v1)。SPADE：Shankar 等，[arXiv 2401.03038v2](https://arxiv.org/abs/2401.03038v2)。*
+- *τ²-bench 的评审门槛与「验证待定」标注据 [sierra-research/tau2-bench](https://github.com/sierra-research/tau2-bench) 仓库 commit da0835f 的 [docs/judge-validation.md](https://github.com/sierra-research/tau2-bench/blob/main/docs/judge-validation.md)；FAQ 的样本建议见 Husain 与 Shankar 的 [AI Evals FAQ](https://hamel.dev/blog/posts/evals-faq/)（hamel.dev，2026-10-31 读取）。*
+- *Terminal-Bench 的评审回归与对抗加固据 harbor-framework/terminal-bench 仓库 [scripts/rubric-regression/README.md](https://github.com/harbor-framework/terminal-bench/blob/main/scripts/rubric-regression/README.md) 与 [scripts/fortify/README.md](https://github.com/harbor-framework/terminal-bench/blob/main/scripts/fortify/README.md)（2026-10-31 读取）。*
 - *「三的法则」是统计学通识，各样本量对应的上界由作者按公式计算。*

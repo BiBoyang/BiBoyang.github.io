@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-3c58fa40.js";
+            window.path_to_searchindex_js = "searchindex-ca30757f.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-235d8387.js"></script>
@@ -179,11 +179,11 @@
                     <main>
                         <h1 id="回到自己的引擎forgelooptui-改造实录"><a class="header" href="#回到自己的引擎forgelooptui-改造实录">回到自己的引擎——ForgeLoopTUI 改造实录</a></h1>
 <blockquote>
-<p>拆完别人的引擎，这一篇回到自己的：八月中的审计给 ForgeLoopTUI 开过一张七件套的“吸收清单”，这是两个月后的清点报告。先说结论：执行情况有点难堪，但清单外发生的一件事比整张清单都重要。为了修第 3 篇的“弹入”问题，我的引擎在默认应用路径上，往对面阵营走了一半。</p>
+<p>拆完别人的引擎，这一篇回到自己的：八月中的审计给 ForgeLoopTUI 开过一张七件套的“吸收清单”，这是两个月后的清点报告。先说结论：执行情况有点难堪，但清单外发生的一件事比整张清单都重要。为了修第 3 篇那套稳定前缀缓存带出的“弹入”问题，我的引擎在默认应用路径上，往对面阵营走了一半。</p>
 </blockquote>
 <hr>
 <h2 id="一先清点七件清单落地零件半"><a class="header" href="#一先清点七件清单落地零件半">一、先清点：七件清单，落地零件半</a></h2>
-<p>审计表原样重跑一遍（对照 <code>素材-forgelooptui-audit</code>，2026-08-19）：</p>
+<p>审计表原样重跑一遍（对照 8 月 19 日的审计记录）：</p>
 <div class="table-wrapper">
 <table>
 <thead>
@@ -203,7 +203,7 @@
 <p>那这两个月干了什么？8 月 28 日到 9 月 1 日，五天，61 个提交。清单之外的地方：Markdown 表格单元按词换行（三连修）、嵌套列表缩进保真、代码围栏标签泄漏、宽度歧义字符、括号粘贴模式、kitty 键盘协议、OSC 8 超链接、Python 高亮。再往后是这一篇的主角。</p>
 <p>为什么清单没动，不是忘了。七件件件正确，但件件属于“引擎更对“；而这段时间用户可见的缺陷全在渲染质量和输入协议上，它们赢了排期。工程排期的实际顺序往往是缺陷在前、正确在后，这一点没什么可辩护的，记录在案。</p>
 <h2 id="二清单外的那件事把提前发射搬进全屏引擎"><a class="header" href="#二清单外的那件事把提前发射搬进全屏引擎">二、清单外的那件事：把“提前发射“搬进全屏引擎</a></h2>
-<p>第 3 篇拆过全屏派流式 Markdown 的核心困境：Stable Prefix Cache 只在引擎认证“稳定“后才把行放进正式布局，于是流式观感是<strong>整块内容在稳定后一次性弹入</strong>。inline 派没有这个问题，它们不等稳定，内容到了就发射进 scrollback，反正发射即定型，视觉上永远是渐进生长。全屏派赢回了原地改写的能力，代价是丢掉了“逐行可见“。</p>
+<p>第 3 篇拆过的 Stable Prefix Cache，在示例 app 里带出一个观感问题：只有引擎认证“稳定“的行才进正式布局，于是流式观感是<strong>整块内容在稳定后一次性弹入</strong>。inline 派没有这个问题，它们不等稳定，内容到了就发射进 scrollback，反正发射即定型，视觉上永远是渐进生长。全屏派赢回了原地改写的能力，代价是丢掉了“逐行可见“。</p>
 <p>8 月 30 日的 TASK-27/28 是正面解决这个困境的一次尝试，做法是把 inline 派的核心策略搬进来：</p>
 <p><strong>不稳定尾部预览。</strong> 活跃流式块里，越过引擎认证稳定前缀的那些行（还没定型的尾巴），作为 <code>tui.render(committed:live:)</code> 的 committed 区参数<strong>原地预览</strong>，于是 Markdown 在流式期间逐行出现，不用等稳定后弹入。行一旦被引擎认证稳定，就离开预览、落进正式历史。</p>
 <p><strong>三步定稿序列。</strong> 预览行转正的时刻是危险时刻：既要把新稳定行写进历史，又不能和历史区、预览区的既有内容打架。方案被钉成一个固定序列：</p>
@@ -233,7 +233,7 @@
 </div>
 <p>比 Kimi 的“退出时归还“更早：不是终态一次性移交，是逐行移交。第 14 篇的结论是“所有权的代价可以按生命周期分阶段承担“，现在“会话期间“内部也可以再分阶段了，<strong>稳定的程度就是所有权的边界</strong>：每行内容在它被认证稳定的那个瞬间，从归引擎管变成归终端管。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch14-per-line-mortgage.svg" alt="稳定一行，归还一行：每行内容在认证稳定的瞬间换手"><span class="img-wrapper"><img src="assets/ch14-per-line-mortgage.svg" alt="稳定一行，归还一行：每行内容在认证稳定的瞬间换手"></span></label></p>
-<p>但要说清楚：引擎没有换阵营。窗口化全帧 API 原样保留，AppKit 桥、全屏路径都在，另一个 app 仍然可以选“历史全归引擎“。引擎做的事是提供了两种语义（原地帧 + 发射通道）让 app 自选，这恰好是八月审计里“问题 2“（历史持久化路径待确认，实为 API 设计问题）的答案，也顺带回答了当时挂着的 Phase 0 决策 A：要不要提供 <code>commit(_:)</code> 一等沉降语义？实践给出的答案是<strong>已经有了</strong>，<code>appendFrame</code> 就是 commit 通道，差的只是把它作为一等语义写进文档和 README 的选择指引。挂了两个月的问题，被一次修 bug 顺手回答了。</p>
+<p>但要说清楚：引擎没有换阵营。窗口化全帧 API 原样保留，AppKit 桥、全屏路径都在，另一个 app 仍然可以选“历史全归引擎“。引擎做的事是提供了两种语义（原地帧 + 发射通道）让 app 自选，这恰好是八月审计里一个遗留问题（历史持久化路径待确认，实为 API 设计问题）的答案，也顺带回答了当时悬而未决的一个 API 决策：要不要提供 <code>commit(_:)</code> 一等沉降语义？实践给出的答案是<strong>已经有了</strong>，<code>appendFrame</code> 就是 commit 通道，差的只是把它作为一等语义写进文档和 README 的选择指引。挂了两个月的问题，被一次修 bug 顺手回答了。</p>
 <h2 id="四混合模式的代价"><a class="header" href="#四混合模式的代价">四、混合模式的代价</a></h2>
 <p>第 13 篇推导过 inline 派的代价。混合模式并不豁免，反而多了一种新代价。9 月 1 日的 TASK-37，就是它第一次找上门。</p>
 <p><strong>事故</strong>：<code>inlineAnchor</code> 超屏回退路径复用了 <code>renderLegacy</code>：<code>ESC[2J</code> 清屏后从 home 重写整帧。当 committed+live 超过终端高度，重写本身就会滚屏，把帧的顶部行顶进 scrollback；而流式预览是每个 chunk 重渲染一次，于是<strong>同一张表格在 scrollback 里落地了几十次，连原始的管道符都在</strong>。更糟的是 iTerm2 风格终端上，擦除帧的 ED2 会把清掉的内容存一份进 scrollback，每个 chunk 存一份上一次预览的副本。第 3 篇的“表格地狱“以成倍复制的形态在 scrollback 里重现。</p>

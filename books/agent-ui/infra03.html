@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-3c58fa40.js";
+            window.path_to_searchindex_js = "searchindex-ca30757f.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-235d8387.js"></script>
@@ -192,11 +192,11 @@
 </ul>
 <p>主语不同，代价落在谁身上也不同。逐条看。</p>
 <h2 id="二工具边界mcp-和它的无状态豪赌"><a class="header" href="#二工具边界mcp-和它的无状态豪赌">二、工具边界：MCP 和它的无状态豪赌</a></h2>
-<p>MCP 管的是能力发现和结构化 IO：工具怎么声明自己的 schema、结果怎么以结构化形态返回（<code>structuredContent</code> 明说是给模型的）。这条边界上，基建第 1 篇已经核查过 2026-07-28 那次激进的无状态化重写：会话头删了，断线恢复删了，官方 changelog 的措辞是把这些“从传输里移除“，流断在半路，结果作废，客户端在应用层重试。</p>
-<p>当时把它当传输层新闻讲，这里补上边界层的解读：<strong>MCP 敢这么做，是因为工具这个对话者近似纯函数</strong>。调用、返回、结束，边界对面没有需要延续的视图状态，会话性对这条边界是奢侈品而非必需品。无状态化的代价是真实的（会话被推给两端自己解决），但这个代价恰好落在了一个扛得住的位置。</p>
+<p>MCP 管的是能力发现和结构化 IO：工具怎么声明自己的 schema、结果怎么以结构化形态返回（<code>structuredContent</code> 明说是给模型的）。这条边界上，基建第 1 篇已经核查过 2026-07-28 那次激进的无状态化重写：会话头删了，断线恢复删了，<a href="https://modelcontextprotocol.io/specification/2026-07-28/changelog">官方 changelog</a> 的措辞是把这些“从传输里移除“，流断在半路，结果作废，客户端在应用层重试。</p>
+<p>当时把它当传输层新闻讲，这里补上边界层的解读：<strong>MCP 敢这么做，是因为多数工具调用近似纯函数</strong>。调用、返回、结束，边界对面没有需要延续的视图状态，会话性对这条边界是奢侈品而非必需品。无状态化的代价是真实的（会话被推给两端自己解决），但这个代价恰好落在了一个扛得住的位置。</p>
 <h2 id="三编辑器边界acp-的lsp-时刻"><a class="header" href="#三编辑器边界acp-的lsp-时刻">三、编辑器边界：ACP 的“LSP 时刻“</a></h2>
 <p>ACP 面对的问题形状是编辑器圈的老朋友：编辑器不想为每个 agent 写一遍 UI，agent 不想为每个编辑器写一遍适配，这正是 LSP 解决过的问题，只是主角从语言换成了 agent。所以它的定位被叫做“AI coding agent 的 LSP 时刻“：开放标准，JSON-RPC over stdio/WebSocket，agent 作为子进程被编辑器拉起，编辑器从此是一个能装任何 agent 的通用投影面。</p>
-<p>生态现状（2026-09 核实）：Zed 的 ACP Registry 已上线，入驻名单包括 Claude Code、Codex CLI、GitHub Copilot CLI、OpenCode、Cursor、Pi；JetBrains 在 2026 年 1 月开了自家的 ACP Agent Registry，覆盖 Gemini CLI、Claude Code、Auggie、OpenCode、Copilot。接入深度不一：Copilot CLI 和 Gemini CLI 是原生支持，Claude Code 和 Codex 走适配器。</p>
+<p>生态现状（2026-09 核实）：Zed 的 <a href="https://zed.dev/blog/acp-registry">ACP Registry</a> 已上线，入驻名单包括 Claude Code、Codex CLI、GitHub Copilot CLI、OpenCode、Cursor、Pi；JetBrains 在 2026 年 1 月开了自家的 <a href="https://blog.jetbrains.com/ai/2026/01/acp-agent-registry/">ACP Agent Registry</a>，覆盖 Gemini CLI、Claude Code、Auggie、OpenCode、Copilot。接入深度不一：Copilot CLI 和 Gemini CLI 是原生支持，Claude Code 和 Codex 走适配器。</p>
 <p>一手注脚来自 kimi-code：仓库里有一个专门的 <code>packages/acp-adapter</code> 包，依赖 <code>@agentclientprotocol/sdk@0.23.0</code>，月之暗面给自家 agent 配的早期周边里，编辑器适配层占了一个正式包位。测试文件名把适配的难点泄露得很直白：<code>tool-call-stream</code>（流式工具调用怎么过桥）、<code>set-session-config-option</code>（会话配置怎么映射）。<strong>过协议边界的从来不只是事件，还有两侧各自的会话语义。</strong></p>
 <p>这条边界为什么必须有会话？因为对面的编辑器是一个深度有状态的投影面：打开的文件、光标位置、diff 面板的展开状态。边界对面有状态，协议就躲不开会话。第 7 篇说“编辑器是 agent 事件流的投影之一“，ACP 做的事就是给这句话定契约；系列早期引过的 zacp（ACP 协议驱动的多 Agent WebUI）是同一思想在 Web 端的自发实践，协议出现之前，论点已经先在野生实现里活着了。</p>
 <h2 id="四前端边界ag-ui把事件流写成协议"><a class="header" href="#四前端边界ag-ui把事件流写成协议">四、前端边界：AG-UI，把事件流写成协议</a></h2>
@@ -228,10 +228,10 @@
 <h2 id="参考与延伸"><a class="header" href="#参考与延伸">参考与延伸</a></h2>
 <ul>
 <li><em>核查分层（截至 2026-09-28）：ACP Registry 名单与接入方式基于 Zed 官方博客与文档、JetBrains 官方博客（2026-01）及 agentclientprotocol.com 目录，多源交叉。</em></li>
-<li><em>AG-UI 事件分组基于 CopilotKit 官方资料与第三方教程（事件计数 16–17 存在版本差异，按量级表述）。</em></li>
+<li><em>AG-UI 事件分组基于 <a href="https://docs.ag-ui.com/introduction">CopilotKit 官方资料</a>与第三方教程（事件计数 16–17 存在版本差异，按量级表述）。</em></li>
 <li><em>MCP 无状态化修订引自基建第 1 篇核查过的官方 changelog。</em></li>
 <li><em>kimi-code 一手（<code>1e553fc</code>：<code>packages/acp-adapter</code>、<code>@agentclientprotocol/sdk@0.23.0</code>、测试文件名）。</em></li>
-<li><em>zacp 为系列既有引用（helloxz/zacp）。</em></li>
+<li><em>zacp 为系列既有引用（<a href="https://github.com/helloxz/zacp">helloxz/zacp</a>）。</em></li>
 </ul>
 
                     </main>

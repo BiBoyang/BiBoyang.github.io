@@ -1,6 +1,6 @@
 # 绿灯的两种谎言——实验真的发生过吗
 
-> 全书开篇问过：没报错，就代表输出没问题吗？这一篇把同样的怀疑推向行为层，先讲失败里最便宜也最致命的一类：不是检查问错了，就是检查看着的那件事根本没发生。两种情况里，绿灯都是全绿的。
+> 本卷序章问过：没报错，就代表输出没问题吗？这一篇把同样的怀疑推向行为层，先讲失败里最便宜也最致命的一类：不是检查问错了，就是检查看着的那件事根本没发生。两种情况里，绿灯都是全绿的。
 
 ## 本章将讲
 
@@ -82,5 +82,5 @@
 
 - *本章底稿 2026-10-05 定稿，成章时收编了已发布博客《从 trace 到 eval：trace 设计、Agent 评测方法论、一个评测 harness 的实现，和它抓到的上游并发 bug》（2026-08-23）与《给流式协议造故障：三协议 mock、once 注入、字节级送达证明，和 strings 阴性不等于代码不存在》（2026-09-25）的病例段；章首 zstd 病例与前者的采集层事故同源。*
 - *密钥目录病例整理自作者 2026-10-05 与 @echo_vic 在 X 上关于 agent harness eval 的公开讨论，他的原表述是「信任检查问的是"这个文件在不在"，而它该问的是"这个目录能不能信"」。*
-- *「提前宣告胜利」与特性清单初始化为 failing 的防线，转述自 Anthropic 关于长时程 agent 工程实践的公开文章；「35 次工具调用不是 pass」转述自 Braintrust 的 agent 综述；基准分 50→73 的基础设施归因案例转述自 LangChain 的 eval checklist（引 Witan Labs）。三处均为转述级引用，具体数字以原文为准。*
+- *「提前宣告胜利」与特性清单初始化为 failing 的防线，转述自 Anthropic 关于长时程 agent 工程实践的[公开文章](https://www.anthropic.com/research/effective-harnesses-for-long-running-agents)；「35 次工具调用不是 pass」转述自 Braintrust 的 [agent 综述](https://www.braintrust.dev/blog/six-generations-ai-agents)；基准分 50→73 的基础设施归因案例转述自 LangChain 的 [eval checklist](https://www.langchain.com/blog/agent-evaluation-readiness-checklist)（引 Witan Labs）。三处均为转述级引用，具体数字以原文为准。*
 - *「仪器假设与 treatment 正面冲突」的完整病例（139 行判无效 88 行）见第 8 篇；「选中零文件照常评估」的完整经过见第 2 篇。*

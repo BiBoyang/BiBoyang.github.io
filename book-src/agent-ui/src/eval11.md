@@ -132,11 +132,11 @@ HAL 只有身份字段，没有等价规则。Harness-Bench 的规则是任何�
 ## 参考与延伸
 
 - *本篇成书首发，与作者的独立文章《换个 harness 排名就翻：评测 agent 时，被测的到底是谁》同源；事实均取自公开论文、代码仓库与数据，作者未复现任何实验。*
-- *CL-Bench 的名次取自其排行榜原始数据 leaderboard_data.json（数据更新于 2026-07-18，2026-11-07 抓取）。*
-- *WorkBuddy 的跨 harness 数字、拒答次数与 HY-3 诊断重跑见 Tencent WorkBuddy Bench 论文（arXiv 2607.20911v1，2026-07-23）；配置做法见 Tencent/workbuddy-bench 仓库的 configs/README.md 与 configs/harnesses/HARNESS_AUTHORING.md（2026-10-31 读取）。*
-- *The Scaffold Effect in Coding Agents，Vats 与 Golev，arXiv 2607.22585v1（2026-06-08）。*
-- *Hardy、Azam、Reuel、Kochenderfer，Agent Evaluation Reliability: More Tasks Won't (Always) Fix An Agent Leaderboard，arXiv 2610.00651v1（2026-09-30）。*
-- *HAL（Holistic Agent Leaderboard）据 ICLR 2026 会议版与 arXiv 2510.11977v1；身份字段的时间线据 princeton-pli/hal-harness 仓库 HEAD 16bb03e（2026-07-01 归档）与 HAL 网站（2026-11-06 抓取）。*
-- *Harness-Bench 据 Qihoo360/harness-bench 仓库 commit b8d8963（2026-10-09）的 README 与运行工具；Terminal-Bench 的 Harbor 版本钉在其仓库的 .github/harbor-version；Harbor 关于任务不声明工具的理由见其文档 /tasks/environment 的 Tools 一节（2026-10-31 读取）。*
-- *ABC 清单的 R.6 见 arXiv 2507.02825v5；τ²-bench 的策略文档实验见 arXiv 2506.07982v1。*
+- *CL-Bench 的名次取自其排行榜原始数据 [leaderboard_data.json](https://continual-learning-bench.com/leaderboard_data.json)（数据更新于 2026-07-18，2026-11-07 抓取）。*
+- *WorkBuddy 的跨 harness 数字、拒答次数与 HY-3 诊断重跑见 Tencent WorkBuddy Bench 论文（[arXiv 2607.20911v1](https://arxiv.org/abs/2607.20911v1)，2026-07-23）；配置做法见 [Tencent/workbuddy-bench](https://github.com/Tencent/workbuddy-bench) 仓库的 [configs/README.md](https://github.com/Tencent/workbuddy-bench/blob/main/configs/README.md) 与 [configs/harnesses/HARNESS_AUTHORING.md](https://github.com/Tencent/workbuddy-bench/blob/main/configs/harnesses/HARNESS_AUTHORING.md)（2026-10-31 读取）。*
+- *The Scaffold Effect in Coding Agents，Vats 与 Golev，[arXiv 2607.22585v1](https://arxiv.org/abs/2607.22585v1)（2026-06-08）。*
+- *Hardy、Azam、Reuel、Kochenderfer，Agent Evaluation Reliability: More Tasks Won't (Always) Fix An Agent Leaderboard，[arXiv 2610.00651v1](https://arxiv.org/abs/2610.00651v1)（2026-09-30）。*
+- *HAL（Holistic Agent Leaderboard）据 ICLR 2026 会议版与 [arXiv 2510.11977v1](https://arxiv.org/abs/2510.11977v1)；身份字段的时间线据 [princeton-pli/hal-harness](https://github.com/princeton-pli/hal-harness) 仓库 HEAD 16bb03e（2026-07-01 归档）与 [HAL 网站](https://hal.cs.princeton.edu/)（2026-11-06 抓取）。*
+- *Harness-Bench 据 [Qihoo360/harness-bench](https://github.com/Qihoo360/harness-bench) 仓库 commit b8d8963（2026-10-09）的 README 与运行工具；Terminal-Bench 的 Harbor 版本钉在其仓库的 [.github/harbor-version](https://github.com/harbor-framework/terminal-bench/blob/main/.github/harbor-version)；Harbor 关于任务不声明工具的理由见其文档 [/tasks/environment](https://docs.harborframework.com/tasks/environment) 的 Tools 一节（2026-10-31 读取）。*
+- *ABC 清单的 R.6 见 [arXiv 2507.02825v5](https://arxiv.org/abs/2507.02825v5)；τ²-bench 的策略文档实验见 [arXiv 2506.07982v1](https://arxiv.org/abs/2506.07982v1)。*
 - *宿主矩阵「脚手架 × 模型双变量，差异不做归因拆分」的口径见第 4 篇；「宿主配置列为必进报告的格子变量」见第 5 篇。*

@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-3c58fa40.js";
+            window.path_to_searchindex_js = "searchindex-ca30757f.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-235d8387.js"></script>
@@ -207,7 +207,7 @@
 <p>这个「全绿」值钱，值钱在它是对照出来的：一个直接坐在模型请求链路上的 7000★ 注入器插件，不破坏宿主的故障检出与恢复。<strong>没有裸基线，「全绿」和「没测到」长得一模一样。</strong> 这就是双臂对照（with / without）的最低配置地位：两臂只差一个变量，分数相减得 Δ，Δ 才是被测物的真贡献。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/eval06-two-arms.svg" alt="归因靠对照：with / without 双臂相减得 Δ；对照组被污染的三种形态"><span class="img-wrapper"><img src="assets/eval06-two-arms.svg" alt="归因靠对照：with / without 双臂相减得 Δ；对照组被污染的三种形态"></span></label></p>
 <p>这个设计不是私家偏方。Anthropic 官方的 Claude Code plugin evals 把 with/without 双臂默认打开、裸基线内置，「插件在不在场」作为一等变量写进了官方评测协议（其 grader 分六档，机制不展开，一句官方背书即可）。社区基建和官方文档在同一个点上汇合：双臂不是增强，是底线。</p>
-<p>对照组的反面教材有三种常见形态，都进过我的事故现场：拿<strong>老配置</strong>当对照（混淆变量藏在「新旧差异」里，下一节的翻案就是它）；对照组靠<strong>默认值</strong>「自动出现」（第 2 篇里宿主的自动发现机制把对照组悄悄喂了和能力同源的东西，对照组的「无」必须强制出来）；以及干脆<strong>无裸基线</strong>直接报分。三种形态殊途同归：给错误的结论配上了证据。</p>
+<p>对照组的反面教材有三种常见形态，都进过我的事故现场：拿<strong>老配置</strong>当对照（混淆变量藏在「新旧差异」里，下一节的翻案就是它）；对照组靠<strong>默认值</strong>「自动出现」（比如宿主的自动发现机制，会把和能力同源的东西悄悄喂给对照组；对照组的「无」必须强制出来）；以及干脆<strong>无裸基线</strong>直接报分。三种形态殊途同归：给错误的结论配上了证据。</p>
 <h2 id="五一次推翻自己的归因"><a class="header" href="#五一次推翻自己的归因">五、一次推翻自己的归因</a></h2>
 <p>本篇的戏肉，是我自己的一次误判。</p>
 <p>视觉插件的行为层首跑，现象非常「清楚」：在新建的隔离配置里装上插件，首次启动直接挂死，三十分钟没有输出。安装日志干净、配置结构正常、插件是 npm 正规军，「插件启动阻塞」，归因报告第一版就这么写的，证据看着很硬。</p>
@@ -232,8 +232,8 @@
 <h2 id="参考与延伸"><a class="header" href="#参考与延伸">参考与延伸</a></h2>
 <ul>
 <li><em>本章由作者草稿《测别人的生态：四层漏斗、三种 oracle、一次推翻自己的归因，和它抓到的三只 bug》收编改写，成书首发（草稿不再单独发博客）；实验运行于 2026-09-26/27，上游互动：dsh Discussion #7978（新 profile 首启挂起）、routing-suite issue #152（预构建产物建议）。</em></li>
-<li><em>Anthropic Claude Code plugin evals 的双臂默认开启与六档 grader，经官方文档核实（2026-10-05，v2.1.269 文档口径）。</em></li>
-<li><em>pass^k 可靠性指标与「看数据库终态」的判定方式出自 τ-bench 论文；可安装率数字（9247/1673/979/600/94）来自社区清单作者的容器实测，引用时已注明口径。</em></li>
+<li><em>Anthropic Claude Code plugin evals 的双臂默认开启与六档 grader，经<a href="https://code.claude.com/docs/en/plugin-evals">官方文档</a>核实（2026-10-05，v2.1.269 文档口径）。</em></li>
+<li><em>pass^k 可靠性指标与「看数据库终态」的判定方式出自 <a href="https://arxiv.org/abs/2406.12045">τ-bench 论文</a>；可安装率数字（9247/1673/979/600/94）来自社区清单作者的容器实测，引用时已注明口径。</em></li>
 <li><em>消融与双臂的分工：消融拆测量仪器（第 3 篇），双臂扰动被测物（本篇），各管一半。</em></li>
 </ul>
 
