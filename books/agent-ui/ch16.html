@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-59aa598c.js";
+            window.path_to_searchindex_js = "searchindex-3c58fa40.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-235d8387.js"></script>
@@ -179,7 +179,7 @@
                     <main>
                         <h1 id="渲染的信任边界agent-ui-没有同源策略"><a class="header" href="#渲染的信任边界agent-ui-没有同源策略">渲染的信任边界——Agent UI 没有同源策略</a></h1>
 <blockquote>
-<p>第 10 篇讲权限 UX，回答“要不要批准”；这一篇讲它全部设计的前提：<strong>你看到的那个批准请求，是真的吗</strong>。过去两年针对 Agent 界面的注入攻击从研究演示变成了真实供应链事件，而我把两家引擎的源码连同自己的翻了一遍，专门找“内容清洗”这道防线，结果是零。</p>
+<p>第 10 篇讲权限 UX，回答“要不要批准”；这一篇讲它全部设计的前提：<strong>你看到的那个批准请求，是真的吗</strong>。过去两年针对 Agent 界面的注入攻击从研究演示变成了真实供应链事件，而我把三家引擎的源码连同自己的翻了一遍，专门找“内容清洗”这道防线，只有 Codex 做了一部分，模型输出和 MCP 工具结果都不在防线之内。</p>
 </blockquote>
 <hr>
 <h2 id="一这些漏洞不姓模型"><a class="header" href="#一这些漏洞不姓模型">一、这些漏洞不姓“模型“</a></h2>
@@ -203,8 +203,8 @@
 <p>确认框劫持的完整链条，Trail of Bits 已经演示过：恶意 MCP 服务器返回的文本里带光标码 → 权限确认时刻，屏幕上“工具将执行 X“的 X 已经被擦换成了良性描述，或恶意命令被移出了可视区 → 用户核对无误，按了回车。<strong>权限 UX 的全部隐含假设（用户看到的等于将要执行的），在字符网格上是可以用一串字节伪造的。</strong></p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch16-confirmation-hijack.svg" alt="确认框劫持的完整链条：用户看到的等于将要执行的，可以用一串字节伪造"><span class="img-wrapper"><img src="assets/ch16-confirmation-hijack.svg" alt="确认框劫持的完整链条：用户看到的等于将要执行的，可以用一串字节伪造"></span></label></p>
 <p>还有一层 TUI 特有的脆弱性。GUI 里内容原地消失是异常，会触发警觉；终端里滚动、清屏、重绘是每分钟都在发生的正常现象（第 2、13 篇拆过的那些机制）。用户对“字符消失“已经脱敏，这是这个介质白送给攻击者的掩护。</p>
-<h2 id="三我把防线找了一遍三家引擎的排查记录"><a class="header" href="#三我把防线找了一遍三家引擎的排查记录">三、我把防线找了一遍：三家引擎的排查记录</a></h2>
-<p>为了不空谈，我做了个一手排查：在两家开源引擎和 ForgeLoopTUI 里找“不可信内容进入渲染前，是否被转义或中和“。方法很朴素：grep 清洗类标识符，再读命中处。</p>
+<h2 id="三我把防线找了一遍四家引擎的排查记录"><a class="header" href="#三我把防线找了一遍四家引擎的排查记录">三、我把防线找了一遍：四家引擎的排查记录</a></h2>
+<p>为了不空谈，我做了个一手排查：在三家开源引擎和 ForgeLoopTUI 里找“不可信内容进入渲染前，是否被转义或中和“。方法很朴素：grep 清洗类标识符，再读命中处。</p>
 <div class="table-wrapper">
 <table>
 <thead>
@@ -213,12 +213,13 @@
 <tbody>
 <tr><td>kimi-code（pi-tui）</td><td><strong>规范化，但不清洗</strong></td><td><code>utils.ts</code> 的 <code>normalizeTerminalOutput</code>（405-427 行）：做泰文字符规范化和 tab 转空格；遇到 ANSI 码走 <code>extractAnsiCode</code>，<strong>原样拼回输出</strong>，它保护的是布局计算，防线不是给安全用的</td></tr>
 <tr><td>grok-build</td><td>未发现内容清洗</td><td>全仓库 <code>sanitize</code> 命中都在 worktree 的 <code>.git</code> 目录清理，与渲染无关</td></tr>
+<tr><td>Codex</td><td><strong>部分清洗</strong></td><td>用户输入走 <code>sanitize_user_text</code>（<code>history_cell/messages.rs</code>，去掉 CSI 和控制字符），命令输出经 ansi-to-tui 只留颜色，超链接目标和窗口标题单独清洗；<strong>模型输出和 MCP 工具结果没有清洗</strong>，进历史后由 <code>insert_history.rs</code> 的 <code>write_spans</code> 原样写给终端</td></tr>
 <tr><td>ForgeLoopTUI（我的）</td><td><strong>同样没有</strong></td><td>MarkdownEngine 有 OSC 8 的发射端（TASK-31 加的），没有过滤端</td></tr>
 </tbody>
 </table>
 </div>
-<p>三家（算上我）全部裸奔。Claude Code 是发布产物，没做同等排查，如实声明。</p>
-<p>为什么三家都没有？原因是结构性的，不是哪家疏忽。这几家引擎都把<strong>样式和内容混在同一条字符串流</strong>里，第 14 篇拆过的段落模型，引擎自己的颜色、重置、链接序列和用户内容交织在同一个数组里。在这个表示法上做“清洗内容里的控制码“是自相矛盾的：你分不清哪个 <code>ESC</code> 是自己人。所以没人做，等于谁都没做。</p>
+<p>除了 Codex，三家（算上我）全部裸奔。Codex 也只防了用户输入、命令输出、链接和标题；时间线里 Trail of Bits 和 Terminal DiLLMa 那两条攻击走的 MCP 工具结果和模型输出，在 Codex 里照样原样上屏。Claude Code 是发布产物，没做同等排查，如实声明。</p>
+<p>为什么那三家都没有？原因是结构性的，不是哪家疏忽。这几家引擎都把<strong>样式和内容混在同一条字符串流</strong>里，第 14 篇拆过的段落模型，引擎自己的颜色、重置、链接序列和用户内容交织在同一个数组里。在这个表示法上做“清洗内容里的控制码“是自相矛盾的：你分不清哪个 <code>ESC</code> 是自己人。所以没人做，等于谁都没做。Codex 正好是旁证：它的样式存在 ratatui 的 span 属性里，不和内容挤在一个字符串里，所以能对内容单独动手，用户输入那一路就是这么清洗的。</p>
 <p>这和 Web 早期“HTML 与数据混流“导致 XSS 泛滥是同一个病，解药也是同一个：<strong>结构化分离</strong>。</p>
 <h2 id="四防线应该长在哪几层"><a class="header" href="#四防线应该长在哪几层">四、防线应该长在哪几层</a></h2>
 <p><strong>转义层：终端版的 HTML escaping。</strong> 不可信文本（工具输出、文件内容、网页摘要）在进入行数组之前，中和全部 CSI/OSC 序列：剥除，或可见地转义成 <code>␛[A</code>。OSC 52、OSC 8、光标码、模式开关，零容忍。这件事的前提是内容与样式的结构化分离，恰好是第 7 篇说过的“渲染输入应该是结构化事件，投影发生在边界上“：转义就发生在投影边界，不用在 ANSI 字符串里做外科手术。这个系列写到这里，安全问题和架构问题在第 7 篇的地基上会师了。</p>
@@ -238,6 +239,7 @@
 <li><em>Invariant Labs tool poisoning 未复核原文，按公开报道转述。</em></li>
 <li><em>编号为 CVE-2026-21852 的条目始终未能核实到原始记录，本文不引用。</em></li>
 <li><em>引擎排查基于本地源码：kimi-code <code>1e553fc</code>（<code>packages/pi-tui/src/utils.ts</code>）、grok-build <code>9fabade</code>（全仓库检索）、ForgeLoopTUI <code>f99367b</code>（<code>Sources/ForgeLoopTUI/Markdown/MarkdownEngine.swift</code>）。</em></li>
+<li><em>Codex 部分为 2026-11-10 补查，口径同上（grep 加读命中处），快照 <code>6b9826e3</code>：<code>tui/src/history_cell/messages.rs</code>（<code>sanitize_user_text</code>）、<code>history_cell/mcp.rs</code>（MCP 结果直接成行）、<code>insert_history.rs</code>（<code>write_spans</code> 原样写出）、<code>terminal_hyperlinks.rs</code>、<code>terminal_title.rs</code>；命令输出经 ansi-to-tui 8.0.1 解析，非颜色的转义序列被 <code>any_escape_sequence</code> 丢弃。底部活动区经 ratatui 缓冲区绘制，ratatui-core 0.1.2 的 <code>set_stringn</code> 会丢掉含控制字符的字形，这是库的副作用，不是 Codex 专门做的防线。同日对照 main（<code>c875667</code>）：<code>sanitize_user_text</code> 又用到了侧边对话、异步问答等几处，历史里的模型输出和 MCP 工具结果仍原样写给终端，结论不变。</em></li>
 <li><em>方法局限：grep 加人工阅读命中处，不能排除存在未被这两种方式覆盖的防线，结论以“未发现“为准，不断言“不存在“。</em></li>
 </ul>
 

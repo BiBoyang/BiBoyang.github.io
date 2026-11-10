@@ -187,15 +187,15 @@
   ch16.md:24  「第 2 篇」  OK → 界面 02 · TUI 不是低配 GUI
   ch16.md:33  「第 2、13 篇」  OK → 界面 02 · TUI 不是低配 GUI
   ch16.md:33  「第 2、13 篇」  OK → 界面 13 · 渲染的所有权模型
-  ch16.md:47  「第 14 篇」  OK → 界面 14 · 双模渲染
-  ch16.md:53  「第 7 篇」  OK → 界面 07 · 中场：Event Sourcing，Agent UI 的底层模型
-  ch16.md:53  「第 7 篇」  OK → 界面 07 · 中场：Event Sourcing，Agent UI 的底层模型
-  ch16.md:63  「第 17 篇」  OK → 界面 17 · 回到自己的引擎：ForgeLoopTUI 改造实录
-  ch16.md:67  「第 10 篇」  OK → 界面 10 · 权限 UX 与 Diff UX
-  ch16.md:69  「第 13、14、17、18 篇」  OK → 界面 13 · 渲染的所有权模型
-  ch16.md:69  「第 13、14、17、18 篇」  OK → 界面 14 · 双模渲染
-  ch16.md:69  「第 13、14、17、18 篇」  OK → 界面 17 · 回到自己的引擎：ForgeLoopTUI 改造实录
-  ch16.md:69  「第 13、14、17、18 篇」  OK → 界面 18 · 终端之外：GUI 与移动端的映射
+  ch16.md:48  「第 14 篇」  OK → 界面 14 · 双模渲染
+  ch16.md:54  「第 7 篇」  OK → 界面 07 · 中场：Event Sourcing，Agent UI 的底层模型
+  ch16.md:54  「第 7 篇」  OK → 界面 07 · 中场：Event Sourcing，Agent UI 的底层模型
+  ch16.md:64  「第 17 篇」  OK → 界面 17 · 回到自己的引擎：ForgeLoopTUI 改造实录
+  ch16.md:68  「第 10 篇」  OK → 界面 10 · 权限 UX 与 Diff UX
+  ch16.md:70  「第 13、14、17、18 篇」  OK → 界面 13 · 渲染的所有权模型
+  ch16.md:70  「第 13、14、17、18 篇」  OK → 界面 14 · 双模渲染
+  ch16.md:70  「第 13、14、17、18 篇」  OK → 界面 17 · 回到自己的引擎：ForgeLoopTUI 改造实录
+  ch16.md:70  「第 13、14、17、18 篇」  OK → 界面 18 · 终端之外：GUI 与移动端的映射
   ch25.md:3  「第 12 篇」  OK → 界面 12 · 移动端的位置
   ch25.md:15  「第 1 篇」  OK → 界面 01 · 为什么 Agent 从 CLI/TUI 开始
   ch25.md:15  「第 8 篇」  OK → 界面 08 · 为什么 Agent GUI 这么难
