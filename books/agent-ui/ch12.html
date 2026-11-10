@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-561dc826.js";
+            window.path_to_searchindex_js = "searchindex-59aa598c.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-235d8387.js"></script>
@@ -250,8 +250,8 @@ block 不到 committed frontier 不发射，发射即归终端，从架构上保
 <h3 id="31-模型文档--scrolltop--视口重绘"><a class="header" href="#31-模型文档--scrolltop--视口重绘">3.1 模型：文档 + scrollTop + 视口重绘</a></h3>
 <p>进 alt screen（<code>\x1b[?1049h</code>），关自动换行，开鼠标。文档是完整行数组，<code>ScrollView</code> 持有 <code>scrollTop</code>；每帧经 <code>renderLayoutFrame</code> 只排出<strong>可见的 height 行</strong>，然后逐行和上一屏 <code>previousScreen</code> 比较，变化的行用光标寻址覆写（<code>\x1b[row;1H\x1b[2K</code> + 新行）。没有 scrollback 参与，没有任何“发射“。</p>
 <p>先看我那派的核心优势在代码里的直接兑现：<strong>resize</strong>。尺寸变化只是把 <code>fullRedraw</code> 置真，代价是 <code>\x1b[2J</code> + 重画一屏 height 行（<code>tui-alt-screen.ts:1270-1276</code>）。没有 <code>3J</code>，没有历史重印，没有 I/O 爆发。主屏那条路的“核平“在这里是 O（屏高） 的平价操作。第 13 篇说全屏自管派的 resize 成本是 CPU 且量级是一屏，这里是逐字的证据。</p>
-<h3 id="32-赎回清单终端免费给的全部自建"><a class="header" href="#32-赎回清单终端免费给的全部自建">3.2 赎回清单：终端免费给的，全部自建</a></h3>
-<p>第 13 篇说 inline 派“终端免费给的能力“是红利，反过来说，全屏派要把这些能力一件件赎回来。这份赎单在 <code>tui-alt-screen.ts</code> 里是明码标价的：</p>
+<h3 id="32-补齐清单终端免费给的全部自建"><a class="header" href="#32-补齐清单终端免费给的全部自建">3.2 补齐清单：终端免费给的，全部自建</a></h3>
+<p>第 13 篇说 inline 派“终端免费给的能力“是现成的便利，反过来说，全屏派要把这些能力一件件自己补回来。这份清单在 <code>tui-alt-screen.ts</code> 里一项项都看得见：</p>
 <ul>
 <li><strong>滚动</strong>：<code>ScrollView</code> 抽象（<code>scrollTop</code>、<code>follow: "end"</code>、<code>overscroll: "contain"</code>），而且是<strong>嵌套滚动</strong>，滚轮事件按坐标在布局树里命中测试，命中最内层 ScrollView，滚不动的余量溢出给外层（<code>routeWheel</code>）。这是 GUI 的 nested scroll view 语义，在字符网格上重建了一份；</li>
 <li><strong>搜索</strong>（Ctrl+Shift+F）：匹配在<strong>数据层</strong>做（对完整文档行全文查找），高亮在<strong>绘制层</strong>做，<code>applySearchHighlights</code> 把命中文段从渲染好的行里切出来、包上样式、再拼回去，数据一个字不动。跳转有 anchor 保持和 next/previous 环绕；</li>
@@ -259,7 +259,7 @@ block 不到 committed frontier 不发射，发射即归终端，从架构上保
 <li><strong>语义锚点（OSC 133）</strong>：transcript 的消息带着 OSC 133 区域标记下发，绘制时剥掉，但滚动导航用它实现“上一个/下一个 prompt“跳转，<strong>用终端的 shell 集成协议，给应用级滚动加了语义站点</strong>。这个设计我觉得是全文件最巧妙的一笔；</li>
 <li><strong>kitty 图片预算缓存</strong>：滚出视口的图片不删会泄漏终端显存，于是屏外缓存带预算上限（16 张 / 32MB 传输字节 / 64MB 解码字节），超预算逐出。</li>
 </ul>
-<p>还有一处环境妥协值得记：鼠标默认开全量移动追踪，但检测到 tmux/zellij/screen 就降级为“仅按键时追踪“，复用器转发鼠标事件会卡。<strong>每个免费能力的赎回价里，都包含一笔兼容性成本。</strong></p>
+<p>还有一处环境妥协值得记：鼠标默认开全量移动追踪，但检测到 tmux/zellij/screen 就降级为“仅按键时追踪“，复用器转发鼠标事件会卡。<strong>每补回一项免费能力，都要多付一份兼容性成本。</strong></p>
 <h3 id="33-最妙的一笔退出时归还-scrollback"><a class="header" href="#33-最妙的一笔退出时归还-scrollback">3.3 最妙的一笔：退出时归还 scrollback</a></h3>
 <p><code>afterTerminalStop</code>（305-328 行）：全屏模式退出时，把<strong>整个文档重新打印回主屏</strong>，逐行 <code>\r\x1b[2K</code> + 内容，写完 <code>\r\n</code> 收笔。</p>
 <p>效果是：会话期间历史归应用（可滚动、可搜索、可选择、resize 免费），<strong>退出之后历史落进终端原生 scrollback</strong>，用户照常往上翻、Cmd+F、用终端自己的选择复制。</p>
@@ -270,28 +270,28 @@ block 不到 committed frontier 不发射，发射即归终端，从架构上保
 <tr><th>实现</th><th>会话期间</th><th>会话结束后</th></tr>
 </thead>
 <tbody>
-<tr><td>Grok Build / Claude Code / Codex</td><td>历史归终端</td><td>归终端</td></tr>
+<tr><td>inline 派（Claude Code 的默认，Codex、Grok Build 的 inline 模式）</td><td>历史归终端</td><td>归终端</td></tr>
 <tr><td>ForgeLoopTUI（我的）</td><td>历史归引擎</td><td>留在主屏，但无干净归档（全量重印会把陈旧副本顶进 scrollback）；内存模型随进程蒸发</td></tr>
 <tr><td>Kimi Code alt 模式</td><td>历史归引擎</td><td><strong>归还终端</strong></td></tr>
 </tbody>
 </table>
 </div>
-<p><strong>生前归自己，死后归终端。</strong> 运行期享受全屏自管的全部自由，退出时把资产清算回介质本身。两派的优点被串行地各取了一段。</p>
+<p><strong>生前归自己，死后归终端。</strong> 运行期享受全屏自管的全部自由，退出时把历史整个交还给介质本身。两派的优点被串行地各取了一段。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch12-return-scrollback.svg" alt="生前归自己，死后归终端：退出时把历史归还给终端"><span class="img-wrapper"><img src="assets/ch12-return-scrollback.svg" alt="生前归自己，死后归终端：退出时把历史归还给终端"></span></label></p>
 <hr>
 <h2 id="四这个案例对本系列意味着什么"><a class="header" href="#四这个案例对本系列意味着什么">四、这个案例对本系列意味着什么</a></h2>
 <p><strong>1. 上一篇的分界线被复用了，但没有被推翻。</strong>
-那条分界是真实的结构，真实到四家的开关都压在同一条线上，而 Kimi Code 是在同一个接口后面把两边都实现得最完整的一个。默认主屏（inline 派）说明：对一个要集成进用户日常终端的 CLI，“历史归终端“仍是默认正确答案；实验性全屏说明：会话内体验（滚动、搜索、选择、resize）的诉求强到值得再养一套引擎。</p>
+那条分界是真实的结构，真实到四家的开关都压在同一条线上，而 Kimi Code 是在同一个接口后面把两边都实现得最完整的一个。默认主屏（inline 派）说明：对一个要集成进用户日常终端的 CLI，“历史归终端“仍是站得住的默认答案（第 13 篇的记分牌上，四家有两家这么选）；实验性全屏说明：会话内体验（滚动、搜索、选择、resize）的诉求强到值得再养一套引擎。</p>
 <p><strong>2. inline 派内部要分两档。</strong>
 第 13 篇把 inline 派写成一种做法（发射即定型），Kimi 主屏的差分变种给出了第二种：全量渲染 + 增量落盘 + 越界检测 + 核平兜底。两档的不变式相同（scrollback 不可触碰），但维持不变式的方式一个是数据层纪律、一个是渲染层检查。这个区分应该补进第 13 篇的框架里。</p>
-<p><strong>3. 我那派的“赎回清单“有了工业参照。</strong>
+<p><strong>3. 我那派的“补齐清单“有了工业参照。</strong>
 第 2 篇我写的是引擎的渲染核心；Kimi 的 alt 模式展示了渲染核心之外，把一个全屏 TUI 做到产品级还需要什么：嵌套滚动、应用级选择、数据层搜索、OSC 133 锚点、图片显存预算、复用器降级。每一项都是“终端免费给的“对照项。</p>
 <p><strong>4. “退出归还 scrollback“是一个新的架构选项。</strong>
 它回避了两派各自最难堪的时刻：inline 派在会话中无法提供可交互的历史，全屏派在退出后把历史带走。串行混合（运行期自管、终态归还）让“所有权“从一个静态选择变成了一个随生命周期变化的转移过程。如果 ForgeLoopTUI 未来要解决“退出后没有干净归档“的问题（它跑在主屏，退出后最后一帧仍在屏幕上，但全量重印顶进 scrollback 的陈旧副本让那份记录不可用），这是可以直接借鉴的范式。</p>
 <hr>
 <h2 id="五总结"><a class="header" href="#五总结">五、总结</a></h2>
-<p>上一篇的结论是：两派没有高下，是同一条公理（终端没有 undo）的两种成本结构。而本篇通过分析 Kimi Code 这个案例把结论往前推了一步：<strong>既然只是成本结构不同，就可以按生命周期分期付。</strong></p>
-<p>运行期，把历史留在自己手里，缴“自建滚动/搜索/选择“的代价，换来可交互的会话；退出时，把历史打印回 scrollback，缴一次“全量重印“的代价，换来用户终端里的完整记录。甚至同一个引擎里还可以再备一套 inline 差分实现，缴“核平兜底“的代价，作为默认模式的日常形态。</p>
+<p>上一篇的结论是：两派没有高下，是同一条公理（终端没有 undo）的两种成本结构。而本篇通过分析 Kimi Code 这个案例把结论往前推了一步：<strong>既然只是成本结构不同，就可以按生命周期分阶段承担。</strong></p>
+<p>运行期，把历史留在自己手里，承担“自建滚动/搜索/选择“的代价，换来可交互的会话；退出时，把历史打印回 scrollback，承担一次“全量重印“的代价，换来用户终端里的完整记录。甚至同一个引擎里还可以再备一套 inline 差分实现，承担“核平兜底“的代价，作为默认模式的日常形态。</p>
 <p>所有权模型因而从一道单选题变成了一份调度表：什么东西、在什么阶段、归谁管，每个问题都可以单独回答。介质还是那个只进不退的电传打字机，但和地基的关系，比上一篇设想的还要再自由一点。</p>
 <hr>
 <h2 id="参考与延伸"><a class="header" href="#参考与延伸">参考与延伸</a></h2>

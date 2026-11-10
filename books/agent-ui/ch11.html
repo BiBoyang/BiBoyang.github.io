@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-561dc826.js";
+            window.path_to_searchindex_js = "searchindex-59aa598c.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-235d8387.js"></script>
@@ -282,7 +282,7 @@
 <hr>
 <h2 id="五inline-派的代价"><a class="header" href="#五inline-派的代价">五、inline 派的代价</a></h2>
 <h3 id="51-发射后的内容不可触碰"><a class="header" href="#51-发射后的内容不可触碰">5.1 发射后的内容不可触碰</a></h3>
-<p>ANSI 光标序列只能寻址可见屏幕。一行内容滚过顶边进入 scrollback 后，不存在任何转义序列能再碰到它。而对还停在屏幕上、位于 viewport 上方的历史，inline 派给自己立了纪律：<strong>光标从不越过 viewport 顶边</strong>，一旦回写，就重新背上了帧状态那笔债，这条路线的全部意义就消失了。</p>
+<p>ANSI 光标序列只能寻址可见屏幕。一行内容滚过顶边进入 scrollback 后，不存在任何转义序列能再碰到它。而对还停在屏幕上、位于 viewport 上方的历史，inline 派给自己立了纪律：<strong>光标从不越过 viewport 顶边</strong>，一旦回写，就重新背上了帧状态那份负担，这条路线的全部意义就消失了。</p>
 <p>把“不可触碰“用一个例子走到底。屏幕上显示着折叠的字母表 ABC…XYZ，用户想把它原地展开成 26 个字母，分三种处境：</p>
 <ul>
 <li><strong>字母还没定型</strong>（还在流式输出）：两派都能改，而且都在改——一个跑五分钟的工具调用，它的 block 就在 viewport 里被重绘五分钟。这一层没有分歧。</li>
@@ -306,13 +306,13 @@ print(history);                  // 内存里的全部历史按新宽度重新�
 <p>代价有两笔。一是 <strong>I/O 爆发</strong>：pty（伪终端）是串行字节流，3 小时会话的历史是几万行、几 MB 文本，每次 resize 都重推一遍（用同步输出模式压住闪烁）。二是 <code>ESC[3J</code> <strong>误伤无辜</strong>：它清空终端的整个 scrollback，包括启动 agent 之前 shell 里留下的内容。</p>
 <p>对照第 2 篇：全屏自管派的 resize 成本是 CPU（物理行重算），量级是一屏；inline 派是 I/O 带宽，量级是整场会话。代价落在了不同的地方。</p>
 <h3 id="53-终端免费给的能力想用就得自建一份"><a class="header" href="#53-终端免费给的能力想用就得自建一份">5.3 终端免费给的能力，想用就得自建一份</a></h3>
-<p>终端 scrollback 的滚动/搜索/选择对人免费，但对程序是黑箱：不能导出会话、不能程序化跳转、不能带格式复制。想把历史当数据用，只能靠内存里那份模型自建。Grok Build 那份 4242 行的 <code>text_selection.rs</code>（连同独立的 scrollback 窗格、历史搜索、导出模块）就是这类自建的样子。不过严格按所有权划分，它长在默认的全屏分页器里，是全屏派赎回原生能力的赎单（第 14 篇会逐条点这张赎单）；inline 派的 minimal 模式反而没有补这张票，它把“再看一眼历史“导出给了 <code>$PAGER</code>。</p>
+<p>终端 scrollback 的滚动/搜索/选择对人免费，但对程序是黑箱：不能导出会话、不能程序化跳转、不能带格式复制。想把历史当数据用，只能靠内存里那份模型自建。Grok Build 那份 4242 行的 <code>text_selection.rs</code>（连同独立的 scrollback 窗格、历史搜索、导出模块）就是这类自建的样子。不过严格按所有权划分，它长在默认的全屏分页器里，是全屏派把原生能力一件件补回来的清单（第 14 篇会逐条点这张清单）；inline 派的 minimal 模式反而没有补这张票，它把“再看一眼历史“导出给了 <code>$PAGER</code>。</p>
 <h3 id="54-活区膨胀的退化"><a class="header" href="#54-活区膨胀的退化">5.4 活区膨胀的退化</a></h3>
 <p>长任务场景下（后台任务跑 20 分钟、权限等待用户离开），未定型 block 一直钉在 viewport 里参与每帧 diff。“活区极小“的优势被稀释，渲染负担向全屏自管派回归。</p>
 <hr>
 <h2 id="六为什么分界线变成了开关"><a class="header" href="#六为什么分界线变成了开关">六、为什么分界线变成了开关</a></h2>
 <p>我初稿把四家写成了“收敛到 inline“，那是错的。真实的图景是 2:2 的默认分岔 + 全员双模。逐项分析之后，我认为有几个结构性原因。</p>
-<p><strong>1. 对话的介质本性。</strong><br>Agent 会话天然 append-only。为“历史原地改写“这个低频需求维护一条常驻的精确 diff 管道，是三条路线里最不划算的一笔投资。模态 viewer 和 <code>$PAGER</code> 导出覆盖了真实需求的大部分。这是 inline 派的拉力。</p>
+<p><strong>1. 对话的介质本性。</strong><br>Agent 会话天然 append-only。为“历史原地改写“这个低频需求维护一条常驻的精确 diff 管道，是三条路线里最不划算的一项投入。模态 viewer 和 <code>$PAGER</code> 导出覆盖了真实需求的大部分。这是 inline 派的拉力。</p>
 <p><strong>2. 失败模式的不对称。</strong><br>全屏自管派的失败形态是屏幕上出现无法解释的乱码（输入法劫持光标、tmux 不同步、resize 时机错误），难复现、难定位，且发生在用户最看重的地方（别忘了这是一个需要用户审计 agent 行为的产品）。inline 派的失败形态是 resize 时闪一下，可见、有界、可恢复。对商业产品，这个不对称是决定性的。</p>
 <p><strong>3. 纪律比天才便宜。</strong><br>8 个帧状态字段时刻正确，是一个只有引擎作者本人才能长期维护的承诺；而“发射后永不触碰“是任何新人都能遵守的纪律。大组织选架构，选的是“不容易被改坏“。这个不对称有机制上的根：帧状态是每一帧、每个字段都必须正确的连续承诺，源码扫描守不住一片连续的场；“光标永不越过 viewport 顶边“是一个离散的、可机械检查的边界——移交点是离散的，纪律才能被写成测试。Grok 把这一点做到了字面上：minimal 模式的纪律不靠 Code Review 把关，靠 guard.rs 里一个扫描全部源码的守护测试，<strong>纪律被写进了构建</strong>。</p>
 <p><strong>4. 成本支付频率的不对称。</strong><br>全屏自管派的维护成本每天都在付（任何渲染改动都要过帧状态）；inline 派的爆发成本只在“长会话 + 用户拖窗口“的交集发生时付。pty（伪终端）本身的吞吐是几十 MB/s，瓶颈其实在终端模拟器的解析渲染，但即便保守估计，几 MB 重印也只是百毫秒级的事。为罕见事件多付，为日常事件零成本。</p>
@@ -331,7 +331,7 @@ print(history);                  // 内存里的全部历史按新宽度重新�
 </ul>
 <p>然后说我做的 UI 引擎的定位。</p>
 <p>ForgeLoopTUI 是少数派，但我不认为是错误，Grok Build 和 Codex 的默认形态证明了全屏自管在大组织手里同样能产品化。这条路能做到 inline 派结构性做不到的事：<strong>任意可见历史的原地改写、每一帧每一个 ANSI 字节的精确控制、会话内完整的交互能力</strong>。如果未来出现“历史必须活“的产品需求（实时协作标注、历史中的 diff 就地更新），inline 派三个实现都得重构，全屏自管派不用。</p>
-<p>但演进方向也因此清晰了：ForgeLoopTUI 的 committed 区在语义上已经是 append-only，和 inline 派的 scrollback 只差最后一步：<strong>物理上还归不归我管</strong>，也就是渲染权交不交、交出去还拿不拿得回。四家的开关给出了同一个提示：这道题不必一次答完，可以按生命周期分期回答。这笔交换是否值得，取决于约束集合，这和第 11 篇“端的选择由约束决定“是同一个逻辑，在渲染层又成立了一次。</p>
+<p>但演进方向也因此清晰了：ForgeLoopTUI 的 committed 区在语义上已经是 append-only，和 inline 派的 scrollback 只差最后一步：<strong>物理上还归不归我管</strong>，也就是渲染权交不交、交出去还拿不拿得回。四家的开关给出了同一个提示：这道题不必一次答完，可以按生命周期分阶段回答。这样的交换是否值得，取决于约束集合，这和第 11 篇“端的选择由约束决定“是同一个逻辑，在渲染层又成立了一次。</p>
 <hr>
 <h2 id="八总结"><a class="header" href="#八总结">八、总结</a></h2>
 <p>第 2 篇说：TUI 渲染是在“终端没有 undo“的地基上建引擎。这篇补上下半句：<strong>地基没法换，但你可以选择和地基的关系。</strong></p>

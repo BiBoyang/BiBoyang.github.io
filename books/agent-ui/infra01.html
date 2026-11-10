@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-561dc826.js";
+            window.path_to_searchindex_js = "searchindex-59aa598c.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-235d8387.js"></script>
@@ -179,7 +179,7 @@
                     <main>
                         <h1 id="连接与会话断线之后谁还记得它讲到哪了"><a class="header" href="#连接与会话断线之后谁还记得它讲到哪了">连接与会话——断线之后，谁还记得它讲到哪了</a></h1>
 <blockquote>
-<p>「界面」卷拆的是像素层：界面怎么画、历史归谁管、信什么。这个系列拆另一半，<strong>信用层：那些画面凭什么信、承诺凭什么兑现</strong>。准入线只有一条：只写决定某个界面承诺真假的基建。第一篇的题目，来自我写作期间被自己问住的第一个问题：SSE 流断了怎么办？换一台服务器重连呢？</p>
+<p>「界面」卷拆的是像素层：界面怎么画、历史归谁管、信什么。这个系列拆另一半，<strong>信任层：那些画面凭什么信、承诺凭什么兑现</strong>。准入线只有一条：只写决定某个界面承诺真假的基建。第一篇的题目，来自我写作期间被自己问住的第一个问题：SSE 流断了怎么办？换一台服务器重连呢？</p>
 </blockquote>
 <hr>
 <h2 id="一停在半行字上的界面"><a class="header" href="#一停在半行字上的界面">一、停在半行字上的界面</a></h2>
@@ -211,12 +211,12 @@
 <tr><td>连接里（进程内存）</td><td>断线即丢，只能 sticky session</td><td>最朴素的 WS 服务</td><td>全部会话阵亡</td></tr>
 <tr><td>有界 journal（内存）</td><td>热续：游标在覆盖内重放差量</td><td>kimi transcript ops journal</td><td>丢最近一段</td></tr>
 <tr><td>磁盘 log</td><td>冷重建：慢但完整</td><td>kimi <code>wire.jsonl</code>；Claude Code 会话文件</td><td>无损</td></tr>
-<tr><td>外部共享存储</td><td>换服务器随意连，连接=租借加速器</td><td>Vercel（Redis）；Cloudflare Agents（每 Agent 一个 Durable Object，单写者正确性 + WebSocket 休眠：对象睡了连接还活着，不收活钱的算力费）</td><td>无损</td></tr>
+<tr><td>外部共享存储</td><td>换服务器随意连，连接=租借加速器</td><td>Vercel（Redis）；Cloudflare Agents（每 Agent 一个 Durable Object，单写者正确性 + WebSocket 休眠：对象睡了连接还活着，这段时间不计算力费）</td><td>无损</td></tr>
 <tr><td>都不记</td><td>断了就断了，应用层重试</td><td>MCP 2026-07-28</td><td>不适用（本来无状态）</td></tr>
 </tbody>
 </table>
 </div>
-<p>第 11 篇说“统一 Event Log“是四个统一之一，当时它是一句架构主张；这张表是它的工程含义全集。顺带补一句 actor 档的注脚：Cloudflare Agents 的官方仓库里挂着一个重连竞态的 issue（#1837，移动网络抖动或重新部署弹跳 Durable Object 时，客户端 hook 在重连与续传之间赛跑）。每往上一档，省下的是会话状态，欠下的是新的竞态。没有免费的档位。</p>
+<p>第 11 篇说“统一 Event Log“是四个统一之一，当时它是一句架构主张；这张表是它的工程含义全集。顺带补一句 actor 档的注脚：Cloudflare Agents 的官方仓库里挂着一个重连竞态的 issue（#1837，移动网络抖动或重新部署弹跳 Durable Object 时，客户端 hook 在重连与续传之间赛跑）。每往上一档，省下的是会话状态，换来的是新的竞态。没有免费的档位。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/infra01-source-of-truth-ladder.svg" alt="重连语义由 source of truth 的位置决定：五档谱系"><span class="img-wrapper"><img src="assets/infra01-source-of-truth-ladder.svg" alt="重连语义由 source of truth 的位置决定：五档谱系"></span></label></p>
 <h2 id="五幂等与序号at-least-once-世界的生存守则"><a class="header" href="#五幂等与序号at-least-once-世界的生存守则">五、幂等与序号：at-least-once 世界的生存守则</a></h2>
 <p>只要服务端肯重放，重复推送就不可避免，传输的现实是 at-least-once，不是 exactly-once。消费侧按事件 id 去重是基本功；真正会咬人的是副作用：工具已经执行了，确认事件在断线中丢了，重试会不会再执行一遍？</p>
@@ -246,7 +246,7 @@
 </table>
 </div>
 <p>所以这一篇的结论可以压成一句：<strong>界面承诺的真假，不取决于渲染层多努力，取决于事实源存在哪一层。</strong> 半行字卡在屏幕上的那一刻，界面能说“正在重连，已恢复到第 N 个事件“，还是只能让动画继续转下去骗人，这个差别在上线之前，就已经被后端的一张表决定了。</p>
-<p>下一篇把镜头从连接的两端拉近到拿在手里的那一端：一部随时会被操作系统杀掉的手机，如何在一台会话的每个站点（输入、发送、排队、流式、回看）保住“流畅“和“完整“这两件互相打架的事。</p>
+<p>下一篇把镜头从连接的两端拉近到拿在手里的那一端：一部随时会被操作系统杀掉的手机，如何在一次会话的每个站点（输入、发送、排队、流式、回看）保住“流畅“和“完整“这两件互相打架的事。</p>
 <hr>
 <h2 id="参考与延伸"><a class="header" href="#参考与延伸">参考与延伸</a></h2>
 <ul>

@@ -36,7 +36,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-561dc826.js";
+            window.path_to_searchindex_js = "searchindex-59aa598c.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-235d8387.js"></script>
@@ -883,7 +883,7 @@ if stableSource.count &gt; maxStableSourceChars { reset() }
 <hr>
 <blockquote>
 <p>补记（2026.10）：本篇定稿两个月后，我逐行读了 Codex 的流式渲染模块（<code>codex-rs/tui/src/streaming/</code>）。两个发现值得记在这里：§3.2 的表格陷阱，Codex 用另一种机制独立解了一遍；§3.3 的代码块盲区，Codex 里有一个现成的完整答案。</p>
-<p>Codex 的对应物叫 table holdback，是一个三态状态机：没有表格迹象时放行一切；末行看着像表头、分隔行还没到，就进入“待确认“，乐观地把这一行拦在稳定区之外；表头与分隔行一旦配对确认，从表头起的内容全部保持可变，直到表格结束。它解的问题和 retreat 是同一个（给表格加一行会改变所有列宽、重塑之前所有行，所以表格在闭合前不能定型），但机制相反。ForgeLoopTUI 是<strong>事后回退</strong>：先按换行符乐观切分，发现劈开风险再回头扫描，最坏 O(n)，平时零常驻状态。Codex 是<strong>事前状态机</strong>：扫描器随每个 delta 增量推进，只记住上一行的事实，常数成本，提前拦住。第六节说防御逻辑是必要之恶，这两家只是选择了不同的付代价时点：一个按需补付，一个分期预付。</p>
+<p>Codex 的对应物叫 table holdback，是一个三态状态机：没有表格迹象时放行一切；末行看着像表头、分隔行还没到，就进入“待确认“，乐观地把这一行拦在稳定区之外；表头与分隔行一旦配对确认，从表头起的内容全部保持可变，直到表格结束。它解的问题和 retreat 是同一个（给表格加一行会改变所有列宽、重塑之前所有行，所以表格在闭合前不能定型），但机制相反。ForgeLoopTUI 是<strong>事后回退</strong>：先按换行符乐观切分，发现劈开风险再回头扫描，最坏 O(n)，平时零常驻状态。Codex 是<strong>事前状态机</strong>：扫描器随每个 delta 增量推进，只记住上一行的事实，常数成本，提前拦住。第六节说防御逻辑是必要之恶，这两家只是选择了不同的付代价时点：一个出了问题再回头补算，一个把成本均摊到每一步。</p>
 <p>还有两个细节。其一，Codex 的源累积器只在换行符处交付：没写完的半行根本不进入渲染管线，注释里写明了动机——防止用户先瞥见结构未定的畸形块、下一帧又看它消失。§3.2 里那类闪烁，在这个设计里从源头不存在。其二，§3.3 盲区的他山答案：Codex 全程维护 fence 状态，开着的代码块走一条快路径——直接追加渲染行、不重新解析，fence 状态跨帧连续，盲区在结构上不存在。</p>
 <p>时间线：ForgeLoopTUI v1.2.1 的 fence retreat 修复在前，我读 Codex 在后。两家独立收敛到了同一个判断：fence 状态必须跨帧保持，区别只在用回退还是用状态机来实现。另外，Codex 给这套机制配的测试不是逐帧断言，而是断言一个不变量：任意 delta 切分下，“已上屏 + 待放行“恒等于一次性全量渲染。这个思路本身值得展开，见第 16 篇。</p>
 </blockquote>
@@ -2075,7 +2075,7 @@ tick 90: parse(3000字)+ build(3000字)+ layout(3000字)
 <hr>
 <h2 id="五inline-派的代价"><a class="header" href="#五inline-派的代价">五、inline 派的代价</a></h2>
 <h3 id="51-发射后的内容不可触碰"><a class="header" href="#51-发射后的内容不可触碰">5.1 发射后的内容不可触碰</a></h3>
-<p>ANSI 光标序列只能寻址可见屏幕。一行内容滚过顶边进入 scrollback 后，不存在任何转义序列能再碰到它。而对还停在屏幕上、位于 viewport 上方的历史，inline 派给自己立了纪律：<strong>光标从不越过 viewport 顶边</strong>，一旦回写，就重新背上了帧状态那笔债，这条路线的全部意义就消失了。</p>
+<p>ANSI 光标序列只能寻址可见屏幕。一行内容滚过顶边进入 scrollback 后，不存在任何转义序列能再碰到它。而对还停在屏幕上、位于 viewport 上方的历史，inline 派给自己立了纪律：<strong>光标从不越过 viewport 顶边</strong>，一旦回写，就重新背上了帧状态那份负担，这条路线的全部意义就消失了。</p>
 <p>把“不可触碰“用一个例子走到底。屏幕上显示着折叠的字母表 ABC…XYZ，用户想把它原地展开成 26 个字母，分三种处境：</p>
 <ul>
 <li><strong>字母还没定型</strong>（还在流式输出）：两派都能改，而且都在改——一个跑五分钟的工具调用，它的 block 就在 viewport 里被重绘五分钟。这一层没有分歧。</li>
@@ -2099,13 +2099,13 @@ print(history);                  // 内存里的全部历史按新宽度重新�
 <p>代价有两笔。一是 <strong>I/O 爆发</strong>：pty（伪终端）是串行字节流，3 小时会话的历史是几万行、几 MB 文本，每次 resize 都重推一遍（用同步输出模式压住闪烁）。二是 <code>ESC[3J</code> <strong>误伤无辜</strong>：它清空终端的整个 scrollback，包括启动 agent 之前 shell 里留下的内容。</p>
 <p>对照第 2 篇：全屏自管派的 resize 成本是 CPU（物理行重算），量级是一屏；inline 派是 I/O 带宽，量级是整场会话。代价落在了不同的地方。</p>
 <h3 id="53-终端免费给的能力想用就得自建一份"><a class="header" href="#53-终端免费给的能力想用就得自建一份">5.3 终端免费给的能力，想用就得自建一份</a></h3>
-<p>终端 scrollback 的滚动/搜索/选择对人免费，但对程序是黑箱：不能导出会话、不能程序化跳转、不能带格式复制。想把历史当数据用，只能靠内存里那份模型自建。Grok Build 那份 4242 行的 <code>text_selection.rs</code>（连同独立的 scrollback 窗格、历史搜索、导出模块）就是这类自建的样子。不过严格按所有权划分，它长在默认的全屏分页器里，是全屏派赎回原生能力的赎单（第 14 篇会逐条点这张赎单）；inline 派的 minimal 模式反而没有补这张票，它把“再看一眼历史“导出给了 <code>$PAGER</code>。</p>
+<p>终端 scrollback 的滚动/搜索/选择对人免费，但对程序是黑箱：不能导出会话、不能程序化跳转、不能带格式复制。想把历史当数据用，只能靠内存里那份模型自建。Grok Build 那份 4242 行的 <code>text_selection.rs</code>（连同独立的 scrollback 窗格、历史搜索、导出模块）就是这类自建的样子。不过严格按所有权划分，它长在默认的全屏分页器里，是全屏派把原生能力一件件补回来的清单（第 14 篇会逐条点这张清单）；inline 派的 minimal 模式反而没有补这张票，它把“再看一眼历史“导出给了 <code>$PAGER</code>。</p>
 <h3 id="54-活区膨胀的退化"><a class="header" href="#54-活区膨胀的退化">5.4 活区膨胀的退化</a></h3>
 <p>长任务场景下（后台任务跑 20 分钟、权限等待用户离开），未定型 block 一直钉在 viewport 里参与每帧 diff。“活区极小“的优势被稀释，渲染负担向全屏自管派回归。</p>
 <hr>
 <h2 id="六为什么分界线变成了开关"><a class="header" href="#六为什么分界线变成了开关">六、为什么分界线变成了开关</a></h2>
 <p>我初稿把四家写成了“收敛到 inline“，那是错的。真实的图景是 2:2 的默认分岔 + 全员双模。逐项分析之后，我认为有几个结构性原因。</p>
-<p><strong>1. 对话的介质本性。</strong><br>Agent 会话天然 append-only。为“历史原地改写“这个低频需求维护一条常驻的精确 diff 管道，是三条路线里最不划算的一笔投资。模态 viewer 和 <code>$PAGER</code> 导出覆盖了真实需求的大部分。这是 inline 派的拉力。</p>
+<p><strong>1. 对话的介质本性。</strong><br>Agent 会话天然 append-only。为“历史原地改写“这个低频需求维护一条常驻的精确 diff 管道，是三条路线里最不划算的一项投入。模态 viewer 和 <code>$PAGER</code> 导出覆盖了真实需求的大部分。这是 inline 派的拉力。</p>
 <p><strong>2. 失败模式的不对称。</strong><br>全屏自管派的失败形态是屏幕上出现无法解释的乱码（输入法劫持光标、tmux 不同步、resize 时机错误），难复现、难定位，且发生在用户最看重的地方（别忘了这是一个需要用户审计 agent 行为的产品）。inline 派的失败形态是 resize 时闪一下，可见、有界、可恢复。对商业产品，这个不对称是决定性的。</p>
 <p><strong>3. 纪律比天才便宜。</strong><br>8 个帧状态字段时刻正确，是一个只有引擎作者本人才能长期维护的承诺；而“发射后永不触碰“是任何新人都能遵守的纪律。大组织选架构，选的是“不容易被改坏“。这个不对称有机制上的根：帧状态是每一帧、每个字段都必须正确的连续承诺，源码扫描守不住一片连续的场；“光标永不越过 viewport 顶边“是一个离散的、可机械检查的边界——移交点是离散的，纪律才能被写成测试。Grok 把这一点做到了字面上：minimal 模式的纪律不靠 Code Review 把关，靠 guard.rs 里一个扫描全部源码的守护测试，<strong>纪律被写进了构建</strong>。</p>
 <p><strong>4. 成本支付频率的不对称。</strong><br>全屏自管派的维护成本每天都在付（任何渲染改动都要过帧状态）；inline 派的爆发成本只在“长会话 + 用户拖窗口“的交集发生时付。pty（伪终端）本身的吞吐是几十 MB/s，瓶颈其实在终端模拟器的解析渲染，但即便保守估计，几 MB 重印也只是百毫秒级的事。为罕见事件多付，为日常事件零成本。</p>
@@ -2124,7 +2124,7 @@ print(history);                  // 内存里的全部历史按新宽度重新�
 </ul>
 <p>然后说我做的 UI 引擎的定位。</p>
 <p>ForgeLoopTUI 是少数派，但我不认为是错误，Grok Build 和 Codex 的默认形态证明了全屏自管在大组织手里同样能产品化。这条路能做到 inline 派结构性做不到的事：<strong>任意可见历史的原地改写、每一帧每一个 ANSI 字节的精确控制、会话内完整的交互能力</strong>。如果未来出现“历史必须活“的产品需求（实时协作标注、历史中的 diff 就地更新），inline 派三个实现都得重构，全屏自管派不用。</p>
-<p>但演进方向也因此清晰了：ForgeLoopTUI 的 committed 区在语义上已经是 append-only，和 inline 派的 scrollback 只差最后一步：<strong>物理上还归不归我管</strong>，也就是渲染权交不交、交出去还拿不拿得回。四家的开关给出了同一个提示：这道题不必一次答完，可以按生命周期分期回答。这笔交换是否值得，取决于约束集合，这和第 11 篇“端的选择由约束决定“是同一个逻辑，在渲染层又成立了一次。</p>
+<p>但演进方向也因此清晰了：ForgeLoopTUI 的 committed 区在语义上已经是 append-only，和 inline 派的 scrollback 只差最后一步：<strong>物理上还归不归我管</strong>，也就是渲染权交不交、交出去还拿不拿得回。四家的开关给出了同一个提示：这道题不必一次答完，可以按生命周期分阶段回答。这样的交换是否值得，取决于约束集合，这和第 11 篇“端的选择由约束决定“是同一个逻辑，在渲染层又成立了一次。</p>
 <hr>
 <h2 id="八总结-2"><a class="header" href="#八总结-2">八、总结</a></h2>
 <p>第 2 篇说：TUI 渲染是在“终端没有 undo“的地基上建引擎。这篇补上下半句：<strong>地基没法换，但你可以选择和地基的关系。</strong></p>
@@ -2212,8 +2212,8 @@ block 不到 committed frontier 不发射，发射即归终端，从架构上保
 <h3 id="31-模型文档--scrolltop--视口重绘"><a class="header" href="#31-模型文档--scrolltop--视口重绘">3.1 模型：文档 + scrollTop + 视口重绘</a></h3>
 <p>进 alt screen（<code>\x1b[?1049h</code>），关自动换行，开鼠标。文档是完整行数组，<code>ScrollView</code> 持有 <code>scrollTop</code>；每帧经 <code>renderLayoutFrame</code> 只排出<strong>可见的 height 行</strong>，然后逐行和上一屏 <code>previousScreen</code> 比较，变化的行用光标寻址覆写（<code>\x1b[row;1H\x1b[2K</code> + 新行）。没有 scrollback 参与，没有任何“发射“。</p>
 <p>先看我那派的核心优势在代码里的直接兑现：<strong>resize</strong>。尺寸变化只是把 <code>fullRedraw</code> 置真，代价是 <code>\x1b[2J</code> + 重画一屏 height 行（<code>tui-alt-screen.ts:1270-1276</code>）。没有 <code>3J</code>，没有历史重印，没有 I/O 爆发。主屏那条路的“核平“在这里是 O（屏高） 的平价操作。第 13 篇说全屏自管派的 resize 成本是 CPU 且量级是一屏，这里是逐字的证据。</p>
-<h3 id="32-赎回清单终端免费给的全部自建"><a class="header" href="#32-赎回清单终端免费给的全部自建">3.2 赎回清单：终端免费给的，全部自建</a></h3>
-<p>第 13 篇说 inline 派“终端免费给的能力“是红利，反过来说，全屏派要把这些能力一件件赎回来。这份赎单在 <code>tui-alt-screen.ts</code> 里是明码标价的：</p>
+<h3 id="32-补齐清单终端免费给的全部自建"><a class="header" href="#32-补齐清单终端免费给的全部自建">3.2 补齐清单：终端免费给的，全部自建</a></h3>
+<p>第 13 篇说 inline 派“终端免费给的能力“是现成的便利，反过来说，全屏派要把这些能力一件件自己补回来。这份清单在 <code>tui-alt-screen.ts</code> 里一项项都看得见：</p>
 <ul>
 <li><strong>滚动</strong>：<code>ScrollView</code> 抽象（<code>scrollTop</code>、<code>follow: "end"</code>、<code>overscroll: "contain"</code>），而且是<strong>嵌套滚动</strong>，滚轮事件按坐标在布局树里命中测试，命中最内层 ScrollView，滚不动的余量溢出给外层（<code>routeWheel</code>）。这是 GUI 的 nested scroll view 语义，在字符网格上重建了一份；</li>
 <li><strong>搜索</strong>（Ctrl+Shift+F）：匹配在<strong>数据层</strong>做（对完整文档行全文查找），高亮在<strong>绘制层</strong>做，<code>applySearchHighlights</code> 把命中文段从渲染好的行里切出来、包上样式、再拼回去，数据一个字不动。跳转有 anchor 保持和 next/previous 环绕；</li>
@@ -2221,7 +2221,7 @@ block 不到 committed frontier 不发射，发射即归终端，从架构上保
 <li><strong>语义锚点（OSC 133）</strong>：transcript 的消息带着 OSC 133 区域标记下发，绘制时剥掉，但滚动导航用它实现“上一个/下一个 prompt“跳转，<strong>用终端的 shell 集成协议，给应用级滚动加了语义站点</strong>。这个设计我觉得是全文件最巧妙的一笔；</li>
 <li><strong>kitty 图片预算缓存</strong>：滚出视口的图片不删会泄漏终端显存，于是屏外缓存带预算上限（16 张 / 32MB 传输字节 / 64MB 解码字节），超预算逐出。</li>
 </ul>
-<p>还有一处环境妥协值得记：鼠标默认开全量移动追踪，但检测到 tmux/zellij/screen 就降级为“仅按键时追踪“，复用器转发鼠标事件会卡。<strong>每个免费能力的赎回价里，都包含一笔兼容性成本。</strong></p>
+<p>还有一处环境妥协值得记：鼠标默认开全量移动追踪，但检测到 tmux/zellij/screen 就降级为“仅按键时追踪“，复用器转发鼠标事件会卡。<strong>每补回一项免费能力，都要多付一份兼容性成本。</strong></p>
 <h3 id="33-最妙的一笔退出时归还-scrollback"><a class="header" href="#33-最妙的一笔退出时归还-scrollback">3.3 最妙的一笔：退出时归还 scrollback</a></h3>
 <p><code>afterTerminalStop</code>（305-328 行）：全屏模式退出时，把<strong>整个文档重新打印回主屏</strong>，逐行 <code>\r\x1b[2K</code> + 内容，写完 <code>\r\n</code> 收笔。</p>
 <p>效果是：会话期间历史归应用（可滚动、可搜索、可选择、resize 免费），<strong>退出之后历史落进终端原生 scrollback</strong>，用户照常往上翻、Cmd+F、用终端自己的选择复制。</p>
@@ -2232,28 +2232,28 @@ block 不到 committed frontier 不发射，发射即归终端，从架构上保
 <tr><th>实现</th><th>会话期间</th><th>会话结束后</th></tr>
 </thead>
 <tbody>
-<tr><td>Grok Build / Claude Code / Codex</td><td>历史归终端</td><td>归终端</td></tr>
+<tr><td>inline 派（Claude Code 的默认，Codex、Grok Build 的 inline 模式）</td><td>历史归终端</td><td>归终端</td></tr>
 <tr><td>ForgeLoopTUI（我的）</td><td>历史归引擎</td><td>留在主屏，但无干净归档（全量重印会把陈旧副本顶进 scrollback）；内存模型随进程蒸发</td></tr>
 <tr><td>Kimi Code alt 模式</td><td>历史归引擎</td><td><strong>归还终端</strong></td></tr>
 </tbody>
 </table>
 </div>
-<p><strong>生前归自己，死后归终端。</strong> 运行期享受全屏自管的全部自由，退出时把资产清算回介质本身。两派的优点被串行地各取了一段。</p>
+<p><strong>生前归自己，死后归终端。</strong> 运行期享受全屏自管的全部自由，退出时把历史整个交还给介质本身。两派的优点被串行地各取了一段。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch12-return-scrollback.svg" alt="生前归自己，死后归终端：退出时把历史归还给终端"><span class="img-wrapper"><img src="assets/ch12-return-scrollback.svg" alt="生前归自己，死后归终端：退出时把历史归还给终端"></span></label></p>
 <hr>
 <h2 id="四这个案例对本系列意味着什么"><a class="header" href="#四这个案例对本系列意味着什么">四、这个案例对本系列意味着什么</a></h2>
 <p><strong>1. 上一篇的分界线被复用了，但没有被推翻。</strong>
-那条分界是真实的结构，真实到四家的开关都压在同一条线上，而 Kimi Code 是在同一个接口后面把两边都实现得最完整的一个。默认主屏（inline 派）说明：对一个要集成进用户日常终端的 CLI，“历史归终端“仍是默认正确答案；实验性全屏说明：会话内体验（滚动、搜索、选择、resize）的诉求强到值得再养一套引擎。</p>
+那条分界是真实的结构，真实到四家的开关都压在同一条线上，而 Kimi Code 是在同一个接口后面把两边都实现得最完整的一个。默认主屏（inline 派）说明：对一个要集成进用户日常终端的 CLI，“历史归终端“仍是站得住的默认答案（第 13 篇的记分牌上，四家有两家这么选）；实验性全屏说明：会话内体验（滚动、搜索、选择、resize）的诉求强到值得再养一套引擎。</p>
 <p><strong>2. inline 派内部要分两档。</strong>
 第 13 篇把 inline 派写成一种做法（发射即定型），Kimi 主屏的差分变种给出了第二种：全量渲染 + 增量落盘 + 越界检测 + 核平兜底。两档的不变式相同（scrollback 不可触碰），但维持不变式的方式一个是数据层纪律、一个是渲染层检查。这个区分应该补进第 13 篇的框架里。</p>
-<p><strong>3. 我那派的“赎回清单“有了工业参照。</strong>
+<p><strong>3. 我那派的“补齐清单“有了工业参照。</strong>
 第 2 篇我写的是引擎的渲染核心；Kimi 的 alt 模式展示了渲染核心之外，把一个全屏 TUI 做到产品级还需要什么：嵌套滚动、应用级选择、数据层搜索、OSC 133 锚点、图片显存预算、复用器降级。每一项都是“终端免费给的“对照项。</p>
 <p><strong>4. “退出归还 scrollback“是一个新的架构选项。</strong>
 它回避了两派各自最难堪的时刻：inline 派在会话中无法提供可交互的历史，全屏派在退出后把历史带走。串行混合（运行期自管、终态归还）让“所有权“从一个静态选择变成了一个随生命周期变化的转移过程。如果 ForgeLoopTUI 未来要解决“退出后没有干净归档“的问题（它跑在主屏，退出后最后一帧仍在屏幕上，但全量重印顶进 scrollback 的陈旧副本让那份记录不可用），这是可以直接借鉴的范式。</p>
 <hr>
 <h2 id="五总结"><a class="header" href="#五总结">五、总结</a></h2>
-<p>上一篇的结论是：两派没有高下，是同一条公理（终端没有 undo）的两种成本结构。而本篇通过分析 Kimi Code 这个案例把结论往前推了一步：<strong>既然只是成本结构不同，就可以按生命周期分期付。</strong></p>
-<p>运行期，把历史留在自己手里，缴“自建滚动/搜索/选择“的代价，换来可交互的会话；退出时，把历史打印回 scrollback，缴一次“全量重印“的代价，换来用户终端里的完整记录。甚至同一个引擎里还可以再备一套 inline 差分实现，缴“核平兜底“的代价，作为默认模式的日常形态。</p>
+<p>上一篇的结论是：两派没有高下，是同一条公理（终端没有 undo）的两种成本结构。而本篇通过分析 Kimi Code 这个案例把结论往前推了一步：<strong>既然只是成本结构不同，就可以按生命周期分阶段承担。</strong></p>
+<p>运行期，把历史留在自己手里，承担“自建滚动/搜索/选择“的代价，换来可交互的会话；退出时，把历史打印回 scrollback，承担一次“全量重印“的代价，换来用户终端里的完整记录。甚至同一个引擎里还可以再备一套 inline 差分实现，承担“核平兜底“的代价，作为默认模式的日常形态。</p>
 <p>所有权模型因而从一道单选题变成了一份调度表：什么东西、在什么阶段、归谁管，每个问题都可以单独回答。介质还是那个只进不退的电传打字机，但和地基的关系，比上一篇设想的还要再自由一点。</p>
 <hr>
 <h2 id="参考与延伸-12"><a class="header" href="#参考与延伸-12">参考与延伸</a></h2>
@@ -2340,7 +2340,7 @@ block 不到 committed frontier 不发射，发射即归终端，从架构上保
 <p>这也向我们回答了“值不值“的问题。流式渲染的正确性涉及时序、布局、状态机的组合爆炸，人工回归不可能覆盖；而一旦基建就位，等价性层的单个测试能顶掉一整个手工测试矩阵。测试在这里从成本中心变成了让“事前状态机“这类精巧设计<strong>敢存在</strong>的前提：没有等价性测试盯着，任何后来者的“优化“都可能悄悄破坏收敛性，而且没有人会发现。</p>
 <hr>
 <h2 id="四总结-1"><a class="header" href="#四总结-1">四、总结</a></h2>
-<p>回头看，这个系列里关于可测试性的判断一直是散点：第 2 篇列举 CLI/TUI 优势时提过“管道可测试“，第 13 篇把可测试性列为 inline 派的优点之一（“系统越聪明，证明它正确的基础设施越贵”）而把这个优点兑现得最彻底的，反倒是默认全屏的 Codex：双模产品的测试成本要付两份。Codex 的四层实践把这些散点收成了一个框架：</p>
+<p>回头看，这个系列里关于可测试性的判断一直是散点：第 2 篇列举 CLI/TUI 优势时提过“管道可测试“，第 13 篇把可测试性列为 inline 派的优点之一（“系统越聪明，证明它正确的基础设施越贵”）。而把这个优点兑现得最彻底的，反倒是默认全屏的 Codex：双模产品的测试成本要付两份。Codex 的四层实践把这些散点收成了一个框架：</p>
 <pre><code>字节断言  →  钉契约（贵而硬，只钉关键行为）
 快照      →  钉形态（配归一化，防抖动失效）
 等价性    →  钉不变量（一次断言，覆盖无限切分）
@@ -2392,7 +2392,7 @@ block 不到 committed frontier 不发射，发射即归终端，从架构上保
 <p>并且立了铁律：<strong>永远不要在完整帧之后直接 <code>appendFrame</code></strong>。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch14-three-step-settle.svg" alt="三步定稿序列与铁律：appendFrame 是永久历史的唯一通道"><span class="img-wrapper"><img src="assets/ch14-three-step-settle.svg" alt="三步定稿序列与铁律：appendFrame 是永久历史的唯一通道"></span></label></p>
 <p>这条铁律有出处。TASK-27 是测试先行的，只写测试不改库。<code>CommittedPreviewAnchorTests</code> 造了一个预言机：<code>ScrollbackTerminal</code>，实现了真实终端语义（deferred wrap、宽字符、底部滚动入 scrollback，覆盖 TUI 输出的全部 ANSI 子集），每个 API 调用后断言屏幕与 scrollback 和“期望内容物理换行后的尾部“逐行一致。S1–S5 场景验证 erase→append→redraw 在各种组合下锚定正确；S6 是一个专门的探针，<strong>故意钉住直连序列的缺陷形状</strong>：满帧后直接 appendFrame，结果是永久性的窗口偏移加陈旧绘制补位。把“为什么要先擦“从一条经验升级成了一道回归约束。</p>
-<p>还有一个归属细节值得记：<code>StreamingTranscriptAppendState</code>（维护“哪些行已落卷轴、哪些未定稿“的增量状态机）放在 <code>Sources/ForgeLoopTUI/Transcript/</code>，在引擎里，不在示例 app 里。合流是引擎级的决定，app 只是消费者，现在有两个消费者：MinimalAIApp 和 dsh-tui，两者帧模式一致。</p>
+<p>还有一个归属细节值得记：<code>StreamingTranscriptAppendState</code>（维护“哪些行已落卷轴、哪些未定稿“的增量状态机）放在 <code>Sources/ForgeLoopTUI/Transcript/</code>，在引擎里，不在示例 app 里。合流是引擎级的决定，app 只是消费者，现在有两个消费者：MinimalAIApp 和 dsh-tui（dsh 是 deepseek harness 的缩写），两者帧模式一致。</p>
 <h2 id="三这件事在所有权坐标系里意味着什么"><a class="header" href="#三这件事在所有权坐标系里意味着什么">三、这件事在所有权坐标系里意味着什么</a></h2>
 <p>盘点一下新稳态。一条回复流式期间：不稳定尾巴 + 状态栏 + 输入框，归引擎原地管；行一旦稳定：<code>appendFrame</code> 写进<strong>终端原生 scrollback</strong>，从此滚动、回看、复制都是终端的事，引擎脱手。</p>
 <p>把这个状态放到第 14 篇那张三行所有权表里：</p>
@@ -2402,14 +2402,14 @@ block 不到 committed frontier 不发射，发射即归终端，从架构上保
 <tr><th>实现</th><th>会话期间</th><th>会话结束后</th></tr>
 </thead>
 <tbody>
-<tr><td>Grok / Claude Code / Codex</td><td>历史归终端</td><td>归终端</td></tr>
+<tr><td>inline 派（Claude Code 的默认，Codex、Grok 的 inline 模式）</td><td>历史归终端</td><td>归终端</td></tr>
 <tr><td>ForgeLoopTUI（第 14 篇时的判断）</td><td>历史归引擎</td><td>无干净归档</td></tr>
 <tr><td>Kimi Code alt 模式</td><td>历史归引擎</td><td>归还终端</td></tr>
 <tr><td><strong>ForgeLoopTUI app 路径（8 月 30 日后）</strong></td><td><strong>稳定一行，归还一行</strong></td><td><strong>已在 scrollback</strong></td></tr>
 </tbody>
 </table>
 </div>
-<p>比 Kimi 的“退出时归还“更早：不是终态一次性清算，是逐行按揭。第 14 篇的结论是“所有权可以按生命周期分期缴“，现在“会话期间“内部也可以分期了，<strong>稳定的程度就是所有权的边界</strong>：每行内容在它被认证稳定的那个瞬间，从引擎资产变成终端资产。</p>
+<p>比 Kimi 的“退出时归还“更早：不是终态一次性移交，是逐行移交。第 14 篇的结论是“所有权的代价可以按生命周期分阶段承担“，现在“会话期间“内部也可以再分阶段了，<strong>稳定的程度就是所有权的边界</strong>：每行内容在它被认证稳定的那个瞬间，从归引擎管变成归终端管。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch14-per-line-mortgage.svg" alt="稳定一行，归还一行：每行内容在认证稳定的瞬间换手"><span class="img-wrapper"><img src="assets/ch14-per-line-mortgage.svg" alt="稳定一行，归还一行：每行内容在认证稳定的瞬间换手"></span></label></p>
 <p>但要说清楚：引擎没有换阵营。窗口化全帧 API 原样保留，AppKit 桥、全屏路径都在，另一个 app 仍然可以选“历史全归引擎“。引擎做的事是提供了两种语义（原地帧 + 发射通道）让 app 自选，这恰好是八月审计里“问题 2“（历史持久化路径待确认，实为 API 设计问题）的答案，也顺带回答了当时挂着的 Phase 0 决策 A：要不要提供 <code>commit(_:)</code> 一等沉降语义？实践给出的答案是<strong>已经有了</strong>，<code>appendFrame</code> 就是 commit 通道，差的只是把它作为一等语义写进文档和 README 的选择指引。挂了两个月的问题，被一次修 bug 顺手回答了。</p>
 <h2 id="四混合模式的代价"><a class="header" href="#四混合模式的代价">四、混合模式的代价</a></h2>
@@ -2421,7 +2421,7 @@ block 不到 committed frontier 不发射，发射即归终端，从架构上保
 </blockquote>
 <p>（appendFrame 是永久历史的唯一通道。）这就是 inline 派“发射即定型“纪律在混合模式里的对应物，只不过它管的方向反过来：inline 派用它约束“不许碰已发射的历史“，这里用它约束“不许从别的门进历史“。同一句纪律，两种所有制下各管一边。</p>
 <p>配套的是一个计数器：<code>unretainedAppendedRows</code>，appendFrame 写下、但还没被任何 retained 帧接管的光标行数。有了它，erase→append→redraw 序列里万一发生超屏重绘，重绘从新追加历史的<strong>下方</strong>开画，而不是从 home 把刚 append 的行覆盖掉。回归测试的口径也很硬：118×12 终端、7 字符 chunk、帧模式与两个消费者 app 完全一致；断言整场流式期间 scrollback 保持为空、<code>| --- |</code> 永不出现、<code>Kubernetes</code> 哨兵词恰好出现一次。</p>
-<p>这个事故值得单独定性：它不是第 13 篇 5.2（resize 核平误伤 scrollback）的复读，诱因不是 resize，是<strong>回退路径 × 混合所有权</strong>的乘积。单一所有权下不存在这类 bug：历史全归终端时没有“回退重写“，历史全归引擎时没有“scrollback 污染“。第 14 篇说每种所有权都要付出代价；这里补一条：<strong>分期付代价，本身也是一种代价</strong>，两条通道并存的那一刻，就要为“别让内容走错门“付出工程量。</p>
+<p>这个事故值得单独定性：它不是第 13 篇 5.2（resize 核平误伤 scrollback）的复读，诱因不是 resize，是<strong>回退路径 × 混合所有权</strong>的乘积。单一所有权下不存在这类 bug：历史全归终端时没有“回退重写“，历史全归引擎时没有“scrollback 污染“。第 14 篇说每种所有权都要付出代价；这里补一条：<strong>分阶段承担代价，本身也是一种代价</strong>，两条通道并存的那一刻，就要为“别让内容走错门“付出工程量。</p>
 <h2 id="五总结-1"><a class="header" href="#五总结-1">五、总结</a></h2>
 <p>两个月，五天里的 61 个提交，七件清单落了半件，但引擎完成了一次跨阵营的半程：全屏自管的引擎，长出了一条逐行归还 scrollback 的通道，配上了一个真实终端语义的预言机、一道“唯一之门“的纪律，以及一套跨通道的状态核对。</p>
 <p>第 13 篇结尾说过，ForgeLoopTUI 的 committed 区在语义上已经是 append-only，和 inline 派的 scrollback“只差最后一步：物理上还归不归我管“。这一步现在有了答案的形状：<strong>物理归属不再由引擎统一决定，由每一行内容在稳定瞬间自己决定</strong>。所有权从引擎的出厂设置，变成了内容级的调度表。</p>
@@ -2439,7 +2439,7 @@ block 不到 committed frontier 不发射，发射即归终端，从架构上保
 </blockquote>
 <hr>
 <h2 id="一gui-世界里inline-派不存在"><a class="header" href="#一gui-世界里inline-派不存在">一、GUI 世界里，inline 派不存在</a></h2>
-<p>第 13 篇两派成立有个前提：终端这个介质提供了两个可归属的资产池，你自己管理的帧，和终端的原生 scrollback。inline 派的核心是<strong>把历史托付给介质</strong>：发射进 scrollback，从此滚动、搜索、复制都归终端管，引擎脱手。</p>
+<p>第 13 篇两派成立有个前提：终端这个介质提供了两个可以存放历史的地方，你自己管理的帧，和终端的原生 scrollback。inline 派的核心是<strong>把历史托付给介质</strong>：发射进 scrollback，从此滚动、搜索、复制都归终端管，引擎脱手。</p>
 <p>GUI 没有这个托付对象。窗口是你画的，滚动区是你实现的，系统递给你一块随时会被回收的画布，仅此而已。</p>
 <p>所以第 13 篇那张 2:2 的记分牌，在 GUI 世界塌缩成一行：全屏自管是出厂设定，别无分店。Grok Build 默认形态那套“应用自管 scrollback“，在 GUI 语境里就是唯一解。</p>
 <p>但要说清楚：<strong>所有权问题没有消失。它只是换了一层皮</strong>。</p>
@@ -2461,10 +2461,10 @@ block 不到 committed frontier 不发射，发射即归终端，从架构上保
 <li><code>reasoningContent</code> + <code>thinkingDuration</code> + <code>isThinkingFold</code>：思考内容和它的展示状态一起记；</li>
 <li><code>removed: Bool</code>、<code>modified: Date</code>、<code>deviceId</code>：软删除标记、修改时间戳、多设备同步字段。</li>
 </ul>
-<p>对照终端：终端里历史可以只以像素形式存在（数据模型可有可无，Grok 的 minimal 模式就只留够重印用的）；FlowDown 这边正相反，像素一张都不存，全部资产以记录形式活着。</p>
+<p>对照终端：终端里历史可以只以像素形式存在（数据模型可有可无，Grok 的 minimal 模式就只留够重印用的）；FlowDown 这边正相反，像素一张都不存，全部历史以记录形式活着。</p>
 <h3 id="32-窗口化像素只租给可见的十几行"><a class="header" href="#32-窗口化像素只租给可见的十几行">3.2 窗口化：像素只租给可见的十几行</a></h3>
 <p>聊天主界面 <code>MessageListView</code> 建在 ListViewKit 上：<code>ListViewDiffableDataSource&lt;Entry&gt;</code> 做增量更新，配一条专用队列（<code>userInteractive</code> QoS）串行化 UI 变更，订阅 <code>session.messagesDidChange</code> 驱动整条管线。</p>
-<p>屏幕之外没有像素。滚出视野的消息行，数据还在 <code>messages</code> 数组和 WCDB 里，cell 本体已经进了复用池。终端里“历史以像素形式活在 scrollback“，GUI 里“历史以记录形式活在库里，像素只租给可见的那十几行“，第 13 篇全屏自管派“引擎为每一行持续负责“的图景，在 GUI 上由框架代持了：UIKit 管回收，你的 diffable data source 管内容。</p>
+<p>屏幕之外没有像素。滚出视野的消息行，数据还在 <code>messages</code> 数组和 WCDB 里，cell 本体已经进了复用池。终端里“历史以像素形式活在 scrollback“，GUI 里“历史以记录形式活在库里，像素只租给可见的那十几行“，第 13 篇全屏自管派“引擎为每一行持续负责“的图景，在 GUI 上由框架代管了：UIKit 管回收，你的 diffable data source 管内容。</p>
 <h3 id="33-定稿时机几何问题的生命周期版本"><a class="header" href="#33-定稿时机几何问题的生命周期版本">3.3 定稿时机：几何问题的生命周期版本</a></h3>
 <p>第 13 篇说过 inline 派的关键转变：“什么时候算定型“从几何问题变成了生命周期问题。这句话在 GUI 换了个对象重新成立：定型问题变成了<strong>落盘节奏</strong>。</p>
 <p>FlowDown 的实际节奏（<code>ConversationSession</code> 与 <code>Pipeline/Execute/</code>）：</p>
@@ -2490,30 +2490,30 @@ block 不到 committed frontier 不发射，发射即归终端，从架构上保
 <tr><td>终端 inline 派</td><td>终端 scrollback（像素）</td><td>block 生命周期完结即发射</td><td>历史本来就在终端</td><td>scrollback 滚动/搜索/复制</td></tr>
 <tr><td>终端全屏派</td><td>引擎（像素+数据）</td><td>无定稿，持续维护</td><td>无干净归档（第 14 篇）</td><td>无</td></tr>
 <tr><td>终端混合（14 篇）</td><td>稳定行→scrollback，未稳定→引擎</td><td>行级：认证稳定即归还</td><td>已在 scrollback</td><td>scrollback（部分）</td></tr>
-<tr><td>移动 GUI（本篇）</td><td>数据库（数据），像素仅租借</td><td>生命周期节点落盘</td><td>磁盘是唯一长寿介质</td><td>无，UIKit 回收还收工本费</td></tr>
+<tr><td>移动 GUI（本篇）</td><td>数据库（数据），像素仅租借</td><td>生命周期节点落盘</td><td>磁盘是唯一长寿介质</td><td>无，UIKit 回收也有代价</td></tr>
 </tbody>
 </table>
 </div>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch15-ownership-finale.svg" alt="所有权四部曲合拢：四条路线的总表"><span class="img-wrapper"><img src="assets/ch15-ownership-finale.svg" alt="所有权四部曲合拢：四条路线的总表"></span></label></p>
-<p>四行连起来读：终端之争争的是“这些内容归谁管“，答案是开关和分期；GUI 没有这场争论，它的题目直接写在数据层：什么算定型、什么时候落盘、被杀时历史完不完整。渲染所有权的尽头是数据所有权，也就是第 7 篇那条事件流的必然形态。</p>
+<p>四行连起来读：终端之争争的是“这些内容归谁管“，答案是开关和分阶段移交；GUI 没有这场争论，它的题目直接写在数据层：什么算定型、什么时候落盘、被杀时历史完不完整。渲染所有权的尽头是数据所有权，也就是第 7 篇那条事件流的必然形态。</p>
 <h3 id="再往高一层两种介质各附赠什么"><a class="header" href="#再往高一层两种介质各附赠什么">再往高一层：两种介质各附赠什么</a></h3>
-<p>四部曲讲的是“历史“这一件事。把镜头拉远，两种介质的差别其实是同一个结构的重复：<strong>每种介质都附赠一些东西，同时给另一些东西标了高价；没有一方全面优越，只是两边赠的东西恰好互补。</strong></p>
+<p>四部曲讲的是“历史“这一件事。把镜头拉远，两种介质的差别其实是同一个结构的重复：<strong>每种介质都附赠一些东西，同时让另一些东西代价很高；没有一方全面优越，只是两边赠的东西恰好互补。</strong></p>
 <div class="table-wrapper">
 <table>
 <thead>
 <tr><th>维度</th><th>终端</th><th>GUI</th></tr>
 </thead>
 <tbody>
-<tr><td>已发射的历史</td><td>附赠：进 scrollback 即归档，进程死了也在</td><td>标价：像素随进程死，落盘是生存必需（本篇）</td></tr>
-<tr><td>遮挡与切走再回来</td><td>标价：重连即失忆，全屏应用要整页重绘</td><td>附赠：合成器持有像素，不用应用重画</td></tr>
-<tr><td>分发与可达</td><td>附赠：SSH、tmux、CI、管道，任何机器</td><td>标价：安装包、跨端、版本兼容</td></tr>
-<tr><td>输入带宽</td><td>标价：只有字节流，行级采纳、并排 diff 全要手搓</td><td>附赠：命中测试、多点触控、拖拽</td></tr>
-<tr><td>表达力</td><td>标价：等宽格子，图片、表格、文件预览几乎不可能</td><td>附赠：任意像素、排版、动画、多模态</td></tr>
-<tr><td>信任</td><td>附赠：文本即真相，命令可复现、可管道审计</td><td>标价：界面可藏可换，信任要靠沙箱与同源策略（第 19 篇）</td></tr>
+<tr><td>已发射的历史</td><td>附赠：进 scrollback 即归档，进程死了也在</td><td>代价：像素随进程死，落盘是生存必需（本篇）</td></tr>
+<tr><td>遮挡与切走再回来</td><td>代价：重连即失忆，全屏应用要整页重绘</td><td>附赠：合成器持有像素，不用应用重画</td></tr>
+<tr><td>分发与可达</td><td>附赠：SSH、tmux、CI、管道，任何机器</td><td>代价：安装包、跨端、版本兼容</td></tr>
+<tr><td>输入带宽</td><td>代价：只有字节流，行级采纳、并排 diff 全要手搓</td><td>附赠：命中测试、多点触控、拖拽</td></tr>
+<tr><td>表达力</td><td>代价：等宽格子，图片、表格、文件预览几乎不可能</td><td>附赠：任意像素、排版、动画、多模态</td></tr>
+<tr><td>信任</td><td>附赠：文本即真相，命令可复现、可管道审计</td><td>代价：界面可藏可换，信任要靠沙箱与同源策略（第 19 篇）</td></tr>
 </tbody>
 </table>
 </div>
-<p>这张表是对称的：终端的赠品是“过去“（已发射的历史）和“信任“（文本透明），GUI 的赠品是“现在“（合成器持有的结构）和“带宽“（输入与表达）。它也是第 1 篇“不是低配版、而是不同介质投影“那句话的完整清单：差异不在架构，事件树、投影、diff、审批、压缩、回放，两种界面是同一套内核的两个后端（Ink 在终端上长出声明式，UIKit 手写 frame 在 GUI 上停在命令式，楼层可以互换）；差异在各端要另付的介质费。</p>
+<p>这张表是对称的：终端的赠品是“过去“（已发射的历史）和“信任“（文本透明），GUI 的赠品是“现在“（合成器持有的结构）和“带宽“（输入与表达）。它也是第 1 篇“不是低配版、而是不同介质投影“那句话的完整清单：差异不在架构，事件树、投影、diff、审批、压缩、回放，两种界面是同一套内核的两个后端（Ink 在终端上长出声明式，UIKit 手写 frame 在 GUI 上停在命令式，楼层可以互换）；差异在各端要另付的介质代价。</p>
 <p>这张表还有一条没画出来的横切轴：上面“终端/GUI“分的是契约，UI 平台本身跑在哪是另一个维度：原生、浏览器，或 Electron 这种双契约并存的容器（DOM 做界面，node-pty 另开一条真实终端）。同样标着“GUI“，浏览器一格拿不到本地 shell 环境，但多端同步和“服务端即事实源“是自带的；标着“终端“的 xterm.js 跑在浏览器里，TUI 应用的契约一字不变，agent 人却已经在远端机器上。第 11 篇用两轴四格给六个端定了坐标，基建系列则是“事实在服务端“那一格的完整展开。</p>
 <p>这也补上了第 1 篇补记那个判断的机制。agent 早期的需求结构（一维 token 流、文本工具链、处处可审计）恰好压在终端现成的格子上；而长会话、并行多 agent、行级审批、手机伴随端（第 10、17–19 篇与基建系列），每一项都在消费 GUI 的赠品。<strong>GUI 赢在需求结构越过了两边成本结构的交叉点，而不在于它更好。</strong> 选界面从来不是选范式，是在 agent 生命周期的不同阶段，选哪边的代价你更愿意付。</p>
 <hr>
@@ -2532,7 +2532,7 @@ block 不到 committed frontier 不发射，发射即归终端，从架构上保
 <h2 id="一这些漏洞不姓模型"><a class="header" href="#一这些漏洞不姓模型">一、这些漏洞不姓“模型“</a></h2>
 <p>先把时间线摆出来。每一条的核实状态在脚注里交代，这里只说已经被多源证实的部分：</p>
 <ul>
-<li><strong>2024 年 12 月，Terminal DiLLMa</strong>（arXiv 2412.11807）：研究者系统化了一条信道：诱导 LLM 输出 ANSI 控制码，终端解释这些码，就能对用户隐藏正在执行的指令，或劫持终端会话。这是“终端控制码作为攻击面“的奠基论文。</li>
+<li><strong>2024 年 12 月，Terminal DiLLMa</strong>（Johann Rehberger 的 Embrace The Red 博客）：研究者演示了提示注入怎样让 LLM 在输出里带上 ANSI 控制码，终端照单执行，改窗口标题、响铃、生成能外泄数据的可点击链接，在当时的 macOS 自带终端里还能借 DNS 请求零点击送出上下文。用转义序列攻击终端不是新问题，2003 年 xterm 就因此出过 CVE；这篇把这条老信道接到了 LLM 的输出上。</li>
 <li><strong>2025 年 4 月，Trail of Bits《Deceiving users with ANSI terminal codes in MCP》</strong>：MCP 服务器的输出里埋光标跳转码，把恶意指令移动到用户看不到的位置，屏幕上只留良性文本。攻击对象写得很明白：human-in-the-loop 审查。</li>
 <li><strong>2025 年 6 月，EchoLeak（CVE-2025-32711）</strong>：Microsoft 365 Copilot 的零点击注入，远程攻击者无需任何用户交互外传组织数据。它被广泛引用为“生产系统首个零点击注入实证“，也证明模型侧防御（分类器、指令约束）挡不住认真的绕过。</li>
 <li><strong>2026 年 5 月，jqwik 1.10.0</strong>：一个百万级下载的 Java 测试库，作者本人在新版本里埋了用 ANSI 序列隐藏的注入指令：人眼看构建输出干净，AI 编码代理（Cursor、Claude Code 这类会读终端输出的）会读到并可能执行。Snyk 六月初出了分析。注意这个细节：埋码的不是黑产，是库作者本人的抗议行为。连正经作者都意识到，这条信道开箱即用。</li>
@@ -2549,7 +2549,7 @@ block 不到 committed frontier 不发射，发射即归终端，从架构上保
 </ul>
 <p>确认框劫持的完整链条，Trail of Bits 已经演示过：恶意 MCP 服务器返回的文本里带光标码 → 权限确认时刻，屏幕上“工具将执行 X“的 X 已经被擦换成了良性描述，或恶意命令被移出了可视区 → 用户核对无误，按了回车。<strong>权限 UX 的全部隐含假设（用户看到的等于将要执行的），在字符网格上是可以用一串字节伪造的。</strong></p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch16-confirmation-hijack.svg" alt="确认框劫持的完整链条：用户看到的等于将要执行的，可以用一串字节伪造"><span class="img-wrapper"><img src="assets/ch16-confirmation-hijack.svg" alt="确认框劫持的完整链条：用户看到的等于将要执行的，可以用一串字节伪造"></span></label></p>
-<p>还有一层 TUI 特有的脆弱性。GUI 里内容原地消失是异常，会触发警觉；终端里滚动、清屏、重绘是每分钟都在发生的正常现象（第 2、13 篇拆过的那些机制）。用户对“字符消失“已经脱敏，这是这个介质给攻击者免租金提供的掩护。</p>
+<p>还有一层 TUI 特有的脆弱性。GUI 里内容原地消失是异常，会触发警觉；终端里滚动、清屏、重绘是每分钟都在发生的正常现象（第 2、13 篇拆过的那些机制）。用户对“字符消失“已经脱敏，这是这个介质白送给攻击者的掩护。</p>
 <h2 id="三我把防线找了一遍三家引擎的排查记录"><a class="header" href="#三我把防线找了一遍三家引擎的排查记录">三、我把防线找了一遍：三家引擎的排查记录</a></h2>
 <p>为了不空谈，我做了个一手排查：在两家开源引擎和 ForgeLoopTUI 里找“不可信内容进入渲染前，是否被转义或中和“。方法很朴素：grep 清洗类标识符，再读命中处。</p>
 <div class="table-wrapper">
@@ -2581,7 +2581,7 @@ block 不到 committed frontier 不发射，发射即归终端，从架构上保
 <hr>
 <h2 id="参考与延伸-17"><a class="header" href="#参考与延伸-17">参考与延伸</a></h2>
 <ul>
-<li><em>事件部分核实状态（截至 2026-09-28）：Terminal DiLLMa（<a href="https://arxiv.org/abs/2412.11807">arXiv 2412.11807</a>，2024-12）、Trail of Bits《Deceiving users with ANSI terminal codes in MCP》（2025-04-29）、EchoLeak CVE-2025-32711（Aim Security 2025-06 披露，多源交叉）、jqwik 1.10.0 事件（2026-05，Snyk 2026-06-02 分析）均经多源检索核实。</em></li>
+<li><em>事件部分核实状态（截至 2026-09-28）：Terminal DiLLMa（<a href="https://embracethered.com/blog/posts/2024/terminal-dillmas-prompt-injection-ansi-sequences/">Embrace The Red</a>，2024-12-06）、Trail of Bits《Deceiving users with ANSI terminal codes in MCP》（2025-04-29）、EchoLeak CVE-2025-32711（Aim Security 2025-06 披露，多源交叉）、jqwik 1.10.0 事件（2026-05，Snyk 2026-06-02 分析）均经多源检索核实。Terminal DiLLMa 的出处初版误标为一个无关的 arXiv 编号，2026-11 更正；2003 年的 xterm 漏洞是 CVE-2003-0063（H D Moore 披露）。</em></li>
 <li><em>Invariant Labs tool poisoning 未复核原文，按公开报道转述。</em></li>
 <li><em>编号为 CVE-2026-21852 的条目始终未能核实到原始记录，本文不引用。</em></li>
 <li><em>引擎排查基于本地源码：kimi-code <code>1e553fc</code>（<code>packages/pi-tui/src/utils.ts</code>）、grok-build <code>9fabade</code>（全仓库检索）、ForgeLoopTUI <code>f99367b</code>（<code>Sources/ForgeLoopTUI/Markdown/MarkdownEngine.swift</code>）。</em></li>
@@ -2618,7 +2618,7 @@ block 不到 committed frontier 不发射，发射即归终端，从架构上保
 </blockquote>
 <hr>
 <h2 id="一三条国境线都没有覆盖的那个对话者"><a class="header" href="#一三条国境线都没有覆盖的那个对话者">一、三条国境线都没有覆盖的那个对话者</a></h2>
-<p>先给一张十秒钟的地图。一个 agent 今天要和三类对话者说话，行业为每条边界造了一套协议：跟工具说话用 MCP，主语是 agent，它去征用外界的能力；跟编辑器说话用 ACP，主语是编辑器，它去征用一个 agent；跟浏览器前端说话用 AG-UI，前端是消费者，它订阅 agent 的事件流。这三条边界各自怎么划、各欠谁的债，基建第 3 篇会逐条讲；这一篇只需要它们的朝向，因为 Codex 的 app-server 协议不在这张地图上。</p>
+<p>先给一张十秒钟的地图。一个 agent 今天要和三类对话者说话，行业为每条边界造了一套协议：跟工具说话用 MCP，主语是 agent，它去征用外界的能力；跟编辑器说话用 ACP，主语是编辑器，它去征用一个 agent；跟浏览器前端说话用 AG-UI，前端是消费者，它订阅 agent 的事件流。这三条边界各自怎么划、代价各落在谁身上，基建第 3 篇会逐条讲；这一篇只需要它们的朝向，因为 Codex 的 app-server 协议不在这张地图上。</p>
 <p>它当然不是 MCP：能力方向反了，是引擎被界面征用，不是引擎去征用工具。它有点像 ACP 的镜像：ACP 里编辑器把 agent 当子进程拉起，编辑器是主语；Codex 的 app-server 里<strong>引擎把界面当客户端服务</strong>，引擎是 server，TUI、桌面端、IDE、手机、连 UI 都没有的 <code>codex exec</code>，全是 client。三条边界里主语最强势的是“编辑器征用 agent“，这里是“agent 征用一切界面“。</p>
 <p>方向反过来，难题清单跟着换。编辑器当主语时，最难的问题是“agent 的权限请求怎么嵌进我的 UI“；引擎当主语时，最难的问题变成：<strong>一个 server，怎么向自己的 client 开口要东西</strong>。审批不是界面弹个窗那么简单：server 在 turn 跑到一半时，向 client 发一条反向 request，挂起执行，等一个 oneshot 回填决定。Codex 把这个“反向通道“做成了一个枚举：执行审批、文件变更审批、向用户提问、MCP elicitation、权限申请、甚至宿主代管 token 时的刷新请求，全部走同一类 server→client request。“宿主怎么反问用户“这个 ACP 边界上最难的设计点，在引擎当主语的世界里不是一个 UI 问题，是<strong>协议里的一类消息</strong>。</p>
 <p>server 身份带来的第二件事是<strong>历史的归属</strong>。编辑器当主语时，会话历史跟着编辑器的项目走；引擎当 server 之后，thread 的历史归引擎持久：append-only 的 rollout 文件是事实源，客户端看到的 turn/item 视图是投影器的产物。<code>thread_history.rs</code> 这个 5024 行的文件，把 rollout 逐行译成增量 ChangeSet。协议注释已经宣布全量水合废弃（“Full-history hydration is deprecated for paginated threads”），往回翻页走 opaque cursor。界面部分第 7 篇的 Event Sourcing、第 11 篇的统一 Event Log，在这里不是主张，是一个每天被好几种客户端消费的真实部件；“换一台设备接着聊“是出厂设置，因为历史从来不在任何一台设备上。记住这个承诺，§四会回来看它在哪里被打破。</p>
@@ -2707,7 +2707,7 @@ block 不到 committed frontier 不发射，发射即归终端，从架构上保
 <h2 id="三三个可观察面证人从哪里取证"><a class="header" href="#三三个可观察面证人从哪里取证">三、三个可观察面：证人从哪里取证</a></h2>
 <p>降级那节已经把证人派上了庭，现在退回来回答一个更基础的问题：证人的证词从哪来？胶水层的断言，原料只有三样：<strong>出站请求日志、事件流、副作用</strong>。三样加起来，是 agent 行为的全部可观察面，也是证据采集的最小集：多一样不必，少一样不够。</p>
 <p>请求日志是最诚实的一样。引擎向模型、向 daemon、向任何对端发出的每个请求都是白纸黑字，而 Codex 测试基建最重要的一次转身，就是把捕获层变成断言层：自定义的 wiremock matcher 在匹配每个请求时，顺带做一次协议不变量检查，call 和 output 必须配对，孤儿 output 直接 panic。妙处在于<strong>寄生</strong>：不需要专门养一套协议测试，已有的每一次普通测试运行都自动变成一次协议 fuzz。证人不是雇来的，是埋伏在每天的例行公事里的。</p>
-<p>事件流是第二样。全量落盘成 JSONL，回放即断言。要干净的原料就用 <code>codex exec --jsonl</code>：没有 TUI 渲染掺入，逐行带时间戳；要连界面一起审，就开 <code>CODEX_TUI_RECORD_SESSION=1</code>，AppEvent 的进出和每一次 commit tick 都在案。同一条流，两个清晰度，各管一段。</p>
+<p>事件流是第二样。全量落盘成 JSONL，回放即断言。要干净的原料就用 <code>codex exec --json</code>：没有 TUI 渲染掺入，逐行带时间戳；要连界面一起审，就开 <code>CODEX_TUI_RECORD_SESSION=1</code>，AppEvent 的进出和每一次 commit tick 都在案。同一条流，两个清晰度，各管一段。</p>
 <p>副作用是第三样：状态存储、文件系统、rollout 文件——世界被改成了什么样。三样的分工是：**请求日志回答“引擎说了什么“，事件流回答“界面被告知了什么“，副作用回答“世界变成了什么样“。**一句承诺的真假，要三样都对得上才算数，降级那节的“线程列表核对“，就是事件流和副作用的交叉质证。</p>
 <p>后面四节，是四组承诺各自的证人。你会发现每组的取料都不出这三样，变的是问法。</p>
 <h2 id="四契约的配对与时序"><a class="header" href="#四契约的配对与时序">四、契约的配对与时序</a></h2>
@@ -2749,7 +2749,7 @@ block 不到 committed frontier 不发射，发射即归终端，从架构上保
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="连接与会话断线之后谁还记得它讲到哪了"><a class="header" href="#连接与会话断线之后谁还记得它讲到哪了">连接与会话——断线之后，谁还记得它讲到哪了</a></h1>
 <blockquote>
-<p>「界面」卷拆的是像素层：界面怎么画、历史归谁管、信什么。这个系列拆另一半，<strong>信用层：那些画面凭什么信、承诺凭什么兑现</strong>。准入线只有一条：只写决定某个界面承诺真假的基建。第一篇的题目，来自我写作期间被自己问住的第一个问题：SSE 流断了怎么办？换一台服务器重连呢？</p>
+<p>「界面」卷拆的是像素层：界面怎么画、历史归谁管、信什么。这个系列拆另一半，<strong>信任层：那些画面凭什么信、承诺凭什么兑现</strong>。准入线只有一条：只写决定某个界面承诺真假的基建。第一篇的题目，来自我写作期间被自己问住的第一个问题：SSE 流断了怎么办？换一台服务器重连呢？</p>
 </blockquote>
 <hr>
 <h2 id="一停在半行字上的界面"><a class="header" href="#一停在半行字上的界面">一、停在半行字上的界面</a></h2>
@@ -2781,12 +2781,12 @@ block 不到 committed frontier 不发射，发射即归终端，从架构上保
 <tr><td>连接里（进程内存）</td><td>断线即丢，只能 sticky session</td><td>最朴素的 WS 服务</td><td>全部会话阵亡</td></tr>
 <tr><td>有界 journal（内存）</td><td>热续：游标在覆盖内重放差量</td><td>kimi transcript ops journal</td><td>丢最近一段</td></tr>
 <tr><td>磁盘 log</td><td>冷重建：慢但完整</td><td>kimi <code>wire.jsonl</code>；Claude Code 会话文件</td><td>无损</td></tr>
-<tr><td>外部共享存储</td><td>换服务器随意连，连接=租借加速器</td><td>Vercel（Redis）；Cloudflare Agents（每 Agent 一个 Durable Object，单写者正确性 + WebSocket 休眠：对象睡了连接还活着，不收活钱的算力费）</td><td>无损</td></tr>
+<tr><td>外部共享存储</td><td>换服务器随意连，连接=租借加速器</td><td>Vercel（Redis）；Cloudflare Agents（每 Agent 一个 Durable Object，单写者正确性 + WebSocket 休眠：对象睡了连接还活着，这段时间不计算力费）</td><td>无损</td></tr>
 <tr><td>都不记</td><td>断了就断了，应用层重试</td><td>MCP 2026-07-28</td><td>不适用（本来无状态）</td></tr>
 </tbody>
 </table>
 </div>
-<p>第 11 篇说“统一 Event Log“是四个统一之一，当时它是一句架构主张；这张表是它的工程含义全集。顺带补一句 actor 档的注脚：Cloudflare Agents 的官方仓库里挂着一个重连竞态的 issue（#1837，移动网络抖动或重新部署弹跳 Durable Object 时，客户端 hook 在重连与续传之间赛跑）。每往上一档，省下的是会话状态，欠下的是新的竞态。没有免费的档位。</p>
+<p>第 11 篇说“统一 Event Log“是四个统一之一，当时它是一句架构主张；这张表是它的工程含义全集。顺带补一句 actor 档的注脚：Cloudflare Agents 的官方仓库里挂着一个重连竞态的 issue（#1837，移动网络抖动或重新部署弹跳 Durable Object 时，客户端 hook 在重连与续传之间赛跑）。每往上一档，省下的是会话状态，换来的是新的竞态。没有免费的档位。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/infra01-source-of-truth-ladder.svg" alt="重连语义由 source of truth 的位置决定：五档谱系"><span class="img-wrapper"><img src="assets/infra01-source-of-truth-ladder.svg" alt="重连语义由 source of truth 的位置决定：五档谱系"></span></label></p>
 <h2 id="五幂等与序号at-least-once-世界的生存守则"><a class="header" href="#五幂等与序号at-least-once-世界的生存守则">五、幂等与序号：at-least-once 世界的生存守则</a></h2>
 <p>只要服务端肯重放，重复推送就不可避免，传输的现实是 at-least-once，不是 exactly-once。消费侧按事件 id 去重是基本功；真正会咬人的是副作用：工具已经执行了，确认事件在断线中丢了，重试会不会再执行一遍？</p>
@@ -2816,7 +2816,7 @@ block 不到 committed frontier 不发射，发射即归终端，从架构上保
 </table>
 </div>
 <p>所以这一篇的结论可以压成一句：<strong>界面承诺的真假，不取决于渲染层多努力，取决于事实源存在哪一层。</strong> 半行字卡在屏幕上的那一刻，界面能说“正在重连，已恢复到第 N 个事件“，还是只能让动画继续转下去骗人，这个差别在上线之前，就已经被后端的一张表决定了。</p>
-<p>下一篇把镜头从连接的两端拉近到拿在手里的那一端：一部随时会被操作系统杀掉的手机，如何在一台会话的每个站点（输入、发送、排队、流式、回看）保住“流畅“和“完整“这两件互相打架的事。</p>
+<p>下一篇把镜头从连接的两端拉近到拿在手里的那一端：一部随时会被操作系统杀掉的手机，如何在一次会话的每个站点（输入、发送、排队、流式、回看）保住“流畅“和“完整“这两件互相打架的事。</p>
 <hr>
 <h2 id="参考与延伸-20"><a class="header" href="#参考与延伸-20">参考与延伸</a></h2>
 <ul>
@@ -2841,14 +2841,14 @@ block 不到 committed frontier 不发射，发射即归终端，从架构上保
 <p>用户打了 200 字，微信弹窗，切走，进程十秒后被挂起或杀死。回来时草稿还在不在？</p>
 <p>错误答案是“监听退后台事件，临走前保存“。错误在哪：挂起和杀死都可能<strong>不给回调</strong>，willResignActive 不是遗嘱，进程可能根本等不到执行它的机会。把持久化押在一个不保证送达的事件上，等于把草稿押在运气上。</p>
 <p>正确姿势是<strong>持续写</strong>：草稿每次变化就落盘，赌的不是“能等到告别“，而是“丢得足够少“。FlowDown 的实现是现成样本（<code>ConversationManager.swift</code>）：内存字典 <code>temporaryEditorObjects</code> 的 <code>didSet</code> 里挂一个 <strong>1 秒防抖</strong>的保存任务（<code>perform(#selector(saveObjects), afterDelay: 1.0)</code>，新修改会取消旧任务），到点后在后台线程写入 UserDefaults 支撑的 <code>@TypedStorage</code>；启动时回灌并记日志“loaded N temporary editor objects“。</p>
-<p>注意它连代价都是明码标价的：防抖窗口 1 秒，意味着杀死发生在最后一次击键后的 1 秒内会丢最后几个字。<strong>这是一笔自觉的交易</strong>，用“最多丢 1 秒“换“每秒写盘一次“的低频，而不是假装存在零丢失的免费方案。界面上那句“已保存“要不要显示、按什么粒度显示，就是这笔交易的用户侧报价单。</p>
+<p>注意它连代价都写得明明白白：防抖窗口 1 秒，意味着杀死发生在最后一次击键后的 1 秒内会丢最后几个字。<strong>这是一次有意识的取舍</strong>，用“最多丢 1 秒“换“每秒写盘一次“的低频，而不是假装存在零丢失的免费方案。界面上那句“已保存“要不要显示、按什么粒度显示，就是这次取舍在用户那一侧的交代。</p>
 <h2 id="站点二按下发送的瞬间切走"><a class="header" href="#站点二按下发送的瞬间切走">站点二：按下发送的瞬间切走</a></h2>
 <p>更危险的一站，因为发送是一个<strong>事务</strong>，事务最怕执行到一半断电。</p>
 <p>用户按了发送，请求进了网络栈，进程被挂起，这条消息到底发出去了没有？回来之后，界面该怎么显示？如果客户端这时自动重发，服务器会不会收到两条？</p>
 <p>工程答案是发件箱（outbox）模式，三条纪律：</p>
 <ol>
 <li><strong>本地事务先于网络事务</strong>：发送动作先落盘（进发件箱），再传输。界面状态跟着发件箱走，“排队中 / 已发出 / 已送达”，每个状态都是本地可查的事实，不猜。</li>
-<li><strong>幂等 request id</strong>：每条消息带客户端生成的唯一 id。重发时服务器凭 id 去重，“我可能发过“和“我肯定没发过“从此可区分。这是基建第 1 篇说的 at-least-once 世界的入场费。</li>
+<li><strong>幂等 request id</strong>：每条消息带客户端生成的唯一 id。重发时服务器凭 id 去重，“我可能发过“和“我肯定没发过“从此可区分。这是基建第 1 篇说的 at-least-once 世界的基本功。</li>
 <li><strong>宽限的用法</strong>：几十秒的后台宽限，够把一条消息推出网络栈，不够流完一场回复。宽限期该做的事是“把发件箱清空“，不是“把会话跑完“，认清时间常数，才知道宽限该花在哪。</li>
 </ol>
 <p>一个旁证：本机 Claude Code 的会话 JSONL 里，<code>type: "queue-operation"</code> 的第一行就是 <code>"operation": "enqueue"</code>，用户输入在一开始就被记成排队事件，而不是“即发即忘“的网络动作。把输入当事件记下来，是单机版的发件箱；移动端要做的只是让它穿过网络还成立。</p>
@@ -2912,7 +2912,7 @@ block 不到 committed frontier 不发射，发射即归终端，从架构上保
 <p>执行不拥有连接（挂起、杀进程、换服务器，会话继续）；连接不携带事实（断了，游标和 log 还在）；推送不携带内容（门铃只负责叫人）；客户端不携带状态（它的每样记忆都有磁盘或服务端的备份）。移动端不是这套原则的一个应用场景，<strong>它是最苛刻的那个证明环境</strong>：进程朝不保夕、网络七零八落、版本几周漂移，在这样的地基上还能兑现“流畅且完整“，靠的就是把每一样事实都安放在比进程、比连接、比画面活得久的地方。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/infra02b-first-principle.svg" alt="agent loop 不能拥有 socket：四条分离原则"><span class="img-wrapper"><img src="assets/infra02b-first-principle.svg" alt="agent loop 不能拥有 socket：四条分离原则"></span></label></p>
 <p>第 11 篇当年写过“Mobile 是 Companion，不是主战场“，从渲染负担看它依然成立；但从架构纪律看要补一句：<strong>移动端是这个行业里最诚实的甲方。</strong> 它不允许任何“先连着再说“的懒惰假设，每一条都在逼你把事实和传输分开。桌面端能蒙混过关的架构，在手机上四秒内露馅。</p>
-<p>下一篇回到地面：agent 与编辑器、前端、工具之间那三套正在三国杀的协议，MCP、ACP、AG-UI，三个边界各欠着谁的债。</p>
+<p>下一篇回到地面：agent 与编辑器、前端、工具之间那三套正在三国杀的协议，MCP、ACP、AG-UI，三个边界的代价各落在谁身上。</p>
 <hr>
 <h2 id="参考与延伸-22"><a class="header" href="#参考与延伸-22">参考与延伸</a></h2>
 <ul>
@@ -2923,7 +2923,7 @@ block 不到 committed frontier 不发射，发射即归终端，从架构上保
 <li><em>冷启动路径、通知直批安全边界、出站身份与网络管控为设计层论述（后者为开放题，未引具体产品）。</em></li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div>
-<h1 id="协议三边界mcpacpag-ui各欠谁的债"><a class="header" href="#协议三边界mcpacpag-ui各欠谁的债">协议三边界——MCP、ACP、AG-UI，各欠谁的债</a></h1>
+<h1 id="协议三边界mcpacpag-ui代价各落在谁身上"><a class="header" href="#协议三边界mcpacpag-ui代价各落在谁身上">协议三边界——MCP、ACP、AG-UI，代价各落在谁身上</a></h1>
 <blockquote>
 <p>这一篇讲“界面”这个词的复数化：同一个 agent 要同时面对三类对话者（工具、编辑器、浏览器前端），行业为这三条边界各造了一套协议：MCP、ACP、AG-UI。它们不是竞争关系，是同一张地图上的三条国境线。这篇讲每条线怎么划的、为什么必须这么划，以及一个有意思的规律：<strong>协议要不要有会话，取决于边界对面那位有没有状态。</strong></p>
 </blockquote>
@@ -2936,7 +2936,7 @@ block 不到 committed frontier 不发射，发射即归终端，从架构上保
 <li><strong>agent ↔ 编辑器</strong>（ACP）：编辑器是主语，它去征用一个 agent；</li>
 <li><strong>agent ↔ 前端</strong>（AG-UI）：前端是消费者，它订阅 agent 的事件流。</li>
 </ul>
-<p>主语不同，欠的债也不同。逐条看。</p>
+<p>主语不同，代价落在谁身上也不同。逐条看。</p>
 <h2 id="二工具边界mcp-和它的无状态豪赌"><a class="header" href="#二工具边界mcp-和它的无状态豪赌">二、工具边界：MCP 和它的无状态豪赌</a></h2>
 <p>MCP 管的是能力发现和结构化 IO：工具怎么声明自己的 schema、结果怎么以结构化形态返回（<code>structuredContent</code> 明说是给模型的）。这条边界上，基建第 1 篇已经核查过 2026-07-28 那次激进的无状态化重写：会话头删了，断线恢复删了，官方 changelog 的措辞是把这些“从传输里移除“，流断在半路，结果作废，客户端在应用层重试。</p>
 <p>当时把它当传输层新闻讲，这里补上边界层的解读：<strong>MCP 敢这么做，是因为工具这个对话者近似纯函数</strong>。调用、返回、结束，边界对面没有需要延续的视图状态，会话性对这条边界是奢侈品而非必需品。无状态化的代价是真实的（会话被推给两端自己解决），但这个代价恰好落在了一个扛得住的位置。</p>
@@ -2966,7 +2966,7 @@ block 不到 committed frontier 不发射，发射即归终端，从架构上保
 </div>
 <p>规律就藏在“会话性“那一行：<strong>协议的会话性由边界另一端是否有状态决定。</strong> 工具无视图，MCP 可以拍掉会话；编辑器有状态，ACP 必须扛住会话；前端要增量，AG-UI 干脆把整个协议做成事件流。选协议之前先看对面是谁，跟第 11 篇选端先看约束是同一个思考方式。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/infra03-three-borders.svg" alt="三条协议边界：会话性由边界另一端是否有状态决定"><span class="img-wrapper"><img src="assets/infra03-three-borders.svg" alt="三条协议边界：会话性由边界另一端是否有状态决定"></span></label></p>
-<p>两条债也记下。其一，<strong>协议会咬人</strong>：MCP 2026-07-28 删 GET stream 的破坏性修订就是现场案例，依赖协议承诺的字段（比如断线恢复）说没就没，基建第 1 篇里 kimi 那份“seq 字段全可选“的契约，就是客户端对协议咬人的标准防御。其二，<strong>registry 也在割据</strong>：Zed 一个、JetBrains 一个，agent 要么入驻两次要么选边，CLAUDE.md 和 AGENTS.md 的双写，在协议层换了个名字重演。</p>
+<p>另有两个代价也记下。其一，<strong>协议会咬人</strong>：MCP 2026-07-28 删 GET stream 的破坏性修订就是现场案例，依赖协议承诺的字段（比如断线恢复）说没就没，基建第 1 篇里 kimi 那份“seq 字段全可选“的契约，就是客户端对协议咬人的标准防御。其二，<strong>registry 也在割据</strong>：Zed 一个、JetBrains 一个，agent 要么入驻两次要么选边，CLAUDE.md 和 AGENTS.md 的双写，在协议层换了个名字重演。</p>
 <h2 id="六总结-5"><a class="header" href="#六总结-5">六、总结</a></h2>
 <p>把三篇基建的结论合到界面上：ACP 决定编辑器能不能内联渲染 agent 的 diff、能不能把权限请求嵌进侧栏；AG-UI 决定前端组件收到的是增量还是全量、状态会不会静默漂移；MCP 的无状态化决定断线那一刻，工具调用这条支路上的界面敢不敢承诺续传。<strong>界面的每一个承诺，往下挖两层都会碰到一条协议的条款。</strong></p>
 <p>基建卷到此收口：连接（基建第 1 篇）、端（基建第 2 篇上下两篇）、协议（本篇），讲的是事件流离开本机之后的全部旅程。旅程之外还有一个这三篇没请进来的角色：网络本身。当 principal 是一个会被输入策反、还会瞬时繁殖子代的 agent，“谁能连谁、能碰什么“该按什么身份强制执行，今天还散落在工具授权和沙箱配置里，没有长成自己的一层（基建第 2 篇下篇的末尾把它和云端工作区并记为开放题）。下一卷换一个问题：这些机制建起来之后，怎么证明它们真的在工作。那是评测卷的事。</p>
@@ -2975,7 +2975,7 @@ block 不到 committed frontier 不发射，发射即归终端，从架构上保
 <ul>
 <li><em>核查分层（截至 2026-09-28）：ACP Registry 名单与接入方式基于 Zed 官方博客与文档、JetBrains 官方博客（2026-01）及 agentclientprotocol.com 目录，多源交叉。</em></li>
 <li><em>AG-UI 事件分组基于 CopilotKit 官方资料与第三方教程（事件计数 16–17 存在版本差异，按量级表述）。</em></li>
-<li><em>MCP 无状态化修订引自基01 轮核查的官方 changelog。</em></li>
+<li><em>MCP 无状态化修订引自基建第 1 篇核查过的官方 changelog。</em></li>
 <li><em>kimi-code 一手（<code>1e553fc</code>：<code>packages/acp-adapter</code>、<code>@agentclientprotocol/sdk@0.23.0</code>、测试文件名）。</em></li>
 <li><em>zacp 为系列既有引用（helloxz/zacp）。</em></li>
 </ul>
@@ -3033,7 +3033,7 @@ complete               以上全部排除，才轮到我
 <p>直接看第四层，这是最容易被省掉的一层。</p>
 <p>一条流正常收尾，应该有两个<strong>互相独立</strong>的信号：关闭标记（SSE 的 <code>data: [DONE]</code>）和结束原因（最后一个数据 chunk 里的 <code>finish_reason</code>：<code>stop</code> / <code>length</code> / <code>tool_calls</code>…）。结束原因可以理解为协议替 Markdown“补发的结尾信息“，正文里看不出来的事，协议单独告诉你一次。</p>
 <p>这两个信号缺一不可，因为它们会单独阵亡。最典型的死法：网关转发时把最后一个数据 chunk 弄丢了，只放行了 <code>[DONE]</code>。只查关闭标记的实现，对这种故障全线失守；反过来只查 <code>finish_reason</code> 也一样。我的判定标准是三条，任一命中就判不完整：<strong>结束标记没等到</strong>、<strong>缓冲区里有没解析完的字节</strong>、<strong>从头到尾没见过一个结束原因</strong>。前两条各管一层，第三条管的就是“证人缺了一个“的现场。</p>
-<p>如果你认真看了前面的文字，会注意到：前面枚举了四个失败状态，这里怎么只剩三条？不矛盾。transport_error 和 no_end_marker 在观测上折叠成了同一条,因为<strong>连接都死了，结束标记必然没等到</strong>。状态机按原因分四类，是为了标准化地归类原因，而这条录制到底是“连接断了“还是“连接活着但流被关了“，事后排查时是两回事。</p>
+<p>如果你认真看了前面的文字，会注意到：前面枚举了四个失败状态，这里怎么只剩三条？不矛盾。transport_error 和 no_end_marker 在观测上折叠成了同一条，因为<strong>连接都死了，结束标记必然没等到</strong>。状态机按原因分四类，是为了标准化地归类原因，而这条录制到底是“连接断了“还是“连接活着但流被关了“，事后排查时是两回事。</p>
 <p><strong>结束需要双保险，缺一个都不算数。</strong></p>
 <h3 id="33-收尾不能押注在一个等不来的信号上"><a class="header" href="#33-收尾不能押注在一个等不来的信号上">3.3 收尾不能押注在一个等不来的信号上</a></h3>
 <p>第三类坏法藏得更深（也是源自我稀烂的网络，笑）。SSE 的事件之间靠空行分隔，解析器攒到一个空行才敢处理前面的事件。如果某个超大事件中间网络卡住，空行永远不来，这个“攒了一半的事件“就<strong>无界地占着内存</strong>：业务逻辑永远不触发，而且没有任何报错，进程看上去完全健康。</p>
@@ -3128,7 +3128,7 @@ complete               以上全部排除，才轮到我
 <p>四问之外还有一问，问的是评测自己：裁判会不会错？会，而且裁判的 bug 比被测对象的更隐蔽。这面镜子安在第 14 篇的下半场，用我自己的一次公开翻案给全书收口。第 9 篇把整套方法搬进一个具体领域（记忆）。第 10–13 篇换一个位置：分数不是我跑的，是别人给的（榜单、论文、公开 benchmark），怎么判断它可不可信。第 14 篇先补上断言形态的第三块拼图（蜕变测试），再以裁判校准收束全书。十四个章号：四问，一个领域，四篇读别人的分数，一面镜子。</p>
 <p>三个姿势各连一问，但姿势不是章的私有财产：能力评测里有注入（第 2 篇的红绿对照就是注出来的），故障注入里全是微型对照实验。地图画的是主雇关系，不是围墙。</p>
 <h2 id="五本卷的叙事弧与公理"><a class="header" href="#五本卷的叙事弧与公理">五、本卷的叙事弧与公理</a></h2>
-<p>交代一下本卷的口气。和界面卷拿 ForgeLoopTUI 当参照系一样，本卷的参照系是我自己的评测工具链：dsh-eval-harness、skill-quake 故障注入管线、108 格截断矩阵。叙事弧大致是：先拿自己的 harness 当尺子，再拿尺子去量别人的生态，然后发现尺子本身的刻度是错的，最后把「修正尺子」长成纪律。所以本卷的病例大多是我自己的翻案记录。这不是自曝家短的癖好，是本卷的公理决定的：</p>
+<p>交代一下本卷的口气。和界面卷拿 ForgeLoopTUI 当参照系一样，本卷的参照系是我自己的评测工具链：dsh-eval-harness（dsh 是 deepseek harness 的缩写）、skill-quake 故障注入管线、108 格截断矩阵。叙事弧大致是：先拿自己的 harness 当尺子，再拿尺子去量别人的生态，然后发现尺子本身的刻度是错的，最后把「修正尺子」长成纪律。所以本卷的病例大多是我自己的翻案记录。这不是自曝家短的癖好，是本卷的公理决定的：</p>
 <p><strong>评测的全部产物（考题、观测、对照组、裁判）自己也是软件，也会坏，也需要被测。</strong> 每一章既是拿评测问 agent，也是拿这句公理问评测本身。第 14 篇末尾的「错误 → 机制化」清单，就是这句公理逐章兑现后的总单。</p>
 <h2 id="参考与延伸-24"><a class="header" href="#参考与延伸-24">参考与延伸</a></h2>
 <ul>
@@ -3242,7 +3242,7 @@ complete               以上全部排除，才轮到我
 <p>第二个方向更主动：把坏世界造出来，看有没有人叫。</p>
 <p>对<strong>检查</strong>，喂坏样本：把目录改名、把配置删一行、把流按要求截断，再跑一遍。红了，这个检查才算存在；不红，它只是装饰。第 4 篇会把这件事做成一个 108 格的矩阵。</p>
 <p>对<strong>流程</strong>，做消融：把你以为是主干的部件拆掉再跑一遍。分数掉了，说明它真的在被测；分数没动，说明你测的从来就不是你以为的东西。</p>
-<p>还有第三条，最少人做：<strong>对测量仪器本身做故障注入</strong>。仪器也是软件，它的假设可以和被测物正面冲突。第 9 篇有个病例：校验器假设「两臂回执顺序一致」，而 treatment 改的正是顺序，139 行里 88 行被仪器判了无效。这类事故的通用解法不是放宽仪器，是先怀疑仪器。我自己的待做清单里有一项就是把注入对象对准 harness 自身：逐个拆掉部件，看门禁分数动不动。还没跑出数字，先不写结论，但方向是定的：仪器不经过注入考验，和被测对象不经过注入考验一样，都只是「看起来在工作」。</p>
+<p>还有第三条，最少人做：<strong>对测量仪器本身做故障注入</strong>。仪器也是软件，它的假设可以和被测物正面冲突。第 8 篇有个病例：校验器假设「两臂回执顺序一致」，而 treatment 改的正是顺序，139 行里 88 行被仪器判了无效。这类事故的通用解法不是放宽仪器，是先怀疑仪器。我自己的待做清单里有一项就是把注入对象对准 harness 自身：逐个拆掉部件，看门禁分数动不动。还没跑出数字，先不写结论，但方向是定的：仪器不经过注入考验，和被测对象不经过注入考验一样，都只是「看起来在工作」。</p>
 <p>消融和后面常用的双臂对照要分清：消融拆的是测量仪器，双臂扰动的是被测物——各管一半，第 6 篇讲双臂那半。</p>
 <h2 id="六每次惊讶都是一块空地"><a class="header" href="#六每次惊讶都是一块空地">六、每次惊讶都是一块空地</a></h2>
 <p>最后一条是纪律层面的。每次靠偶然发现或翻日志才看见问题，本身就是症状，说明当时没有任何检查在场。而每次惊讶都标出一块该写断言的空地。</p>
@@ -3477,7 +3477,7 @@ complete               以上全部排除，才轮到我
 </ul>
 <h2 id="一开场十八比十八为什么仍然被否决"><a class="header" href="#一开场十八比十八为什么仍然被否决">一、开场：十八比十八，为什么仍然被否决</a></h2>
 <p>先交代一件我自己没算清的事。第 4 篇那个截断检出矩阵，每格跑三次，108 格格格都是真金白银的会话；给 skill 建门禁时为了把置信区间压窄，采样模式一开就是好几轮。这些钱当时花得都对，但「花得对」的判断从来没被写进任何裁决规则，全靠手感。我的 harness 记了每一个 token 的去向，却从没回答过一个问题：<strong>这个通过率是多少钱买的？</strong></p>
-<p>然后我读到了一个把这个问题回答到底的裁决。我持续在看的一个开源 agent 内核项目（单人维护；为保持小册独立叫它 M 项目，出处登记在写作简报里），它的评测记录里有一次配对实验：对照组和实验组各 18 个 rollout，<strong>两组 18/18 全成功</strong>。质量打平，实验组还多一套机制。按「通过率说话」的习惯，这个实验该判实验组赢。裁决却是<strong>拒绝</strong>——实验组每个 rollout 多花 0.0648 美元，而实验合同里预注册的成本门槛是 0.02 美元。</p>
+<p>然后我读到了一个把这个问题回答到底的裁决。我持续在看的一个开源 agent 内核项目（单人维护；为保持小册独立叫它 M 项目，项目名和链接从略），它的评测记录里有一次配对实验：对照组和实验组各 18 个 rollout，<strong>两组 18/18 全成功</strong>。质量打平，实验组还多一套机制。按「通过率说话」的习惯，这个实验该判实验组赢。裁决却是<strong>拒绝</strong>——实验组每个 rollout 多花 0.0648 美元，而实验合同里预注册的成本门槛是 0.02 美元。</p>
 <p>两组全成功，仍然被否决。我第一次读到时停了一下：它逼出的正是我一直在回避的事。<strong>只按质量裁决，等于给「花钱买通过率」开后门。</strong></p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/eval08-quality-cost-frontier.svg" alt="质量-成本散点 + Pareto 前沿，标注「18/18 但被否决」的点"><span class="img-wrapper"><img src="assets/eval08-quality-cost-frontier.svg" alt="质量-成本散点 + Pareto 前沿，标注「18/18 但被否决」的点"></span></label></p>
 <h2 id="二通过率是可以花钱买的"><a class="header" href="#二通过率是可以花钱买的">二、通过率是可以花钱买的</a></h2>
@@ -3516,7 +3516,7 @@ complete               以上全部排除，才轮到我
 <h2 id="七四问的闭环"><a class="header" href="#七四问的闭环">七、四问的闭环</a></h2>
 <p>卷首语的四问到此全部有主：能不能做对（第 2–5 篇）、坏了会不会察觉（第 3–5 篇）、是不是它的功劳（第 6、8 篇）、什么代价（本篇）。</p>
 <p>刻意留一条缝：本篇讲的是裁决与记录，即钱花了多少、买到了什么、该不该继续花。但「花掉的上下文有多少真正有效」是另一个问题：800K 上下文里模型认真在读的可能只有一小段，有效窗口随长度衰减。那条线是价格之外的质量问题，两边分开记；它暂列未来选题、不占编号，等实验数据齐了再独立成章。</p>
-<p><em>本章外部病例来自我持续在看的一个单人维护开源 agent 内核项目的公开评测文档与变更记录（观察窗口 2026-10 上半月，含其评测规范、停滞熔断设计文档与记忆试点合同；项目名从略，链接与原文出处登记在写作简报，成书前由我凭链接复核全部数字）；JevBench 为独立的第三方公开榜单（其四轴计价口径见其公开 METHOD 文档）。自家病例出自 dsh-eval-harness 与截断检出矩阵（2026-09）。</em></p>
+<p><em>本章外部病例来自我持续在看的一个单人维护开源 agent 内核项目的公开评测文档与变更记录（观察窗口 2026-10 上半月，含其评测规范、停滞熔断设计文档与记忆试点合同；项目名和链接从略，数字以观察窗口内的文档版本为准）；JevBench 为独立的第三方公开榜单（其四轴计价口径见其公开 METHOD 文档）。自家病例出自 dsh-eval-harness 与截断检出矩阵（2026-09）。</em></p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="配对实验手册让同一道题回答两次"><a class="header" href="#配对实验手册让同一道题回答两次">配对实验手册——让同一道题回答两次</a></h1>
 <blockquote>
@@ -3633,7 +3633,7 @@ statistics:
 preregistered_at: &lt;开跑前的日期与合同 commit&gt;
 </code></pre>
 <p>练手建议用自家 fixture：从 skill-quake 或截断矩阵里挑 10 道题，对照臂关掉所有注入、treatment 臂开一个你确信有效的机制，跑一轮 10 对的配对。重点不是出结论，是把合同的每个字段都实际填一遍。</p>
-<p><em>本章外部病例来自我持续在看的那个单人维护开源 agent 内核项目（M 项目，首次出场于第 7 篇）的公开试点合同、变更记录与评测规范文档（观察窗口 2026-10；项目名从略，链接登记在写作简报，成书前凭链接复核）；精确二项检验与 Wilson 区间属统计学通识。自家病例出自 dsh-eval-harness、skill-quake 与截断检出矩阵（2026-09～10）。</em></p>
+<p><em>本章外部病例来自我持续在看的那个单人维护开源 agent 内核项目（M 项目，首次出场于第 7 篇）的公开试点合同、变更记录与评测规范文档（观察窗口 2026-10；项目名和链接从略，数字以观察窗口内的文档版本为准）；精确二项检验与 Wilson 区间属统计学通识。自家病例出自 dsh-eval-harness、skill-quake 与截断检出矩阵（2026-09～10）。</em></p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="记忆怎么测从被注入到被采信"><a class="header" href="#记忆怎么测从被注入到被采信">记忆怎么测——从「被注入」到「被采信」</a></h1>
 <blockquote>
@@ -3666,12 +3666,12 @@ preregistered_at: &lt;开跑前的日期与合同 commit&gt;
 </div>
 <p>归因折返规则与检出率模型同构：端到端没答对，先看模型有没有打开注入的记忆（采信层断）；打开了没核实到金标，看金标在不在注入集合（检索层断）；金标根本没进库，看写入层。<strong>不逐层分开记录，「记忆系统没用」就是一句无法证伪的抱怨。</strong></p>
 <h2 id="三两个题库两种金标必须分报"><a class="header" href="#三两个题库两种金标必须分报">三、两个题库，两种金标，必须分报</a></h2>
-<p>M 项目用的外部题库是 LongMemEval 一类的长期记忆公开学术基准（成书前复核具体版本口径），它内部把记忆库拆成两种形态，这个拆法值得照搬：</p>
+<p>M 项目用的外部题库是长期记忆的公开学术基准 LongMemEval-S（cleaned 版），它内部把记忆库拆成两种形态，这个拆法值得照搬：</p>
 <ul>
 <li><strong>turn 级原子记忆库</strong>：每条记忆是一次对话里的一个原子事实（「张三的航班是周三」），金标是精确的一条；</li>
 <li><strong>whole-session 会话库</strong>：记忆是整段会话，金标散在好几段里，判分要看 top-3 而不是 at-1。</li>
 </ul>
-<p>同一个方案在两个库上的成绩可以差出十个百分点：其迭代表里，弱判官方案在原子库命中 0.495 时整段库 0.450，而基线在整段库有 0.725。<strong>把两个库平均成一个「记忆准确率」，等于让两种任务的失败互相抵消着藏起来。</strong> 按切片分层看，不许只报聚合。</p>
+<p>同一个方案在两个库上的成绩可以差出十个百分点：其迭代表里，弱判官方案在原子库命中 0.495 时整段库 0.450，而基线在整段库有 0.720。<strong>把两个库平均成一个「记忆准确率」，等于让两种任务的失败互相抵消着藏起来。</strong> 按切片分层看，不许只报聚合。</p>
 <p>金标纪律没有新东西：dev 集调参、holdout 在读题面前冻结、校准集与验证集分开（第 14 篇同此口径）。记忆题库唯一额外的要求是<strong>写入侧也要有金标</strong>：给定一段对话，「应该沉淀出哪几条事实」需要人工标注，否则写入层的对错永远说不清。</p>
 <h2 id="四召回与精排必须分家"><a class="header" href="#四召回与精排必须分家">四、召回与精排必须分家</a></h2>
 <p>两个月迭代里最贵的一课，先看伤亡数字。第一版方案让一个 4B 判官独自决定「有没有相关记忆 + 注入哪几条」：turn 级命中从基线 0.620 掉到 0.495（p=0.001），整段库从 0.720 掉到 0.450。<strong>加了智能，显著退步。</strong></p>
@@ -3705,7 +3705,7 @@ preregistered_at: &lt;开跑前的日期与合同 commit&gt;
 <h2 id="九记忆是第一块能被严格测量的长期状态"><a class="header" href="#九记忆是第一块能被严格测量的长期状态">九、记忆是第一块能被严格测量的长期状态</a></h2>
 <p>收口说回为什么值得做。agent 身上的长期状态正在快速增多：规则文件、托管记忆、技能沉淀、用户画像、任务历史。它们大多数现在没法测：生效配置对用户不可见，是产品侧的黑箱；而<strong>评测侧的对应物是「注入集合必须可记录、可回放、可判分」</strong>。</p>
 <p>记忆是这堆长期状态里第一个拥有干净金标（事实可精确匹配）、天然配对形态（同一道题有记忆 vs 无记忆）、清晰三层链的东西。它的评测法立住了，规则、画像、技能的评测才有模板可抄。也正因如此，这个战场上长出的纪律（召回精排分家、shadow 同一性、写路径先造题、采信才是终点、文本干预对弱模型失效），会比记忆系统本身活得更久。</p>
-<p><em>本章外部病例来自 M 项目的记忆系统设计文档、排序方案退役相关变更与记忆试点合同（观察窗口 2026-10；项目名从略，原文链接与文档路径登记在写作简报），迭代数字（0.620/0.495、33/34/42 of 60、258→272/288、55 次咨询 0 越阈等）成书前由我凭链接复核；LongMemEval 为公开学术基准，引用时需核对所用版本与指标定义。检索评测方法论出自作者的《自顶向下拆 RAG》，本章互指不搬。产品侧的「生效配置预览」讨论原在界面部分第 21–22 篇，两章已于 2026-10-14 撤稿存档（materials/），本章自含其结论。</em></p>
+<p><em>本章外部病例来自 M 项目的记忆系统设计文档、排序方案退役相关变更与记忆试点合同（观察窗口 2026-10；项目名和链接从略），迭代数字（0.620/0.495、33/34/42 of 60、258→272/288、55 次咨询 0 越阈等）以观察窗口内的文档版本为准；LongMemEval-S 为公开学术基准，M 项目用的是它的 cleaned 版。检索评测方法论出自作者的《自顶向下拆 RAG》，本章互指不搬。产品侧的「生效配置预览」讨论原在界面部分第 21–22 篇，两章已于 2026-10-14 撤稿存档（materials/），本章自含其结论。</em></p>
 <div style="break-before: page; page-break-before: always;"></div>
 <h1 id="换个-harness-排名就翻被测的到底是谁"><a class="header" href="#换个-harness-排名就翻被测的到底是谁">换个 harness 排名就翻——被测的到底是谁</a></h1>
 <blockquote>
@@ -3997,7 +3997,7 @@ preregistered_at: &lt;开跑前的日期与合同 commit&gt;
 <p>被测系统一旦能改自己，评测就多了一个对手。</p>
 <p>DGM 的论文里有个例子。研究者想让 DGM 解决「假装调用工具」的问题：模型并没有真的调用工具，只是在文本里写出了工具的输入和输出。为了检测这种情况，他们在每次真实调用工具时插入特殊标记，再看这些标记有没有出现在模型的纯文本输出里。</p>
 <p>其中一个节点只改了两次，就拿到了满分 2.0。它的办法是删掉记录这些特殊标记的日志，而指令明确要求不许改动这些标记。分数是满的，问题一点没解决。作者把这叫作指标刷分（objective hacking），并观察到：检测函数不对 agent 隐藏时，这种情况更常发生。</p>
-<p>今年几份工作的防法很一致，都是让评分资产在结构上够不着：</p>
+<p>今年几份工作的防法很一致，都是让评分材料在结构上够不着：</p>
 <ul>
 <li>AI4AI-Bench 用对 agent 隐藏的评估器，并把改好的代码从头重跑；</li>
 <li>AIDE² 只接受在被改写的 agent 看不到的留出数据上变好的改动；</li>
@@ -4010,7 +4010,7 @@ preregistered_at: &lt;开跑前的日期与合同 commit&gt;
 <li><strong>配对的开关对照。</strong> 同一系统，保留经验和不保留经验各跑一组，逐实例相减。</li>
 <li><strong>多种顺序、多次运行，报区间。</strong> 顺序会影响学到什么，单次运行的名次不可信。</li>
 <li><strong>机制证据。</strong> 确认涨分走的是「保存、检索、更新」这条路，而不是别的捷径。</li>
-<li><strong>评分资产隔离。</strong> 评估器、参考答案、留出数据，被测系统都够不着；改过的代码从头重跑再评。</li>
+<li><strong>评分材料隔离。</strong> 评估器、参考答案、留出数据，被测系统都够不着；改过的代码从头重跑再评。</li>
 <li><strong>记录每次自我修改的谱系。</strong> 哪次改了什么、在什么数据上被接受，要能回溯，出了问题才能定位。</li>
 <li><strong>测「加速」要有二阶对照。</strong> 学习机制冻结的一组和允许修改的一组，比较的是改进的速度，而不只是分数。</li>
 <li><strong>事先估好成本。</strong> 二阶对照要很长的序列和很多种子，AIDE² 的作者就卡在这里。先算清预算，再决定测到哪一层。</li>
@@ -4069,9 +4069,9 @@ preregistered_at: &lt;开跑前的日期与合同 commit&gt;
 <li>超时按失败计；</li>
 <li>隔离边界搭不起来时，让异常直接抛出，一个分数都不写。</li>
 </ul>
-<p>WorkBuddy 把隔离做在镜像构建这一步：任务镜像只拷入 agent 可见的工作区，评分资产从不进镜像，到评分阶段才上传。用论文的话说，评估边界是打包本身的属性，而不是运行时的配置。</p>
+<p>WorkBuddy 把隔离做在镜像构建这一步：任务镜像只拷入 agent 可见的工作区，评分材料从不进镜像，到评分阶段才上传。用论文的话说，评估边界是打包本身的属性，而不是运行时的配置。</p>
 <p>这几条我在第 4 篇的伤弹实验里学过缩小版：做实验的人不能当宿主，宿主可见的任何路径都不能编码伤型。当时防的是宿主「看出来」，这里防的是 agent「改得动」，道理是一个：不能指望被测物不看、不碰，只能让它够不着。</p>
-<p>还有一点常被混淆：隔离、保密、抗污染是三件事。WorkBuddy 的「隐藏测试」只是指解题时 agent 看不见；隐藏测试和参考补丁本身，是随数据集全部公开的，抗污染靠的是改写题目和版本化。对私有评测来说，「不公开」不等于「隔离好了」。保密挡不住被测系统在运行过程中读到评分资产。</p>
+<p>还有一点常被混淆：隔离、保密、抗污染是三件事。WorkBuddy 的「隐藏测试」只是指解题时 agent 看不见；隐藏测试和参考补丁本身，是随数据集全部公开的，抗污染靠的是改写题目和版本化。对私有评测来说，「不公开」不等于「隔离好了」。保密挡不住被测系统在运行过程中读到评分材料。</p>
 <h2 id="三误差有两个方向常见检查各漏一边"><a class="header" href="#三误差有两个方向常见检查各漏一边">三、误差有两个方向，常见检查各漏一边</a></h2>
 <p>评测出错有两个方向：放水，把错的判成对的；误杀，把对的判成错的。几乎所有关于评测缺陷的讨论都集中在放水上，可误杀一点也不少见。</p>
 <p>SWE-bench Verified 的来历就是一个例子。OpenAI 请 93 名开发者标注了原版 SWE-bench 的 1,699 道题：38.3% 被标为题面描述不足，61.1% 被标为测试可能把有效解判错，最后剔除了 68.3%。这些是标记比例，不是实测的误判率，但方向很清楚：原版的主要问题是低估。</p>
@@ -4079,7 +4079,7 @@ preregistered_at: &lt;开跑前的日期与合同 commit&gt;
 <p>看结果的人也有同样的偏向。Who Validates the Validators 做过一个用户研究：9 名参与者看结果总表时，只有一个人按「有没有漏判」的方向逐行核查，其余所有人都只看被判失败的格子。漏判在这样的界面上是看不见的。</p>
 <p>所以我建议，评分器的验收要显式地做两个方向：</p>
 <ul>
-<li><strong>负例分两栏。</strong> 放水一栏：空操作、把所有答案都列出来、子串误匹配、覆盖评分资产、读到残留的真值。过严一栏：语义等价的另一种写法、一题多解、合法的格式变体。过严那一栏不写进验收清单，就永远没人测。</li>
+<li><strong>负例分两栏。</strong> 放水一栏：空操作、把所有答案都列出来、子串误匹配、覆盖评分材料、读到残留的真值。过严一栏：语义等价的另一种写法、一题多解、合法的格式变体。过严那一栏不写进验收清单，就永远没人测。</li>
 <li><strong>oracle 要独立实现。</strong> 参考解如果就是判分的基准，它当然能过，「换一种正确写法会不会被拒」就测不到。oracle 最好照题面独立实现，不看评分器的代码，最好还准备几种不同的写法。这和第 14 篇的双实现互证是同一个思路：用另一份独立的实现当尺子。</li>
 <li><strong>强制复核判「通过」的样本。</strong> 审计界面要对称地呈现两侧，而不是只把失败的格子标红。</li>
 </ul>
@@ -4114,7 +4114,7 @@ preregistered_at: &lt;开跑前的日期与合同 commit&gt;
 <h2 id="七给评测做验收一份检查清单"><a class="header" href="#七给评测做验收一份检查清单">七、给评测做验收：一份检查清单</a></h2>
 <ol>
 <li><strong>按「会被攻击」设计评分器。</strong> 问两个问题：环境允许哪些意图之外的得分操作？评分器接受哪些没完成任务的终态？</li>
-<li><strong>隔离做成结构。</strong> 独立评分容器，评分资产不进被测环境，跨界产物先净化，执行被测代码换身份。</li>
+<li><strong>隔离做成结构。</strong> 独立评分容器，评分材料不进被测环境，跨界产物先净化，执行被测代码换身份。</li>
 <li><strong>分清隔离、保密、抗污染。</strong> 不公开不等于隔离好了。</li>
 <li><strong>验收两个方向。</strong> 负例分放水和过严两栏，oracle 独立实现，强制复核判「通过」的样本。</li>
 <li><strong>LLM 评审的门槛写成区间。</strong> 记录样本量，管住集合级的误判，达不到就只进诊断层。</li>

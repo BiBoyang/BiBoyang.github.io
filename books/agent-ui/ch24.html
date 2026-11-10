@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-561dc826.js";
+            window.path_to_searchindex_js = "searchindex-59aa598c.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-235d8387.js"></script>
@@ -212,7 +212,7 @@
 <p>这也向我们回答了“值不值“的问题。流式渲染的正确性涉及时序、布局、状态机的组合爆炸，人工回归不可能覆盖；而一旦基建就位，等价性层的单个测试能顶掉一整个手工测试矩阵。测试在这里从成本中心变成了让“事前状态机“这类精巧设计<strong>敢存在</strong>的前提：没有等价性测试盯着，任何后来者的“优化“都可能悄悄破坏收敛性，而且没有人会发现。</p>
 <hr>
 <h2 id="四总结"><a class="header" href="#四总结">四、总结</a></h2>
-<p>回头看，这个系列里关于可测试性的判断一直是散点：第 2 篇列举 CLI/TUI 优势时提过“管道可测试“，第 13 篇把可测试性列为 inline 派的优点之一（“系统越聪明，证明它正确的基础设施越贵”）而把这个优点兑现得最彻底的，反倒是默认全屏的 Codex：双模产品的测试成本要付两份。Codex 的四层实践把这些散点收成了一个框架：</p>
+<p>回头看，这个系列里关于可测试性的判断一直是散点：第 2 篇列举 CLI/TUI 优势时提过“管道可测试“，第 13 篇把可测试性列为 inline 派的优点之一（“系统越聪明，证明它正确的基础设施越贵”）。而把这个优点兑现得最彻底的，反倒是默认全屏的 Codex：双模产品的测试成本要付两份。Codex 的四层实践把这些散点收成了一个框架：</p>
 <pre><code>字节断言  →  钉契约（贵而硬，只钉关键行为）
 快照      →  钉形态（配归一化，防抖动失效）
 等价性    →  钉不变量（一次断言，覆盖无限切分）

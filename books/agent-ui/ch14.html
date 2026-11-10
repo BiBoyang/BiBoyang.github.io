@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-561dc826.js";
+            window.path_to_searchindex_js = "searchindex-59aa598c.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-235d8387.js"></script>
@@ -214,7 +214,7 @@
 <p>并且立了铁律：<strong>永远不要在完整帧之后直接 <code>appendFrame</code></strong>。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch14-three-step-settle.svg" alt="三步定稿序列与铁律：appendFrame 是永久历史的唯一通道"><span class="img-wrapper"><img src="assets/ch14-three-step-settle.svg" alt="三步定稿序列与铁律：appendFrame 是永久历史的唯一通道"></span></label></p>
 <p>这条铁律有出处。TASK-27 是测试先行的，只写测试不改库。<code>CommittedPreviewAnchorTests</code> 造了一个预言机：<code>ScrollbackTerminal</code>，实现了真实终端语义（deferred wrap、宽字符、底部滚动入 scrollback，覆盖 TUI 输出的全部 ANSI 子集），每个 API 调用后断言屏幕与 scrollback 和“期望内容物理换行后的尾部“逐行一致。S1–S5 场景验证 erase→append→redraw 在各种组合下锚定正确；S6 是一个专门的探针，<strong>故意钉住直连序列的缺陷形状</strong>：满帧后直接 appendFrame，结果是永久性的窗口偏移加陈旧绘制补位。把“为什么要先擦“从一条经验升级成了一道回归约束。</p>
-<p>还有一个归属细节值得记：<code>StreamingTranscriptAppendState</code>（维护“哪些行已落卷轴、哪些未定稿“的增量状态机）放在 <code>Sources/ForgeLoopTUI/Transcript/</code>，在引擎里，不在示例 app 里。合流是引擎级的决定，app 只是消费者，现在有两个消费者：MinimalAIApp 和 dsh-tui，两者帧模式一致。</p>
+<p>还有一个归属细节值得记：<code>StreamingTranscriptAppendState</code>（维护“哪些行已落卷轴、哪些未定稿“的增量状态机）放在 <code>Sources/ForgeLoopTUI/Transcript/</code>，在引擎里，不在示例 app 里。合流是引擎级的决定，app 只是消费者，现在有两个消费者：MinimalAIApp 和 dsh-tui（dsh 是 deepseek harness 的缩写），两者帧模式一致。</p>
 <h2 id="三这件事在所有权坐标系里意味着什么"><a class="header" href="#三这件事在所有权坐标系里意味着什么">三、这件事在所有权坐标系里意味着什么</a></h2>
 <p>盘点一下新稳态。一条回复流式期间：不稳定尾巴 + 状态栏 + 输入框，归引擎原地管；行一旦稳定：<code>appendFrame</code> 写进<strong>终端原生 scrollback</strong>，从此滚动、回看、复制都是终端的事，引擎脱手。</p>
 <p>把这个状态放到第 14 篇那张三行所有权表里：</p>
@@ -224,14 +224,14 @@
 <tr><th>实现</th><th>会话期间</th><th>会话结束后</th></tr>
 </thead>
 <tbody>
-<tr><td>Grok / Claude Code / Codex</td><td>历史归终端</td><td>归终端</td></tr>
+<tr><td>inline 派（Claude Code 的默认，Codex、Grok 的 inline 模式）</td><td>历史归终端</td><td>归终端</td></tr>
 <tr><td>ForgeLoopTUI（第 14 篇时的判断）</td><td>历史归引擎</td><td>无干净归档</td></tr>
 <tr><td>Kimi Code alt 模式</td><td>历史归引擎</td><td>归还终端</td></tr>
 <tr><td><strong>ForgeLoopTUI app 路径（8 月 30 日后）</strong></td><td><strong>稳定一行，归还一行</strong></td><td><strong>已在 scrollback</strong></td></tr>
 </tbody>
 </table>
 </div>
-<p>比 Kimi 的“退出时归还“更早：不是终态一次性清算，是逐行按揭。第 14 篇的结论是“所有权可以按生命周期分期缴“，现在“会话期间“内部也可以分期了，<strong>稳定的程度就是所有权的边界</strong>：每行内容在它被认证稳定的那个瞬间，从引擎资产变成终端资产。</p>
+<p>比 Kimi 的“退出时归还“更早：不是终态一次性移交，是逐行移交。第 14 篇的结论是“所有权的代价可以按生命周期分阶段承担“，现在“会话期间“内部也可以再分阶段了，<strong>稳定的程度就是所有权的边界</strong>：每行内容在它被认证稳定的那个瞬间，从归引擎管变成归终端管。</p>
 <p><label class="checkbox-label"><input class="checkbox-img" type="checkbox"><img src="assets/ch14-per-line-mortgage.svg" alt="稳定一行，归还一行：每行内容在认证稳定的瞬间换手"><span class="img-wrapper"><img src="assets/ch14-per-line-mortgage.svg" alt="稳定一行，归还一行：每行内容在认证稳定的瞬间换手"></span></label></p>
 <p>但要说清楚：引擎没有换阵营。窗口化全帧 API 原样保留，AppKit 桥、全屏路径都在，另一个 app 仍然可以选“历史全归引擎“。引擎做的事是提供了两种语义（原地帧 + 发射通道）让 app 自选，这恰好是八月审计里“问题 2“（历史持久化路径待确认，实为 API 设计问题）的答案，也顺带回答了当时挂着的 Phase 0 决策 A：要不要提供 <code>commit(_:)</code> 一等沉降语义？实践给出的答案是<strong>已经有了</strong>，<code>appendFrame</code> 就是 commit 通道，差的只是把它作为一等语义写进文档和 README 的选择指引。挂了两个月的问题，被一次修 bug 顺手回答了。</p>
 <h2 id="四混合模式的代价"><a class="header" href="#四混合模式的代价">四、混合模式的代价</a></h2>
@@ -243,7 +243,7 @@
 </blockquote>
 <p>（appendFrame 是永久历史的唯一通道。）这就是 inline 派“发射即定型“纪律在混合模式里的对应物，只不过它管的方向反过来：inline 派用它约束“不许碰已发射的历史“，这里用它约束“不许从别的门进历史“。同一句纪律，两种所有制下各管一边。</p>
 <p>配套的是一个计数器：<code>unretainedAppendedRows</code>，appendFrame 写下、但还没被任何 retained 帧接管的光标行数。有了它，erase→append→redraw 序列里万一发生超屏重绘，重绘从新追加历史的<strong>下方</strong>开画，而不是从 home 把刚 append 的行覆盖掉。回归测试的口径也很硬：118×12 终端、7 字符 chunk、帧模式与两个消费者 app 完全一致；断言整场流式期间 scrollback 保持为空、<code>| --- |</code> 永不出现、<code>Kubernetes</code> 哨兵词恰好出现一次。</p>
-<p>这个事故值得单独定性：它不是第 13 篇 5.2（resize 核平误伤 scrollback）的复读，诱因不是 resize，是<strong>回退路径 × 混合所有权</strong>的乘积。单一所有权下不存在这类 bug：历史全归终端时没有“回退重写“，历史全归引擎时没有“scrollback 污染“。第 14 篇说每种所有权都要付出代价；这里补一条：<strong>分期付代价，本身也是一种代价</strong>，两条通道并存的那一刻，就要为“别让内容走错门“付出工程量。</p>
+<p>这个事故值得单独定性：它不是第 13 篇 5.2（resize 核平误伤 scrollback）的复读，诱因不是 resize，是<strong>回退路径 × 混合所有权</strong>的乘积。单一所有权下不存在这类 bug：历史全归终端时没有“回退重写“，历史全归引擎时没有“scrollback 污染“。第 14 篇说每种所有权都要付出代价；这里补一条：<strong>分阶段承担代价，本身也是一种代价</strong>，两条通道并存的那一刻，就要为“别让内容走错门“付出工程量。</p>
 <h2 id="五总结"><a class="header" href="#五总结">五、总结</a></h2>
 <p>两个月，五天里的 61 个提交，七件清单落了半件，但引擎完成了一次跨阵营的半程：全屏自管的引擎，长出了一条逐行归还 scrollback 的通道，配上了一个真实终端语义的预言机、一道“唯一之门“的纪律，以及一套跨通道的状态核对。</p>
 <p>第 13 篇结尾说过，ForgeLoopTUI 的 committed 区在语义上已经是 append-only，和 inline 派的 scrollback“只差最后一步：物理上还归不归我管“。这一步现在有了答案的形状：<strong>物理归属不再由引擎统一决定，由每一行内容在稳定瞬间自己决定</strong>。所有权从引擎的出厂设置，变成了内容级的调度表。</p>

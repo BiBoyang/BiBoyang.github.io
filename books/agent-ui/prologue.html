@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-561dc826.js";
+            window.path_to_searchindex_js = "searchindex-59aa598c.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-235d8387.js"></script>
@@ -230,7 +230,7 @@ complete               以上全部排除，才轮到我
 <p>直接看第四层，这是最容易被省掉的一层。</p>
 <p>一条流正常收尾，应该有两个<strong>互相独立</strong>的信号：关闭标记（SSE 的 <code>data: [DONE]</code>）和结束原因（最后一个数据 chunk 里的 <code>finish_reason</code>：<code>stop</code> / <code>length</code> / <code>tool_calls</code>…）。结束原因可以理解为协议替 Markdown“补发的结尾信息“，正文里看不出来的事，协议单独告诉你一次。</p>
 <p>这两个信号缺一不可，因为它们会单独阵亡。最典型的死法：网关转发时把最后一个数据 chunk 弄丢了，只放行了 <code>[DONE]</code>。只查关闭标记的实现，对这种故障全线失守；反过来只查 <code>finish_reason</code> 也一样。我的判定标准是三条，任一命中就判不完整：<strong>结束标记没等到</strong>、<strong>缓冲区里有没解析完的字节</strong>、<strong>从头到尾没见过一个结束原因</strong>。前两条各管一层，第三条管的就是“证人缺了一个“的现场。</p>
-<p>如果你认真看了前面的文字，会注意到：前面枚举了四个失败状态，这里怎么只剩三条？不矛盾。transport_error 和 no_end_marker 在观测上折叠成了同一条,因为<strong>连接都死了，结束标记必然没等到</strong>。状态机按原因分四类，是为了标准化地归类原因，而这条录制到底是“连接断了“还是“连接活着但流被关了“，事后排查时是两回事。</p>
+<p>如果你认真看了前面的文字，会注意到：前面枚举了四个失败状态，这里怎么只剩三条？不矛盾。transport_error 和 no_end_marker 在观测上折叠成了同一条，因为<strong>连接都死了，结束标记必然没等到</strong>。状态机按原因分四类，是为了标准化地归类原因，而这条录制到底是“连接断了“还是“连接活着但流被关了“，事后排查时是两回事。</p>
 <p><strong>结束需要双保险，缺一个都不算数。</strong></p>
 <h3 id="33-收尾不能押注在一个等不来的信号上"><a class="header" href="#33-收尾不能押注在一个等不来的信号上">3.3 收尾不能押注在一个等不来的信号上</a></h3>
 <p>第三类坏法藏得更深（也是源自我稀烂的网络，笑）。SSE 的事件之间靠空行分隔，解析器攒到一个空行才敢处理前面的事件。如果某个超大事件中间网络卡住，空行永远不来，这个“攒了一半的事件“就<strong>无界地占着内存</strong>：业务逻辑永远不触发，而且没有任何报错，进程看上去完全健康。</p>

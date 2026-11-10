@@ -1,4 +1,4 @@
-# 协议三边界——MCP、ACP、AG-UI，各欠谁的债
+# 协议三边界——MCP、ACP、AG-UI，代价各落在谁身上
 
 > 这一篇讲“界面”这个词的复数化：同一个 agent 要同时面对三类对话者（工具、编辑器、浏览器前端），行业为这三条边界各造了一套协议：MCP、ACP、AG-UI。它们不是竞争关系，是同一张地图上的三条国境线。这篇讲每条线怎么划的、为什么必须这么划，以及一个有意思的规律：**协议要不要有会话，取决于边界对面那位有没有状态。**
 
@@ -14,7 +14,7 @@
 - **agent ↔ 编辑器**（ACP）：编辑器是主语，它去征用一个 agent；
 - **agent ↔ 前端**（AG-UI）：前端是消费者，它订阅 agent 的事件流。
 
-主语不同，欠的债也不同。逐条看。
+主语不同，代价落在谁身上也不同。逐条看。
 
 ## 二、工具边界：MCP 和它的无状态豪赌
 
@@ -54,7 +54,7 @@ AG-UI（CopilotKit 出品）管 agent 和浏览器前端的对话：SSE 传输�
 
 ![三条协议边界：会话性由边界另一端是否有状态决定](assets/infra03-three-borders.svg)
 
-两条债也记下。其一，**协议会咬人**：MCP 2026-07-28 删 GET stream 的破坏性修订就是现场案例，依赖协议承诺的字段（比如断线恢复）说没就没，基建第 1 篇里 kimi 那份"seq 字段全可选"的契约，就是客户端对协议咬人的标准防御。其二，**registry 也在割据**：Zed 一个、JetBrains 一个，agent 要么入驻两次要么选边，CLAUDE.md 和 AGENTS.md 的双写，在协议层换了个名字重演。
+另有两个代价也记下。其一，**协议会咬人**：MCP 2026-07-28 删 GET stream 的破坏性修订就是现场案例，依赖协议承诺的字段（比如断线恢复）说没就没，基建第 1 篇里 kimi 那份"seq 字段全可选"的契约，就是客户端对协议咬人的标准防御。其二，**registry 也在割据**：Zed 一个、JetBrains 一个，agent 要么入驻两次要么选边，CLAUDE.md 和 AGENTS.md 的双写，在协议层换了个名字重演。
 
 ## 六、总结
 
@@ -68,6 +68,6 @@ AG-UI（CopilotKit 出品）管 agent 和浏览器前端的对话：SSE 传输�
 
 - *核查分层（截至 2026-09-28）：ACP Registry 名单与接入方式基于 Zed 官方博客与文档、JetBrains 官方博客（2026-01）及 agentclientprotocol.com 目录，多源交叉。*
 - *AG-UI 事件分组基于 CopilotKit 官方资料与第三方教程（事件计数 16–17 存在版本差异，按量级表述）。*
-- *MCP 无状态化修订引自基01 轮核查的官方 changelog。*
+- *MCP 无状态化修订引自基建第 1 篇核查过的官方 changelog。*
 - *kimi-code 一手（`1e553fc`：`packages/acp-adapter`、`@agentclientprotocol/sdk@0.23.0`、测试文件名）。*
 - *zacp 为系列既有引用（helloxz/zacp）。*

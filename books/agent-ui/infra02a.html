@@ -35,7 +35,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-561dc826.js";
+            window.path_to_searchindex_js = "searchindex-59aa598c.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-235d8387.js"></script>
@@ -190,14 +190,14 @@
 <p>用户打了 200 字，微信弹窗，切走，进程十秒后被挂起或杀死。回来时草稿还在不在？</p>
 <p>错误答案是“监听退后台事件，临走前保存“。错误在哪：挂起和杀死都可能<strong>不给回调</strong>，willResignActive 不是遗嘱，进程可能根本等不到执行它的机会。把持久化押在一个不保证送达的事件上，等于把草稿押在运气上。</p>
 <p>正确姿势是<strong>持续写</strong>：草稿每次变化就落盘，赌的不是“能等到告别“，而是“丢得足够少“。FlowDown 的实现是现成样本（<code>ConversationManager.swift</code>）：内存字典 <code>temporaryEditorObjects</code> 的 <code>didSet</code> 里挂一个 <strong>1 秒防抖</strong>的保存任务（<code>perform(#selector(saveObjects), afterDelay: 1.0)</code>，新修改会取消旧任务），到点后在后台线程写入 UserDefaults 支撑的 <code>@TypedStorage</code>；启动时回灌并记日志“loaded N temporary editor objects“。</p>
-<p>注意它连代价都是明码标价的：防抖窗口 1 秒，意味着杀死发生在最后一次击键后的 1 秒内会丢最后几个字。<strong>这是一笔自觉的交易</strong>，用“最多丢 1 秒“换“每秒写盘一次“的低频，而不是假装存在零丢失的免费方案。界面上那句“已保存“要不要显示、按什么粒度显示，就是这笔交易的用户侧报价单。</p>
+<p>注意它连代价都写得明明白白：防抖窗口 1 秒，意味着杀死发生在最后一次击键后的 1 秒内会丢最后几个字。<strong>这是一次有意识的取舍</strong>，用“最多丢 1 秒“换“每秒写盘一次“的低频，而不是假装存在零丢失的免费方案。界面上那句“已保存“要不要显示、按什么粒度显示，就是这次取舍在用户那一侧的交代。</p>
 <h2 id="站点二按下发送的瞬间切走"><a class="header" href="#站点二按下发送的瞬间切走">站点二：按下发送的瞬间切走</a></h2>
 <p>更危险的一站，因为发送是一个<strong>事务</strong>，事务最怕执行到一半断电。</p>
 <p>用户按了发送，请求进了网络栈，进程被挂起，这条消息到底发出去了没有？回来之后，界面该怎么显示？如果客户端这时自动重发，服务器会不会收到两条？</p>
 <p>工程答案是发件箱（outbox）模式，三条纪律：</p>
 <ol>
 <li><strong>本地事务先于网络事务</strong>：发送动作先落盘（进发件箱），再传输。界面状态跟着发件箱走，“排队中 / 已发出 / 已送达”，每个状态都是本地可查的事实，不猜。</li>
-<li><strong>幂等 request id</strong>：每条消息带客户端生成的唯一 id。重发时服务器凭 id 去重，“我可能发过“和“我肯定没发过“从此可区分。这是基建第 1 篇说的 at-least-once 世界的入场费。</li>
+<li><strong>幂等 request id</strong>：每条消息带客户端生成的唯一 id。重发时服务器凭 id 去重，“我可能发过“和“我肯定没发过“从此可区分。这是基建第 1 篇说的 at-least-once 世界的基本功。</li>
 <li><strong>宽限的用法</strong>：几十秒的后台宽限，够把一条消息推出网络栈，不够流完一场回复。宽限期该做的事是“把发件箱清空“，不是“把会话跑完“，认清时间常数，才知道宽限该花在哪。</li>
 </ol>
 <p>一个旁证：本机 Claude Code 的会话 JSONL 里，<code>type: "queue-operation"</code> 的第一行就是 <code>"operation": "enqueue"</code>，用户输入在一开始就被记成排队事件，而不是“即发即忘“的网络动作。把输入当事件记下来，是单机版的发件箱；移动端要做的只是让它穿过网络还成立。</p>
