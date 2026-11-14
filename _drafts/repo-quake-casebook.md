@@ -1,14 +1,6 @@
----
-layout: post
-title:  "用评测抓 bug：8 个开源项目、7 个合并的 PR，和一次公开撤回的误报"
-date:   2026-11-14 20:00:00 +0800
-categories: [AI]
-tags: [AI, Agent]
----
 
-<!-- 草稿：用于链接分享，不移入 _posts（_drafts 不会被 GitHub Pages 构建）。
-     GitHub 状态与 star 数为 2026-11-14 用 gh 实查；书中数字均可在对应章节找到原文；
-     案例 11–13 取自 issue/PR 原文与 repo-quake 的运行记录。 -->
+# 给 AI 工具挑刺的记录
+
 
 
 素材来自两本小册——《自顶向下拆 Agent》的评测卷和《我的评测工具链》——外加 [repo-quake](https://github.com/BiBoyang/repo-quake) 的缺陷台账、运行记录，以及上游的 issue/PR 原文。上游状态是 2026-11-14 在 GitHub 上实查的。
